@@ -1,0 +1,31 @@
+# Project-specific
+# For parameter injection
+dynaconf
+# For data processing
+pandas
+pandera
+# For curve fitting
+scipy
+# matplotlib w/ backend
+matplotlib
+PyQt5
+
+# Experiment
+rich
+jupyter
+nbstripout
+
+# Format
+black
+
+# Lint
+flake8
+flake8-absolute-import
+flake8-bandit
+flake8-black
+flake8-builtins
+flake8-bugbear
+flake8-comprehensions
+flake8-fixme
+pep8-naming
+flake8-codes
