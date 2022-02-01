@@ -1,0 +1,11 @@
+# Changes here will be overwritten by Copier; NEVER EDIT MANUALLY
+_commit: ae1776a
+_src_path: gh:blakeNaccarato/copier-python
+github_repo_name: boilerdata
+include_funding: true
+project_email: blake.naccarato+boilerdata@gmail.com
+project_name: boilerdata
+project_owner_github_username: blakeNaccarato
+project_owner_name: Blake Naccarato
+python_version: '3.10'
+year_of_project_creation: 2022
