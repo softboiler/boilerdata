@@ -1,1 +1,10 @@
 # List project dependencies here. A workflow ports them to `pyproject.toml`. This is needed because Dependabot does not currently support `flit`-flavored `pyproject.toml`.
+# For parameter injection
+dynaconf~=3.1.7
+# For data processing
+pandas~=1.4.0
+# For curve fitting
+scipy~=1.7.3
+# matplotlib w/ backend
+matplotlib~=3.5.1
+# PyQt6~=6.2.3
