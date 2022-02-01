@@ -1,5 +1,5 @@
 [build-system]
-requires = ["flit_core >=3.3,<4"]
+requires = [ "flit_core >=3.3,<4",]
 build-backend = "flit_core.buildapi"
 
 [project]
@@ -7,7 +7,7 @@ name = "boilerdata"
 requires-python = ">=3.10"
 dependencies = []
 readme = "README.md"
-dynamic = ["version", "description"]
+dynamic = [ "version", "description",]
 [[project.authors]]
 name = "Blake Naccarato"
 email = "blake.naccarato+boilerdata@gmail.com"
