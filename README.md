@@ -1,3 +1,3 @@
 # boilerdata
 
-Long description of your project.
+Data processing pipeline for a nucleate pool boiling apparatus.
