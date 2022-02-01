@@ -83,7 +83,7 @@ def fit(
     # get average post temperature for each run, for property estimation
     T_p_avg_arr = df.loc[:, T_p_str].mean(axis="columns").values
     # post geometry
-    A = np.pi / 4 * D ** 2
+    A = np.pi / 4 * D**2
 
     # ! Property Lookup
     # write post material, number of runs, and average post temperatures to IN.DAT
