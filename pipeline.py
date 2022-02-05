@@ -5,10 +5,12 @@ import subprocess  # noqa: S404; only used for hardcoded calls
 from os import environ
 from pathlib import Path
 from time import sleep
+from typing import Any
 
 import numpy as np
 import pandas as pd
 from dynaconf import Dynaconf
+from pydantic.dataclasses import dataclass
 from scipy.stats import linregress
 
 from pdfittings import tap, tee
@@ -17,10 +19,23 @@ ENABLE_FITTINGS = True
 logging.basicConfig(level=logging.INFO)
 pdobj = pd.DataFrame | pd.Series
 
-parameters = Dynaconf(settings_files=["parameters.yaml"])
-
 
 def main():
+    parameters = Dynaconf(settings_files=["parameters.yaml"])
+
+    @dataclass
+    class Fit:
+        x: list[float]
+        T_p_str: list[str]
+        material: str
+        T_b_str: str
+        T_L_str: str
+        L: float
+        D: float
+        do_plot: bool
+
+    params_fit = Fit(**parameters.fit)
+
     path = Path(
         "G:/My Drive/Blake/School/Grad/Projects/18.09 Nucleate Pool Boiling/Data/Boiling Curves/22.01.19 Copper X-A6-B3-1/data2"
     )
@@ -30,22 +45,28 @@ def main():
     srs = [
         df.pipe(take_last, rows=80)
         .pipe(tee, enable=ENABLE_FITTINGS, preview=skip_preview)
-        .mean()
+        .mean(level="time")  # specify index to guarantee no `float` return
         for df in dfs
     ]
     df = pd.concat(srs, keys=stems, axis="columns")
-    df = df.T.pipe(fit, **parameters.fit).pipe(
-        get_superheat, **parameters.get_superheat
-    )
+    df = df.T.pipe(fit, params_fit).pipe(get_superheat, **parameters.get_superheat)
     df.to_csv(path / "fitted.csv", index_label="From Dataset")
 
 
 def skip_preview(df: pdobj) -> str:
     return ""
 
+    # * -------------------------------------------------------------------------------- * #
+    # * FUNCTIONS
 
-# * -------------------------------------------------------------------------------- * #
-# * FUNCTIONS
+
+class StrictDict(dict[Any, Any]):
+    """Dict that doesn't allow new keys to be set after construction."""
+
+    def __setitem__(self, key: Any, value: Any):
+        if key not in self:
+            raise KeyError(f'Cannot add "{key}" key to StrictDict with immutable keys.')
+        dict.__setitem__(self, key, value)
 
 
 @tap(enable=ENABLE_FITTINGS, preview=skip_preview)
@@ -113,16 +134,6 @@ def fit(
     ]
     # preallocate numpy arrays
     results = {key: np.full_like(k_arr, np.nan) for key in keys}
-
-    class StrictDict(dict):
-        """Dict that doesn't allow new keys to be set after construction."""
-
-        def __setitem__(self, key, value):
-            if key not in self:
-                raise KeyError(
-                    f'Cannot add "{key}" key to StrictDict with immutable keys.'
-                )
-            dict.__setitem__(self, key, value)
 
     # prepare an index for mapping results
     i = 0
@@ -231,16 +242,6 @@ def get_superheat(
     ]
     # preallocate numpy arrays
     results = {key: np.full_like(k_arr, np.nan) for key in keys}
-
-    class StrictDict(dict):
-        """Dict that doesn't allow new keys to be set after construction."""
-
-        def __setitem__(self, key, value):
-            if key not in self:
-                raise KeyError(
-                    f'Cannot add "{key}" key to StrictDict with immutable keys.'
-                )
-            dict.__setitem__(self, key, value)
 
     # prepare an index for mapping results
     j = StrictDict(dict.fromkeys(keys))  # ensure key order for later mapping
