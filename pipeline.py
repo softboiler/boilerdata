@@ -1,7 +1,7 @@
 """Pipeline functions."""
 
 import logging
-import subprocess
+import subprocess  # noqa: S404; only used for hardcoded calls
 from os import environ
 from pathlib import Path
 from time import sleep
@@ -58,7 +58,7 @@ def take_last(df: pdobj, rows: int = 100) -> pdobj:
 def fit(
     df: pd.DataFrame,
     x: float,
-    T_p_str: list[str],
+    T_p_str: list[str],  # noqa: N803
     material: str,
     L: float,
     D: float,
@@ -71,34 +71,32 @@ def fit(
     Fit the data assuming one-dimensional, steady-state conduction.
     """
 
-    # ! Environment Variables
-    EESIN = "EESIN"
-    EESOUT = "EESOUT"
-    EES = "EES"
-    EESFILE = "EESFILE"
-
     # ! Inputs
     # get temperatures along the post as a numpy array
-    T_p_arr = df.loc[:, T_p_str].values
+    T_p_arr = df.loc[:, T_p_str].values  # noqa: N806
     # get average post temperature for each run, for property estimation
-    T_p_avg_arr = df.loc[:, T_p_str].mean(axis="columns").values
+    T_p_avg_arr = df.loc[:, T_p_str].mean(axis="columns").values  # noqa: N806
     # post geometry
-    A = np.pi / 4 * D**2
+    A = np.pi / 4 * D**2  # noqa: N806
 
     # ! Property Lookup
     # write post material, number of runs, and average post temperatures to IN.DAT
-    with open(environ[EESIN], "w+") as f:
+    with open(environ["EESIN"], "w+") as f:
         print(material, len(T_p_avg_arr), *T_p_avg_arr, file=f)
-    # call on PowerShell to invoke EES to write thermal conductivities to OUT.DAT given
+    # call on PowerShell to invoke "EES" to write thermal conductivities to OUT.DAT given
     # the contents of IN.DAT
-    subprocess.Popen(
-        ["pwsh.exe", "-Command", "& $env:" + EES + " $pwd\\$env:" + EESFILE + " /solve"]
+    subprocess.Popen(  # noqa: S603; input is hardcoded
+        [
+            "C:/Program Files/PowerShell/7/pwsh.exe",
+            "-Command",
+            "& $env:" + "EES" + " $pwd\\$env:" + "EESFILE" + " /solve",
+        ]
     )
-    # Since the subprocess command finishes before EES does, we have to wait long enough
-    # for EES to finish its job. We could hook into the process, but waiting is fine.
+    # Since the subprocess command finishes before "EES" does, we have to wait long enough
+    # for "EES" to finish its job. We could hook into the process, but waiting is fine.
     sleep(wait)
-    # EES should have written to OUT.DAT. get the properties from it
-    with open(environ[EESOUT], "r") as f:
+    # "EES" should have written to OUT.DAT. get the properties from it
+    with open(environ["EESOUT"], "r") as f:
         k_str = f.read().split("\t")
         k_arr = np.array(k_str, dtype=np.float64)
 
@@ -131,11 +129,19 @@ def fit(
     j = StrictDict(dict.fromkeys(keys))  # ensure key order for later mapping
 
     # perform a curve fit for each experimental run
-    for (T_p, k) in zip(T_p_arr, k_arr):
+    for (T_p, k) in zip(T_p_arr, k_arr):  # noqa: N806
 
         # ! Fit Assuming 1D Conduction
         # linear regression of the temperature profile
-        (dTdx, j[T_b_str], j["rval"], j["pval"], j["stderr"]) = linregress(x, T_p)
+        (  # noqa: N806
+            dTdx,
+            j[T_b_str],
+            j["rval"],
+            j["pval"],
+            j["stderr"],
+        ) = linregress(
+            x, T_p
+        )  # noqa: N806
         # ? q and DT
         j[T_L_str] = j[T_b_str] + dTdx * L
         j["Q (W)"] = -k * A * dTdx
@@ -175,7 +181,7 @@ def fit(
 
 def get_superheat(
     df: pd.DataFrame,
-    T_b_str: str,
+    T_b_str: str,  # noqa: N803
     T_L_str: str,
     T_w_str: list[str],
     material: str,
@@ -187,33 +193,31 @@ def get_superheat(
     Fit the data assuming one-dimensional, steady-state conduction.
     """
 
-    # ! Environment Variables
-    EESIN = "EESIN"
-    EESOUT = "EESOUT"
-    EES = "EES"
-    EESFILE = "EESFILE"
-
     # ! Inputs
     # get temperatures along the post as a numpy array
-    T_b_arr = df.loc[:, T_b_str].values
+    T_b_arr = df.loc[:, T_b_str].values  # noqa: N806
     # get average water temperature, part of superheat calculation
-    T_w_avg = np.mean(df.loc[:, T_w_str].mean(axis="columns").values)
+    T_w_avg = np.mean(df.loc[:, T_w_str].mean(axis="columns").values)  # noqa: N806
     # post geometry
 
     # ! Property Lookup
     # write post material, number of runs, and base temperatures to IN.DAT
-    with open(environ[EESIN], "w+") as f:
+    with open(environ["EESIN"], "w+") as f:
         print(material, len(T_b_arr), *T_b_arr, file=f)
-    # call on PowerShell to invoke EES to write thermal conductivities to OUT.DAT given
+    # call on PowerShell to invoke "EES" to write thermal conductivities to OUT.DAT given
     # the contents of IN.DAT
-    subprocess.Popen(
-        ["pwsh.exe", "-Command", "& $env:" + EES + " $pwd\\$env:" + EESFILE + " /solve"]
+    subprocess.Popen(  # noqa: S603; input is hardcoded
+        [
+            "C:/Program Files/PowerShell/7/pwsh.exe",
+            "-Command",
+            "& $env:" + "EES" + " $pwd\\$env:" + "EESFILE" + " /solve",
+        ]
     )
-    # Since the subprocess command finishes before EES does, we have to wait long enough
-    # for EES to finish its job. We could hook into the process, but waiting is fine.
+    # Since the subprocess command finishes before "EES" does, we have to wait long enough
+    # for "EES" to finish its job. We could hook into the process, but waiting is fine.
     sleep(wait)
-    # EES should have written to OUT.DAT. get the properties from it
-    with open(environ[EESOUT], "r") as f:
+    # "EES" should have written to OUT.DAT. get the properties from it
+    with open(environ["EESOUT"], "r") as f:
         k_str = f.read().split("\t")
         k_arr = np.array(k_str, dtype=np.float64)
 
@@ -242,9 +246,9 @@ def get_superheat(
     j = StrictDict(dict.fromkeys(keys))  # ensure key order for later mapping
 
     # get the superheat for each experimental run
-    for i, (T_b, k) in enumerate(zip(T_b_arr, k_arr)):
+    for i, (T_b, k) in enumerate(zip(T_b_arr, k_arr)):  # noqa: N806
         # ? q and DT
-        dTdx = -df.at[df.index[i], "q (W/m^2)"] / k
+        dTdx = -df.at[df.index[i], "q (W/m^2)"] / k  # noqa: N806
         j[T_L_str] = T_b + dTdx * L
         j["DT (C)"] = j[T_L_str] - T_w_avg
 
