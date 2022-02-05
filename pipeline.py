@@ -135,12 +135,10 @@ def fit(
     # preallocate numpy arrays
     results = {key: np.full_like(k_arr, np.nan) for key in keys}
 
-    # prepare an index for mapping results
-    i = 0
     j = StrictDict(dict.fromkeys(keys))  # ensure key order for later mapping
 
     # perform a curve fit for each experimental run
-    for (T_p, k) in zip(T_p_arr, k_arr):  # noqa: N806
+    for i, (T_p, k) in enumerate(zip(T_p_arr, k_arr)):  # noqa: N806
 
         # ! Fit Assuming 1D Conduction
         # linear regression of the temperature profile
@@ -178,9 +176,6 @@ def fit(
         # map results from this iteration to the overall results dict
         for key, value in j.items():
             results[key][i] = value
-        # increment the index
-        i += 1
-
     # ! Generate Results DataFrame
     df_results = pd.DataFrame(index=df.index, data=results)
 
