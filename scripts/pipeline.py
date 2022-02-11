@@ -305,6 +305,37 @@ def get_superheat(
 
 
 # * -------------------------------------------------------------------------------- * #
+# * HELPER FUNCTIONS
+
+
+def get_thermal_conductivity(
+    material: str, temperatures, wait: float = 7
+) -> np.ndarray:
+
+    with cd(paths["ees_workdir"]):
+        # write post material, number of runs, and average post temperatures to in.dat
+        with open("in.dat", "w+") as f:
+            print(material, len(temperatures), *temperatures, file=f)
+        # Invoke EES to write thermal conductivities to out.dat given contents of in.dat
+        subprocess.Popen(  # noqa: S603, S607  # hardcoded
+            [
+                "pwsh",
+                "-Command",
+                f"{paths['ees']}",
+                f"{Path('get_thermal_conductivity.ees').resolve()}",
+                "/solve",
+            ]
+        )
+        sleep(wait)  # Wait long enough for EES to finish
+        # EES should have written to out.dat
+        with open("out.dat", "r") as f:
+            k_str = f.read().split("\t")
+            k_arr = np.array(k_str, dtype=np.float64)
+
+    return k_arr
+
+
+# * -------------------------------------------------------------------------------- * #
 
 if __name__ == "__main__":
     main()

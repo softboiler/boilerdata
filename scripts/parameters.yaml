@@ -1,6 +1,6 @@
 paths:
   data: G:/My Drive/Blake/School/Grad/Projects/18.09 Nucleate Pool Boiling/Data/Boiling Curves/22.01.19 Copper X-A6-B3-1/data2
-  ees: E:/EES32/EES.exe
+  ees: C:/EES32/EES.exe
   ees_workdir: scripts/EES
 
 fit:
