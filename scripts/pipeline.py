@@ -1,63 +1,95 @@
 """Pipeline functions."""
 
+from contextlib import contextmanager
 import logging
-import subprocess  # noqa: S404; only used for hardcoded calls
-from os import environ
+import os
 from pathlib import Path
+import subprocess  # noqa: S404  # only used for hardcoded calls
+from dataclasses import asdict
 from time import sleep
 from typing import Any
 
 import numpy as np
 import pandas as pd
 from dynaconf import Dynaconf
+from pydantic import DirectoryPath, FilePath, validator
 from pydantic.dataclasses import dataclass
 from scipy.stats import linregress
 
-from pdfittings import tap, tee
-
-ENABLE_FITTINGS = True
-logging.basicConfig(level=logging.INFO)
+ENABLE_FITTINGS = False
+if DEBUG := ENABLE_FITTINGS:
+    logging.basicConfig(level=logging.INFO)
 pdobj = pd.DataFrame | pd.Series
+
+# * -------------------------------------------------------------------------------- * #
+# * VALIDATION
+
+
+@dataclass
+class Paths:
+    data: DirectoryPath
+    ees: FilePath
+    ees_workdir: DirectoryPath
+
+    @validator("ees")
+    def validate_ees(cls, ees):
+        if ees.name != "EES.exe":
+            raise ValueError("Filename must be 'EES.exe'.")
+        return ees
+
+
+@dataclass
+class FitParams:
+    x: list[float]
+    T_p_str: list[str]
+    material: str
+    T_b_str: str
+    T_L_str: str
+    L: float
+    D: float
+    do_plot: bool
+
+
+@dataclass
+class GetSuperheatParams:
+    T_b_str: str
+    T_L_str: str
+    T_w_str: list[str]
+    material: str
+    L: float
+
+
+params = Dynaconf(settings_files=["scripts/parameters.yaml"])
+paths = asdict(Paths(**params.paths))
+fit_params = asdict(FitParams(**params.fit))
+get_superheat_params = asdict(GetSuperheatParams(**params.get_superheat))
+
+
+# * -------------------------------------------------------------------------------- * #
+# * MAIN
 
 
 def main():
-    parameters = Dynaconf(settings_files=["parameters.yaml"])
 
-    @dataclass
-    class Fit:
-        x: list[float]
-        T_p_str: list[str]
-        material: str
-        T_b_str: str
-        T_L_str: str
-        L: float
-        D: float
-        do_plot: bool
+    # @dataclass()
+    # class
 
-    params_fit = Fit(**parameters.fit)
-
-    path = Path(
-        "G:/My Drive/Blake/School/Grad/Projects/18.09 Nucleate Pool Boiling/Data/Boiling Curves/22.01.19 Copper X-A6-B3-1/data2"
-    )
-    files = sorted((path / "raw").glob("*.csv"))
+    data = paths["data"]
+    files = sorted((data / "raw").glob("*.csv"))
     stems = [file.stem for file in files]
     dfs = [pd.read_csv(file, index_col=0) for file in files]
-    srs = [
-        df.pipe(take_last, rows=80)
-        .pipe(tee, enable=ENABLE_FITTINGS, preview=skip_preview)
-        .mean(level="time")  # specify index to guarantee no `float` return
-        for df in dfs
-    ]
-    df = pd.concat(srs, keys=stems, axis="columns")
-    df = df.T.pipe(fit, params_fit).pipe(get_superheat, **parameters.get_superheat)
-    df.to_csv(path / "fitted.csv", index_label="From Dataset")
+    srs = [df.iloc[-80:].mean() for df in dfs]
+    df = pd.concat(srs, keys=stems, axis="columns").T
+    df = df.pipe(fit, **fit_params).pipe(get_superheat, **get_superheat_params)
+    df.to_csv(data / "fitted.csv", index_label="From Dataset")
 
 
 def skip_preview(df: pdobj) -> str:
     return ""
 
-    # * -------------------------------------------------------------------------------- * #
-    # * FUNCTIONS
+
+# * -------------------------------------------------------------------------------- * #
+# * FUNCTIONS
 
 
 class StrictDict(dict[Any, Any]):
@@ -69,11 +101,15 @@ class StrictDict(dict[Any, Any]):
         dict.__setitem__(self, key, value)
 
 
-@tap(enable=ENABLE_FITTINGS, preview=skip_preview)
-def take_last(df: pdobj, rows: int = 100) -> pdobj:
-    """Reduce data to the last 80 data points."""
-    df = df.iloc[-rows:]
-    return df
+@contextmanager
+def cd(path: str):
+    """Context manager for changing working directory."""
+    old_dir = os.getcwd()
+    os.chdir(path)
+    try:
+        yield
+    finally:
+        os.chdir(old_dir)
 
 
 def fit(
@@ -101,25 +137,25 @@ def fit(
     A = np.pi / 4 * D**2  # noqa: N806
 
     # ! Property Lookup
-    # write post material, number of runs, and average post temperatures to IN.DAT
-    with open(environ["EESIN"], "w+") as f:
-        print(material, len(T_p_avg_arr), *T_p_avg_arr, file=f)
-    # call on PowerShell to invoke "EES" to write thermal conductivities to OUT.DAT given
-    # the contents of IN.DAT
-    subprocess.Popen(  # noqa: S603; input is hardcoded
-        [
-            "C:/Program Files/PowerShell/7/pwsh.exe",
-            "-Command",
-            "& $env:" + "EES" + " $pwd\\$env:" + "EESFILE" + " /solve",
-        ]
-    )
-    # Since the subprocess command finishes before "EES" does, we have to wait long enough
-    # for "EES" to finish its job. We could hook into the process, but waiting is fine.
-    sleep(wait)
-    # "EES" should have written to OUT.DAT. get the properties from it
-    with open(environ["EESOUT"], "r") as f:
-        k_str = f.read().split("\t")
-        k_arr = np.array(k_str, dtype=np.float64)
+    with cd(paths["ees_workdir"]):
+        # write post material, number of runs, and average post temperatures to in.dat
+        with open("in.dat", "w+") as f:
+            print(material, len(T_p_avg_arr), *T_p_avg_arr, file=f)
+        # Invoke EES to write thermal conductivities to out.dat given contents of in.dat
+        subprocess.Popen(  # noqa: S603, S607  # hardcoded
+            [
+                "pwsh",
+                "-Command",
+                f"{paths['ees']}",
+                f"{Path('get_thermal_conductivity.ees').resolve()}",
+                "/solve",
+            ]
+        )
+        sleep(wait)  # Wait long enough for EES to finish
+        # EES should have written to out.dat
+        with open("out.dat", "r") as f:
+            k_str = f.read().split("\t")
+            k_arr = np.array(k_str, dtype=np.float64)
 
     # keys for a results dict that will become a DataFrame
     keys = [
@@ -192,7 +228,6 @@ def get_superheat(
     T_w_str: list[str],
     material: str,
     L: float,
-    D: float,
     wait: float = 7,
 ) -> pd.DataFrame:
     """
@@ -207,25 +242,25 @@ def get_superheat(
     # post geometry
 
     # ! Property Lookup
-    # write post material, number of runs, and base temperatures to IN.DAT
-    with open(environ["EESIN"], "w+") as f:
-        print(material, len(T_b_arr), *T_b_arr, file=f)
-    # call on PowerShell to invoke "EES" to write thermal conductivities to OUT.DAT given
-    # the contents of IN.DAT
-    subprocess.Popen(  # noqa: S603; input is hardcoded
-        [
-            "C:/Program Files/PowerShell/7/pwsh.exe",
-            "-Command",
-            "& $env:" + "EES" + " $pwd\\$env:" + "EESFILE" + " /solve",
-        ]
-    )
-    # Since the subprocess command finishes before "EES" does, we have to wait long enough
-    # for "EES" to finish its job. We could hook into the process, but waiting is fine.
-    sleep(wait)
-    # "EES" should have written to OUT.DAT. get the properties from it
-    with open(environ["EESOUT"], "r") as f:
-        k_str = f.read().split("\t")
-        k_arr = np.array(k_str, dtype=np.float64)
+    with cd(paths["ees_workdir"]):
+        # write post material, number of runs, and average post temperatures to in.dat
+        with open("in.dat", "w+") as f:
+            print(material, len(T_b_arr), *T_b_arr, file=f)
+        # Invoke EES to write thermal conductivities to out.dat given contents of in.dat
+        subprocess.Popen(  # noqa: S603, S607  # hardcoded
+            [
+                "pwsh",
+                "-Command",
+                f"{paths['ees']}",
+                f"{Path('get_thermal_conductivity.ees').resolve()}",
+                "/solve",
+            ]
+        )
+        sleep(wait)  # Wait long enough for EES to finish
+        # EES should have written to out.dat
+        with open("out.dat", "r") as f:
+            k_str = f.read().split("\t")
+            k_arr = np.array(k_str, dtype=np.float64)
 
     k_str = f"k_{material} (W/m-K)"
 
