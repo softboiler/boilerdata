@@ -37,6 +37,11 @@ class Paths:
             raise ValueError("Filename must be 'EES.exe'.")
         return ees
 
+    @validator("ees_workdir")
+    def validate_ees_workdir(cls, ees_workdir):
+        # TODO: Look for "in.dat", "out.dat", and "get_thermal_conductivity.ees"
+        return ees_workdir
+
 
 @dataclass
 class FitParams:
