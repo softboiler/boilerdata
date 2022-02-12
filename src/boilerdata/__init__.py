@@ -1,6 +1,5 @@
-"""Short description of your project.
-
-Long description of your project.
-"""
+"""Data processing pipeline for a nucleate pool boiling apparatus."""
 
 __version__ = "0.0.0"
+
+from boilerdata import api

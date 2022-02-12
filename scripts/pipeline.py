@@ -1,7 +1,6 @@
 """Pipeline functions."""
 
 from contextlib import contextmanager
-import logging
 import os
 from pathlib import Path
 import subprocess  # noqa: S404  # only used for hardcoded calls
@@ -10,16 +9,12 @@ from time import sleep
 from typing import Any
 
 import numpy as np
+from numpy import typing as npt
 import pandas as pd
 from dynaconf import Dynaconf
 from pydantic import DirectoryPath, FilePath, validator
 from pydantic.dataclasses import dataclass
 from scipy.stats import linregress
-
-ENABLE_FITTINGS = False
-if DEBUG := ENABLE_FITTINGS:
-    logging.basicConfig(level=logging.INFO)
-pdobj = pd.DataFrame | pd.Series
 
 # * -------------------------------------------------------------------------------- * #
 # * VALIDATION
@@ -76,9 +71,6 @@ get_superheat_params = asdict(GetSuperheatParams(**params.get_superheat))
 
 def main():
 
-    # @dataclass()
-    # class
-
     data = paths["data"]
     files = sorted((data / "raw").glob("*.csv"))
     stems = [file.stem for file in files]
@@ -87,10 +79,6 @@ def main():
     df = pd.concat(srs, keys=stems, axis="columns").T
     df = df.pipe(fit, **fit_params).pipe(get_superheat, **get_superheat_params)
     df.to_csv(data / "fitted.csv", index_label="From Dataset")
-
-
-def skip_preview(df: pdobj) -> str:
-    return ""
 
 
 # * -------------------------------------------------------------------------------- * #
@@ -106,19 +94,8 @@ class StrictDict(dict[Any, Any]):
         dict.__setitem__(self, key, value)
 
 
-@contextmanager
-def cd(path: str):
-    """Context manager for changing working directory."""
-    old_dir = os.getcwd()
-    os.chdir(path)
-    try:
-        yield
-    finally:
-        os.chdir(old_dir)
-
-
 def fit(
-    df: pd.DataFrame,
+    df: pd.DataFrame | pd.Series,
     x: float,
     T_p_str: list[str],  # noqa: N803
     material: str,
@@ -128,39 +105,21 @@ def fit(
     T_L_str: str,
     wait: float = 7,
     do_plot: bool = False,
-) -> pd.DataFrame:
-    """
-    Fit the data assuming one-dimensional, steady-state conduction.
-    """
+):
+    """Fit the data assuming one-dimensional, steady-state conduction."""
 
     # ! Inputs
     # get temperatures along the post as a numpy array
-    T_p_arr = df.loc[:, T_p_str].values  # noqa: N806
+    T_p_arr: npt.NDArray[np.floating] = df.loc[:, T_p_str].values  # noqa: N806
     # get average post temperature for each run, for property estimation
-    T_p_avg_arr = df.loc[:, T_p_str].mean(axis="columns").values  # noqa: N806
+    T_p_avg_arr: npt.NDArray[np.floating] = (  # noqa: N806
+        df.loc[:, T_p_str].mean(axis="columns").values
+    )
     # post geometry
     A = np.pi / 4 * D**2  # noqa: N806
 
     # ! Property Lookup
-    with cd(paths["ees_workdir"]):
-        # write post material, number of runs, and average post temperatures to in.dat
-        with open("in.dat", "w+") as f:
-            print(material, len(T_p_avg_arr), *T_p_avg_arr, file=f)
-        # Invoke EES to write thermal conductivities to out.dat given contents of in.dat
-        subprocess.Popen(  # noqa: S603, S607  # hardcoded
-            [
-                "pwsh",
-                "-Command",
-                f"{paths['ees']}",
-                f"{Path('get_thermal_conductivity.ees').resolve()}",
-                "/solve",
-            ]
-        )
-        sleep(wait)  # Wait long enough for EES to finish
-        # EES should have written to out.dat
-        with open("out.dat", "r") as f:
-            k_str = f.read().split("\t")
-            k_arr = np.array(k_str, dtype=np.float64)
+    k_arr = get_thermal_conductivity(material, T_p_avg_arr)
 
     # keys for a results dict that will become a DataFrame
     keys = [
@@ -235,9 +194,7 @@ def get_superheat(
     L: float,
     wait: float = 7,
 ) -> pd.DataFrame:
-    """
-    Fit the data assuming one-dimensional, steady-state conduction.
-    """
+    """Fit the data assuming one-dimensional, steady-state conduction."""
 
     # ! Inputs
     # get temperatures along the post as a numpy array
@@ -247,25 +204,7 @@ def get_superheat(
     # post geometry
 
     # ! Property Lookup
-    with cd(paths["ees_workdir"]):
-        # write post material, number of runs, and average post temperatures to in.dat
-        with open("in.dat", "w+") as f:
-            print(material, len(T_b_arr), *T_b_arr, file=f)
-        # Invoke EES to write thermal conductivities to out.dat given contents of in.dat
-        subprocess.Popen(  # noqa: S603, S607  # hardcoded
-            [
-                "pwsh",
-                "-Command",
-                f"{paths['ees']}",
-                f"{Path('get_thermal_conductivity.ees').resolve()}",
-                "/solve",
-            ]
-        )
-        sleep(wait)  # Wait long enough for EES to finish
-        # EES should have written to out.dat
-        with open("out.dat", "r") as f:
-            k_str = f.read().split("\t")
-            k_arr = np.array(k_str, dtype=np.float64)
+    k_arr = get_thermal_conductivity(material, T_b_arr)
 
     k_str = f"k_{material} (W/m-K)"
 
@@ -309,10 +248,22 @@ def get_superheat(
 
 
 def get_thermal_conductivity(
-    material: str, temperatures, wait: float = 7
-) -> np.ndarray:
+    material: str, temperatures: npt.NDArray[np.floating], wait: float = 7
+):
+    """Get thermal conductivity."""
 
-    with cd(paths["ees_workdir"]):
+    @contextmanager
+    def change_directory(path: str):
+        """Context manager for changing working directory."""
+        old_dir = os.getcwd()
+        os.chdir(path)
+        try:
+            yield
+        finally:
+            os.chdir(old_dir)
+
+    with change_directory(paths["ees_workdir"]):
+
         # write post material, number of runs, and average post temperatures to in.dat
         with open("in.dat", "w+") as f:
             print(material, len(temperatures), *temperatures, file=f)
@@ -330,9 +281,11 @@ def get_thermal_conductivity(
         # EES should have written to out.dat
         with open("out.dat", "r") as f:
             k_str = f.read().split("\t")
-            k_arr = np.array(k_str, dtype=np.float64)
+            thermal_conductivity: npt.NDArray[np.floating] = np.array(
+                k_str, dtype=np.float64
+            )
 
-    return k_arr
+    return thermal_conductivity
 
 
 # * -------------------------------------------------------------------------------- * #
