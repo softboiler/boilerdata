@@ -2,4 +2,4 @@ import boilerdata
 
 
 def test():
-    pass
+    print(boilerdata.__name__)
