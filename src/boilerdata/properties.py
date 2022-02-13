@@ -4,6 +4,7 @@ import os
 import subprocess  # noqa: S404  # only used for hardcoded calls
 from contextlib import contextmanager
 from pathlib import Path
+from tempfile import NamedTemporaryFile
 from textwrap import dedent
 from time import sleep
 
@@ -39,28 +40,31 @@ def get_thermal_conductivity(
 
     with change_directory(workdir):
 
-        script = Path("get_thermal_conductivity.txt")
+        with NamedTemporaryFile() as script, open("in.dat", "w+") as f:
+            script.write(get_thermal_conductivity_script.encode())
+            script.seek(0)
 
-        with open(script, "w+") as f:
-            print(get_thermal_conductivity_script, file=f)
+            # script = Path("get_thermal_conductivity.txt")
+            # with open(script, "w+") as f:
+            #     print(get_thermal_conductivity_script, file=f)
 
-        # write post material, number of runs, and average post temperatures to in.dat
-        with open("in.dat", "w+") as f:
+            # write post material, number of runs, and average post temperatures to in.dat
+            # with open("in.dat", "w+") as f:
             print(material, len(temperatures), *temperatures, file=f)
-        # Invoke EES to write thermal conductivities to out.dat given contents of in.dat
-        subprocess.Popen(  # noqa: S603, S607  # hardcoded
-            [
-                "pwsh",
-                "-Command",
-                f"{ees}",
-                f"{script.resolve()}",
-                "/solve",
-            ]
-        )
-        sleep(wait)  # Wait long enough for EES to finish
-        # EES should have written to out.dat
-        with open("out.dat", "r") as f:
-            k_str = f.read().split("\t")
-            thermal_conductivity = np.array(k_str, dtype=np.float64)
+            # Invoke EES to write thermal conductivities to out.dat given contents of in.dat
+            subprocess.Popen(  # noqa: S603, S607  # hardcoded
+                [
+                    "pwsh",
+                    "-Command",
+                    f"{ees}",
+                    f"{script.name}",
+                    "/solve",
+                ]
+            )
+            sleep(wait)  # Wait long enough for EES to finish
+            # EES should have written to out.dat
+            with open("out.dat", "r") as f:
+                k_str = f.read().split("\t")
+                thermal_conductivity = np.array(k_str, dtype=np.float64)
 
     return thermal_conductivity
