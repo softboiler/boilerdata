@@ -1,23 +1,15 @@
 """Pipeline functions."""
 
-import os
-import subprocess  # noqa: S404  # only used for hardcoded calls
-from contextlib import contextmanager
 from dataclasses import asdict
-from pathlib import Path
-from time import sleep
 from typing import Any
 
 import numpy as np
 import pandas as pd
+from boilerdata.properties import get_thermal_conductivity
 from dynaconf import Dynaconf
 from pydantic import DirectoryPath, FilePath, validator
 from pydantic.dataclasses import dataclass
 from scipy.stats import linregress
-
-from boilerdata.properties import get_thermal_conductivity
-
-...
 
 # * -------------------------------------------------------------------------------- * #
 # * VALIDATION
@@ -35,10 +27,12 @@ class Paths:
             raise ValueError("Filename must be 'EES.exe'.")
         return ees
 
-    @validator("ees_workdir")
-    def validate_ees_workdir(cls, ees_workdir):
-        # TODO: Look for "in.dat", "out.dat", and "get_thermal_conductivity.ees"
-        return ees_workdir
+    # @validator("ees_workdir")
+    # def validate_ees_workdir(cls, ees_workdir):
+    #     file = "get_thermal_conductivity.ees"
+    #     if not (ees_workdir / file).exists():
+    #         raise ValueError(f"{file} does not exist in {ees_workdir}.")
+    #     return ees_workdir
 
 
 @dataclass
@@ -120,7 +114,9 @@ def fit(
     A = np.pi / 4 * D**2  # noqa: N806
 
     # ! Property Lookup
-    k_arr = get_thermal_conductivity(material, T_p_avg_arr)
+    k_arr = get_thermal_conductivity(
+        material, T_p_avg_arr, paths["ees_workdir"], paths["ees"]
+    )
 
     # keys for a results dict that will become a DataFrame
     keys = [
@@ -205,7 +201,9 @@ def get_superheat(
     # post geometry
 
     # ! Property Lookup
-    k_arr = get_thermal_conductivity(material, T_b_arr)
+    k_arr = get_thermal_conductivity(
+        material, T_b_arr, paths["ees_workdir"], paths["ees"]
+    )
 
     k_str = f"k_{material} (W/m-K)"
 
@@ -242,47 +240,6 @@ def get_superheat(
     df = pd.concat([df, df_results], axis="columns")
 
     return df
-
-
-# * -------------------------------------------------------------------------------- * #
-# * HELPER FUNCTIONS
-
-
-def get_thermal_conductivity(material: str, temperatures, wait: float = 7):
-    """Get thermal conductivity."""
-
-    @contextmanager
-    def change_directory(path: str):
-        """Context manager for changing working directory."""
-        old_dir = os.getcwd()
-        os.chdir(path)
-        try:
-            yield
-        finally:
-            os.chdir(old_dir)
-
-    with change_directory(paths["ees_workdir"]):
-
-        # write post material, number of runs, and average post temperatures to in.dat
-        with open("in.dat", "w+") as f:
-            print(material, len(temperatures), *temperatures, file=f)
-        # Invoke EES to write thermal conductivities to out.dat given contents of in.dat
-        subprocess.Popen(  # noqa: S603, S607  # hardcoded
-            [
-                "pwsh",
-                "-Command",
-                f"{paths['ees']}",
-                f"{Path('get_thermal_conductivity.ees').resolve()}",
-                "/solve",
-            ]
-        )
-        sleep(wait)  # Wait long enough for EES to finish
-        # EES should have written to out.dat
-        with open("out.dat", "r") as f:
-            k_str = f.read().split("\t")
-            thermal_conductivity = np.array(k_str, dtype=np.float64)
-
-    return thermal_conductivity
 
 
 # * -------------------------------------------------------------------------------- * #

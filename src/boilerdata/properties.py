@@ -4,17 +4,28 @@ import os
 import subprocess  # noqa: S404  # only used for hardcoded calls
 from contextlib import contextmanager
 from pathlib import Path
+from textwrap import dedent
 from time import sleep
 
-import numpy as np
-
 import __main__
+import numpy as np
 
 
 def get_thermal_conductivity(
-    material: str, temperatures, wait: float, workdir: os.PathLike, ees: os.PathLike
+    material: str, temperatures, workdir: os.PathLike, ees: os.PathLike, wait: float = 7
 ):
     """Get thermal conductivity."""
+
+    get_thermal_conductivity_script = dedent(
+        """\
+    $Import 'in.dat' Material$ N T[1..N]
+
+    Duplicate j=1,N
+        k[j] = Conductivity(Material$, T=T[j])
+    End
+
+    $Export 'out.dat' k[1..N]"""
+    )
 
     @contextmanager
     def change_directory(path: os.PathLike):
@@ -28,6 +39,11 @@ def get_thermal_conductivity(
 
     with change_directory(workdir):
 
+        script = Path("get_thermal_conductivity.txt")
+
+        with open(script, "w+") as f:
+            print(get_thermal_conductivity_script, file=f)
+
         # write post material, number of runs, and average post temperatures to in.dat
         with open("in.dat", "w+") as f:
             print(material, len(temperatures), *temperatures, file=f)
@@ -37,7 +53,7 @@ def get_thermal_conductivity(
                 "pwsh",
                 "-Command",
                 f"{ees}",
-                f"{Path('get_thermal_conductivity.ees').resolve()}",
+                f"{script.resolve()}",
                 "/solve",
             ]
         )
