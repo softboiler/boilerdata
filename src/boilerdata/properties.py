@@ -2,13 +2,10 @@
 
 import os
 import subprocess  # noqa: S404  # only used for hardcoded calls
-from contextlib import contextmanager
-from pathlib import Path
-from tempfile import NamedTemporaryFile
-from textwrap import dedent
+import tempfile
 from time import sleep
 
-import __main__
+from tkinter import Tk
 import numpy as np
 
 
@@ -17,54 +14,50 @@ def get_thermal_conductivity(
 ):
     """Get thermal conductivity."""
 
-    get_thermal_conductivity_script = dedent(
-        """\
-    $Import 'in.dat' Material$ N T[1..N]
+    files = {
+        key: tempfile.NamedTemporaryFile(delete=False)
+        for key in ["in", "out", "script"]
+    }
 
-    Duplicate j=1,N
-        k[j] = Conductivity(Material$, T=T[j])
-    End
+    # write post material, number of runs, and average post temperatures to in.dat
+    with files["in"] as f:
+        f.write(
+            f"{material} {len(temperatures)} {' '.join([str(t) for t in temperatures])}".encode()
+        )
 
-    $Export 'out.dat' k[1..N]"""
+    get_thermal_conductivity_script = (
+        f"$Import '{files['in'].name}' Material$ N T[1..N]\n\n"
+        "Duplicate j=1,N\n"
+        "    k[j] = Conductivity(Material$, T=T[j])\n"
+        "End\n\n"
+        # f"$Export '{files['out'].name}' k[1..N]"
+        f"$Export 'CLIPBOARD' k[1..N]"
     )
 
-    @contextmanager
-    def change_directory(path: os.PathLike):
-        """Context manager for changing working directory."""
-        old_dir = os.getcwd()
-        os.chdir(path)
-        try:
-            yield
-        finally:
-            os.chdir(old_dir)
+    with files["script"] as f:
+        f.write(get_thermal_conductivity_script.encode())
 
-    with change_directory(workdir):
+    # Invoke EES to write thermal conductivities to out.dat given contents of in.dat
+    subprocess.Popen(  # noqa: S603, S607  # hardcoded
+        [
+            "pwsh",
+            "-Command",
+            f"{ees}",
+            f"{files['script'].name}",
+            "/solve",
+        ]
+    )
+    sleep(wait)  # Wait long enough for EES to finish
+    r = Tk()
+    r.withdraw()
+    clipboard = r.clipboard_get()
 
-        with NamedTemporaryFile() as script, open("in.dat", "w+") as f:
-            script.write(get_thermal_conductivity_script.encode())
-            script.seek(0)
+    # # EES should have written to out.dat
+    # with files["out"] as f:
+    #     k_str = f.read().decode().split("\t")
+    #     thermal_conductivity = np.array(k_str, dtype=np.float64)
 
-            # script = Path("get_thermal_conductivity.txt")
-            # with open(script, "w+") as f:
-            #     print(get_thermal_conductivity_script, file=f)
+    for file in files.values():
+        os.unlink(file.name)
 
-            # write post material, number of runs, and average post temperatures to in.dat
-            # with open("in.dat", "w+") as f:
-            print(material, len(temperatures), *temperatures, file=f)
-            # Invoke EES to write thermal conductivities to out.dat given contents of in.dat
-            subprocess.Popen(  # noqa: S603, S607  # hardcoded
-                [
-                    "pwsh",
-                    "-Command",
-                    f"{ees}",
-                    f"{script.name}",
-                    "/solve",
-                ]
-            )
-            sleep(wait)  # Wait long enough for EES to finish
-            # EES should have written to out.dat
-            with open("out.dat", "r") as f:
-                k_str = f.read().split("\t")
-                thermal_conductivity = np.array(k_str, dtype=np.float64)
-
-    return thermal_conductivity
+    # return thermal_conductivity
