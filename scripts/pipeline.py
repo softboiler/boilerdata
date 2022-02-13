@@ -1,20 +1,23 @@
 """Pipeline functions."""
 
-from contextlib import contextmanager
 import os
-from pathlib import Path
 import subprocess  # noqa: S404  # only used for hardcoded calls
+from contextlib import contextmanager
 from dataclasses import asdict
+from pathlib import Path
 from time import sleep
 from typing import Any
 
 import numpy as np
-from numpy import typing as npt
 import pandas as pd
 from dynaconf import Dynaconf
 from pydantic import DirectoryPath, FilePath, validator
 from pydantic.dataclasses import dataclass
 from scipy.stats import linregress
+
+from boilerdata.properties import get_thermal_conductivity
+
+...
 
 # * -------------------------------------------------------------------------------- * #
 # * VALIDATION
@@ -110,11 +113,9 @@ def fit(
 
     # ! Inputs
     # get temperatures along the post as a numpy array
-    T_p_arr: npt.NDArray[np.floating] = df.loc[:, T_p_str].values  # noqa: N806
+    T_p_arr = df.loc[:, T_p_str].values  # noqa: N806
     # get average post temperature for each run, for property estimation
-    T_p_avg_arr: npt.NDArray[np.floating] = (  # noqa: N806
-        df.loc[:, T_p_str].mean(axis="columns").values
-    )
+    T_p_avg_arr = df.loc[:, T_p_str].mean(axis="columns").values  # noqa: N806
     # post geometry
     A = np.pi / 4 * D**2  # noqa: N806
 
@@ -247,9 +248,7 @@ def get_superheat(
 # * HELPER FUNCTIONS
 
 
-def get_thermal_conductivity(
-    material: str, temperatures: npt.NDArray[np.floating], wait: float = 7
-):
+def get_thermal_conductivity(material: str, temperatures, wait: float = 7):
     """Get thermal conductivity."""
 
     @contextmanager
@@ -281,9 +280,7 @@ def get_thermal_conductivity(
         # EES should have written to out.dat
         with open("out.dat", "r") as f:
             k_str = f.read().split("\t")
-            thermal_conductivity: npt.NDArray[np.floating] = np.array(
-                k_str, dtype=np.float64
-            )
+            thermal_conductivity = np.array(k_str, dtype=np.float64)
 
     return thermal_conductivity
 
