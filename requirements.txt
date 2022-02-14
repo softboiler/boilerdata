@@ -2,7 +2,7 @@
 # For parameter injection
 dynaconf~=3.1.7
 # For data processing
-pandas~=1.4.0
+pandas~=1.4.1
 pandas-stubs~=1.2.0.47
 pydantic~=1.9.0
 # For curve fitting
