@@ -1,14 +1,14 @@
 """Get material properties."""
 
 from pathlib import Path
-from subprocess import run  # noqa: S404  # only used for hardcoded calls
-from tempfile import NamedTemporaryFile, TemporaryDirectory
+from tempfile import TemporaryDirectory
 
 import numpy as np
 
-EES_ROOT = Path("C:/EES32")
-EES_PATH = EES_ROOT / "EES.exe"
-LOOKUP_TABLES_PATH = EES_ROOT / "Userlib/EES_System/Incompressible"
+from boilerdata import ees
+
+LOOKUP_TABLES_PATH = ees.EES_ROOT / "Userlib/EES_System/Incompressible"
+
 
 # * -------------------------------------------------------------------------------- * #
 # * MATERIAL PROPERTIES
@@ -20,11 +20,10 @@ def convert_lookup_tables(directory: Path):
             ".xlsx"
         )
         new_table.parent.mkdir(parents=True, exist_ok=True)
-        text = (
+        ees.run_script(
             f"$OPENLOOKUP '{table.resolve()}' Lookup$\n"
             f"$SAVELOOKUP Lookup$ '{new_table.resolve()}'\n"
         )
-        run_script(Path(NamedTemporaryFile().name), text)
 
 
 def get_thermal_conductivity(material: str, temperatures):
@@ -41,7 +40,7 @@ def get_thermal_conductivity(material: str, temperatures):
         )
 
         # Run an EES script to find thermal conductivity and write out results
-        run_script(
+        ees.run_script(
             f"$Import '{files['in'].resolve()}' Material$ N T[1..N]\n"
             "\n"
             "Duplicate j=1,N\n"
@@ -69,11 +68,3 @@ def get_materials():
 def get_lookup_tables():
     """Get all lookup tables."""
     return LOOKUP_TABLES_PATH.rglob("*.lkt")
-
-
-def run_script(text: str):
-    """Run an EES script."""
-    with TemporaryDirectory() as tempdir:
-        file = Path(tempdir) / "file"
-        file.write_text(text)
-        run([f"{EES_PATH}", f"{file.resolve()}", "/solve"])  # noqa: S603
