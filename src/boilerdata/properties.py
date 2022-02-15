@@ -24,7 +24,7 @@ def convert_lookup_tables(directory: Path):
             f"$OPENLOOKUP '{table.resolve()}' Lookup$\n"
             f"$SAVELOOKUP Lookup$ '{new_table.resolve()}'\n"
         )
-        run_script(Path(NamedTemporaryFile().name), text)
+        run_ees_script(Path(NamedTemporaryFile().name), text)
 
 
 def get_thermal_conductivity(material: str, temperatures):
@@ -32,7 +32,8 @@ def get_thermal_conductivity(material: str, temperatures):
 
     with TemporaryDirectory() as tempdir:
 
-        files = {key: Path(tempdir) / f"{key}" for key in ["in", "script", "out"]}
+        # Prepare input and output files inside of temporary directory
+        files = {key: Path(tempdir) / f"{key}" for key in ["in", "out"]}
 
         # Write down material, number of runs, and temperatures
         files["in"].write_text(
@@ -40,7 +41,7 @@ def get_thermal_conductivity(material: str, temperatures):
         )
 
         # Run an EES script to find thermal conductivity and write out results
-        text = (
+        run_ees_script(
             f"$Import '{files['in'].resolve()}' Material$ N T[1..N]\n"
             "\n"
             "Duplicate j=1,N\n"
@@ -49,7 +50,6 @@ def get_thermal_conductivity(material: str, temperatures):
             "\n"
             f"$Export '{files['out'].resolve()}' k[1..N]\n"
         )
-        run_script(files["script"], text)
 
         # Clean up results from EES and convert to floats
         return np.array(
@@ -63,21 +63,17 @@ def get_thermal_conductivity(material: str, temperatures):
 
 def get_materials():
     """Get all materials."""
-
     return (lkt.stem for lkt in get_lookup_tables())
 
 
 def get_lookup_tables():
     """Get all lookup tables."""
-
     return LOOKUP_TABLES_PATH.rglob("*.lkt")
 
 
-def run_script(file: Path, text: str):
+def run_ees_script(text: str):
     """Run an EES script."""
-
-    file.write_text(text)
-    run([f"{EES_PATH}", f"{file.resolve()}", "/solve"])  # noqa: S603
-
-
-convert_lookup_tables(Path("scripts/tables"))
+    with TemporaryDirectory() as tempdir:
+        file = Path(tempdir) / "file"
+        file.write_text(text)
+        run([f"{EES_PATH}", f"{file.resolve()}", "/solve"])  # noqa: S603
