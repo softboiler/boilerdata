@@ -114,9 +114,7 @@ def fit(
     A = np.pi / 4 * D**2  # noqa: N806
 
     # ! Property Lookup
-    k_arr = get_thermal_conductivity(
-        material, T_p_avg_arr, paths["ees_workdir"], paths["ees"]
-    )
+    k_arr = get_thermal_conductivity(material, T_p_avg_arr)
 
     # keys for a results dict that will become a DataFrame
     keys = [
@@ -201,9 +199,7 @@ def get_superheat(
     # post geometry
 
     # ! Property Lookup
-    k_arr = get_thermal_conductivity(
-        material, T_b_arr, paths["ees_workdir"], paths["ees"]
-    )
+    k_arr = get_thermal_conductivity(material, T_b_arr)
 
     k_str = f"k_{material} (W/m-K)"
 
