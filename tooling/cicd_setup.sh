@@ -1,6 +1,6 @@
 pip install -U pip wheel
 pip install pipx
 pipx install copier==6.0.0a9
-copier -f -r b76c0dd
+copier -f -r 9e295c3
 pip install -r tooling/requirements_cicd.txt
 flit install
