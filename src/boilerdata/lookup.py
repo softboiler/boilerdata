@@ -3,7 +3,7 @@
 from pathlib import Path
 from boilerdata import ees
 
-LOOKUP_TABLES_PATH = ees.EES_ROOT / "Userlib/EES_System/Incompressible"
+EES_LOOKUP_TABLES_PATH = ees.EES_ROOT / "Userlib/EES_System/Incompressible"
 
 
 def get_lookup_tables(destination_directory: Path):
@@ -11,7 +11,7 @@ def get_lookup_tables(destination_directory: Path):
     # E to XLSX not CSV, so that units are written by EES.
     for table in get_lookup_table_paths():
         new_table = destination_directory / table.relative_to(
-            LOOKUP_TABLES_PATH
+            EES_LOOKUP_TABLES_PATH
         ).with_suffix(".xlsx")
         new_table.parent.mkdir(parents=True, exist_ok=True)
         ees.run_script(
@@ -27,4 +27,4 @@ def get_materials():
 
 def get_lookup_table_paths():
     """Get all lookup tables."""
-    return LOOKUP_TABLES_PATH.rglob("*.lkt")
+    return EES_LOOKUP_TABLES_PATH.rglob("*.lkt")
