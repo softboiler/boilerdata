@@ -1,9 +1,11 @@
 """Operate on lookup tables, including generation, tweaking, and conversion."""
 
 from pathlib import Path
-from boilerdata import ees
 
-EES_LOOKUP_TABLES_PATH = ees.EES_ROOT / "Userlib/EES_System/Incompressible"
+from boilerdata import ees
+from boilerdata.config import settings
+
+EES_LOOKUP_TABLES_PATH = settings.ees_root / "Userlib/EES_System/Incompressible"  # type: ignore
 
 
 def get_lookup_tables(destination_directory: Path):

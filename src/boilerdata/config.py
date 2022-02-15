@@ -22,6 +22,8 @@ class Settings:
             raise ValueError("Filename must be 'EES.exe'.")
         return ees
 
+    def __post_init_post_parse__(self):
+        self.ees_root = self.ees.parent
+
 
 settings = Settings(ees=_settings.ees)
-...
