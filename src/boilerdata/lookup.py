@@ -6,6 +6,7 @@ import shutil
 
 from boilerdata import ees
 from boilerdata.config import settings
+import pandas as pd
 
 EES_LOOKUP_TABLES_PATH = (
     settings.ees_root / "Userlib/EES_System/Incompressible"  # type: ignore
@@ -16,10 +17,10 @@ EES_LOOKUP_TABLES_PATH = (
 # * EES LOOKUP TABLE GENERATION AND CLEANUP
 
 
-def get_xlsx_as_feather(
-    destination_directory: Path, xlsx_directory: Path, xlsx_table: Path
-):
-    xlsx_table.relative_to()
+def get_xlsx_as_feather(source_directory: Path, destination_directory: Path):
+    for table in source_directory.iterdir():
+        df = pd.read_excel(table)
+        ...
 
 
 def get_tweaked_materials(directory: Path):
@@ -36,7 +37,7 @@ def flatten_xlsx(source_directory: Path, destination_directory: Path):
 
 
 def tweak_xlsx(source_directory: Path, destination_directory: Path):
-    """Copy files to new destination, with lowercase filenames and no whitespace."""
+    """Copy files to new destination, sanitized and all uppercase."""
     destination_directory.mkdir(parents=False, exist_ok=True)
     source_tables_processed: list[Path] = []
     for source_table in sorted(source_directory.rglob("*.xlsx")):
@@ -45,7 +46,7 @@ def tweak_xlsx(source_directory: Path, destination_directory: Path):
         clean_stem = source_table.stem.upper().replace(" ", "")
         starts_with_digit = re.compile(r"^\d")
         if starts_with_digit.match(clean_stem):
-            clean_stem = f"m{clean_stem}"
+            clean_stem = f"M{clean_stem}"
         destination_table = (
             destination_directory
             / source_table.parent.relative_to(source_directory)
