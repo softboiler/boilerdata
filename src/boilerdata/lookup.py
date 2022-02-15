@@ -12,7 +12,7 @@ EES_LOOKUP_TABLES_PATH = (
 
 def get_lookup_tables(destination_directory: Path):
     """Put all lookup tables in the destination in XLSX format."""
-    # E to XLSX not CSV, so that units are written by EES.
+    # Save to XLSX, not CSV, so that units are written properly by EES.
     for table in get_lookup_table_paths():
         new_table = destination_directory / table.relative_to(
             EES_LOOKUP_TABLES_PATH
