@@ -1,6 +1,5 @@
 """Operate on lookup tables, including generation, tweaking, and conversion."""
 
-from enum import Enum, auto
 from pathlib import Path
 import re
 import shutil
@@ -43,7 +42,7 @@ def tweak_xlsx(source_directory: Path, destination_directory: Path):
     for source_table in sorted(source_directory.rglob("*.xlsx")):
         if any(source_table.stem == table.stem for table in source_tables_processed):
             continue
-        clean_stem = source_table.stem.lower().replace(" ", "")
+        clean_stem = source_table.stem.upper().replace(" ", "")
         starts_with_digit = re.compile(r"^\d")
         if starts_with_digit.match(clean_stem):
             clean_stem = f"m{clean_stem}"
