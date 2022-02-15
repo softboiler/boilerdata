@@ -5,7 +5,9 @@ from pathlib import Path
 from boilerdata import ees
 from boilerdata.config import settings
 
-EES_LOOKUP_TABLES_PATH = settings.ees_root / "Userlib/EES_System/Incompressible"  # type: ignore
+EES_LOOKUP_TABLES_PATH = (
+    settings.ees_root / "Userlib/EES_System/Incompressible"  # type: ignore
+)
 
 
 def get_lookup_tables(destination_directory: Path):
