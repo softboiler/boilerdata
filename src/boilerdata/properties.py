@@ -5,9 +5,6 @@ import subprocess  # noqa: S404  # only used for hardcoded calls
 import tempfile
 from time import sleep
 
-from tkinter import Tk
-import numpy as np
-
 
 def get_thermal_conductivity(
     material: str, temperatures, workdir: os.PathLike, ees: os.PathLike, wait: float = 7
@@ -31,26 +28,21 @@ def get_thermal_conductivity(
         "    k[j] = Conductivity(Material$, T=T[j])\n"
         "End\n\n"
         # f"$Export '{files['out'].name}' k[1..N]"
-        f"$Export 'CLIPBOARD' k[1..N]"
+        f"$Export '{files['out'].name}' k[1..N]"
     )
 
     with files["script"] as f:
         f.write(get_thermal_conductivity_script.encode())
 
     # Invoke EES to write thermal conductivities to out.dat given contents of in.dat
-    subprocess.Popen(  # noqa: S603, S607  # hardcoded
+    subprocess.run(  # noqa: S603  # hardcoded
         [
-            "pwsh",
-            "-Command",
             f"{ees}",
             f"{files['script'].name}",
             "/solve",
         ]
     )
     sleep(wait)  # Wait long enough for EES to finish
-    r = Tk()
-    r.withdraw()
-    clipboard = r.clipboard_get()
 
     # # EES should have written to out.dat
     # with files["out"] as f:
