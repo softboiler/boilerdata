@@ -7,24 +7,6 @@ import numpy as np
 
 from boilerdata import ees
 
-LOOKUP_TABLES_PATH = ees.EES_ROOT / "Userlib/EES_System/Incompressible"
-
-
-# * -------------------------------------------------------------------------------- * #
-# * MATERIAL PROPERTIES
-
-
-def convert_lookup_tables(directory: Path):
-    for table in get_lookup_tables():
-        new_table = directory / table.relative_to(LOOKUP_TABLES_PATH).with_suffix(
-            ".xlsx"
-        )
-        new_table.parent.mkdir(parents=True, exist_ok=True)
-        ees.run_script(
-            f"$OPENLOOKUP '{table.resolve()}' Lookup$\n"
-            f"$SAVELOOKUP Lookup$ '{new_table.resolve()}'\n"
-        )
-
 
 def get_thermal_conductivity(material: str, temperatures):
     """Get thermal conductivity."""
@@ -54,17 +36,3 @@ def get_thermal_conductivity(material: str, temperatures):
         return np.array(
             [np.float64(val) for val in files["out"].read_text().strip().split("\t")]
         )
-
-
-# * -------------------------------------------------------------------------------- * #
-# * HELPER FUNCTIONS
-
-
-def get_materials():
-    """Get all materials."""
-    return (lkt.stem for lkt in get_lookup_tables())
-
-
-def get_lookup_tables():
-    """Get all lookup tables."""
-    return LOOKUP_TABLES_PATH.rglob("*.lkt")
