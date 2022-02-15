@@ -1,4 +1,4 @@
-"""API for lookup operations."""
+"""Operate on lookup tables, including generation, tweaking, and conversion."""
 
 from pathlib import Path
 from boilerdata import ees
