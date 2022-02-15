@@ -1,4 +1,5 @@
 from pathlib import Path
+
 from dynaconf import Dynaconf
 from pydantic import FilePath, validator
 from pydantic.dataclasses import dataclass
