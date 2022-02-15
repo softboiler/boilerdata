@@ -1,8 +1,8 @@
 """Get material properties."""
 
+from pathlib import Path
 from subprocess import run  # noqa: S404  # only used for hardcoded calls
 from tempfile import NamedTemporaryFile, TemporaryDirectory
-from pathlib import Path
 
 import numpy as np
 
@@ -24,7 +24,7 @@ def convert_lookup_tables(directory: Path):
             f"$OPENLOOKUP '{table.resolve()}' Lookup$\n"
             f"$SAVELOOKUP Lookup$ '{new_table.resolve()}'\n"
         )
-        run_ees_script(Path(NamedTemporaryFile().name), text)
+        run_script(Path(NamedTemporaryFile().name), text)
 
 
 def get_thermal_conductivity(material: str, temperatures):
@@ -41,7 +41,7 @@ def get_thermal_conductivity(material: str, temperatures):
         )
 
         # Run an EES script to find thermal conductivity and write out results
-        run_ees_script(
+        run_script(
             f"$Import '{files['in'].resolve()}' Material$ N T[1..N]\n"
             "\n"
             "Duplicate j=1,N\n"
@@ -71,7 +71,7 @@ def get_lookup_tables():
     return LOOKUP_TABLES_PATH.rglob("*.lkt")
 
 
-def run_ees_script(text: str):
+def run_script(text: str):
     """Run an EES script."""
     with TemporaryDirectory() as tempdir:
         file = Path(tempdir) / "file"
