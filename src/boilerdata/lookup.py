@@ -6,11 +6,13 @@ from boilerdata import ees
 LOOKUP_TABLES_PATH = ees.EES_ROOT / "Userlib/EES_System/Incompressible"
 
 
-def convert_lookup_tables(directory: Path):
-    for table in get_lookup_tables():
-        new_table = directory / table.relative_to(LOOKUP_TABLES_PATH).with_suffix(
-            ".xlsx"
-        )
+def get_lookup_tables(destination_directory: Path):
+    """Put all lookup tables in the destination in XLSX format."""
+    # E to XLSX not CSV, so that units are written by EES.
+    for table in get_lookup_table_paths():
+        new_table = destination_directory / table.relative_to(
+            LOOKUP_TABLES_PATH
+        ).with_suffix(".xlsx")
         new_table.parent.mkdir(parents=True, exist_ok=True)
         ees.run_script(
             f"$OPENLOOKUP '{table.resolve()}' Lookup$\n"
@@ -20,9 +22,9 @@ def convert_lookup_tables(directory: Path):
 
 def get_materials():
     """Get all materials."""
-    return (lkt.stem for lkt in get_lookup_tables())
+    return (lkt.stem for lkt in get_lookup_table_paths())
 
 
-def get_lookup_tables():
+def get_lookup_table_paths():
     """Get all lookup tables."""
     return LOOKUP_TABLES_PATH.rglob("*.lkt")
