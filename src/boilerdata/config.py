@@ -6,8 +6,8 @@ from pydantic.dataclasses import dataclass
 
 import boilerdata
 
-default_path = Path(boilerdata.__path__[0]) / "default_settings.toml"  # type: ignore
-user_path = next(Path().rglob("settings.toml"), Path())
+default_path = Path(boilerdata.__path__[0]) / "defaults.toml"  # type: ignore
+user_path = next(Path().rglob("boilerdata.toml"), Path())
 _settings = Dynaconf(
     envvar_prefix="BOILERDATA", settings_files=[default_path, user_path]
 )
