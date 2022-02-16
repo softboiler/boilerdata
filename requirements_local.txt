@@ -1,0 +1,2 @@
+# Packages local to this machine that are rapidly evolving.
+-e ../propshop
