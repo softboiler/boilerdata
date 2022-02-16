@@ -8,14 +8,9 @@ the `tap` decorator, or by inserting a `tee` into the pipeline as in
 
 import logging
 from functools import wraps
-from typing import Callable
-
-import pandas as pd
-
-pdobj = pd.DataFrame | pd.Series
 
 
-def default_preview(df: pdobj) -> str:
+def default_preview(df) -> str:
     """Default preview function for a `pandas` dataframe or series."""
     return (
         f"type: {type(df)}"
@@ -24,7 +19,7 @@ def default_preview(df: pdobj) -> str:
     )
 
 
-def tap(enable: bool = True, preview: Callable[[pdobj], str] = default_preview):
+def tap(enable: bool = True, preview=default_preview):
     """Decorate a function to tap into a `pandas` pipeline and preview the dataframe.
 
     Pandas allows method chaining of user-supplied functions via `pipe`. When this
@@ -39,7 +34,7 @@ def tap(enable: bool = True, preview: Callable[[pdobj], str] = default_preview):
     ----------
     enable : bool, optional
         Enable the tap. Default is True.
-    preview: Callable[[pandas.DataFrame | pandas.Series], str], optional
+    preview: optional
         The preview function. Default previews its type, shape, and statistics.
 
     Example
@@ -62,7 +57,7 @@ def tap(enable: bool = True, preview: Callable[[pdobj], str] = default_preview):
 
     def decorator(func):  # type: ignore
         @wraps(func)
-        def wrapper(df: pdobj, **kwargs) -> pdobj:  # type: ignore
+        def wrapper(df, **kwargs):  # type: ignore
 
             if enable:
                 df = func(df, **kwargs)
@@ -81,9 +76,7 @@ def tap(enable: bool = True, preview: Callable[[pdobj], str] = default_preview):
     return decorator
 
 
-def tee(
-    df: pdobj, enable: bool = True, preview: Callable[[pdobj], str] = default_preview
-) -> pdobj:
+def tee(df, enable: bool = True, preview=default_preview):
     """Insert into a `pandas` pipeline e.g. `df.pipe(tee)` and preview the dataframe.
 
     Pandas allows method chaining of user-supplied functions via `pipe`. When this
@@ -99,6 +92,8 @@ def tee(
         A `pandas` dataframe or series.
     enable : bool, optional
         Enable the tee. Default is True.
+    preview: optional
+        The preview function. Default previews its type, shape, and statistics.
 
     Example
     --------
