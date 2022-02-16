@@ -6,6 +6,7 @@ pydantic~=1.9.0
 pandas~=1.4.1
 pandas-stubs~=1.2.0.47
 openpyxl~=3.0.9
+pyarrow~=7.0.0
 # For curve fitting
 scipy~=1.8.0
 # matplotlib w/ backend

@@ -13,19 +13,20 @@ EES_LOOKUP_TABLES_PATH = (
 )
 
 
-# * -------------------------------------------------------------------------------- * #
-# * EES LOOKUP TABLE GENERATION AND CLEANUP
-
-
-def get_xlsx_as_feather(source_directory: Path, destination_directory: Path):
-    for table in source_directory.iterdir():
-        df = pd.read_excel(table)
-        ...
-
-
-def get_tweaked_materials(directory: Path):
-    """Get all materials in the given directory."""
-    return (table.stem for table in directory.rglob("*.xlsx"))
+def get_xlsx_conductivity_as_feather(
+    source_directory: Path, destination_directory: Path
+):
+    destination_directory.mkdir(parents=False, exist_ok=True)
+    for table in sorted(source_directory.glob("*.xlsx")):
+        try:
+            df = pd.read_excel(
+                table, sheet_name="EES data", skiprows=[1], usecols=["T", "k"]
+            )
+        except ValueError:
+            continue
+        df.dropna().reset_index(drop=True).to_feather(
+            destination_directory / f"{table.stem}.feather"
+        )
 
 
 def flatten_xlsx(source_directory: Path, destination_directory: Path):
@@ -50,7 +51,7 @@ def tweak_xlsx(source_directory: Path, destination_directory: Path):
         destination_table = (
             destination_directory
             / source_table.parent.relative_to(source_directory)
-            / (re.sub(pattern=r"[()-.#]", repl="_", string=clean_stem) + ".xlsx")
+            / f"{re.sub(pattern=r'[()-.#]', repl='_', string=clean_stem)}.xlsx"
         )
         destination_table.parent.mkdir(parents=True, exist_ok=True)
         shutil.copy(source_table, destination_table)

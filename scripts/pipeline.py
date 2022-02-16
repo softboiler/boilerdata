@@ -5,7 +5,7 @@ from typing import Any
 
 import numpy as np
 import pandas as pd
-from boilerdata.properties import get_thermal_conductivity
+from boilerdata.properties import get_thermal_conductivity_old
 from dynaconf import Dynaconf
 from pydantic import DirectoryPath, FilePath, validator
 from pydantic.dataclasses import dataclass
@@ -26,13 +26,6 @@ class Paths:
         if ees.name != "EES.exe":
             raise ValueError("Filename must be 'EES.exe'.")
         return ees
-
-    # @validator("ees_workdir")
-    # def validate_ees_workdir(cls, ees_workdir):
-    #     file = "get_thermal_conductivity.ees"
-    #     if not (ees_workdir / file).exists():
-    #         raise ValueError(f"{file} does not exist in {ees_workdir}.")
-    #     return ees_workdir
 
 
 @dataclass
@@ -114,7 +107,7 @@ def fit(
     A = np.pi / 4 * D**2  # noqa: N806
 
     # ! Property Lookup
-    k_arr = get_thermal_conductivity(material, T_p_avg_arr)
+    k_arr = get_thermal_conductivity_old(material, T_p_avg_arr)
 
     # keys for a results dict that will become a DataFrame
     keys = [
@@ -199,7 +192,7 @@ def get_superheat(
     # post geometry
 
     # ! Property Lookup
-    k_arr = get_thermal_conductivity(material, T_b_arr)
+    k_arr = get_thermal_conductivity_old(material, T_b_arr)
 
     k_str = f"k_{material} (W/m-K)"
 

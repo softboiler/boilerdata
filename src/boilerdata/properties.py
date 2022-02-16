@@ -8,7 +8,7 @@ import numpy as np
 from boilerdata import ees
 
 
-def get_thermal_conductivity(material: str, temperatures):
+def get_thermal_conductivity_old(material: str, temperatures):
     """Get thermal conductivity."""
 
     with TemporaryDirectory() as tempdir:
