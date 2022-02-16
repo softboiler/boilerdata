@@ -5,14 +5,6 @@ from tempfile import TemporaryDirectory
 
 import numpy as np
 
-from boilerdata import ees
-from boilerdata.materials import Material
-from pandas import Series
-
-
-def get_thermal_conductivity(material: Material, temperatures: Series):
-    pass
-
 
 def get_thermal_conductivity_old(material: str, temperatures):
     """Get thermal conductivity."""
