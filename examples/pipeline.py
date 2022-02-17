@@ -45,10 +45,7 @@ class Config:
 
 
 raw_config = Dynaconf(settings_files=["examples/parameters.yaml"])
-config = Config(
-    data_path=raw_config.data_path,
-    fit_params=FitParams(**raw_config.fit),
-)
+config = Config(data_path=raw_config.data_path, fit_params=FitParams(**raw_config.fit))
 
 # * -------------------------------------------------------------------------------- * #
 # * MAIN
@@ -63,8 +60,7 @@ def main():
     steady_state_per_run: list[pd.Series] = [df_.iloc[-80:, :].mean() for df_ in runs]
     (
         pd.DataFrame(steady_state_per_run, index=stems).pipe(
-            fit,
-            **config.fit_params,  # type: ignore
+            fit, **config.fit_params  # type: ignore
         )
     ).to_csv(data / "fitted.csv", index_label="From Dataset")
 
@@ -98,11 +94,7 @@ def fit(
                 df,
                 temperature_cols.apply(
                     axis="columns",
-                    func=lambda ser_: linregress_down(
-                        x,
-                        ser_,
-                        (slope, T_b_str),
-                    ),
+                    func=lambda ser_: linregress_down(x, ser_, (slope, T_b_str)),
                 ),
             ],
         )
@@ -175,10 +167,7 @@ def linregress_down(
     labels = [*label, "rvalue", "pvalue", "stderr"]
     if prefix:
         labels = [*label, *("_".join(label) for label in labels[-3:])]
-    return pd.Series(
-        linregress(x, series_of_y),
-        index=labels,
-    )
+    return pd.Series(linregress(x, series_of_y), index=labels)
 
 
 # * -------------------------------------------------------------------------------- * #
