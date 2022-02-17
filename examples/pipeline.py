@@ -23,12 +23,7 @@ def main():
     config = configure()
     data: Path = config.data_path  # type: ignore
     files: list[Path] = sorted((data / "raw").glob("*.csv"))
-    run_names: list[datetime] = [
-        datetime.fromisoformat(
-            file.stem.removeprefix("results_")[::-1].replace("-", ":", 2)[::-1]
-        )
-        for file in files
-    ]
+    run_names: list[str] = [file.stem for file in files]
     runs_full: list[pd.DataFrame] = [pd.read_csv(file, index_col=0) for file in files]
     runs_steady_state: list[pd.Series] = [df_.iloc[-80:, :].mean() for df_ in runs_full]
     df = pd.DataFrame(runs_steady_state, index=run_names).pipe(
