@@ -136,10 +136,17 @@ def linregress_series(
     Given x-values and a series of y-values, return a series of linear regression
     statistics.
     """
-    labels = [*label, "rvalue", "pvalue", "stderr"]
+    labels = [*label, "rvalue", "pvalue", "stderr", "intercept_stderr"]
     if prefix:
-        labels = [*label, *("_".join(label) for label in labels[-3:])]
-    return pd.Series(linregress(x, series_of_y), index=labels)
+        labels = [*label, *("_".join(label) for label in labels[-4:])]
+
+    # Unpacking would drop r.intercept_stderr, so we have to do it this way.
+    # See "Notes" section of SciPy documentation for more info.
+    r = linregress(x, series_of_y)
+    return pd.Series(
+        [r.slope, r.intercept, r.rvalue, r.pvalue, r.stderr, r.intercept_stderr],
+        index=labels,
+    )
 
 
 # * -------------------------------------------------------------------------------- * #
