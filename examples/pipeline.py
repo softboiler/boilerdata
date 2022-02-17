@@ -113,9 +113,9 @@ def fit(
                 Prop.THERMAL_CONDUCTIVITY,
                 convert_temperature(temperature_cols.mean(axis="columns"), "C", "K"),
             ),
-            T_L_str: lambda df: df[T_b_str] + df[slope] * L,
-            "q (W/m^2)": lambda df: -df[k] * df[slope],
-            "Q (W)": lambda df: df["q (W/m^2)"] * cross_sectional_area,
+            T_L_str: lambda df_: df_[T_b_str] + df_[slope] * L,
+            "q (W/m^2)": lambda df_: -df_[k] * df_[slope],
+            "Q (W)": lambda df_: df_["q (W/m^2)"] * cross_sectional_area,
         }
     )
 
@@ -124,21 +124,21 @@ def fit(
         from matplotlib import pyplot as plt
 
         def plot(ser):
-            tplt = ser.loc[T_p_str]
-            x_plt = np.linspace(0, L)
+            plt.figure()
             plt.title(f"Temperature Profile in {material.title()} Post")
             plt.xlabel("x (m)")
             plt.ylabel("T (C)")
             plt.plot(
                 x,
-                tplt,
+                ser.loc[T_p_str],
                 "*",
                 label="Measured Temperatures",
                 color=[0.2, 0.2, 0.2],
             )
+            x_smooth = np.linspace(0, L)
             plt.plot(
-                x_plt,
-                ser[T_b_str] + ser[slope] * x_plt,
+                x_smooth,
+                ser[T_b_str] + ser[slope] * x_smooth,
                 "--",
                 label=f"Linear Regression $(r^2={round(ser.rvalue**2,4)})$",
             )
@@ -150,7 +150,6 @@ def fit(
                 color=[1, 0, 0],
             )
             plt.legend()
-            plt.draw()
 
         df.apply(plot, axis="columns")
         plt.show()
