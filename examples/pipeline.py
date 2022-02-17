@@ -1,6 +1,7 @@
 """Pipeline functions."""
 
 from dataclasses import asdict
+from datetime import datetime
 from pathlib import Path
 
 import numpy as np
@@ -15,54 +16,25 @@ from scipy.constants import convert_temperature
 from scipy.stats import linregress
 
 # * -------------------------------------------------------------------------------- * #
-# * CONFIGURE
-
-
-@dataclass
-class FitParams:
-    x: list[float]
-    T_p_str: list[str]
-    material: str
-    k: str
-    T_b_str: str
-    T_L_str: str
-    slope: str
-    L: float
-    D: float
-    do_plot: bool
-
-    _ = validator("material", allow_reuse=True)(lambda string: string.upper())
-
-
-@dataclass
-class Config:
-    data_path: DirectoryPath
-    fit_params: FitParams
-
-    @validator("fit_params")
-    def _(cls, param):
-        return asdict(param)
-
-
-raw_config = Dynaconf(settings_files=["examples/parameters.yaml"])
-config = Config(data_path=raw_config.data_path, fit_params=FitParams(**raw_config.fit))
-
-# * -------------------------------------------------------------------------------- * #
 # * MAIN
 
 
 def main():
-
+    config = configure()
     data: Path = config.data_path  # type: ignore
     files: list[Path] = sorted((data / "raw").glob("*.csv"))
-    stems: list[str] = [file.stem for file in files]
-    runs: list[pd.DataFrame] = [pd.read_csv(file, index_col=0) for file in files]
-    steady_state_per_run: list[pd.Series] = [df_.iloc[-80:, :].mean() for df_ in runs]
-    (
-        pd.DataFrame(steady_state_per_run, index=stems).pipe(
-            fit, **config.fit_params  # type: ignore
+    run_names: list[datetime] = [
+        datetime.fromisoformat(
+            file.stem.removeprefix("results_")[::-1].replace("-", ":", 2)[::-1]
         )
-    ).to_csv(data / "fitted.csv", index_label="From Dataset")
+        for file in files
+    ]
+    runs_full: list[pd.DataFrame] = [pd.read_csv(file, index_col=0) for file in files]
+    runs_steady_state: list[pd.Series] = [df_.iloc[-80:, :].mean() for df_ in runs_full]
+    df = pd.DataFrame(runs_steady_state, index=run_names).pipe(
+        fit, **config.fit_params  # type: ignore
+    )
+    df.to_csv(data / "fitted.csv", index_label="Run")
 
 
 # * -------------------------------------------------------------------------------- * #
@@ -70,7 +42,7 @@ def main():
 
 
 def fit(
-    df: pd.DataFrame | pd.Series,
+    df: pd.DataFrame,
     x: float,
     T_p_str: list[str],  # noqa: N803
     material: str,
@@ -168,6 +140,41 @@ def linregress_down(
     if prefix:
         labels = [*label, *("_".join(label) for label in labels[-3:])]
     return pd.Series(linregress(x, series_of_y), index=labels)
+
+
+# * -------------------------------------------------------------------------------- * #
+# * CONFIGURE
+
+
+def configure():
+    @dataclass
+    class FitParams:
+        x: list[float]
+        T_p_str: list[str]
+        material: str
+        k: str
+        T_b_str: str
+        T_L_str: str
+        slope: str
+        L: float
+        D: float
+        do_plot: bool
+
+        _ = validator("material", allow_reuse=True)(lambda string: string.upper())
+
+    @dataclass
+    class Config:
+        data_path: DirectoryPath
+        fit_params: FitParams
+
+        @validator("fit_params")
+        def _(cls, param):
+            return asdict(param)
+
+    raw_config = Dynaconf(settings_files=["examples/parameters.yaml"])
+    return Config(
+        data_path=raw_config.data_path, fit_params=FitParams(**raw_config.fit)
+    )
 
 
 # * -------------------------------------------------------------------------------- * #

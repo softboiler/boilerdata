@@ -16,8 +16,8 @@ fit:
   material: Copper
   k: k (W/m-K)
   T_b_str: T1fit (C)
-  T_L_str: T_CuSS (C)
+  T_L_str: TLfit (C)
   slope: dTdx (K/m)
   L: 0.10859262 # (m) Length of post X plus A6
   D: 0.009525 # (m) 3/8"
-  do_plot: true
+  do_plot: false
