@@ -14,18 +14,10 @@ fit:
     - T4cal (C)
     - T5cal (C)
   material: Copper
+  k: k (W/m-K)
   T_b_str: T1fit (C)
   T_L_str: T_CuSS (C)
+  slope: dTdx (K/m)
   L: 0.10859262 # (m) Length of post X plus A6
   D: 0.009525 # (m) 3/8"
-  do_plot: false
-
-get_superheat:
-  T_b_str: T_CuSS (C)
-  T_L_str: T_s (C)
-  T_w_str:
-    - Tw1cal (C)
-    - Tw2cal (C)
-    - Tw3cal (C)
-  material: Copper # Should be "Stainless_AISI316", use Copper for now
-  L: 0.0015875 # (m) 1/16"
+  do_plot: true
