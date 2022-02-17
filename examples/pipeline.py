@@ -25,7 +25,7 @@ def main():
     files: list[Path] = sorted((data / "raw").glob("*.csv"))
     run_names: list[str] = [file.stem for file in files]
     runs_full: list[pd.DataFrame] = [pd.read_csv(file, index_col=0) for file in files]
-    runs_steady_state: list[pd.Series] = [df_.iloc[-80:, :].mean() for df_ in runs_full]
+    runs_steady_state: list[pd.Series] = [df.iloc[-80:, :].mean() for df in runs_full]
     df = pd.DataFrame(runs_steady_state, index=run_names).pipe(
         fit, **config.fit_params  # type: ignore
     )
@@ -72,9 +72,9 @@ def fit(
                 Prop.THERMAL_CONDUCTIVITY,
                 convert_temperature(temperature_cols.mean(axis="columns"), "C", "K"),
             ),
-            T_L_str: lambda df_: df_[T_b_str] + df_[slope] * L,
-            "q (W/m^2)": lambda df_: -df_[k] * df_[slope],
-            "Q (W)": lambda df_: df_["q (W/m^2)"] * cross_sectional_area,
+            T_L_str: lambda df: df[T_b_str] + df[slope] * L,
+            "q (W/m^2)": lambda df: -df[k] * df[slope],
+            "Q (W)": lambda df: df["q (W/m^2)"] * cross_sectional_area,
         }
     )
 
