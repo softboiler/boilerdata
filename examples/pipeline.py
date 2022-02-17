@@ -73,6 +73,7 @@ def fit(
             ),
             T_L_str: lambda df: df[T_b_str] + df[slope] * L,
             "q (W/m^2)": lambda df: -df[k] * df[slope],
+            "q_err (W/m^2)": lambda df: (df[k] * 4 * df["stderr"]).abs(),
             "Q (W)": lambda df: df["q (W/m^2)"] * cross_sectional_area,
         }
     )
@@ -172,7 +173,7 @@ def configure():
         def _(cls, param):
             return asdict(param)
 
-    raw_config = Dynaconf(settings_files=["examples/parameters.yaml"])
+    raw_config = Dynaconf(settings_files=["examples/config.yaml"])
     return Config(
         data_path=raw_config.data_path, fit_params=FitParams(**raw_config.fit)
     )
