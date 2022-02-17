@@ -1,31 +1,26 @@
 """Pipeline functions."""
 
 from dataclasses import asdict
+from pathlib import Path
 from typing import Any
 
 import numpy as np
 import pandas as pd
-from boilerdata.properties import get_thermal_conductivity_old
 from dynaconf import Dynaconf
-from pydantic import DirectoryPath, FilePath, validator
+from propshop import get_prop
+from propshop.library import Mat, Prop
+from pydantic import DirectoryPath, validator
 from pydantic.dataclasses import dataclass
 from scipy.stats import linregress
+from scipy.constants import convert_temperature
+
 
 # * -------------------------------------------------------------------------------- * #
-# * VALIDATION
+# * CONFIGURE
 
 
-@dataclass
-class Paths:
-    data: DirectoryPath
-    ees: FilePath
-    ees_workdir: DirectoryPath
-
-    @validator("ees")
-    def validate_ees(cls, ees):
-        if ees.name != "EES.exe":
-            raise ValueError("Filename must be 'EES.exe'.")
-        return ees
+def material_validator(*fields):
+    return validator(*fields, allow_reuse=True)(lambda string: string.upper())
 
 
 @dataclass
@@ -39,6 +34,8 @@ class FitParams:
     D: float
     do_plot: bool
 
+    _ = material_validator("material")
+
 
 @dataclass
 class GetSuperheatParams:
@@ -48,12 +45,26 @@ class GetSuperheatParams:
     material: str
     L: float
 
+    _ = material_validator("material")
 
-params = Dynaconf(settings_files=["scripts/parameters.yaml"])
-paths = asdict(Paths(**params.paths))
-fit_params = asdict(FitParams(**params.fit))
-get_superheat_params = asdict(GetSuperheatParams(**params.get_superheat))
 
+@dataclass
+class Config:
+    data_path: DirectoryPath
+    fit_params: FitParams
+    get_superheat_params: GetSuperheatParams
+
+    @validator("fit_params", "get_superheat_params")
+    def _(cls, param):
+        return asdict(param)
+
+
+raw_config = Dynaconf(settings_files=["examples/parameters.yaml"])
+config = Config(
+    data_path=raw_config.data_path,
+    fit_params=FitParams(**raw_config.fit),
+    get_superheat_params=GetSuperheatParams(**raw_config.get_superheat),
+)
 
 # * -------------------------------------------------------------------------------- * #
 # * MAIN
@@ -61,14 +72,16 @@ get_superheat_params = asdict(GetSuperheatParams(**params.get_superheat))
 
 def main():
 
-    data = paths["data"]
-    files = sorted((data / "raw").glob("*.csv"))
-    stems = [file.stem for file in files]
-    dfs = [pd.read_csv(file, index_col=0) for file in files]
-    srs = [df.iloc[-80:].mean() for df in dfs]
-    df = pd.concat(srs, keys=stems, axis="columns").T
-    df = df.pipe(fit, **fit_params).pipe(get_superheat, **get_superheat_params)
-    df.to_csv(data / "fitted.csv", index_label="From Dataset")
+    data: Path = config.data_path  # type: ignore
+    files: list[Path] = sorted((data / "raw").glob("*.csv"))
+    stems: list[str] = [file.stem for file in files]
+    runs: list[pd.DataFrame] = [pd.read_csv(file, index_col=0) for file in files]
+    steady_state_per_run: list[pd.Series] = [df_.iloc[-80:, :].mean() for df_ in runs]
+    (
+        pd.DataFrame(steady_state_per_run, index=stems)
+        .pipe(fit, **config.fit_params)  # type: ignore
+        .pipe(get_superheat, **config.get_superheat_params)  # type: ignore
+    ).to_csv(data / "fitted.csv", index_label="From Dataset")
 
 
 # * -------------------------------------------------------------------------------- * #
@@ -107,7 +120,11 @@ def fit(
     A = np.pi / 4 * D**2  # noqa: N806
 
     # ! Property Lookup
-    k_arr = get_thermal_conductivity_old(material, T_p_avg_arr)
+    k_arr = get_prop(
+        Mat[material],
+        Prop.THERMAL_CONDUCTIVITY,
+        convert_temperature(T_p_avg_arr, "C", "K"),
+    )
 
     # keys for a results dict that will become a DataFrame
     keys = [
@@ -192,7 +209,9 @@ def get_superheat(
     # post geometry
 
     # ! Property Lookup
-    k_arr = get_thermal_conductivity_old(material, T_b_arr)
+    k_arr = get_prop(
+        Mat[material], Prop.THERMAL_CONDUCTIVITY, convert_temperature(T_b_arr, "C", "K")
+    )
 
     k_str = f"k_{material} (W/m-K)"
 
