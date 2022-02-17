@@ -66,7 +66,7 @@ def fit(
                 df,
                 temperature_cols.apply(
                     axis="columns",
-                    func=lambda ser_: linregress_down(x, ser_, (slope, T_b_str)),
+                    func=lambda ser_: linregress_series(x, ser_, (slope, T_b_str)),
                 ),
             ],
         )
@@ -125,7 +125,7 @@ def fit(
 # * HELPER FUNCTIONS
 
 
-def linregress_down(
+def linregress_series(
     x: npt.ArrayLike,
     series_of_y: pd.Series,
     label: tuple[str, str] = ("slope", "intercept"),
