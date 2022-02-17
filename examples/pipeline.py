@@ -111,21 +111,28 @@ def fit(
 ):
     """Fit the data assuming one-dimensional, steady-state conduction."""
 
-    # ! Inputs
-    # get temperatures along the post as a numpy array
-    T_p_arr = df.loc[:, T_p_str].values  # noqa: N806
-    # get average post temperature for each run, for property estimation
-    T_p_avg_arr = df.loc[:, T_p_str].mean(axis="columns").values  # noqa: N806
-    # post geometry
-    A = np.pi / 4 * D**2  # noqa: N806
-
-    # ! Property Lookup
-    k_arr = get_prop(
-        Mat[material],
-        Prop.THERMAL_CONDUCTIVITY,
-        convert_temperature(T_p_avg_arr, "C", "K"),
+    # Get thermal conductivities
+    temps_per_run = df.loc[:, T_p_str]
+    df = df.assign(
+        **{
+            "k (W/m-K)": get_prop(
+                Mat[material],
+                Prop.THERMAL_CONDUCTIVITY,
+                convert_temperature(temps_per_run.mean(axis="columns"), "C", "K"),
+            )
+        }
     )
 
+    # Perform regression along the post temperatures
+    def linregress_cols(series: pd.Series) -> pd.Series:
+        return pd.Series(
+            linregress(x, series),
+            index=["dTdx (K/m)", T_b_str, "rvalue", "pvalue", "stderr"],
+        )
+
+    runs = df.loc[:, T_p_str].T
+    regressions_per_run = runs.agg(linregress_cols).T
+    df = pd.concat([df, regressions_per_run], axis="columns")
     # keys for a results dict that will become a DataFrame
     keys = [
         T_b_str,
@@ -135,12 +142,19 @@ def fit(
         "rval",
         "pval",
         "stderr",
-        "k (W/m-K)",
     ]
+
+    k_arr = df.loc[:, "k (W/m-K)"]
     # preallocate numpy arrays
     results = {key: np.full_like(k_arr, np.nan) for key in keys}
 
     j = StrictDict(dict.fromkeys(keys))  # ensure key order for later mapping
+
+    # ! Inputs
+    # get temperatures along the post as a numpy array
+    T_p_arr = df.loc[:, T_p_str].values  # noqa: N806
+    # post geometry
+    A = np.pi / 4 * D**2  # noqa: N806
 
     # perform a curve fit for each experimental run
     for i, (T_p, k) in enumerate(zip(T_p_arr, k_arr)):  # noqa: N806
@@ -160,9 +174,6 @@ def fit(
         j[T_L_str] = j[T_b_str] + dTdx * L
         j["Q (W)"] = -k * A * dTdx
         j["q (W/m^2)"] = -k * dTdx
-
-        # ! Record k
-        j["k (W/m-K)"] = k
 
         # ! Plot
         if do_plot:
