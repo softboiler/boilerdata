@@ -19,12 +19,17 @@ from scipy.stats import linregress
 
 
 def main():
+
+    num_points = 60
+
     config = configure()
     data: Path = config.data_path  # type: ignore
     files: list[Path] = sorted((data / "raw").glob("*.csv"))
     run_names: list[str] = [file.stem for file in files]
     runs_full: list[pd.DataFrame] = [pd.read_csv(file, index_col=0) for file in files]
-    runs_steady_state: list[pd.Series] = [df.iloc[-80:, :].mean() for df in runs_full]
+    runs_steady_state: list[pd.Series] = [
+        df.iloc[-num_points:, :].mean() for df in runs_full
+    ]
     df: pd.DataFrame = pd.DataFrame(runs_steady_state, index=run_names).pipe(
         fit, **config.fit_params  # type: ignore
     )
@@ -37,8 +42,7 @@ def main():
 
 def fit(
     df: pd.DataFrame,
-    thermocouple_pos: float,
-    post_length: float,
+    thermocouple_pos: npt.ArrayLike,
     do_plot: bool = False,
 ):
     """Fit the data assuming one-dimensional, steady-state conduction."""
@@ -50,14 +54,14 @@ def fit(
 
     # Column names
     slope = "dT/dx (K/m)"  # slope
+    extrap_surf_temp = "TLfit (C)"
     slope_err = "dT/dx_err (K/m)"  # total magnitude of the error bar for slope
     k = "k (W/m-K)"  # thermal conductivity
     q = "q (W/m^2)"  # heat flux
     q_err = "q_err (W/m^2)"  # total magnitude of the error bar for heat flux
+    inter_err = "∆T_err (K)"  # total magnitude of the error bar for slope
     temps_to_regress = ["T1cal (C)", "T2cal (C)", "T3cal (C)", "T4cal (C)", "T5cal (C)"]
     water_temps = ["Tw1cal (C)", "Tw2cal (C)", "Tw3cal (C)"]
-    fitted_base_temp = "T1fit (C)"
-    extrap_surf_temp = "TLfit (C)"
 
     # Computed values
     temperature_cols: pd.DataFrame = df.loc[:, temps_to_regress]
@@ -73,15 +77,14 @@ def fit(
                 temperature_cols.apply(
                     axis="columns",
                     func=lambda ser_: linregress_series(
-                        thermocouple_pos, ser_, (slope, fitted_base_temp)
+                        thermocouple_pos, ser_, (slope, extrap_surf_temp)
                     ),
                 ),
             ],
         )
     ).assign(
         **{
-            slope_err: lambda df: (4 * df["stderr"]).abs(),
-            extrap_surf_temp: lambda df: df[fitted_base_temp] + df[slope] * post_length,
+            slope_err: lambda df: (4 * df["stderr"]).abs(),  # / np.sqrt(60),
             k: get_prop(
                 Mat.COPPER,
                 Prop.THERMAL_CONDUCTIVITY,
@@ -93,6 +96,7 @@ def fit(
             "∆T (K)": lambda df: (
                 df[extrap_surf_temp] - water_temp_cols.mean(axis="columns")
             ),
+            inter_err: lambda df: (4 * df["intercept_stderr"]).abs(),  # / np.sqrt(60),
             "q (W/cm^2)": lambda df: df[q] / cm2_p_m2,
             "q_err (W/cm^2)": lambda df: df[q_err] / cm2_p_m2,
         }
@@ -127,15 +131,15 @@ def fit(
                 label="Measured Temperatures",
                 color=[0.2, 0.2, 0.2],
             )
-            x_smooth = np.linspace(0, post_length)
+            x_smooth = np.linspace(thermocouple_pos[0], thermocouple_pos[-1])  # type: ignore
             plt.plot(
                 x_smooth,
-                ser[fitted_base_temp] + ser[slope] * x_smooth,
+                ser[extrap_surf_temp] + ser[slope] * x_smooth,
                 "--",
                 label=f"Linear Regression $(r^2={round(ser.rvalue**2,4)})$",
             )
             plt.plot(
-                post_length,
+                0,
                 ser[extrap_surf_temp],
                 "x",
                 label="Extrapolated Surface Temperature",
@@ -197,7 +201,6 @@ def configure():
     @dataclass
     class FitParams:
         thermocouple_pos: list[float]
-        post_length: float
         do_plot: bool
 
         @validator("thermocouple_pos")
