@@ -20,7 +20,7 @@ from scipy.stats import linregress
 
 def main():
 
-    num_points = 60
+    points_to_average = 60
 
     config = configure()
     data: Path = config.data_path  # type: ignore
@@ -28,10 +28,12 @@ def main():
     run_names: list[str] = [file.stem for file in files]
     runs_full: list[pd.DataFrame] = [pd.read_csv(file, index_col=0) for file in files]
     runs_steady_state: list[pd.Series] = [
-        df.iloc[-num_points:, :].mean() for df in runs_full
+        df.iloc[-points_to_average:, :].mean() for df in runs_full
     ]
     df: pd.DataFrame = pd.DataFrame(runs_steady_state, index=run_names).pipe(
-        fit, **config.fit_params  # type: ignore
+        fit,
+        **config.fit_params,  # type: ignore
+        points_averaged=points_to_average,
     )
     df.to_csv(data / "fitted.csv", index_label="Run")
 
@@ -43,7 +45,8 @@ def main():
 def fit(
     df: pd.DataFrame,
     thermocouple_pos: npt.ArrayLike,
-    do_plot: bool = False,
+    do_plot: bool,
+    points_averaged: int,
 ):
     """Fit the data assuming one-dimensional, steady-state conduction."""
 
@@ -76,8 +79,11 @@ def fit(
                 df,
                 temperature_cols.apply(
                     axis="columns",
-                    func=lambda ser_: linregress_series(
-                        thermocouple_pos, ser_, (slope, extrap_surf_temp)
+                    func=lambda ser: linregress_series(
+                        thermocouple_pos,
+                        ser,
+                        points_averaged,
+                        (slope, extrap_surf_temp),
                     ),
                 ),
             ],
@@ -160,6 +166,7 @@ def fit(
 def linregress_series(
     x: npt.ArrayLike,
     series_of_y: pd.Series,
+    repeats_per_pair: int,
     label: tuple[str, str] = ("slope", "intercept"),
     prefix: str = "",
 ) -> pd.Series:
@@ -172,9 +179,13 @@ def linregress_series(
     if prefix:
         labels = [*label, *("_".join(label) for label in labels[-4:])]
 
+    # Assume the ordered pairs are repeated with zero standard deviation in x and y
+    x = np.repeat(x, repeats_per_pair)
+    y = np.repeat(series_of_y, repeats_per_pair)
+    r = linregress(x, y)
+
     # Unpacking would drop r.intercept_stderr, so we have to do it this way.
     # See "Notes" section of SciPy documentation for more info.
-    r = linregress(x, series_of_y)
     return pd.Series(
         [r.slope, r.intercept, r.rvalue, r.pvalue, r.stderr, r.intercept_stderr],
         index=labels,
