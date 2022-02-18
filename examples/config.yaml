@@ -1,5 +1,9 @@
 data_path: G:/My Drive/Blake/School/Grad/Projects/18.09 Nucleate Pool Boiling/Data/Boiling Curves/22.01.19 Copper X-A6-B3-1/data
 
+# data_path: G:/My Drive/Blake/School/Grad/Projects/18.09 Nucleate Pool Boiling/Data/Boiling Curves/22.01.06 Copper Y-A7-2/data
+
+# data_path: G:/My Drive/Blake/School/Grad/Projects/18.09 Nucleate Pool Boiling/Data/Boiling Curves/21.12.09 Copper Y-A7-1/data
+
 fit:
   # (m) Distance from thermocouples to end of Post X plus sample A6
   thermocouple_pos:
