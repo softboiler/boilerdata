@@ -20,7 +20,7 @@ from scipy.stats import linregress
 
 def main():
 
-    points_to_average = 60
+    points_to_average = 10
 
     config = configure()
     data: Path = config.data_path  # type: ignore
@@ -49,6 +49,8 @@ def fit(
     points_averaged: int,
 ):
     """Fit the data assuming one-dimensional, steady-state conduction."""
+
+    # points_averaged = 1
 
     # Constants
     diameter = 0.009525  # (m) 3/8"
