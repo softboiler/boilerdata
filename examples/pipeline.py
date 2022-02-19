@@ -92,7 +92,7 @@ def fit(
         )
     ).assign(
         **{
-            slope_err: lambda df: (4 * df["stderr"]).abs(),  # / np.sqrt(60),
+            slope_err: lambda df: (4 * df["stderr"]).abs(),
             k: get_prop(
                 Mat.COPPER,
                 Prop.THERMAL_CONDUCTIVITY,
@@ -104,7 +104,7 @@ def fit(
             "∆T (K)": lambda df: (
                 df[extrap_surf_temp] - water_temp_cols.mean(axis="columns")
             ),
-            inter_err: lambda df: (4 * df["intercept_stderr"]).abs(),  # / np.sqrt(60),
+            inter_err: lambda df: (4 * df["intercept_stderr"]).abs(),
             "q (W/cm^2)": lambda df: df[q] / cm2_p_m2,
             "q_err (W/cm^2)": lambda df: df[q_err] / cm2_p_m2,
         }
