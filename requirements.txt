@@ -11,4 +11,4 @@ pyarrow~=7.0.0
 scipy~=1.8.0
 # matplotlib w/ backend
 matplotlib~=3.5.1
-# PyQt6~=6.2.3
+PyQt6~=6.2.3

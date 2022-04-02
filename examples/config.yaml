@@ -1,4 +1,6 @@
-data_path: G:/My Drive/Blake/School/Grad/Projects/18.09 Nucleate Pool Boiling/Data/Boiling Curves/21.12.09 Copper Y-A7-1/data
+data_path: G:/My Drive/Blake/School/Grad/Projects/18.09 Nucleate Pool Boiling/Data/Boiling Curves/22.03.29 Copper X-A6-1/data
+
+# data_path: G:/My Drive/Blake/School/Grad/Projects/18.09 Nucleate Pool Boiling/Data/Boiling Curves/21.12.09 Copper Y-A7-1/data
 
 # data_path: G:/My Drive/Blake/School/Grad/Projects/18.09 Nucleate Pool Boiling/Data/Boiling Curves/22.01.06 Copper Y-A7-2/data
 
@@ -6,14 +8,25 @@ data_path: G:/My Drive/Blake/School/Grad/Projects/18.09 Nucleate Pool Boiling/Da
 
 # ! Also used for Y-A7-1 and Y-A7-2 trials! Need to fix this when expanding this to multiple directories
 fit:
+  # AFTER polishing removed ~0.0017m of material from A6
   # (m) Distance from thermocouples to end of Post X plus sample A6
   thermocouple_pos:
-    - -0.10859262
-    - -0.09652000
-    - -0.08447024
-    - -0.07240524
-    - -0.02858516
-  do_plot: false
+    - -0.10689262
+    - -0.09482
+    - -0.08277024
+    - -0.07070524
+    - -0.02688516
+  do_plot: true
+
+  # Before polishing removed ~0.0017m of material
+  # # (m) Distance from thermocouples to end of Post X plus sample A6
+  # thermocouple_pos:
+  #   - -0.10859262
+  #   - -0.09652000
+  #   - -0.08447024
+  #   - -0.07240524
+  #   - -0.02858516
+  # do_plot: true
 
   # Old values
   # thermocouple_pos:

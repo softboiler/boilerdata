@@ -20,7 +20,7 @@ from scipy.stats import linregress
 
 def main():
 
-    points_to_average = 10
+    points_to_average = 120
 
     config = configure()
     data: Path = config.data_path  # type: ignore
@@ -101,30 +101,22 @@ def fit(
             q: lambda df: -df[k] * df[slope],
             q_err: lambda df: (-df[k] * df[slope_err]).abs(),
             "Q (W)": lambda df: df[q] * cross_sectional_area,
-            "∆T (K)": lambda df: (
-                df[extrap_surf_temp] - water_temp_cols.mean(axis="columns")
-            ),
+            # "∆T (K)": lambda df: (
+            #     df[extrap_surf_temp] - water_temp_cols.mean(axis="columns")
+            # ),
+            "∆T (K)": lambda df: (df[extrap_surf_temp] - water_temp_cols.mean().mean()),
             inter_err: lambda df: (4 * df["intercept_stderr"]).abs(),
             "q (W/cm^2)": lambda df: df[q] / cm2_p_m2,
             "q_err (W/cm^2)": lambda df: df[q_err] / cm2_p_m2,
         }
     )
 
-    # Move units out of column labels and into a row just below the column labels
-    labels = (get_label(label) for label in df.columns)
-    units = (get_units(label) for label in df.columns)
-    columns_mapping = {old: new for old, new in zip(df.columns, labels)}
-    units_row = pd.DataFrame(
-        {
-            label: pd.Series(unit, index=["Units"])
-            for label, unit in zip(df.columns, units)
-        },
-    )
-    df = pd.concat([units_row, df]).rename(columns=columns_mapping)
-
     # Plotting
     if do_plot:
 
+        import matplotlib
+
+        matplotlib.use("QtAgg")
         from matplotlib import pyplot as plt
 
         def plot(ser):
@@ -157,6 +149,18 @@ def fit(
 
         df.apply(plot, axis="columns")
         plt.show()
+
+    # Move units out of column labels and into a row just below the column labels
+    labels = (get_label(label) for label in df.columns)
+    units = (get_units(label) for label in df.columns)
+    columns_mapping = {old: new for old, new in zip(df.columns, labels)}
+    units_row = pd.DataFrame(
+        {
+            label: pd.Series(unit, index=["Units"])
+            for label, unit in zip(df.columns, units)
+        },
+    )
+    df = pd.concat([units_row, df]).rename(columns=columns_mapping)
 
     return df
 
