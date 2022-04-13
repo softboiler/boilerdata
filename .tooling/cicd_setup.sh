@@ -1,5 +1,5 @@
 pip install -U pip setuptools wheel
 pip install git+https://github.com/copier-org/copier@master  # copier==6.0.0a9
-copier -f -r b936374
-pip install -r tooling/requirements_cicd.txt
+copier -f -r 753f174
+pip install -r .tooling/requirements_cicd.txt
 flit install

@@ -1,14 +1,13 @@
 # * -------------------------------------------------------------------------------- * #
-# * PROJECT-SPECIFIC GITIGNORE
+# * PROJECT-SPECIFIC
 
 
 # * -------------------------------------------------------------------------------- * #
-# * TEMPLATE GITIGNORE
+# * TEMPLATE
 # *
 # * Changes here will be overwritten by Copier; NEVER EDIT MANUALLY
 
-#[[
-# need "*" to allow negations in .vscode/.gitignore
+#[[# need "*" to allow negations in .vscode/.gitignore
 .vscode/*
 *.rej
 package.json
@@ -19,6 +18,7 @@ package.json
 .gitattributes
 pyrightconfig.json
 pytest.ini
+
 #]]
 
 # * -------------------------------------------------------------------------------- * #
