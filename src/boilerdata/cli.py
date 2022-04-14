@@ -1,4 +1,4 @@
-"""Command-line interface for boilerdata."""
+"""CLI for boilerdata."""
 
 import fire
 
