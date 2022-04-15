@@ -10,6 +10,15 @@ data_path: G:/My Drive/Blake/School/Grad/Projects/18.09 Nucleate Pool Boiling/Da
 
 # ! Also used for Y-A7-1 and Y-A7-2 trials! Need to fix this when expanding this to multiple directories
 fit:
+  # # (m) Distance for X-A9, but with artificially reduced "quasi" length
+  # thermocouple_pos:
+  #   - 0.09954262
+  #   - 0.08747
+  #   - 0.07542024
+  #   - 0.06335524
+  #   - 0.01953516
+  # do_plot: false
+
   # New sample
   # (m) Distance from thermocouples to end of Post X plus sample A9
   thermocouple_pos:
@@ -19,16 +28,6 @@ fit:
     - 0.06740144
     - 0.02358136
   do_plot: true
-
-  # # AFTER polishing removed ~0.0017m of material from A6
-  # # (m) Distance from thermocouples to end of Post X plus sample A6
-  # thermocouple_pos:
-  #   - 0.10689262
-  #   - 0.09482
-  #   - 0.08277024
-  #   - 0.07070524
-  #   - 0.02688516
-  # do_plot: true
 
   # # AFTER polishing removed ~0.0017m of material from A6
   # # (m) Distance from thermocouples to end of Post X plus sample A6
