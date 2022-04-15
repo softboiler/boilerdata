@@ -50,8 +50,6 @@ def fit(
 ):
     """Fit the data assuming one-dimensional, steady-state conduction."""
 
-    # points_averaged = 1
-
     # Constants
     diameter = 0.009525  # (m) 3/8"
     cm_p_m = 100  # (cm/m) Conversion factor
@@ -98,8 +96,8 @@ def fit(
                 Prop.THERMAL_CONDUCTIVITY,
                 convert_temperature(temperature_cols.mean(axis="columns"), "C", "K"),
             ),
-            q: lambda df: -df[k] * df[slope],
-            q_err: lambda df: (-df[k] * df[slope_err]).abs(),
+            q: lambda df: df[k] * df[slope],  # no negative due to reversed x-coordinate
+            q_err: lambda df: (df[k] * df[slope_err]).abs(),
             "Q (W)": lambda df: df[q] * cross_sectional_area,
             # "∆T (K)": lambda df: (
             #     df[extrap_surf_temp] - water_temp_cols.mean(axis="columns")

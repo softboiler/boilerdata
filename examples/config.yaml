@@ -1,4 +1,4 @@
-data_path: G:/My Drive/Blake/School/Grad/Projects/18.09 Nucleate Pool Boiling/Data/Test Runs/22.04.08 Copper X-A9-newcam
+data_path: G:/My Drive/Blake/School/Grad/Projects/18.09 Nucleate Pool Boiling/Data/Test Runs/22.04.08 Copper X-A9-newcam/data
 
 # data_path: G:/My Drive/Blake/School/Grad/Projects/18.09 Nucleate Pool Boiling/Data/Boiling Curves/22.03.29 Copper X-A6-1/data
 
@@ -19,6 +19,16 @@ fit:
     - 0.06740144
     - 0.02358136
   do_plot: true
+
+  # # AFTER polishing removed ~0.0017m of material from A6
+  # # (m) Distance from thermocouples to end of Post X plus sample A6
+  # thermocouple_pos:
+  #   - 0.10689262
+  #   - 0.09482
+  #   - 0.08277024
+  #   - 0.07070524
+  #   - 0.02688516
+  # do_plot: true
 
   # # AFTER polishing removed ~0.0017m of material from A6
   # # (m) Distance from thermocouples to end of Post X plus sample A6
