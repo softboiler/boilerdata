@@ -6,7 +6,8 @@
 # * TEMPLATE
 # *
 # * Changes here will be overwritten by Copier; NEVER EDIT MANUALLY
-#[[# Need "*" to allow negations in .vscode/.gitignore
+#[[
+# Need "*" to allow negations in .vscode/.gitignore
 .vscode/*
 # To avoid committing rejected changes upon bumping template
 *.rej
@@ -20,7 +21,7 @@ pythonrc.py
 #]]
 
 # * -------------------------------------------------------------------------------- * #
-# * Node.gitignore
+# * Partial Node.gitignore
 # *
 # * https://raw.githubusercontent.com/github/gitignore/master/Node.gitignore
 
