@@ -1,8 +1,11 @@
 from pathlib import Path
+from posixpath import expanduser
 
 import numpy as np
 from dynaconf import Dynaconf
 from pydantic import BaseModel, DirectoryPath, Field, validator
+
+APP_FOLDER = Path(expanduser("~/.boilerdata"))
 
 
 class Fit(BaseModel):
@@ -37,6 +40,9 @@ def load_config(path: str = "boilerdata.toml"):
         raw_config = Dynaconf(settings_files=[config])
     else:
         raise FileNotFoundError(f"Configuration file {config.name} not found.")
+
+    APP_FOLDER.mkdir(parents=False, exist_ok=True)
+
     return Boilerdata(data=raw_config.get("data"), fit=Fit(**raw_config.fit))
 
 
@@ -44,3 +50,7 @@ def write_schema(directory: str):
     (Path(directory) / "boilerdata.toml.json").write_text(
         Boilerdata.schema_json(indent=2)
     )
+
+
+def parse_tilde_in_path(path: str) -> Path:
+    return Path.home() / path.lstrip("~/") if path.startswith("~/") else Path(path)
