@@ -24,7 +24,7 @@ class Boilerdata(BaseModel):
 
     data: DirectoryPath = Field(
         ".",
-        description="The directory containing experimental data. Defaults to the current working directory.",
+        description='Path to a folder with a subfolder "raw" that contains CSVs of experimental runs. Defaults to the current working directory.',
     )
     fit: Fit
 

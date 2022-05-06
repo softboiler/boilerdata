@@ -1,0 +1,68 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Update boilerdata schema",
+      "type": "process",
+      "options": { "cwd": "${workspaceFolder}/tests/data" },
+      "command": "pwsh",
+      "args": [
+        "-Command",
+        "boilerdata schema . && boilerdata schema ../../schema"
+      ],
+      "problemMatcher": []
+    },
+    {
+      "label": "pytest-cov",
+      "type": "process",
+      "command": ".venv/Scripts/python.exe",
+      "args": ["-m", "pytest", "-q", "-ra", "--cov", "--cov-report", "xml"],
+      "problemMatcher": []
+    },
+    {
+      "label": "Black: Ignore magic comma",
+      "type": "process",
+      "command": "black",
+      "args": ["-C", "${file}"],
+      "problemMatcher": []
+    },
+    {
+      "label": "Git: Rebase back to fork",
+      "type": "process",
+      "command": "git",
+      "args": ["rebase", "-i", "--fork-point", "main"],
+      "problemMatcher": []
+    },
+    {
+      "label": "pwsh: Initialize template",
+      "type": "process",
+      "command": "pwsh",
+      "args": [".tools/scripts/init_template.ps1"],
+      "problemMatcher": []
+    },
+    {
+      "label": "pwsh: Setup project",
+      "type": "process",
+      "command": "pwsh",
+      "args": [".tools/setup/setup.ps1"],
+      "problemMatcher": []
+    },
+    {
+      "label": "pwsh: Update project",
+      "type": "process",
+      "command": "pwsh",
+      "args": [".tools/setup/update.ps1"],
+      "problemMatcher": []
+    },
+    {
+      "label": "pwsh: Remove *.rej",
+      "type": "process",
+      "command": "pwsh",
+      "args": [
+        "-Command",
+        "Get-ChildItem -Recurse -Filter *.rej | Remove-Item"
+      ],
+      "problemMatcher": []
+    }
+  ]
+}

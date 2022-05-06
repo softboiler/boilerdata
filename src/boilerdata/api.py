@@ -1,5 +1,7 @@
 """Pipeline functions."""
 
+__all__ = ["run"]
+
 from pathlib import Path
 
 import numpy as np
@@ -12,14 +14,12 @@ from scipy.stats import linregress
 
 from boilerdata.configs import load_config
 
-# * -------------------------------------------------------------------------------- * #
-# * MAIN
-
 
 def run():
 
+    config = load_config()
     points_to_average = 120
-    data: Path = load_config().data  # type: ignore
+    data: Path = config.data
     files: list[Path] = sorted((data / "raw").glob("*.csv"))
     run_names: list[str] = [file.stem for file in files]
     runs_full: list[pd.DataFrame] = [pd.read_csv(file, index_col=0) for file in files]

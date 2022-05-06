@@ -1,8 +1,0 @@
-#:schema ../schema/boilerdata.toml.json
-
-data = "G:/My Drive/Blake/School/Grad/Projects/18.09 Nucleate Pool Boiling/Data/Test Runs/22.04.08 Copper X-A9-newcam/data"
-
-
-[fit]
-thermocouple_pos = [0.10358882, 0.0915162, 0.07946644, 0.06740144, 0.02358136]
-do_plot = false

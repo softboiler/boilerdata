@@ -14,10 +14,10 @@ override_sourcery: false
 override_vscode_extensions: false
 override_vscode_launch: true
 override_vscode_settings: false
-override_vscode_tasks: false
+override_vscode_tasks: true
 project_email: blake.naccarato+boilerdata@gmail.com
 project_name: boilerdata
 project_owner_github_username: blakeNaccarato
 project_owner_name: Blake Naccarato
-python_version: '3.10'
+python_version: "3.10"
 year_of_project_creation: 2022
