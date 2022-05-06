@@ -17,6 +17,15 @@
       "request": "launch",
       "module": "boilerdata",
       "args": ["${input:input}"]
+    },
+    {
+      "name": "CLI: Export schema",
+      "console": "internalConsole",
+      "cwd": "${workspaceFolder}/examples",
+      "type": "python",
+      "request": "launch",
+      "module": "boilerdata",
+      "args": ["schema", "../schema"]
     }
   ],
   "inputs": [
