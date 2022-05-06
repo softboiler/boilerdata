@@ -28,7 +28,7 @@ def run():
     ]
     df: pd.DataFrame = pd.DataFrame(runs_steady_state, index=run_names).pipe(
         fit,
-        **config.fit,  # type: ignore
+        **config.fit.dict(),
         points_averaged=points_to_average,
     )
     df.to_csv(data / "fitted.csv", index_label="Run")

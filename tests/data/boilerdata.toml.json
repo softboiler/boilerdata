@@ -5,8 +5,7 @@
   "properties": {
     "data": {
       "title": "Data",
-      "description": "Path to a folder with a subfolder \"raw\" that contains CSVs of experimental runs. Defaults to the current working directory.",
-      "default": ".",
+      "description": "Absolute or relative path to a folder containing a subfolder \"raw\" which has CSVs of experimental runs.",
       "format": "directory-path",
       "type": "string"
     },
@@ -15,6 +14,7 @@
     }
   },
   "required": [
+    "data",
     "fit"
   ],
   "definitions": {

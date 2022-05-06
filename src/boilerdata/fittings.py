@@ -55,9 +55,9 @@ def tap(enable: bool = True, preview=default_preview):
         main()
     """
 
-    def decorator(func):  # type: ignore
+    def decorator(func):
         @wraps(func)
-        def wrapper(df, **kwargs):  # type: ignore
+        def wrapper(df, **kwargs):
 
             if enable:
                 df = func(df, **kwargs)

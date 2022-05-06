@@ -23,8 +23,8 @@ class Boilerdata(BaseModel):
     """Configuration for the package."""
 
     data: DirectoryPath = Field(
-        ".",
-        description='Path to a folder with a subfolder "raw" that contains CSVs of experimental runs. Defaults to the current working directory.',
+        ...,
+        description='Absolute or relative path to a folder containing a subfolder "raw" which has CSVs of experimental runs.',
     )
     fit: Fit
 
@@ -37,7 +37,7 @@ def load_config(path: str = "boilerdata.toml"):
         raw_config = Dynaconf(settings_files=[config])
     else:
         raise FileNotFoundError(f"Configuration file {config.name} not found.")
-    return Boilerdata(data=raw_config.data, fit=Fit(**raw_config.fit))
+    return Boilerdata(data=raw_config.get("data"), fit=Fit(**raw_config.fit))
 
 
 def write_schema(directory: str):
