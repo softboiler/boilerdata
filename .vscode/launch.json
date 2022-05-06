@@ -7,12 +7,12 @@
       "request": "launch",
       "program": "${file}",
       "console": "internalConsole",
-      "cwd": "${workspaceFolder}/examples"
+      "cwd": "${workspaceFolder}/examples/example"
     },
     {
       "name": "CLI",
       "console": "internalConsole",
-      "cwd": "${workspaceFolder}/examples",
+      "cwd": "${workspaceFolder}/examples/example",
       "type": "python",
       "request": "launch",
       "module": "boilerdata",
@@ -21,7 +21,7 @@
     {
       "name": "CLI: Export schema",
       "console": "internalConsole",
-      "cwd": "${workspaceFolder}/examples",
+      "cwd": "${workspaceFolder}/examples/example",
       "type": "python",
       "request": "launch",
       "module": "boilerdata",

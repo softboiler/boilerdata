@@ -1,0 +1,46 @@
+{
+  "title": "Boilerdata",
+  "description": "Configuration for the package.",
+  "type": "object",
+  "properties": {
+    "data": {
+      "title": "Data",
+      "description": "Absolute or relative path to a folder containing a subfolder \"raw\" which has CSVs of experimental runs.",
+      "format": "directory-path",
+      "type": "string"
+    },
+    "fit": {
+      "$ref": "#/definitions/Fit"
+    }
+  },
+  "required": [
+    "data",
+    "fit"
+  ],
+  "definitions": {
+    "Fit": {
+      "title": "Fit",
+      "description": "Configure the linear regression of thermocouple temperatures vs. position.",
+      "type": "object",
+      "properties": {
+        "thermocouple_pos": {
+          "title": "Thermocouple Pos",
+          "description": "Thermocouple positions.",
+          "type": "array",
+          "items": {
+            "type": "number"
+          }
+        },
+        "do_plot": {
+          "title": "Do Plot",
+          "description": "Whether to plot the linear regression.",
+          "default": false,
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "thermocouple_pos"
+      ]
+    }
+  }
+}
