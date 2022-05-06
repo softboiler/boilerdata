@@ -8,6 +8,23 @@
       "program": "${file}",
       "console": "internalConsole",
       "cwd": "${workspaceFolder}/examples"
+    },
+    {
+      "name": "CLI",
+      "console": "internalConsole",
+      "cwd": "${workspaceFolder}/examples",
+      "type": "python",
+      "request": "launch",
+      "module": "boilerdata",
+      "args": ["${input:input}"]
+    }
+  ],
+  "inputs": [
+    {
+      "id": "input",
+      "type": "pickString",
+      "description": "Select the command to debug.",
+      "options": ["--help", "run"]
     }
   ]
 }

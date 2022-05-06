@@ -1,16 +1,13 @@
 """Pipeline functions."""
 
-from dataclasses import asdict
 from pathlib import Path
 
 import numpy as np
 import pandas as pd
-from dynaconf import Dynaconf
+from boilerdata.configs import config
 from numpy import typing as npt
 from propshop import get_prop
 from propshop.library import Mat, Prop
-from pydantic import DirectoryPath, validator
-from pydantic.dataclasses import dataclass
 from scipy.constants import convert_temperature
 from scipy.stats import linregress
 
@@ -21,8 +18,6 @@ from scipy.stats import linregress
 def main():
 
     points_to_average = 120
-
-    config = configure()
     data: Path = config.data_path  # type: ignore
     files: list[Path] = sorted((data / "raw").glob("*.csv"))
     run_names: list[str] = [file.stem for file in files]
@@ -206,35 +201,6 @@ def get_units(label: str) -> str:
             return units.strip("()")
         case _:
             return ""
-
-
-# * -------------------------------------------------------------------------------- * #
-# * CONFIGURE
-
-
-def configure():
-    @dataclass
-    class FitParams:
-        thermocouple_pos: list[float]
-        do_plot: bool
-
-        @validator("thermocouple_pos")
-        def _(cls, thermocouple_pos):
-            return np.array(thermocouple_pos)
-
-    @dataclass
-    class Config:
-        data_path: DirectoryPath
-        fit_params: FitParams
-
-        @validator("fit_params")
-        def _(cls, param):
-            return asdict(param)
-
-    raw_config = Dynaconf(settings_files=["examples/config.yaml"])
-    return Config(
-        data_path=raw_config.data_path, fit_params=FitParams(**raw_config.fit)
-    )
 
 
 # * -------------------------------------------------------------------------------- * #
