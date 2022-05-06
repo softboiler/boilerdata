@@ -33,7 +33,9 @@ if CONFIG.exists():
 else:
     raise FileNotFoundError("Configuration file boilerdata.toml not found.")
 
-config = Config(data_path=raw_config.data_path, fit_params=FitParams(**raw_config.fit))
+config = Config(
+    data_path=raw_config.data_path, fit_params=FitParams(**raw_config.fit_params)
+)
 
 
 def write_schema(directory: str):

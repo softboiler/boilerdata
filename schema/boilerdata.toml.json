@@ -1,29 +1,30 @@
 {
   "$id": "boilerdata.toml.json",
   "$schema": "https://json-schema.org/draft-07/schema",
-  "title": "boilerdata",
+  "title": "Config",
   "type": "object",
-  "required": ["data_path", "fit"],
-  "additionalProperties": false,
   "properties": {
     "data_path": {
-      "type": "string",
-      "description": "Path to the folder containing CSVs."
+      "title": "Data Path",
+      "format": "directory-path",
+      "type": "string"
     },
-    "fit": {
+    "fit_params": { "$ref": "#/definitions/FitParams" }
+  },
+  "required": ["data_path", "fit_params"],
+  "definitions": {
+    "FitParams": {
+      "title": "FitParams",
       "type": "object",
-      "required": ["thermocouple_pos", "do_plot"],
       "properties": {
         "thermocouple_pos": {
+          "title": "Thermocouple Pos",
           "type": "array",
-          "items": { "type": "number" },
-          "minItems": 5,
-          "maxItems": 5
+          "items": { "type": "number" }
         },
-        "do_plot": {
-          "type": "boolean"
-        }
-      }
+        "do_plot": { "title": "Do Plot", "type": "boolean" }
+      },
+      "required": ["thermocouple_pos", "do_plot"]
     }
   }
 }
