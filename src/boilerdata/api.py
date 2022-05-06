@@ -10,7 +10,7 @@ from propshop.library import Mat, Prop
 from scipy.constants import convert_temperature
 from scipy.stats import linregress
 
-from boilerdata.configs import config
+from boilerdata.configs import load_config
 
 # * -------------------------------------------------------------------------------- * #
 # * MAIN
@@ -19,7 +19,7 @@ from boilerdata.configs import config
 def run():
 
     points_to_average = 120
-    data: Path = config.data_path  # type: ignore
+    data: Path = load_config().data  # type: ignore
     files: list[Path] = sorted((data / "raw").glob("*.csv"))
     run_names: list[str] = [file.stem for file in files]
     runs_full: list[pd.DataFrame] = [pd.read_csv(file, index_col=0) for file in files]
@@ -28,7 +28,7 @@ def run():
     ]
     df: pd.DataFrame = pd.DataFrame(runs_steady_state, index=run_names).pipe(
         fit,
-        **config.fit_params,  # type: ignore
+        **config.fit,  # type: ignore
         points_averaged=points_to_average,
     )
     df.to_csv(data / "fitted.csv", index_label="Run")

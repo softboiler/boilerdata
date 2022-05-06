@@ -1,44 +1,46 @@
-from dataclasses import asdict
 from pathlib import Path
 
-from dynaconf import Dynaconf
 import numpy as np
-from pydantic import DirectoryPath, validator
-from pydantic.dataclasses import dataclass
+from dynaconf import Dynaconf
+from pydantic import BaseModel, DirectoryPath, Field, validator
 
 
-@dataclass
-class FitParams:
-    thermocouple_pos: list[float]
-    do_plot: bool
+class Fit(BaseModel):
+    """Configure the linear regression of thermocouple temperatures vs. position."""
+
+    thermocouple_pos: list[float] = Field(
+        ...,
+        description="Thermocouple positions.",
+    )
+    do_plot: bool = Field(False, description="Whether to plot the linear regression.")
 
     @validator("thermocouple_pos")
     def _(cls, thermocouple_pos):
         return np.array(thermocouple_pos)
 
 
-@dataclass
-class Config:
-    data_path: DirectoryPath
-    fit_params: FitParams
+class Boilerdata(BaseModel):
+    """Configuration for the package."""
 
-    @validator("fit_params")
-    def _(cls, param):
-        return asdict(param)
+    data: DirectoryPath = Field(
+        ".",
+        description="The directory containing experimental data. Defaults to the current working directory.",
+    )
+    fit: Fit
 
 
-CONFIG = Path("boilerdata.toml")
-if CONFIG.exists():
-    raw_config = Dynaconf(settings_files=[Path("boilerdata.toml")])
-else:
-    raise FileNotFoundError("Configuration file boilerdata.toml not found.")
+def load_config(path: str = "boilerdata.toml"):
+    """Load the configuration file."""
 
-config = Config(
-    data_path=raw_config.data_path, fit_params=FitParams(**raw_config.fit_params)
-)
+    config = Path(path)
+    if config.exists():
+        raw_config = Dynaconf(settings_files=[config])
+    else:
+        raise FileNotFoundError(f"Configuration file {config.name} not found.")
+    return Boilerdata(data=raw_config.data, fit=Fit(**raw_config.fit))
 
 
 def write_schema(directory: str):
     (Path(directory) / "boilerdata.toml.json").write_text(
-        config.__pydantic_model__.schema_json()
+        Boilerdata.schema_json(indent=2)
     )

@@ -1,30 +1,46 @@
 {
-  "$id": "boilerdata.toml.json",
-  "$schema": "https://json-schema.org/draft-07/schema",
-  "title": "Config",
+  "title": "Boilerdata",
+  "description": "Configuration for the package.",
   "type": "object",
   "properties": {
-    "data_path": {
-      "title": "Data Path",
+    "data": {
+      "title": "Data",
+      "description": "The directory containing experimental data. Defaults to the current working directory.",
+      "default": ".",
       "format": "directory-path",
       "type": "string"
     },
-    "fit_params": { "$ref": "#/definitions/FitParams" }
+    "fit": {
+      "$ref": "#/definitions/Fit"
+    }
   },
-  "required": ["data_path", "fit_params"],
+  "required": [
+    "fit"
+  ],
   "definitions": {
-    "FitParams": {
-      "title": "FitParams",
+    "Fit": {
+      "title": "Fit",
+      "description": "Configure the linear regression of thermocouple temperatures vs. position.",
       "type": "object",
       "properties": {
         "thermocouple_pos": {
           "title": "Thermocouple Pos",
+          "description": "Thermocouple positions.",
           "type": "array",
-          "items": { "type": "number" }
+          "items": {
+            "type": "number"
+          }
         },
-        "do_plot": { "title": "Do Plot", "type": "boolean" }
+        "do_plot": {
+          "title": "Do Plot",
+          "description": "Whether to plot the linear regression.",
+          "default": false,
+          "type": "boolean"
+        }
       },
-      "required": ["thermocouple_pos", "do_plot"]
+      "required": [
+        "thermocouple_pos"
+      ]
     }
   }
 }
