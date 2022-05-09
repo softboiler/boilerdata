@@ -1,3 +1,9 @@
-from boilerdata import cli
+"""CLI for boilerdata."""
 
-cli.main()
+import fire
+from boilerdata import api, configs
+
+
+def main():
+    """Entry-point for the CLI."""
+    fire.Fire({"run": api.run, "schema": configs.write_schema})
