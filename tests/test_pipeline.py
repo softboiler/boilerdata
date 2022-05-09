@@ -3,7 +3,7 @@ from filecmp import cmp
 from os import chdir, getcwd
 from pathlib import Path
 from shutil import copytree
-import boilerdata
+from boilerdata import pipeline
 from boilerdata.configs import write_schema
 import pandas as pd
 
@@ -34,7 +34,7 @@ def test_run(tmpdir):
     test_data = tmpdir / "data"
     copytree(DATA, test_data)
     with working_directory(test_data):
-        boilerdata.run()
+        pipeline.run()
     result = pd.read_csv(test_data / RESULT)
     expected = pd.read_csv(DATA / RESULT)
     pd.testing.assert_frame_equal(result, expected)

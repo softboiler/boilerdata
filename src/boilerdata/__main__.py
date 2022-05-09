@@ -1,9 +1,9 @@
 """CLI for boilerdata."""
 
-import fire
-from boilerdata import api, configs
+import typer
 
+from boilerdata import trials, pipeline
 
-def main():
-    """Entry-point for the CLI."""
-    fire.Fire({"run": api.run, "schema": configs.write_schema})
+app = typer.Typer()
+app.add_typer(trials.app, name=trials.__name__.split(".")[-1])
+app.add_typer(pipeline.app, name=pipeline.__name__.split(".")[-1])

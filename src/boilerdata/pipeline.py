@@ -6,6 +6,7 @@ from pathlib import Path
 
 import numpy as np
 import pandas as pd
+import typer
 from numpy import typing as npt
 from propshop import get_prop
 from propshop.library import Mat, Prop
@@ -14,7 +15,10 @@ from scipy.stats import linregress
 
 from boilerdata.configs import load_config
 
+app = typer.Typer()
 
+
+@app.command()
 def run():
 
     config = load_config()

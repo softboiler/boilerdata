@@ -6,5 +6,3 @@ from rich import pretty, traceback
 
 pretty.install()
 traceback.install()
-
-from boilerdata.api import *  # type: ignore  # noqa: E402

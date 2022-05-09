@@ -16,6 +16,6 @@ email = "blake.naccarato+boilerdata@gmail.com"
 Home = "https://github.com/blakeNaccarato/boilerdata"
 
 [project.scripts]
-boilerdata = "boilerdata.cli:main"
+boilerdata = "boilerdata.__main__:app"
 
 [project.optional-dependencies]
