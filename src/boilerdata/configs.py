@@ -1,7 +1,7 @@
 from pathlib import Path
 
 import numpy as np
-from dynaconf import Dynaconf
+import toml
 from pydantic import BaseModel, DirectoryPath, Field, validator
 
 
@@ -36,18 +36,18 @@ class Boilerdata(BaseModel):
     fit: Fit
 
 
-def load_config(path: str = "boilerdata.toml"):
+def load_config(path: str, model: type[BaseModel]):
     """Load the configuration file."""
 
     config = Path(path)
     if config.exists():
-        raw_config = Dynaconf(settings_files=[config])
+        raw_config = toml.load(config)
     else:
         raise FileNotFoundError(f"Configuration file {config.name} not found.")
 
     APP_FOLDER.mkdir(parents=False, exist_ok=True)
 
-    return Boilerdata(data=raw_config.get("data"), fit=Fit(**raw_config.fit))
+    return model(**{key: raw_config.get(key) for key in model.__fields__.keys()})
 
 
 def write_schema(directory: str):

@@ -13,7 +13,7 @@ from propshop.library import Mat, Prop
 from scipy.constants import convert_temperature
 from scipy.stats import linregress
 
-from boilerdata.configs import load_config
+from boilerdata.configs import Boilerdata, load_config
 
 app = typer.Typer()
 
@@ -21,7 +21,7 @@ app = typer.Typer()
 @app.command()
 def run():
 
-    config = load_config()
+    config = load_config("boilerdata.toml", Boilerdata)
     points_to_average = 120
     data: Path = config.data
     files: list[Path] = sorted((data / "raw").glob("*.csv"))
