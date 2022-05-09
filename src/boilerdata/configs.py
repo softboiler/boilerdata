@@ -1,11 +1,15 @@
 from pathlib import Path
-from posixpath import expanduser
 
 import numpy as np
 from dynaconf import Dynaconf
 from pydantic import BaseModel, DirectoryPath, Field, validator
 
-APP_FOLDER = Path(expanduser("~/.boilerdata"))
+
+def parse_tilde_in_path(path: str) -> Path:
+    return Path.home() / path.lstrip("~/") if path.startswith("~/") else Path(path)
+
+
+APP_FOLDER = Path(parse_tilde_in_path("~/.boilerdata"))
 
 
 class Fit(BaseModel):
@@ -50,7 +54,3 @@ def write_schema(directory: str):
     (Path(directory) / "boilerdata.toml.json").write_text(
         Boilerdata.schema_json(indent=2)
     )
-
-
-def parse_tilde_in_path(path: str) -> Path:
-    return Path.home() / path.lstrip("~/") if path.startswith("~/") else Path(path)
