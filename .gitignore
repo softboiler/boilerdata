@@ -6,17 +6,13 @@
 # * TEMPLATE
 # *
 # * Changes here will be overwritten by Copier; NEVER EDIT MANUALLY
-#[[
-# Need "*" to allow negations in .vscode/.gitignore
+#[[# Need "*" to allow negations in .vscode/.gitignore
 .vscode/*
 # To avoid committing rejected changes upon bumping template
 *.rej
 # Only needed in dev environments
 pythonrc.py
 .nest_*
-# Don't commit convenience scripts in root, but still commit those in subfolder
-/setup.ps1
-/update.ps1
 
 #]]
 
