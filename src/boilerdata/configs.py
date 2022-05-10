@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import TypeVar
+from typing import Optional, TypeVar
 
 import toml
 from pydantic import BaseModel
@@ -63,23 +63,45 @@ def get_file(path: StrPath) -> Path:
 PydanticModel = TypeVar("PydanticModel", bound=ModelMetaclass)
 
 
-def load_config(path: StrPath, model: PydanticModel) -> PydanticModel:
+def load_config(
+    path: StrPath, model: PydanticModel
+) -> tuple[PydanticModel, Optional[str]]:
     """Load a TOML file into a Pydantic model.
 
     Given a path to a TOML file, automatically unpack its fields into the provided
-    Pydantic model.
+    Pydantic model. Also return the schema directive at the top of the TOML file, if it
+    happens to have one.
 
     Parameters
     ----------
     path: StrPath
         The path to a TOML file.
+    model: pydantic.BaseModel
+        The Pydantic model to which the contents of the TOML file will be passed.
+
+    Returns
+    -------
+    pydantic.BaseModel
+        An instance of the Pydantic model after validation.
+    Optional[str]
+        The schema directive in the TOML file, if it had one.
 
     """
-    file = get_file(path)
-    if file.suffix != ".toml":
-        raise ValueError(f"The path '{file}' does not refer to a TOML file.")
-    raw_config = toml.load(file)
-    return model(**{key: raw_config.get(key) for key in model.__fields__.keys()})  # type: ignore
+    path = get_file(path)
+    if path.suffix != ".toml":
+        raise ValueError(f"The path '{path}' does not refer to a TOML file.")
+
+    with open(path) as file:
+        if (first_line := file.readline()).startswith("#:"):
+            schema_directive = first_line
+        else:
+            schema_directive = None
+
+    raw_config = toml.load(path)
+    return (
+        model(**{key: raw_config.get(key) for key in model.__fields__.keys()}),  # type: ignore
+        schema_directive,
+    )
 
 
 def write_schema(directory: str, model: type[BaseModel]):
