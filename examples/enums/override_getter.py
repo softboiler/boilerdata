@@ -1,3 +1,5 @@
+"""Makes the Enum return the name of the key when called, eg: `C.T1` yields `"T1`."""
+
 from enum import Enum, auto, unique
 
 
@@ -11,4 +13,4 @@ class C(Enum):
         return self.name
 
 
-C.T1
+print(C.T1)
