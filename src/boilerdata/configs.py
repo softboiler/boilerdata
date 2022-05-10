@@ -1,43 +1,62 @@
 from pathlib import Path
+from typing import TypeVar
 
-import numpy as np
 import toml
-from pydantic import BaseModel, DirectoryPath, Field, validator
+from pydantic import BaseModel
+from pydantic.main import ModelMetaclass
+
+from boilerdata.typing import StrPath
 
 
-def parse_tilde_in_path(path: str) -> Path:
-    return Path.home() / path.lstrip("~/") if path.startswith("~/") else Path(path)
+def expanduser2(path: str) -> Path:
+    """Expand the "~" user construction.
+
+    Unlike the builtin `posixpath.expanduser`, this always works on Windows, and returns
+    a `pathlib.Path` object.
+
+    Parameters
+    ----------
+    path: str
+        A string that may contain "~" at the start.
+
+    Returns
+    -------
+    pathlib.Path
+        The path after user expansion.
+
+    """
+    home = "~/"
+    return Path.home() / path.lstrip(home) if path.startswith(home) else Path(path)
 
 
-APP_FOLDER = Path(parse_tilde_in_path("~/.boilerdata"))
+def get_path(path: StrPath) -> Path:
+    """Generate `pathlib.Path` from various inputs.
+
+    Handle the "~" user construction if necessary and return a `pathlib.Path` object.
+
+    Parameters
+    ----------
+    path: str | PathLike[str]
+        The path.
+
+    Returns
+    -------
+    pathlib.Path
+        The path after handling.
+
+    """
+    if isinstance(path, str):
+        path = expanduser2(path)
+    return Path(path)
 
 
-class Fit(BaseModel):
-    """Configure the linear regression of thermocouple temperatures vs. position."""
+APP_FOLDER = Path(get_path("~/.boilerdata"))
 
-    thermocouple_pos: list[float] = Field(
-        ...,
-        description="Thermocouple positions.",
-    )
-    do_plot: bool = Field(False, description="Whether to plot the linear regression.")
-
-    @validator("thermocouple_pos")
-    def _(cls, thermocouple_pos):
-        return np.array(thermocouple_pos)
+PydanticModel = TypeVar("PydanticModel", bound=ModelMetaclass)
 
 
-class Boilerdata(BaseModel):
-    """Configuration for the package."""
-
-    data: DirectoryPath = Field(
-        ...,
-        description='Absolute or relative path to a folder containing a subfolder "raw" which has CSVs of experimental runs.',
-    )
-    fit: Fit
-
-
-def load_config(path: str, model: type[BaseModel]):
-    """Load the configuration file."""
+def load_config(path: StrPath, model: PydanticModel) -> PydanticModel:
+    """Load a configuration file."""
 
     config = Path(path)
     if config.exists():
@@ -47,10 +66,8 @@ def load_config(path: str, model: type[BaseModel]):
 
     APP_FOLDER.mkdir(parents=False, exist_ok=True)
 
-    return model(**{key: raw_config.get(key) for key in model.__fields__.keys()})
+    return model(**{key: raw_config.get(key) for key in model.__fields__.keys()})  # type: ignore
 
 
-def write_schema(directory: str):
-    (Path(directory) / "boilerdata.toml.json").write_text(
-        Boilerdata.schema_json(indent=2)
-    )
+def write_schema(directory: str, model: type[BaseModel]):
+    (Path(directory) / "boilerdata.toml.json").write_text(model.schema_json(indent=2))

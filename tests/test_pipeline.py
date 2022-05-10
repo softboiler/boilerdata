@@ -1,10 +1,8 @@
 from contextlib import contextmanager
-from filecmp import cmp
 from os import chdir, getcwd
 from pathlib import Path
 from shutil import copytree
 from boilerdata import pipeline
-from boilerdata.configs import write_schema
 import pandas as pd
 
 DATA = Path("tests/data")
@@ -21,17 +19,9 @@ def working_directory(path: Path):
         chdir(original_working_directory)
 
 
-def test_write_schema(tmpdir):
-    """Ensure the schema can be written and is up to date."""
-    write_schema(tmpdir)
-    schema = next(Path(tmpdir).iterdir())
-    expected_schema = Path("schema/boilerdata.toml.json")
-    assert cmp(schema, expected_schema)
-
-
-def test_run(tmpdir):
+def test_run(tmp_path):
     """Ensure the same result is coming out of the pipeline as before."""
-    test_data = tmpdir / "data"
+    test_data = tmp_path / "data"
     copytree(DATA, test_data)
     with working_directory(test_data):
         pipeline.run()

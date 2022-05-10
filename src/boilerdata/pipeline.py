@@ -6,6 +6,7 @@ from pathlib import Path
 
 import numpy as np
 import pandas as pd
+from pydantic import BaseModel, DirectoryPath, Field, validator
 import typer
 from numpy import typing as npt
 from propshop import get_prop
@@ -13,9 +14,38 @@ from propshop.library import Mat, Prop
 from scipy.constants import convert_temperature
 from scipy.stats import linregress
 
-from boilerdata.configs import Boilerdata, load_config
+from boilerdata.configs import load_config, write_schema
 
 app = typer.Typer()
+
+
+class Fit(BaseModel):
+    """Configure the linear regression of thermocouple temperatures vs. position."""
+
+    thermocouple_pos: list[float] = Field(
+        ...,
+        description="Thermocouple positions.",
+    )
+    do_plot: bool = Field(False, description="Whether to plot the linear regression.")
+
+    @validator("thermocouple_pos")
+    def _(cls, thermocouple_pos):
+        return np.array(thermocouple_pos)
+
+
+class Boilerdata(BaseModel):
+    """Configuration for the package."""
+
+    data: DirectoryPath = Field(
+        ...,
+        description='Absolute or relative path to a folder containing a subfolder "raw" which has CSVs of experimental runs.',
+    )
+    fit: Fit
+
+
+@app.command("schema")
+def write_pipeline_schema(directory: str):
+    write_schema(directory, Boilerdata)
 
 
 @app.command()
