@@ -93,7 +93,7 @@ def load_config(
 
     with open(path) as file:
         if (first_line := file.readline()).startswith("#:"):
-            schema_directive = first_line
+            schema_directive = first_line.strip()
         else:
             schema_directive = None
 

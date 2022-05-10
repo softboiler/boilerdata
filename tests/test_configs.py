@@ -44,7 +44,7 @@ def test_load_config_raises_not_toml(tmp_path):
 @m.parametrize(
     "test_id, user_model, expected_schema_directive",
     [
-        ("schema", USER_MODEL, "#:schema schema.json\n"),
+        ("schema", USER_MODEL, "#:schema schema.json"),
         ("no_schema", USER_MODEL_NO_SCHEMA, None),
     ],
 )
