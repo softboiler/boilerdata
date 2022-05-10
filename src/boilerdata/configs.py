@@ -29,14 +29,15 @@ def expanduser2(path: str) -> Path:
     return Path.home() / path.lstrip(home) if path.startswith(home) else Path(path)
 
 
-def get_path(path: StrPath) -> Path:
-    """Generate `pathlib.Path` from various inputs.
+def get_file(path: StrPath) -> Path:
+    """Generate `pathlib.Path` to a file that exists.
 
     Handle the "~" user construction if necessary and return a `pathlib.Path` object.
+    Raise exception if the file is not found.
 
     Parameters
     ----------
-    path: str | PathLike[str]
+    path: StrPath
         The path.
 
     Returns
@@ -44,28 +45,40 @@ def get_path(path: StrPath) -> Path:
     pathlib.Path
         The path after handling.
 
+    Raises
+    ------
+    FleNotFoundError
+        If the file doesn't exist or does not refer to a file.
+
     """
-    if isinstance(path, str):
-        path = expanduser2(path)
-    return Path(path)
+    path = expanduser2(path) if isinstance(path, str) else Path(path)
+    if not path.exists():
+        raise FileNotFoundError(f"The path '{path}' does not exist.")
+    elif not path.is_file():
+        raise FileNotFoundError(f"The path '{path}' does not refer to a file.")
+    else:
+        return path
 
-
-APP_FOLDER = Path(get_path("~/.boilerdata"))
 
 PydanticModel = TypeVar("PydanticModel", bound=ModelMetaclass)
 
 
 def load_config(path: StrPath, model: PydanticModel) -> PydanticModel:
-    """Load a configuration file."""
+    """Load a TOML file into a Pydantic model.
 
-    config = Path(path)
-    if config.exists():
-        raw_config = toml.load(config)
-    else:
-        raise FileNotFoundError(f"Configuration file {config.name} not found.")
+    Given a path to a TOML file, automatically unpack its fields into the provided
+    Pydantic model.
 
-    APP_FOLDER.mkdir(parents=False, exist_ok=True)
+    Parameters
+    ----------
+    path: StrPath
+        The path to a TOML file.
 
+    """
+    file = get_file(path)
+    if file.suffix != ".toml":
+        raise ValueError(f"The path '{file}' does not refer to a TOML file.")
+    raw_config = toml.load(file)
     return model(**{key: raw_config.get(key) for key in model.__fields__.keys()})  # type: ignore
 
 
