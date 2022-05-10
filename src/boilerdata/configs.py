@@ -1,11 +1,10 @@
 from pathlib import Path
-from typing import Optional, TypeVar
+from typing import Optional
 
 import toml
 from pydantic import BaseModel
-from pydantic.main import ModelMetaclass
 
-from boilerdata.typing import StrPath
+from boilerdata.typing import PydanticModel, StrPath
 
 
 def expanduser2(path: str) -> Path:
@@ -29,7 +28,7 @@ def expanduser2(path: str) -> Path:
     return Path.home() / path.lstrip(home) if path.startswith(home) else Path(path)
 
 
-def get_file(path: StrPath) -> Path:
+def get_file(path: StrPath, create: bool = False) -> Path:
     """Generate `pathlib.Path` to a file that exists.
 
     Handle the "~" user construction if necessary and return a `pathlib.Path` object.
@@ -39,6 +38,8 @@ def get_file(path: StrPath) -> Path:
     ----------
     path: StrPath
         The path.
+    create: bool
+        Whether a file should be created at the path if it doesn't already exist.
 
     Returns
     -------
@@ -53,14 +54,13 @@ def get_file(path: StrPath) -> Path:
     """
     path = expanduser2(path) if isinstance(path, str) else Path(path)
     if not path.exists():
-        raise FileNotFoundError(f"The path '{path}' does not exist.")
+        if create:
+            path.touch()
+        else:
+            raise FileNotFoundError(f"The path '{path}' does not exist.")
     elif not path.is_file():
         raise FileNotFoundError(f"The path '{path}' does not refer to a file.")
-    else:
-        return path
-
-
-PydanticModel = TypeVar("PydanticModel", bound=ModelMetaclass)
+    return path
 
 
 def load_config(
@@ -101,6 +101,17 @@ def load_config(
     return (
         model(**{key: raw_config.get(key) for key in model.__fields__.keys()}),  # type: ignore
         schema_directive,
+    )
+
+
+def dump_model(path: StrPath, model, schema_directive: Optional[str] = None):
+    schema_directive = schema_directive or ""
+    file = get_file(path, create=True)
+    # ensure one \n and no leading \n, Pydantic sometimes does more
+    file.write_text(
+        "\n\n".join(
+            [schema_directive, toml.dumps(model.dict()).strip() + "\n"]
+        ).lstrip()
     )
 
 
