@@ -106,14 +106,17 @@ def load_config(
 
 def dump_model(path: StrPath, model, schema_directive: Optional[str] = None):
     schema_directive = schema_directive or ""
-    file = get_file(path, create=True)
+    path = get_file(path, create=True)
     # ensure one \n and no leading \n, Pydantic sometimes does more
-    file.write_text(
+    path.write_text(
         "\n\n".join(
             [schema_directive, toml.dumps(model.dict()).strip() + "\n"]
         ).lstrip()
     )
 
 
-def write_schema(directory: str, model: type[BaseModel]):
-    (Path(directory) / "boilerdata.toml.json").write_text(model.schema_json(indent=2))
+def write_schema(path: StrPath, model: type[BaseModel]):
+    path = get_file(path, create=True)
+    if path.suffix != ".json":
+        raise ValueError(f"The path '{path}' does not refer to a JSON file.")
+    path.write_text(model.schema_json(indent=2) + "\n")

@@ -44,8 +44,8 @@ class Boilerdata(BaseModel):
 
 
 @app.command("schema")
-def write_pipeline_schema(directory: str):
-    write_schema(directory, Boilerdata)
+def write_pipeline_schema(path: str):
+    write_schema(path, Boilerdata)
 
 
 @app.command()

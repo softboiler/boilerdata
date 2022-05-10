@@ -23,9 +23,17 @@ SCHEMA_JSON = """\
 {
   "title": "UserModel",
   "type": "object",
-  "properties": { "test": { "title": "Test", "type": "string" } },
-  "required": ["test"]
+  "properties": {
+    "test": {
+      "title": "Test",
+      "type": "string"
+    }
+  },
+  "required": [
+    "test"
+  ]
 }
+\
 """
 
 
@@ -62,3 +70,16 @@ def test_dump_model(tmp_path, capfd):
     user_model_path = tmp_path / "test.toml"
     configs.dump_model(user_model_path, USER_MODEL_INSTANCE)
     assert user_model_path.read_text() == USER_MODEL_TOML_NO_SCHEMA
+
+
+def test_write_schema_raises_not_json(tmp_path):
+    file = tmp_path / "test.not_json"
+    with raises(ValueError):
+        configs.write_schema(file, UserModel)
+
+
+def test_write_schema(tmp_path):
+    """Ensure the schema can be written and is up to date."""
+    schema_path = tmp_path / "test.json"
+    configs.write_schema(schema_path, UserModel)
+    assert schema_path.read_text() == SCHEMA_JSON
