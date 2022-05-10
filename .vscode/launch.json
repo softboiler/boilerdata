@@ -7,7 +7,7 @@
       "request": "launch",
       "program": "${file}",
       "console": "internalConsole",
-      "cwd": "${workspaceFolder}/examples/example"
+      "cwd": "${workspaceFolder}/examples/"
     },
     {
       "name": "CLI",
