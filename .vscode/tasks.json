@@ -4,7 +4,7 @@
     // * -------------------------------------------------------------------------- * //
     // * PROJECT-SPECIFIC * //
     {
-      "label": "Update boilerdata schema",
+      "label": "boilerdata: Update schema",
       "type": "process",
       "options": { "cwd": "${workspaceFolder}/tests/data" },
       "command": "pwsh",
@@ -14,18 +14,11 @@
       ],
       "problemMatcher": []
     },
-    {
-      "label": "pytest-cov",
-      "type": "process",
-      "command": ".venv/Scripts/python.exe",
-      "args": ["-m", "pytest", "-q", "-ra", "--cov", "--cov-report", "xml"],
-      "problemMatcher": []
-    },
 
     // * -------------------------------------------------------------------------- * //
     // * GIT * //
     {
-      "label": "Git: Rebase back to fork",
+      "label": "git: Rebase back to fork",
       "type": "process",
       "command": "git",
       "args": ["rebase", "-i", "--fork-point", "main"],
@@ -64,7 +57,14 @@
     // * but this is platform-specific anyways.
 
     {
-      "label": "pwsh: Remove *.rej",
+      "label": "task: pytest-cov",
+      "type": "process",
+      "command": ".venv/Scripts/python.exe",
+      "args": ["-m", "pytest", "-q", "-ra", "--cov", "--cov-report", "xml"],
+      "problemMatcher": []
+    },
+    {
+      "label": "task: Remove *.rej",
       "type": "process",
 
       "command": "pwsh",
@@ -75,14 +75,14 @@
       "problemMatcher": []
     },
     {
-      "label": "pwsh: Run pre-commit on all project files",
+      "label": "task: Run pre-commit on all project files",
       "type": "process",
       "command": "pwsh",
       "args": ["-Command", "pre-commit run --all-files"],
       "problemMatcher": []
     },
     {
-      "label": "Black: Ignore magic comma in all project files",
+      "label": "task: Ignore magic comma in all project files",
       "type": "process",
       "command": "pwsh",
       "args": ["-Command", "black -C src tests"],
