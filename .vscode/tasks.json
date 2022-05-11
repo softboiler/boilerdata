@@ -1,3 +1,7 @@
+// Calling `pwsh` first leverages my personal $PROFILE to activate `.venv`.
+// Alternatively, we could use `.venv/Scripts/python.exe` and change the `args`, but
+// this is platform-specific anyways.
+
 {
   "version": "2.0.0",
   "tasks": [
@@ -50,11 +54,25 @@
     },
 
     // * -------------------------------------------------------------------------- * //
-    // * COMMON TASKS * //
-    // *
-    // * Calling `pwsh` first leverages my personal $PROFILE to activate `.venv`.
-    // * Alternatively, we could use `.venv/Scripts/python.exe` and change the `args`,
-    // * but this is platform-specific anyways.
+    // * PRE-COMMIT * //
+
+    {
+      "label": "pre-commit: All files",
+      "type": "process",
+      "command": "pwsh",
+      "args": ["-Command", "pre-commit run --all-files"],
+      "problemMatcher": []
+    },
+    {
+      "label": "pre-commit: Current file",
+      "type": "process",
+      "command": "pwsh",
+      "args": ["-Command", "pre-commit run --files ${file}"],
+      "problemMatcher": []
+    },
+
+    // * -------------------------------------------------------------------------- * //
+    // * OTHER TASKS * //
 
     {
       "label": "task: pytest-cov",
@@ -72,13 +90,6 @@
         "-Command",
         "Get-ChildItem -Recurse -Filter *.rej | Remove-Item"
       ],
-      "problemMatcher": []
-    },
-    {
-      "label": "task: Run pre-commit on all project files",
-      "type": "process",
-      "command": "pwsh",
-      "args": ["-Command", "pre-commit run --all-files"],
       "problemMatcher": []
     },
     {
