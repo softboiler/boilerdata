@@ -1,0 +1,4 @@
+# Tell Dependabot to monitor these requirements specifically.
+-r requirements_both.txt
+-r requirements_cicd.txt
+-r requirements_dev.txt
