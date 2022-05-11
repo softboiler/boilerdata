@@ -1,0 +1,10 @@
+#:schema test_schema.json
+
+[[my_list]]
+my_enum = "T1"
+
+[[my_list]]
+my_enum = "T2"
+
+[[my_list]]
+my_enum = "T3"

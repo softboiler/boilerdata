@@ -1,19 +1,19 @@
 {
   "title": "MyModel",
-  "description": "Docstring for MyModel",
+  "description": "Docstring for MyModel.",
   "type": "object",
   "properties": {
-    "my_enum": {
-      "description": "Description for this field.",
-      "allOf": [
-        {
-          "$ref": "#/definitions/MyEnum"
-        }
-      ]
+    "my_list": {
+      "title": "My List",
+      "description": "Description for my_list.",
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/EnumModel"
+      }
     }
   },
   "required": [
-    "my_enum"
+    "my_list"
   ],
   "definitions": {
     "MyEnum": {
@@ -23,6 +23,24 @@
         "T1",
         "T2",
         "T3"
+      ]
+    },
+    "EnumModel": {
+      "title": "EnumModel",
+      "description": "Docstring for EnumModel.",
+      "type": "object",
+      "properties": {
+        "my_enum": {
+          "description": "Description for my_enum.",
+          "allOf": [
+            {
+              "$ref": "#/definitions/MyEnum"
+            }
+          ]
+        }
+      },
+      "required": [
+        "my_enum"
       ]
     }
   }
