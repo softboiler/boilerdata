@@ -1,0 +1,28 @@
+repos:
+  - repo: local
+    hooks:
+      - id: autoflake
+        name: autoflake
+        types: [python]
+        require_serial: true
+        language: system
+        entry: autoflake
+        args: ["-i", "--remove-all-unused-imports", "--ignore-init-module-imports"]
+      - id: black
+        name: black
+        types: [python]
+        require_serial: true
+        language: system
+        entry: black
+      - id: isort
+        name: isort
+        types: [python]
+        require_serial: true
+        language: system
+        entry: isort
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: "v4.2.0"
+    hooks:
+      - id: check-docstring-first
+      - id: end-of-file-fixer
+      - id: trailing-whitespace
