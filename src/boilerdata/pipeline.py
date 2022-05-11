@@ -14,7 +14,7 @@ from scipy.constants import convert_temperature
 from scipy.stats import linregress
 import typer
 
-from boilerdata.configs import load_config, write_schema
+from .configs import load_config, write_schema
 
 app = typer.Typer()
 
