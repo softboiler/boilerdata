@@ -15,5 +15,4 @@ scipy~=1.8.0
 matplotlib~=3.5.2
 PyQt6~=6.3.0
 # For user-friendly CLI
-fire~=0.4.0
 typer[all]~=0.4.1
