@@ -22,10 +22,7 @@ app = typer.Typer()
 class Fit(BaseModel):
     """Configure the linear regression of thermocouple temperatures vs. position."""
 
-    thermocouple_pos: list[float] = Field(
-        ...,
-        description="Thermocouple positions.",
-    )
+    thermocouple_pos: list[float] = Field(..., description="Thermocouple positions.")
     do_plot: bool = Field(False, description="Whether to plot the linear regression.")
 
     @validator("thermocouple_pos")
@@ -61,9 +58,7 @@ def run():
         df.iloc[-points_to_average:, :].mean() for df in runs_full
     ]
     df: pd.DataFrame = pd.DataFrame(runs_steady_state, index=run_names).pipe(
-        fit,
-        **config.fit.dict(),
-        points_averaged=points_to_average,
+        fit, **config.fit.dict(), points_averaged=points_to_average
     )
     df.to_csv(data / "fitted.csv", index_label="Run")
 
@@ -186,7 +181,7 @@ def fit(
         {
             label: pd.Series(unit, index=["Units"])
             for label, unit in zip(df.columns, units)
-        },
+        }
     )
     df = pd.concat([units_row, df]).rename(columns=columns_mapping)
 
