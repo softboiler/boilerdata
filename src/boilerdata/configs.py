@@ -1,6 +1,5 @@
 """Configuration utilities for loading and dumping Pydantic models and their schema."""
 
-from enum import Enum
 from pathlib import Path
 from typing import Optional
 
@@ -8,14 +7,6 @@ from pydantic import BaseModel
 import toml
 
 from boilerdata.typing import PydanticModel, StrPath
-
-
-class NameEnum(Enum):
-    """Enum names get assigned to values when `auto()` is used."""
-
-    @staticmethod
-    def _generate_next_value_(name: str, *_) -> str:
-        return name
 
 
 def expanduser2(path: str) -> Path:
