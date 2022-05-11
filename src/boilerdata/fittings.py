@@ -6,8 +6,8 @@ the `tap` decorator, or by inserting a `tee` into the pipeline as in
 `df.<pipeline>.pipe(tee).<pipeline>`.
 """
 
-import logging
 from functools import wraps
+import logging
 
 
 def default_preview(df) -> str:

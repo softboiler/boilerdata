@@ -1,8 +1,8 @@
-from boilerdata import configs
 from pydantic import BaseModel
-from pytest import raises
-from pytest import mark as m
+from pytest import mark as m, raises
 import toml
+
+from boilerdata import configs
 
 
 class UserModel(BaseModel):

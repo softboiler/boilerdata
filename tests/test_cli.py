@@ -1,6 +1,8 @@
 from pathlib import Path
-from boilerdata.__main__ import app
+
 from typer.testing import CliRunner
+
+from boilerdata.__main__ import app
 
 runner = CliRunner()
 
