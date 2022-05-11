@@ -1,9 +1,10 @@
 """Manipulate trials."""
 
 from pathlib import Path
+
+from pydantic import BaseModel
 import toml
 import typer
-from pydantic import BaseModel
 
 
 class Trials(BaseModel):

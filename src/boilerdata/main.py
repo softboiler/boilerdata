@@ -1,10 +1,11 @@
 """CLI for boilerdata."""
 
 from types import ModuleType
+
 from typer import Typer
 from typer.main import get_command_name
 
-from boilerdata import trials, pipeline
+from boilerdata import pipeline, trials
 
 
 def add_typer_autoname(app: Typer, module: ModuleType):

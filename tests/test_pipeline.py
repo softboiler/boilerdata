@@ -2,8 +2,10 @@ from contextlib import contextmanager
 from os import chdir, getcwd
 from pathlib import Path
 from shutil import copytree
-from boilerdata import pipeline
+
 import pandas as pd
+
+from boilerdata import pipeline
 
 DATA = Path("tests/data")
 RESULT = Path("fitted.csv")

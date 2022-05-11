@@ -4,15 +4,15 @@ __all__ = ["run"]
 
 from pathlib import Path
 
+from numpy import typing as npt
 import numpy as np
 import pandas as pd
-from pydantic import BaseModel, DirectoryPath, Field, validator
-import typer
-from numpy import typing as npt
 from propshop import get_prop
 from propshop.library import Mat, Prop
+from pydantic import BaseModel, DirectoryPath, Field, validator
 from scipy.constants import convert_temperature
 from scipy.stats import linregress
+import typer
 
 from boilerdata.configs import load_config, write_schema
 

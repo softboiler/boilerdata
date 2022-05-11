@@ -4,8 +4,8 @@ from enum import Enum
 from pathlib import Path
 from typing import Optional
 
-import toml
 from pydantic import BaseModel
+import toml
 
 from boilerdata.typing import PydanticModel, StrPath
 
