@@ -1,3 +1,5 @@
+"""Configuration utilities for loading and dumping Pydantic models and their schema."""
+
 from pathlib import Path
 from typing import Optional
 
@@ -22,7 +24,6 @@ def expanduser2(path: str) -> Path:
     -------
     pathlib.Path
         The path after user expansion.
-
     """
     home = "~/"
     return Path.home() / path.lstrip(home) if path.startswith(home) else Path(path)
@@ -50,7 +51,6 @@ def get_file(path: StrPath, create: bool = False) -> Path:
     ------
     FleNotFoundError
         If the file doesn't exist or does not refer to a file.
-
     """
     path = expanduser2(path) if isinstance(path, str) else Path(path)
     if not path.exists():
@@ -76,8 +76,8 @@ def load_config(
     ----------
     path: StrPath
         The path to a TOML file.
-    model: pydantic.BaseModel
-        The Pydantic model to which the contents of the TOML file will be passed.
+    model: type[pydantic.BaseModel]
+        The Pydantic model class to which the contents of the TOML file will be passed.
 
     Returns
     -------
@@ -85,7 +85,6 @@ def load_config(
         An instance of the Pydantic model after validation.
     Optional[str]
         The schema directive in the TOML file, if it had one.
-
     """
     path = get_file(path)
     if path.suffix != ".toml":
@@ -104,7 +103,22 @@ def load_config(
     )
 
 
+# Can't type annotate `model` for some reason
 def dump_model(path: StrPath, model, schema_directive: Optional[str] = None):
+    """Dump a Pydantic model to a TOML file.
+
+    Given a path to a TOML file, write a Pydantic model to the file. Optionally add a
+    schema directive at the top of the file. Create the file if it doesn't exist.
+
+    Parameters
+    ----------
+    path: StrPath
+        The path to a TOML file. Will create it if it doesn't exist.
+    model: type[pydantic.BaseModel]
+        An instance of the Pydantic model to dump.
+    schema_directive: Optional[str]
+        A schema directive to place in the header of the TOML file.
+    """
     schema_directive = schema_directive or ""
     path = get_file(path, create=True)
     # ensure one \n and no leading \n, Pydantic sometimes does more
@@ -116,6 +130,18 @@ def dump_model(path: StrPath, model, schema_directive: Optional[str] = None):
 
 
 def write_schema(path: StrPath, model: type[BaseModel]):
+    """Write a Pydantic model schema to a JSON file.
+
+    Given a path to a JSON file, write a Pydantic model schema to the file. Create the
+    file if it doesn't exist.
+
+    Parameters
+    ----------
+    path: StrPath
+        The path to a JSON file. Will create it if it doesn't exist.
+    model: type[pydantic.BaseModel]
+        The Pydantic model class to get the schema from.
+    """
     path = get_file(path, create=True)
     if path.suffix != ".json":
         raise ValueError(f"The path '{path}' does not refer to a JSON file.")
