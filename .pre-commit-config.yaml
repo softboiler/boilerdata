@@ -1,7 +1,8 @@
 files: |
   (?x)^(
-      src/.*|
-      tests/.*
+      src/.*
+      |tests/.*
+      |examples/.*
   )$
 
 # Note: Can't use anything in `.venv` for local hooks when commiting from VSCode GUI.

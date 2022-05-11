@@ -1,7 +1,8 @@
 from pathlib import Path
-from boilerdata.configs import load_config, dump_model
 
 from dump_schema import MyModel
+
+from boilerdata.configs import dump_model, load_config
 
 path = Path("examples/enums")
 
