@@ -13,7 +13,7 @@ override_pytest: false
 override_sourcery: false
 override_vscode_extensions: false
 override_vscode_launch: true
-override_vscode_settings: false
+override_vscode_settings: true
 override_vscode_tasks: true
 project_email: blake.naccarato+boilerdata@gmail.com
 project_name: boilerdata
