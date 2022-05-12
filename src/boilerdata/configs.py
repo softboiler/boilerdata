@@ -5,11 +5,8 @@ from typing import Optional
 
 from pydantic import BaseModel
 import toml
-from typer import Typer
 
-from .typing import PydanticModel, StrPath
-
-app = Typer()
+from boilerdata.typing import PydanticModel, StrPath
 
 
 def expanduser2(path: str) -> Path:

@@ -5,7 +5,7 @@ from types import ModuleType
 from typer import Option, Typer
 from typer.main import get_command_name
 
-from boilerdata import configs, pipeline, trials
+from boilerdata.configs import write_schema
 from boilerdata.models import Model, model_from_cli
 
 
@@ -28,7 +28,7 @@ def add_typer_autoname(app: Typer, module: ModuleType):
 
 
 app = Typer()
-for module in [configs, pipeline, trials]:
+for module in []:
     add_typer_autoname(app, module)
 
 
@@ -42,4 +42,4 @@ def write_schema_cli(
     Given a Pydantic model named e.g. "Model", write its JSON schema to
     "schema/Model.json".
     """
-    configs.write_schema(f"schema/{model.name}_schema.json", model_from_cli[model])
+    write_schema(f"schema/{model.name}_schema.json", model_from_cli[model])

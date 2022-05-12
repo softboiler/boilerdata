@@ -12,11 +12,8 @@ from propshop.library import Mat, Prop
 from pydantic import BaseModel, DirectoryPath, Field, validator
 from scipy.constants import convert_temperature
 from scipy.stats import linregress
-import typer
 
-from .configs import load_config, write_schema
-
-app = typer.Typer()
+from boilerdata.configs import load_config, write_schema
 
 
 class Fit(BaseModel):
@@ -40,12 +37,10 @@ class Boilerdata(BaseModel):
     fit: Fit
 
 
-@app.command("schema")
 def write_pipeline_schema(path: str):
     write_schema(path, Boilerdata)
 
 
-@app.command()
 def run():
 
     config, _ = load_config("boilerdata.toml", Boilerdata)
