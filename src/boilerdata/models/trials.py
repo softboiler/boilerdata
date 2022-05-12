@@ -6,6 +6,10 @@ from enum import auto, unique
 from pydantic import BaseModel, Field
 
 from boilerdata.enums import GetNameEnum
+from boilerdata.models import ExtraForbidBaseModel
+
+# * -------------------------------------------------------------------------------- * #
+# * ENUMS
 
 
 @unique
@@ -60,7 +64,11 @@ class Joint(GetNameEnum):
     solder = auto()
 
 
-class Trial(BaseModel):
+# * -------------------------------------------------------------------------------- * #
+# * MODELS
+
+
+class Trial(ExtraForbidBaseModel):
     """A trial."""
 
     date: date
@@ -71,6 +79,7 @@ class Trial(BaseModel):
     group: Group
     monotonic: bool = Field(..., description="Whether the boiling curve is monotonic.")
     joint: Joint
+    hello: str
 
 
 class Trials(BaseModel):
