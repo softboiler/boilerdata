@@ -99,5 +99,4 @@ app = Typer()
 
 @app.command("get")
 def get_trials(path: Path):
-    config = load_config(path, Config)
-    ...
+    return load_config(path, Config)
