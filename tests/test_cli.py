@@ -2,14 +2,17 @@ from pathlib import Path
 
 from typer.testing import CliRunner
 
-from boilerdata.__main__ import app
+from boilerdata.main import app
 
 runner = CliRunner()
 
 
-def test_app():
-    result = runner.invoke(app, ["trials", "test"])
-    assert result.exit_code == 0
+def test_app_help():
+    assert runner.invoke(app, ["--help"]).exit_code == 0
+
+
+def test_schema_help():
+    assert runner.invoke(app, ["schema", "--help"]).exit_code == 0
 
 
 # TODO: Move this to pipeline tests
