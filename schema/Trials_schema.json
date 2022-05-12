@@ -49,9 +49,9 @@
         "B3"
       ]
     },
-    "SampleType": {
-      "title": "SampleType",
-      "description": "The type of sample studied in this trial.",
+    "Group": {
+      "title": "Group",
+      "description": "The group that this sample belongs to.",
       "enum": [
         "control",
         "porous",
@@ -72,6 +72,11 @@
       "description": "A trial.",
       "type": "object",
       "properties": {
+        "date": {
+          "title": "Date",
+          "type": "string",
+          "format": "date"
+        },
         "name": {
           "title": "Name",
           "type": "string"
@@ -85,12 +90,12 @@
         "sample": {
           "$ref": "#/definitions/Sample"
         },
-        "sample_type": {
-          "$ref": "#/definitions/SampleType"
+        "group": {
+          "$ref": "#/definitions/Group"
         },
-        "good": {
-          "title": "Good",
-          "description": "Whether this trial was deemed a success.",
+        "monotonic": {
+          "title": "Monotonic",
+          "description": "Whether the boiling curve is monotonic.",
           "type": "boolean"
         },
         "joint": {
@@ -98,12 +103,13 @@
         }
       },
       "required": [
+        "date",
         "name",
         "rod",
         "coupon",
         "sample",
-        "sample_type",
-        "good",
+        "group",
+        "monotonic",
         "joint"
       ]
     }
