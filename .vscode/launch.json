@@ -8,29 +8,22 @@
       "program": "${file}",
       "console": "internalConsole"
     },
+    // * -------------------------------------------------------------------------- * //
+    // * PROJECT-SPECIFIC * //
     {
-      "name": "CLI",
-      "console": "internalConsole",
+      "name": "Update schema",
       "type": "python",
       "request": "launch",
       "module": "boilerdata",
-      "args": ["${input:input}"]
-    },
-    {
-      "name": "CLI: Update 'trials' schema",
-      "console": "internalConsole",
-      "type": "python",
-      "request": "launch",
-      "module": "boilerdata",
-      "args": ["utils", "schema", "trials"]
+      "args": ["utils", "schema", "${input:input}"]
     }
   ],
   "inputs": [
     {
       "id": "input",
       "type": "pickString",
-      "description": "Select the command to debug.",
-      "options": ["--help", "run"]
+      "description": "Select the schema to write to.",
+      "options": ["all", "config", "trials"]
     }
   ]
 }
