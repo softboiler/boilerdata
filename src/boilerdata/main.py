@@ -31,11 +31,14 @@ def add_typer_autoname(app: Typer, module: ModuleType):
 
 # This flattens nested namespaces
 app = Typer()
-for module in [trials]:
+for module in []:
     add_typer_autoname(app, module)
 
 # * -------------------------------------------------------------------------------- * #
 # * UTILS
+# *
+# * Avoids circular import between `boilerdata.utils` and `boilerdata.models.configs` by
+# * having this app here instead of in `boilerdata.utils`.
 
 app_utils = Typer()
 app.add_typer(app_utils, name="utils")

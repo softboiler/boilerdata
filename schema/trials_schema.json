@@ -32,10 +32,8 @@
         "A2",
         "A3",
         "A4",
-        "A5",
         "A6",
         "A7",
-        "A8",
         "A9"
       ]
     },
@@ -44,8 +42,6 @@
       "description": "The sample attached to the coupon in this trial.",
       "enum": [
         "NA",
-        "B1",
-        "B2",
         "B3"
       ]
     },
