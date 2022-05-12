@@ -8,14 +8,10 @@
     // * -------------------------------------------------------------------------- * //
     // * PROJECT-SPECIFIC * //
     {
-      "label": "boilerdata: Update schema",
+      "label": "boilerdata: Update 'trials' schema",
       "type": "process",
-      "options": { "cwd": "${workspaceFolder}/tests/data" },
       "command": "pwsh",
-      "args": [
-        "-Command",
-        "boilerdata schema . && boilerdata schema ../../schema"
-      ],
+      "args": ["-Command", "boilerdata configs schema trials"],
       "problemMatcher": []
     },
 

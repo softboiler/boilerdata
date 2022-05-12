@@ -11,14 +11,6 @@ def test_app_help():
     assert runner.invoke(app, ["--help"]).exit_code == 0
 
 
-def test_schema_help():
-    assert runner.invoke(app, ["schema", "--help"]).exit_code == 0
-
-
-def test_schema_trials():
-    assert runner.invoke(app, ["--model", "trials"]).exit_code == 0
-
-
 # TODO: Move this to pipeline tests
 def test_write_schema(tmp_path):
     """Ensure the schema can be written and is up to date."""
