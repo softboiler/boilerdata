@@ -4,31 +4,33 @@ from pathlib import Path
 
 from pydantic import BaseModel
 import toml
-import typer
 
-from boilerdata.enums import NameEnum
-from boilerdata.enums.rods import Rod
+from boilerdata.enums import Coupon, Joint, Rod, Sample, SampleType
 
 
-class Trial(BaseModel):
-    """Trial docstring."""
+class EnumValueBaseModel(BaseModel):
+    class Config:
+        use_enum_values = True
+
+
+class Trial(EnumValueBaseModel):
+    """A trial."""
 
     name: str
     rod: Rod
-    upper: NameEnum
-    sample: NameEnum
+    coupon: Coupon
+    sample: Sample
+    sample_type: SampleType
+    good: bool
+    joint: Joint
 
 
 class Trials(BaseModel):
-    """Trials docstring."""
+    """Trials."""
 
     trials: list[Trial]
 
 
-app = typer.Typer()
-
-
-@app.command("get")
 def get_trials():
     a = {
         "trials": [

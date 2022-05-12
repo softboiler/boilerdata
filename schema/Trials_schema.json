@@ -1,0 +1,114 @@
+{
+  "title": "Trials",
+  "description": "Trials.",
+  "type": "object",
+  "properties": {
+    "trials": {
+      "title": "Trials",
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/Trial"
+      }
+    }
+  },
+  "required": [
+    "trials"
+  ],
+  "definitions": {
+    "Rod": {
+      "title": "Rod",
+      "description": "The rod.",
+      "enum": [
+        "W",
+        "X",
+        "Y"
+      ]
+    },
+    "Coupon": {
+      "title": "Coupon",
+      "description": "The coupon.",
+      "enum": [
+        "A1",
+        "A2",
+        "A3",
+        "A4",
+        "A5",
+        "A6",
+        "A7",
+        "A8",
+        "A9"
+      ]
+    },
+    "Sample": {
+      "title": "Sample",
+      "description": "The sample.",
+      "enum": [
+        "B1",
+        "B2",
+        "B3"
+      ]
+    },
+    "SampleType": {
+      "title": "SampleType",
+      "description": "The sample type.",
+      "enum": [
+        "control",
+        "porous",
+        "hybrid"
+      ]
+    },
+    "Joint": {
+      "title": "Joint",
+      "description": "The joint.",
+      "enum": [
+        "paste",
+        "epoxy",
+        "solder"
+      ]
+    },
+    "Trial": {
+      "title": "Trial",
+      "description": "A trial.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "title": "Name",
+          "type": "string"
+        },
+        "rod": {
+          "$ref": "#/definitions/Rod"
+        },
+        "coupon": {
+          "description": "Hello!",
+          "allOf": [
+            {
+              "$ref": "#/definitions/Coupon"
+            }
+          ]
+        },
+        "sample": {
+          "$ref": "#/definitions/Sample"
+        },
+        "sample_type": {
+          "$ref": "#/definitions/SampleType"
+        },
+        "good": {
+          "title": "Good",
+          "type": "boolean"
+        },
+        "joint": {
+          "$ref": "#/definitions/Joint"
+        }
+      },
+      "required": [
+        "name",
+        "rod",
+        "coupon",
+        "sample",
+        "sample_type",
+        "good",
+        "joint"
+      ]
+    }
+  }
+}

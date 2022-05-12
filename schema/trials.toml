@@ -1,0 +1,9 @@
+#:schema Trials_schema.json
+[[trials]]
+name = "hello"
+rod = "W"
+coupon = "A1"
+sample = "B1"
+sample_type = "control"
+good = true
+joint = "epoxy"
