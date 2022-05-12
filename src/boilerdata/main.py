@@ -8,7 +8,7 @@ from typer.main import get_command_name
 
 from boilerdata.enums import NameEnum
 from boilerdata.models import trials
-from boilerdata.models.configs import Config
+from boilerdata.models.config import Config
 from boilerdata.utils import write_schema
 
 
