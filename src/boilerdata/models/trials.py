@@ -2,11 +2,15 @@
 
 from datetime import date
 from enum import auto, unique
+from pathlib import Path
 
 from pydantic import BaseModel, Field
+from typer import Typer
 
 from boilerdata.enums import GetNameEnum
 from boilerdata.models import ExtraForbidBaseModel
+from boilerdata.models.configs import Config
+from boilerdata.utils import load_config
 
 # * -------------------------------------------------------------------------------- * #
 # * ENUMS
@@ -87,5 +91,13 @@ class Trials(BaseModel):
     trials: list[Trial]
 
 
-def get_trials():
-    pass
+# * -------------------------------------------------------------------------------- * #
+# * CLI
+
+app = Typer()
+
+
+@app.command("get")
+def get_trials(path: Path):
+    config = load_config(path, Config)
+    ...

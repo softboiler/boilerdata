@@ -15,12 +15,23 @@
       "type": "python",
       "request": "launch",
       "module": "boilerdata",
-      "args": ["utils", "schema", "${input:input}"]
+      "args": ["utils", "schema", "${input:schema}"]
+    },
+    {
+      "name": "Get trials",
+      "type": "python",
+      "request": "launch",
+      "module": "boilerdata",
+      "args": [
+        "trials",
+        "get",
+        "${workspaceFolder:boilerdata-env}/code/config/config.toml"
+      ]
     }
   ],
   "inputs": [
     {
-      "id": "input",
+      "id": "schema",
       "type": "pickString",
       "description": "Select the schema to write to.",
       "options": ["all", "config", "trials"]
