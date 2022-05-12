@@ -13,7 +13,7 @@ class EnumValueBaseModel(BaseModel):
         use_enum_values = True
 
 
-class Trial(EnumValueBaseModel):
+class Trial(BaseModel):
     """A trial."""
 
     name: str

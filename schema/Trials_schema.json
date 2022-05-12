@@ -79,12 +79,7 @@
           "$ref": "#/definitions/Rod"
         },
         "coupon": {
-          "description": "Hello!",
-          "allOf": [
-            {
-              "$ref": "#/definitions/Coupon"
-            }
-          ]
+          "$ref": "#/definitions/Coupon"
         },
         "sample": {
           "$ref": "#/definitions/Sample"
