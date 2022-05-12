@@ -1,5 +1,6 @@
 """Manipulate trials."""
 
+from datetime import date
 from enum import auto, unique
 
 from pydantic import BaseModel, Field
@@ -42,8 +43,8 @@ class Sample(GetNameEnum):
 
 
 @unique
-class SampleType(GetNameEnum):
-    """The type of sample studied in this trial."""
+class Group(GetNameEnum):
+    """The group that this sample belongs to."""
 
     control = auto()
     porous = auto()
@@ -62,12 +63,13 @@ class Joint(GetNameEnum):
 class Trial(BaseModel):
     """A trial."""
 
+    date: date
     name: str
     rod: Rod
     coupon: Coupon
     sample: Sample
-    sample_type: SampleType
-    good: bool = Field(..., description="Whether this trial was deemed a success.")
+    group: Group
+    monotonic: bool = Field(..., description="Whether the boiling curve is monotonic.")
     joint: Joint
 
 

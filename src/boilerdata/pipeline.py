@@ -13,7 +13,7 @@ from pydantic import BaseModel, DirectoryPath, Field, validator
 from scipy.constants import convert_temperature
 from scipy.stats import linregress
 
-from boilerdata.configs import load_config, write_schema
+from boilerdata.utils import load_config, write_schema
 
 
 class Fit(BaseModel):

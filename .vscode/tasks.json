@@ -11,7 +11,7 @@
       "label": "boilerdata: Update 'trials' schema",
       "type": "process",
       "command": "pwsh",
-      "args": ["-Command", "boilerdata configs schema trials"],
+      "args": ["-Command", "boilerdata utils schema trials"],
       "problemMatcher": []
     },
 

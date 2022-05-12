@@ -5,7 +5,7 @@ from types import ModuleType
 from typer import Typer
 from typer.main import get_command_name
 
-from boilerdata import configs
+from boilerdata import utils
 
 
 def add_typer_autoname(app: Typer, module: ModuleType):
@@ -27,5 +27,5 @@ def add_typer_autoname(app: Typer, module: ModuleType):
 
 
 app = Typer()
-for module in [configs]:
+for module in [utils]:
     add_typer_autoname(app, module)
