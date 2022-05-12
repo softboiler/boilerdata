@@ -100,10 +100,6 @@
         },
         "joint": {
           "$ref": "#/definitions/Joint"
-        },
-        "hello": {
-          "title": "Hello",
-          "type": "string"
         }
       },
       "required": [
@@ -114,8 +110,7 @@
         "sample",
         "group",
         "monotonic",
-        "joint",
-        "hello"
+        "joint"
       ],
       "additionalProperties": false
     }

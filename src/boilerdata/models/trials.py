@@ -79,7 +79,6 @@ class Trial(ExtraForbidBaseModel):
     group: Group
     monotonic: bool = Field(..., description="Whether the boiling curve is monotonic.")
     joint: Joint
-    hello: str
 
 
 class Trials(BaseModel):
