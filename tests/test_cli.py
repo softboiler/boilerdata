@@ -22,8 +22,8 @@ def test_write_schema(tmp_path):
 
 
 def test_schema_help():
-    assert runner.invoke(app, ["configs", "schema", "--help"]).exit_code == 0
+    assert runner.invoke(app, ["utils", "schema", "--help"]).exit_code == 0
 
 
 def test_schema_trials():
-    assert runner.invoke(app, ["configs", "schema", "trials"]).exit_code == 0
+    assert runner.invoke(app, ["utils", "schema", "trials"]).exit_code == 0
