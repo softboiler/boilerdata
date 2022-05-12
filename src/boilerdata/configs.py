@@ -5,8 +5,12 @@ from typing import Optional
 
 from pydantic import BaseModel
 import toml
+from typer import Argument, Typer
 
+from boilerdata.models import Model, model_from_cli
 from boilerdata.typing import PydanticModel, StrPath
+
+app = Typer()
 
 
 def expanduser2(path: str) -> Path:
@@ -146,3 +150,16 @@ def write_schema(path: StrPath, model: type[BaseModel]):
     if path.suffix != ".json":
         raise ValueError(f"The path '{path}' does not refer to a JSON file.")
     path.write_text(model.schema_json(indent=2) + "\n")
+
+
+@app.command("schema")
+def write_schema_cli(
+    model: Model = Argument(
+        ..., help="The Pydantic model.", case_sensitive=False, show_choices=True
+    )
+):
+    """
+    Given a Pydantic model named e.g. "Model", write its JSON schema to
+    "schema/Model.json".
+    """
+    write_schema(f"schema/{model.name}_schema.json", model_from_cli[model])
