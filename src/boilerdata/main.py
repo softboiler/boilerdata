@@ -20,12 +20,12 @@ def add_typer_autoname(app: Typer, module: ModuleType):
         The app to which a subcommand should be added.
     module: ModuleType
         The module which will be added as an automatically-named subcommand.
-
     """
     name = get_command_name(module.__name__.split(".")[-1])
     app.add_typer(module.app, name=name)
 
 
+# This flattens nested namespaces
 app = Typer()
 for module in [utils]:
     add_typer_autoname(app, module)
