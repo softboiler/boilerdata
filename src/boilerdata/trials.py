@@ -6,9 +6,23 @@ from pydantic import BaseModel
 import toml
 import typer
 
+from boilerdata.enums import NameEnum
+from boilerdata.enums.rods import Rod
+
+
+class Trial(BaseModel):
+    """Trial docstring."""
+
+    name: str
+    rod: Rod
+    upper: NameEnum
+    sample: NameEnum
+
 
 class Trials(BaseModel):
-    pass
+    """Trials docstring."""
+
+    trials: list[Trial]
 
 
 app = typer.Typer()

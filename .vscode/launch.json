@@ -17,12 +17,12 @@
       "args": ["${input:input}"]
     },
     {
-      "name": "CLI: Export schema",
+      "name": "CLI: Schema",
       "console": "internalConsole",
       "type": "python",
       "request": "launch",
       "module": "boilerdata",
-      "args": ["schema", "../schema"]
+      "args": ["schema", "--help"]
     }
   ],
   "inputs": [
