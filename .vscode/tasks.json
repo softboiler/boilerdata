@@ -8,10 +8,17 @@
     // * -------------------------------------------------------------------------- * //
     // * PROJECT-SPECIFIC * //
     {
-      "label": "boilerdata: Update 'trials' schema",
+      "label": "boilerdata: Update schema",
       "type": "process",
       "command": "pwsh",
-      "args": ["-Command", "boilerdata utils schema trials"],
+      "args": ["-Command", "boilerdata utils schema ${input:input}"],
+      "problemMatcher": []
+    },
+    {
+      "label": "boilerdata: Update all schema",
+      "type": "process",
+      "command": "pwsh",
+      "args": ["-Command", "boilerdata utils schema all"],
       "problemMatcher": []
     },
 
@@ -53,17 +60,17 @@
     // * PRE-COMMIT * //
 
     {
-      "label": "pre-commit: All files",
+      "label": "autoflake: All files",
       "type": "process",
       "command": "pwsh",
-      "args": ["-Command", "pre-commit run --all-files"],
+      "args": ["-Command", "pre-commit run autoflake --all-files"],
       "problemMatcher": []
     },
     {
-      "label": "pre-commit: Current file",
+      "label": "autoflake: Current file",
       "type": "process",
       "command": "pwsh",
-      "args": ["-Command", "pre-commit run --files ${file}"],
+      "args": ["-Command", "pre-commit run autoflake --files ${file}"],
       "problemMatcher": []
     },
 
@@ -94,6 +101,16 @@
       "command": "pwsh",
       "args": ["-Command", "black -C src tests"],
       "problemMatcher": []
+    }
+  ],
+  // * ------------------------------------------------------------------------------ //
+  // * INPUTS * //
+  "inputs": [
+    {
+      "id": "input",
+      "type": "pickString",
+      "description": "Select the schema to write to.",
+      "options": ["all", "config", "trials"]
     }
   ]
 }

@@ -9,6 +9,7 @@ import toml
 from typer import Argument, Typer
 
 from boilerdata.enums import NameEnum
+from boilerdata.models.configs import Config
 from boilerdata.models.trials import Trials
 from boilerdata.typing import PydanticModel, StrPath
 
@@ -155,18 +156,25 @@ def write_schema(path: StrPath, model: type[BaseModel]):
 
 
 class Model(NameEnum):
-    Trials = auto()
+    all_models = "all"
+    config = auto()
+    trials = auto()
+
+
+all_models = {Model.config: Config, Model.trials: Trials}
 
 
 @app.command("schema")
 def write_schema_cli(
-    model: Model = Argument(
-        ..., help="The Pydantic model.", case_sensitive=False, show_choices=True
-    )
+    model: Model = Argument(..., help='The model, or "all".', case_sensitive=False),
 ):
     """
     Given a Pydantic model named e.g. "Model", write its JSON schema to
     "schema/Model.json".
     """
-    model_from_cli = {Model.Trials: Trials}
-    write_schema(f"schema/{model.name}_schema.json", model_from_cli[model])
+
+    if model == Model.all_models:
+        for model in all_models.keys():
+            write_schema_cli(model)
+    else:
+        write_schema(f"schema/{model.name}_schema.json".lower(), all_models[model])

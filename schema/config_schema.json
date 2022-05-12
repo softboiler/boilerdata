@@ -1,0 +1,16 @@
+{
+  "title": "Config",
+  "description": "Base configuration for boilerdata.",
+  "type": "object",
+  "properties": {
+    "trials": {
+      "title": "Trials",
+      "description": "The path to the trials directory.",
+      "format": "directory-path",
+      "type": "string"
+    }
+  },
+  "required": [
+    "trials"
+  ]
+}

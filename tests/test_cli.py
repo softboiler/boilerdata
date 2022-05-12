@@ -21,9 +21,13 @@ def test_write_schema(tmp_path):
     assert schema_path.read_text() == expected_schema.read_text()
 
 
-def test_schema_help():
-    assert runner.invoke(app, ["utils", "schema", "--help"]).exit_code == 0
+def test_schema_missing_required_arg_raises():
+    assert 0 != runner.invoke(app, ["utils", "schema", "what"]).exit_code
 
 
-def test_schema_trials():
-    assert runner.invoke(app, ["utils", "schema", "trials"]).exit_code == 0
+def test_schema_all():
+    assert 0 == runner.invoke(app, ["utils", "schema", "all"]).exit_code
+
+
+def test_schema_other_than_all():
+    assert 0 == runner.invoke(app, ["utils", "schema", "config"]).exit_code
