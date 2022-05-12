@@ -5,12 +5,20 @@
   "properties": {
     "trials": {
       "title": "Trials",
-      "description": "The path to the trials directory.",
+      "description": "The path to a directory containing trials.",
       "format": "directory-path",
       "type": "string"
+    },
+    "data": {
+      "title": "Data",
+      "description": "The relative path inside each trial directory to its data.",
+      "type": "string",
+      "format": "path"
     }
   },
   "required": [
-    "trials"
-  ]
+    "trials",
+    "data"
+  ],
+  "additionalProperties": false
 }
