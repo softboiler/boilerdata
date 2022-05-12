@@ -1,5 +1,6 @@
 from pathlib import Path
 
+from pytest import mark as m
 from typer.testing import CliRunner
 
 from boilerdata.main import app
@@ -11,10 +12,18 @@ def test_app_help():
     assert runner.invoke(app, ["--help"]).exit_code == 0
 
 
-# TODO: Move this to pipeline tests
+@m.xfail
 def test_write_schema(tmp_path):
     """Ensure the schema can be written and is up to date."""
     schema_path = tmp_path / "test.json"
     runner.invoke(app, ["pipeline", "schema", str(schema_path)])
     expected_schema = Path("schema/boilerdata.toml.json")
     assert schema_path.read_text() == expected_schema.read_text()
+
+
+def test_schema_help():
+    assert runner.invoke(app, ["configs", "schema", "--help"]).exit_code == 0
+
+
+def test_schema_trials():
+    assert runner.invoke(app, ["configs", "schema", "trials"]).exit_code == 0

@@ -1,16 +1,15 @@
 """Manipulate trials."""
 
 from enum import auto, unique
-from pathlib import Path
-from boilerdata.enums import GetNameEnum
 
-from pydantic import BaseModel
-import toml
+from pydantic import BaseModel, Field
+
+from boilerdata.enums import GetNameEnum
 
 
 @unique
 class Rod(GetNameEnum):
-    """The rod."""
+    """The rod used in this trial."""
 
     W = auto()
     X = auto()
@@ -19,7 +18,7 @@ class Rod(GetNameEnum):
 
 @unique
 class Coupon(GetNameEnum):
-    """The coupon."""
+    """The coupon attached to the rod for this trial."""
 
     A1 = auto()
     A2 = auto()
@@ -34,8 +33,9 @@ class Coupon(GetNameEnum):
 
 @unique
 class Sample(GetNameEnum):
-    """The sample."""
+    """The sample attached to the coupon in this trial."""
 
+    NA = auto()  # If no sample is attached to the coupon.
     B1 = auto()
     B2 = auto()
     B3 = auto()
@@ -43,7 +43,7 @@ class Sample(GetNameEnum):
 
 @unique
 class SampleType(GetNameEnum):
-    """The sample type."""
+    """The type of sample studied in this trial."""
 
     control = auto()
     porous = auto()
@@ -52,16 +52,11 @@ class SampleType(GetNameEnum):
 
 @unique
 class Joint(GetNameEnum):
-    """The joint."""
+    """The method used to join parts of the sample in this trial."""
 
     paste = auto()
     epoxy = auto()
     solder = auto()
-
-
-class EnumValueBaseModel(BaseModel):
-    class Config:
-        use_enum_values = True
 
 
 class Trial(BaseModel):
@@ -72,21 +67,11 @@ class Trial(BaseModel):
     coupon: Coupon
     sample: Sample
     sample_type: SampleType
-    good: bool
+    good: bool = Field(..., description="Whether this trial was deemed a success.")
     joint: Joint
 
 
 class Trials(BaseModel):
-    """Trials."""
+    """The trials."""
 
     trials: list[Trial]
-
-
-def get_trials():
-    a = {
-        "trials": [
-            {"test": 100, "best": 200, "rest": 300},
-            {"test": 100, "best": 200, "rest": 300},
-        ]
-    }
-    Path("test.toml").write_text(toml.dumps(a))

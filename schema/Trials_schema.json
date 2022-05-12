@@ -1,6 +1,6 @@
 {
   "title": "Trials",
-  "description": "Trials.",
+  "description": "The trials.",
   "type": "object",
   "properties": {
     "trials": {
@@ -17,7 +17,7 @@
   "definitions": {
     "Rod": {
       "title": "Rod",
-      "description": "The rod.",
+      "description": "The rod used in this trial.",
       "enum": [
         "W",
         "X",
@@ -26,7 +26,7 @@
     },
     "Coupon": {
       "title": "Coupon",
-      "description": "The coupon.",
+      "description": "The coupon attached to the rod for this trial.",
       "enum": [
         "A1",
         "A2",
@@ -41,8 +41,9 @@
     },
     "Sample": {
       "title": "Sample",
-      "description": "The sample.",
+      "description": "The sample attached to the coupon in this trial.",
       "enum": [
+        "NA",
         "B1",
         "B2",
         "B3"
@@ -50,7 +51,7 @@
     },
     "SampleType": {
       "title": "SampleType",
-      "description": "The sample type.",
+      "description": "The type of sample studied in this trial.",
       "enum": [
         "control",
         "porous",
@@ -59,7 +60,7 @@
     },
     "Joint": {
       "title": "Joint",
-      "description": "The joint.",
+      "description": "The method used to join parts of the sample in this trial.",
       "enum": [
         "paste",
         "epoxy",
@@ -89,6 +90,7 @@
         },
         "good": {
           "title": "Good",
+          "description": "Whether this trial was deemed a success.",
           "type": "boolean"
         },
         "joint": {

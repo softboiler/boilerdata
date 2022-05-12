@@ -17,12 +17,12 @@
       "args": ["${input:input}"]
     },
     {
-      "name": "CLI: Schema",
+      "name": "CLI: Update 'trials' schema",
       "console": "internalConsole",
       "type": "python",
       "request": "launch",
       "module": "boilerdata",
-      "args": ["schema", "--help"]
+      "args": ["configs", "schema", "trials"]
     }
   ],
   "inputs": [
