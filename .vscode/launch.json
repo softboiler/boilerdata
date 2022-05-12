@@ -22,7 +22,7 @@
       "type": "python",
       "request": "launch",
       "module": "boilerdata",
-      "args": ["configs", "schema", "trials"]
+      "args": ["utils", "schema", "trials"]
     }
   ],
   "inputs": [

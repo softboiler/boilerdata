@@ -3,7 +3,7 @@ from pytest import mark as m, raises
 import toml
 from typer.testing import CliRunner
 
-from boilerdata.configs import dump_model, load_config, write_schema
+from boilerdata.utils import dump_model, load_config, write_schema
 
 runner = CliRunner()
 
