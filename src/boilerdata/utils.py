@@ -1,19 +1,12 @@
 """Configuration utilities for loading and dumping Pydantic models and their schema."""
 
-from enum import auto
 from pathlib import Path
 from typing import Optional
 
-from pydantic import BaseModel
+from pydantic import BaseModel, NoneIsNotAllowedError, ValidationError
 import toml
-from typer import Argument, Typer
 
-from boilerdata.enums import NameEnum
-from boilerdata.models.configs import Config
-from boilerdata.models.trials import Trials
 from boilerdata.typing import PydanticModel, StrPath
-
-app = Typer()
 
 
 def expanduser2(path: str) -> Path:
@@ -92,6 +85,13 @@ def load_config(
         An instance of the Pydantic model after validation.
     Optional[str]
         The schema directive in the TOML file, if it had one.
+
+    Raises
+    ------
+    ValueError
+        If the path does not refer to a TOML file.
+    ValidationError
+        If the configuration file is missing a required field.
     """
     path = get_file(path)
     if path.suffix != ".toml":
@@ -104,10 +104,16 @@ def load_config(
             schema_directive = None
 
     raw_config = toml.load(path)
-    return (
-        model(**{key: raw_config.get(key) for key in model.__fields__.keys()}),  # type: ignore
-        schema_directive,
-    )
+    try:
+        config = model(**{key: raw_config.get(key) for key in model.__fields__.keys()})  # type: ignore
+    except ValidationError as exception:
+        for error in exception.errors():
+            if NoneIsNotAllowedError.code in error["type"]:
+                exception.errors()[0][
+                    "msg"
+                ] += "\n  The field may be undefined in the configuration file."
+        raise exception
+    return config, schema_directive
 
 
 # Can't type annotate `model` for some reason
@@ -153,28 +159,3 @@ def write_schema(path: StrPath, model: type[BaseModel]):
     if path.suffix != ".json":
         raise ValueError(f"The path '{path}' does not refer to a JSON file.")
     path.write_text(model.schema_json(indent=2) + "\n")
-
-
-class Model(NameEnum):
-    all_models = "all"
-    config = auto()
-    trials = auto()
-
-
-all_models = {Model.config: Config, Model.trials: Trials}
-
-
-@app.command("schema")
-def write_schema_cli(
-    model: Model = Argument(..., help='The model, or "all".', case_sensitive=False),
-):
-    """
-    Given a Pydantic model named e.g. "Model", write its JSON schema to
-    "schema/Model.json".
-    """
-
-    if model == Model.all_models:
-        for model in all_models.keys():
-            write_schema_cli(model)
-    else:
-        write_schema(f"schema/{model.name}_schema.json".lower(), all_models[model])

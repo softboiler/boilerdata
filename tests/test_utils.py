@@ -18,6 +18,12 @@ USER_MODEL_TOML = """\
 #:schema schema.json
 
 test = "hello"
+\
+"""
+
+USER_MODEL_MISSING_KEY_TOML = """\
+#:schema schema.json
+\
 """
 
 USER_MODEL_TOML_NO_SCHEMA = 'test = "hello"\n'
@@ -52,6 +58,14 @@ def test_load_config_raises_not_toml(tmp_path):
 
     with raises(ValueError):
         load_config(file, UserModel)
+
+
+def test_load_config_raises_validation(tmp_path):
+    user_model_path = tmp_path / "test.toml"
+    user_model_path.write_text(USER_MODEL_MISSING_KEY_TOML)
+    # Can't check for ValidationError directly for some reason
+    with raises(Exception, match="validation error"):
+        load_config(user_model_path, UserModel)
 
 
 @m.parametrize(

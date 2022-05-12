@@ -1,11 +1,15 @@
 """CLI for boilerdata."""
 
+from enum import auto
 from types import ModuleType
 
-from typer import Typer
+from typer import Argument, Typer
 from typer.main import get_command_name
 
-from boilerdata import utils
+from boilerdata.enums import NameEnum
+from boilerdata.models import trials
+from boilerdata.models.configs import Config
+from boilerdata.utils import write_schema
 
 
 def add_typer_autoname(app: Typer, module: ModuleType):
@@ -27,5 +31,36 @@ def add_typer_autoname(app: Typer, module: ModuleType):
 
 # This flattens nested namespaces
 app = Typer()
-for module in [utils]:
+for module in [trials]:
     add_typer_autoname(app, module)
+
+# * -------------------------------------------------------------------------------- * #
+# * UTILS
+
+app_utils = Typer()
+app.add_typer(app_utils, name="utils")
+
+
+class Model(NameEnum):
+    all_models = "all"
+    config = auto()
+    trials = auto()
+
+
+all_models = {Model.config: Config, Model.trials: trials.Trials}
+
+
+@app_utils.command("schema")
+def write_schema_cli(
+    model: Model = Argument(..., help='The model, or "all".', case_sensitive=False),
+):
+    """
+    Given a Pydantic model named e.g. "Model", write its JSON schema to
+    "schema/Model.json".
+    """
+
+    if model == Model.all_models:
+        for model in all_models.keys():
+            write_schema_cli(model)
+    else:
+        write_schema(f"schema/{model.name}_schema.json".lower(), all_models[model])
