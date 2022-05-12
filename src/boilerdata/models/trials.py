@@ -77,3 +77,7 @@ class Trials(BaseModel):
     """The trials."""
 
     trials: list[Trial]
+
+
+def get_trials():
+    pass

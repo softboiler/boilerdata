@@ -5,19 +5,17 @@
 # * -------------------------------------------------------------------------------- * #
 # * TEMPLATE
 # *
-# * Changes here will be overwritten by Copier; NEVER EDIT MANUALLY
-#[[# Need "*" to allow negations in .vscode/.gitignore
-.vscode/*
+
 # To avoid committing rejected changes upon bumping template
 *.rej
 # Only needed in dev environments
 pythonrc.py
 .nest_*
 
-#]]
-
 # Don't commit this duplicate of our answers. It's only used once on project creation.
 .copier-answers-init.yml
+# Don't commit code workspace files, which are likely to be symlinked here
+*.code-workspace
 
 # * -------------------------------------------------------------------------------- * #
 # * Partial Node.gitignore
