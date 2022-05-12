@@ -1,6 +1,6 @@
 """CLI for boilerdata."""
 
-from .main import app
+from boilerdata.main import app
 
 if __name__ == "__main__":
     app()

@@ -1,5 +1,6 @@
 """Configuration utilities for loading and dumping Pydantic models and their schema."""
 
+from enum import auto
 from pathlib import Path
 from typing import Optional
 
@@ -7,7 +8,8 @@ from pydantic import BaseModel
 import toml
 from typer import Argument, Typer
 
-from boilerdata.models import Model, model_from_cli
+from boilerdata.enums import NameEnum
+from boilerdata.models.trials import Trials
 from boilerdata.typing import PydanticModel, StrPath
 
 app = Typer()
@@ -152,6 +154,10 @@ def write_schema(path: StrPath, model: type[BaseModel]):
     path.write_text(model.schema_json(indent=2) + "\n")
 
 
+class Model(NameEnum):
+    Trials = auto()
+
+
 @app.command("schema")
 def write_schema_cli(
     model: Model = Argument(
@@ -162,4 +168,5 @@ def write_schema_cli(
     Given a Pydantic model named e.g. "Model", write its JSON schema to
     "schema/Model.json".
     """
+    model_from_cli = {Model.Trials: Trials}
     write_schema(f"schema/{model.name}_schema.json", model_from_cli[model])

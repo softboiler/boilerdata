@@ -3,7 +3,7 @@ from pytest import mark as m, raises
 import toml
 from typer.testing import CliRunner
 
-from boilerdata.configs import app, dump_model, load_config, write_schema
+from boilerdata.configs import dump_model, load_config, write_schema
 
 runner = CliRunner()
 
@@ -86,11 +86,3 @@ def test_write_schema(tmp_path):
     schema_path = tmp_path / "test.json"
     write_schema(schema_path, UserModel)
     assert schema_path.read_text() == SCHEMA_JSON
-
-
-def test_schema_help():
-    assert runner.invoke(app, ["schema", "--help"]).exit_code == 0
-
-
-def test_schema_trials():
-    assert runner.invoke(app, ["--model", "trials"]).exit_code == 0
