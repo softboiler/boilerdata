@@ -1,7 +1,5 @@
 """Pipeline functions."""
 
-__all__ = ["run"]
-
 from pathlib import Path
 
 from numpy import typing as npt
