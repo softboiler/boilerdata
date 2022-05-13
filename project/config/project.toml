@@ -1,4 +1,4 @@
-#:schema https://raw.githubusercontent.com/blakeNaccarato/boilerdata/blob/main/project/schema/project_schema.json
+#:schema https://raw.githubusercontent.com/blakeNaccarato/boilerdata/main/project/schema/old_schema.json
 
 trials = "G:/My Drive/Blake/School/Grad/Projects/18.09 Nucleate Pool Boiling/Data"
 
