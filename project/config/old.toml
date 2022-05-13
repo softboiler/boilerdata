@@ -1,4 +1,4 @@
-#:schema https://raw.githubusercontent.com/blakeNaccarato/boilerdata/main/schema/old_schema.json
+#:schema https://raw.githubusercontent.com/blakeNaccarato/boilerdata/blob/main/project/schema/old_schema.json
 
 data = "."
 

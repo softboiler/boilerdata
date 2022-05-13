@@ -1,4 +1,4 @@
-#:schema https://raw.githubusercontent.com/blakeNaccarato/boilerdata/main/schema/trials_schema.json
+#:schema https://raw.githubusercontent.com/blakeNaccarato/boilerdata/blob/main/project/schema/trials_schema.json
 
 [[trials]]
 date = "2022-01-01"

@@ -7,7 +7,7 @@ from boilerdata.utils import load_config
 
 
 def main():
-    config, _ = load_config("config/config.toml", Project)
+    config, _ = load_config("project/config/project.toml", Project)
     good_trials = (config.trials / "Boiling Curves").iterdir()
     okay_trials = (config.trials / "Test Runs").iterdir()
     for trial in good_trials:
