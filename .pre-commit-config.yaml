@@ -3,6 +3,7 @@ files: |
       src/.*
       |tests/.*
       |examples/.*
+      |project/.*
   )$
 
 # Note: Can't use anything in `.venv` for local hooks when commiting from VSCode GUI.

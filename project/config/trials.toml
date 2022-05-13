@@ -1,0 +1,11 @@
+#:schema https://raw.githubusercontent.com/blakeNaccarato/boilerdata/main/schema/trials_schema.json
+
+[[trials]]
+date = "2022-01-01"
+name = "hello"
+rod = "W"
+coupon = "A1"
+sample = "B1"
+group = "control"
+monotonic = true
+joint = "epoxy"

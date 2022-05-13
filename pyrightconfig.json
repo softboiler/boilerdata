@@ -1,6 +1,6 @@
 {
   "ignore": [".tools"],
-  "include": ["src", "tests", "examples"],
+  "include": ["src", "tests", "examples", "project"],
   "reportMissingParameterType": "none",
   "reportMissingTypeStubs": "none",
   "reportUnknownArgumentType": "none",

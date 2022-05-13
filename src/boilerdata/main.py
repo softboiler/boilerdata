@@ -66,4 +66,6 @@ def write_schema_cli(
         for model in all_models.keys():
             write_schema_cli(model)
     else:
-        write_schema(f"schema/{model.name}_schema.json".lower(), all_models[model])
+        write_schema(
+            f"project/schema/{model.name}_schema.json".lower(), all_models[model]
+        )
