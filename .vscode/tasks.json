@@ -11,14 +11,7 @@
       "label": "proj: Update schema",
       "type": "process",
       "command": "pwsh",
-      "args": ["-Command", "python project/schema/update.py ${input:input}"],
-      "problemMatcher": []
-    },
-    {
-      "label": "proj: Update all schema",
-      "type": "process",
-      "command": "pwsh",
-      "args": ["-Command", "python project/schema/update.py all"],
+      "args": ["-Command", "python project/update_schema.py"],
       "problemMatcher": []
     },
 
@@ -101,16 +94,6 @@
       "command": "pwsh",
       "args": ["-Command", "black -C src tests"],
       "problemMatcher": []
-    }
-  ],
-  // * ------------------------------------------------------------------------------ //
-  // * INPUTS * //
-  "inputs": [
-    {
-      "id": "input",
-      "type": "pickString",
-      "description": "Select the schema to write to.",
-      "options": ["all", "config", "trials"]
     }
   ]
 }

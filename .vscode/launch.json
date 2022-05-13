@@ -14,27 +14,7 @@
       "name": "proj: Update schema",
       "type": "python",
       "request": "launch",
-      "program": "project/schema/update.py",
-      "args": ["${input:schema}"]
-    },
-    {
-      "name": "proj: Get trials",
-      "type": "python",
-      "request": "launch",
-      "module": "boilerdata",
-      "args": [
-        "trials",
-        "get",
-        "${workspaceFolder:boilerdata-env}/code/config/config.toml"
-      ]
-    }
-  ],
-  "inputs": [
-    {
-      "id": "schema",
-      "type": "pickString",
-      "description": "Select the schema to write to.",
-      "options": ["all", "config", "trials"]
+      "program": "project/update_schema.py"
     }
   ]
 }

@@ -1,14 +1,9 @@
-"""Manipulate trials."""
-
 from datetime import date
 from enum import auto, unique
 
 from pydantic import BaseModel, Extra, Field
 
 from boilerdata.enums import GetNameEnum
-
-# * -------------------------------------------------------------------------------- * #
-# * ENUMS
 
 
 @unique

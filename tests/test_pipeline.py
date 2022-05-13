@@ -22,7 +22,7 @@ def working_directory(path: Path):
         chdir(original_working_directory)
 
 
-@m.xfail
+@m.skip
 def test_run(tmp_path):
     """Ensure the same result is coming out of the pipeline as before."""
     test_data = tmp_path / "data"

@@ -10,7 +10,8 @@ def add_typer_autoname(app: Typer, module: ModuleType):
     """Add a subcommand to a Typer app, inferring its name from the module name.
 
     Given a Typer app and a module, add a subcommand to the Typer app with the same name
-    as the module itself, all lowercase and with underscores swapped for dashes.
+    as the module itself, all lowercase and with underscores swapped for dashes. This
+    flattens nested namespaces.
 
     Parameters
     ----------
@@ -23,7 +24,6 @@ def add_typer_autoname(app: Typer, module: ModuleType):
     app.add_typer(module.app, name=name)
 
 
-# This flattens nested namespaces
 app = Typer()
 for module in []:
     add_typer_autoname(app, module)
