@@ -3,7 +3,7 @@ from pathlib import Path
 from pytest import mark as m
 from typer.testing import CliRunner
 
-from boilerdata.main import app
+from boilerdata.__main__ import app
 
 runner = CliRunner()
 
