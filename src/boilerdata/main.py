@@ -8,7 +8,7 @@ from typer.main import get_command_name
 
 from boilerdata.enums import NameEnum
 from boilerdata.models import trials
-from boilerdata.models.config import Config
+from boilerdata.models.project import Project
 from boilerdata.utils import write_schema
 
 
@@ -50,7 +50,7 @@ class Model(NameEnum):
     trials = auto()
 
 
-all_models = {Model.config: Config, Model.trials: trials.Trials}
+all_models = {Model.config: Project, Model.trials: trials.Trials}
 
 
 @app_utils.command("schema")

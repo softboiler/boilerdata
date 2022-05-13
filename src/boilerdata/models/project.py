@@ -3,7 +3,7 @@ from pathlib import Path
 from pydantic import BaseModel, DirectoryPath, Extra, Field
 
 
-class Config(BaseModel, extra=Extra.forbid):
+class Project(BaseModel, extra=Extra.forbid):
     """Base configuration for boilerdata."""
 
     trials: DirectoryPath = Field(
