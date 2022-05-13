@@ -18,3 +18,5 @@ matplotlib~=3.5.2
 PyQt6~=6.3.0
 # For user-friendly CLI
 typer[all]~=0.4.1
+# For improved interactivity
+rich~=12.4.1
