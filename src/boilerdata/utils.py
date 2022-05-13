@@ -100,11 +100,10 @@ def load_config(path: StrPath, model):
     try:
         config = model(**{key: raw_config.get(key) for key in model.__fields__.keys()})
     except ValidationError as exception:
+        addendum = "\n  The field may be undefined in the configuration file."
         for error in exception.errors():
             if NoneIsNotAllowedError.code in error["type"]:
-                exception.errors()[0][
-                    "msg"
-                ] += "\n  The field may be undefined in the configuration file."
+                error["msg"] += addendum
         raise exception
     return config
 
