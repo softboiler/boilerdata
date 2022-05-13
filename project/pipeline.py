@@ -13,8 +13,6 @@ from pydantic import BaseModel, DirectoryPath, Field, validator
 from scipy.constants import convert_temperature
 from scipy.stats import linregress
 
-from boilerdata.utils import load_config
-
 
 class Fit(BaseModel):
     """Configure the linear regression of thermocouple temperatures vs. position."""
@@ -38,24 +36,27 @@ class OldModel(BaseModel):
 
 
 def run():
-    result = get_trials("config/config.toml")
-    run_one(Path())
+    pass
+
+    # result = get_trials("config/config.toml")
+    # run_one(Path())
 
 
 def run_one(data: Path):
+    pass
 
-    config, _ = load_config("config/old.toml", OldModel)
-    points_to_average = 120
-    files: list[Path] = sorted((data / "raw").glob("*.csv"))
-    run_names: list[str] = [file.stem for file in files]
-    runs_full: list[pd.DataFrame] = [pd.read_csv(file, index_col=0) for file in files]
-    runs_steady_state: list[pd.Series] = [
-        df.iloc[-points_to_average:, :].mean() for df in runs_full
-    ]
-    df: pd.DataFrame = pd.DataFrame(runs_steady_state, index=run_names).pipe(
-        fit, **config.fit.dict(), points_averaged=points_to_average
-    )
-    df.to_csv(data / "fitted.csv", index_label="Run")
+    # config, _ = load_config("config/old.toml", OldModel)
+    # points_to_average = 120
+    # files: list[Path] = sorted((data / "raw").glob("*.csv"))
+    # run_names: list[str] = [file.stem for file in files]
+    # runs_full: list[pd.DataFrame] = [pd.read_csv(file, index_col=0) for file in files]
+    # runs_steady_state: list[pd.Series] = [
+    #     df.iloc[-points_to_average:, :].mean() for df in runs_full
+    # ]
+    # df: pd.DataFrame = pd.DataFrame(runs_steady_state, index=run_names).pipe(
+    #     fit, **config.fit.dict(), points_averaged=points_to_average
+    # )
+    # df.to_csv(data / "fitted.csv", index_label="Run")
 
 
 # * -------------------------------------------------------------------------------- * #

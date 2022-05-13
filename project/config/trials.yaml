@@ -1,0 +1,288 @@
+trials:
+  - date: 20-03-12
+    rod: W
+    coupon: A1
+    sample: NA
+    group: control
+    monotonic: true
+    joint: ""
+    comment: ""
+
+  - date: 21-01-14
+    rod: W
+    coupon: A2
+    sample: NA
+    group: control
+    monotonic: true
+    joint: ""
+    comment: ""
+
+  - date: 21-02-23
+    rod: W
+    coupon: A2
+    sample: NA
+    group: control
+    monotonic: true
+    joint: ""
+    comment: ""
+
+  - date: 21-03-09
+    rod: W
+    coupon: A2
+    sample: NA
+    group: control
+    monotonic: true
+    joint: ""
+    comment: ""
+
+  - date: 21-03-25
+    rod: W
+    coupon: A3
+    sample: NA
+    group: control
+    monotonic: true
+    joint: ""
+    comment: ""
+
+  - date: 21-03-29
+    rod: W
+    coupon: A3
+    sample: NA
+    group: control
+    monotonic: true
+    joint: ""
+    comment: ""
+
+  - date: 21-04-15
+    rod: W
+    coupon: A3
+    sample: NA
+    group: control
+    monotonic: true
+    joint: ""
+    comment: ""
+
+  - date: 21-04-28
+    rod: W
+    coupon: A4
+    sample: NA
+    group: control
+    monotonic: true
+    joint: ""
+    comment: ""
+
+  - date: 21-04-29
+    rod: W
+    coupon: A4
+    sample: NA
+    group: control
+    monotonic: true
+    joint: ""
+    comment: ""
+
+  - date: 21-04-30
+    rod: W
+    coupon: A4
+    sample: NA
+    group: control
+    monotonic: true
+    joint: ""
+    comment: ""
+
+  - date: 21-05-11
+    rod: ""
+    coupon: ""
+    sample: ""
+    group: ""
+    monotonic: false
+    joint: ""
+    comment: PID Failsafe and TC Failure
+
+  - date: 21-05-24
+    rod: ""
+    coupon: ""
+    sample: ""
+    group: ""
+    monotonic: false
+    joint: ""
+    comment: Thermocouple ground loop proven
+
+  - date: 21-06-16
+    rod: W
+    coupon: A4
+    sample: NA
+    group: control
+    monotonic: true
+    joint: ""
+    comment: ""
+
+  - date: 21-06-17
+    rod: W
+    coupon: A4
+    sample: NA
+    group: control
+    monotonic: true
+    joint: ""
+    comment: ""
+
+  - date: 21-06-21
+    rod: W
+    coupon: A4
+    sample: NA
+    group: control
+    monotonic: true
+    joint: ""
+    comment: ""
+
+  - date: 21-06-22
+    rod: ""
+    coupon: ""
+    sample: ""
+    group: ""
+    monotonic: false
+    joint: ""
+    comment: Second day water intrusion
+
+  - date: 21-08-30
+    rod: ""
+    coupon: ""
+    sample: ""
+    group: ""
+    monotonic: false
+    joint: ""
+    comment: Poorly-wrapped sample
+
+  - date: 21-08-31
+    rod: W
+    coupon: A4
+    sample: NA
+    group: control
+    monotonic: true
+    joint: ""
+    comment: ""
+
+  - date: 21-09-01
+    rod: W
+    coupon: A4
+    sample: NA
+    group: control
+    monotonic: true
+    joint: ""
+    comment: ""
+
+  - date: 21-09-13
+    rod: ""
+    coupon: ""
+    sample: ""
+    group: ""
+    monotonic: false
+    joint: ""
+    comment: Untaped sample
+
+  - date: 21-09-14
+    rod: W
+    coupon: A4
+    sample: NA
+    group: control
+    monotonic: true
+    joint: ""
+    comment: ""
+
+  - date: 21-09-15
+    rod: W
+    coupon: A4
+    sample: NA
+    group: control
+    monotonic: true
+    joint: ""
+    comment: ""
+
+  - date: 21-09-16
+    rod: W
+    coupon: A4
+    sample: NA
+    group: control
+    monotonic: true
+    joint: ""
+    comment: ""
+
+  - date: 21-09-29
+    rod: W
+    coupon: A4
+    sample: NA
+    group: control
+    monotonic: true
+    joint: ""
+    comment: ""
+
+  - date: 21-10-12
+    rod: W
+    coupon: A4
+    sample: NA
+    group: control
+    monotonic: true
+    joint: ""
+    comment: ""
+
+  - date: 21-10-13
+    rod: W
+    coupon: A4
+    sample: NA
+    group: control
+    monotonic: true
+    joint: ""
+    comment: ""
+
+  - date: 21-12-09
+    rod: "Y"
+    coupon: A7
+    sample: NA
+    group: control
+    monotonic: true
+    joint: ""
+    comment: ""
+
+  - date: 22-01-06
+    rod: "Y"
+    coupon: A7
+    sample: NA
+    group: control
+    monotonic: true
+    joint: ""
+    comment: ""
+
+  - date: 22-01-19
+    rod: X
+    coupon: A6
+    sample: B3
+    group: porous
+    monotonic: true
+    joint: ""
+    comment: ""
+
+  - date: 22-01-20
+    rod: ""
+    coupon: ""
+    sample: ""
+    group: ""
+    monotonic: false
+    joint: ""
+    comment: Copper X-A6-B3-2
+
+  - date: 22-03-29
+    rod: ""
+    coupon: ""
+    sample: ""
+    group: ""
+    monotonic: false
+    joint: ""
+    comment: Copper X-A6-fail2
+
+  - date: 22-04-08
+    rod: ""
+    coupon: ""
+    sample: ""
+    group: ""
+    monotonic: false
+    joint: ""
+    comment: Copper X-A9-newcam

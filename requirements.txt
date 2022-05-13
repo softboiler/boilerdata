@@ -1,4 +1,6 @@
 # List project dependencies here. A workflow ports them to `pyproject.toml`. This is needed because Dependabot does not currently support `flit`-flavored `pyproject.toml`.
+# For serialization
+pyyaml~=6.0
 # For property lookup
 propshop~=0.0.4
 # For configuration and validation

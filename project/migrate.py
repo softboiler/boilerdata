@@ -1,13 +1,13 @@
 """Generate configs for trials given their old layout."""
 
 from bisect import insort
-from pathlib import Path
 
 from models.project import Project
 from pydantic import BaseModel
-import toml
 
-from boilerdata.utils import load_config
+from boilerdata.utils import dump_model, load_config
+
+TRIALS_PATH = "project/config/trials_raw.yaml"
 
 
 class PartialTrial(BaseModel):
@@ -26,7 +26,7 @@ class PartialTrials(BaseModel):
 
 
 def main():
-    config, _ = load_config("project/config/project.toml", Project)
+    config = load_config("project/config/project.yaml", Project)
     good_trials = list((config.trials / "Boiling Curves").iterdir())
     okay_trials = list((config.trials / "Test Runs").iterdir())
     trials = []
@@ -44,7 +44,7 @@ def main():
 
         monotonic = trial in good_trials
         joint = ""
-        date = date.replace(".", "-")
+        date = "20" + date.replace(".", "-")
 
         trial = PartialTrial(
             date=date,
@@ -59,9 +59,7 @@ def main():
 
         insort(trials, trial, key=lambda t: t.date)
 
-    Path("project/config/trials_raw.toml").write_text(
-        toml.dumps(PartialTrials(trials=trials).dict())
-    )
+    dump_model(TRIALS_PATH, PartialTrials(trials=trials))
 
 
 def match_sample_spec(spec):

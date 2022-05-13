@@ -2,6 +2,13 @@
   // * -------------------------------------------------------------------------- * //
   // * PROJECT-SPECIFIC * //
 
+  //! Schema
+  "yaml.schemas": {
+    "project/schema/trials_schema.json": "trials*.yaml",
+    "project/schema/project_schema.json": "project*.yaml",
+    "project/schema/config_old_schema.json": "config_old.yaml"
+  },
+
   //! Pylance
   //* Pylance settings aren't very discoverable.
   //* https://marketplace.visualstudio.com/items?itemName=ms-python.vscode-pylance

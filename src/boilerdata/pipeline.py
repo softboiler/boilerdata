@@ -43,7 +43,7 @@ def write_pipeline_schema(path: str):
 
 def run():
 
-    config, _ = load_config("boilerdata.toml", Boilerdata)
+    config = load_config("boilerdata.toml", Boilerdata)
     points_to_average = 120
     data: Path = config.data
     files: list[Path] = sorted((data / "raw").glob("*.csv"))

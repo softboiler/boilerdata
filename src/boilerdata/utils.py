@@ -1,12 +1,12 @@
 """Configuration utilities for loading and dumping Pydantic models and their schema."""
 
+from os import PathLike
 from pathlib import Path
-from typing import Optional
 
 from pydantic import BaseModel, NoneIsNotAllowedError, ValidationError
-import toml
+import yaml
 
-from boilerdata.typing import PydanticModel, StrPath
+StrPath = str | PathLike[str]
 
 
 def expanduser2(path: str) -> Path:
@@ -63,9 +63,7 @@ def get_file(path: StrPath, create: bool = False) -> Path:
     return path
 
 
-def load_config(
-    path: StrPath, model: PydanticModel
-) -> tuple[PydanticModel, Optional[str]]:
+def load_config(path: StrPath, model):
     """Load a TOML file into a Pydantic model.
 
     Given a path to a TOML file, automatically unpack its fields into the provided
@@ -83,8 +81,6 @@ def load_config(
     -------
     pydantic.BaseModel
         An instance of the Pydantic model after validation.
-    Optional[str]
-        The schema directive in the TOML file, if it had one.
 
     Raises
     ------
@@ -94,18 +90,12 @@ def load_config(
         If the configuration file is missing a required field.
     """
     path = get_file(path)
-    if path.suffix != ".toml":
+    if path.suffix != ".yaml":
         raise ValueError(f"The path '{path}' does not refer to a TOML file.")
 
-    with open(path) as file:
-        if (first_line := file.readline()).startswith("#:"):
-            schema_directive = first_line.strip()
-        else:
-            schema_directive = None
-
-    raw_config = toml.load(path)
+    raw_config = yaml.safe_load(path.read_text())
     try:
-        config = model(**{key: raw_config.get(key) for key in model.__fields__.keys()})  # type: ignore
+        config = model(**{key: raw_config.get(key) for key in model.__fields__.keys()})
     except ValidationError as exception:
         for error in exception.errors():
             if NoneIsNotAllowedError.code in error["type"]:
@@ -113,11 +103,11 @@ def load_config(
                     "msg"
                 ] += "\n  The field may be undefined in the configuration file."
         raise exception
-    return config, schema_directive
+    return config
 
 
 # Can't type annotate `model` for some reason
-def dump_model(path: StrPath, model, schema_directive: Optional[str] = None):
+def dump_model(path: StrPath, model):
     """Dump a Pydantic model to a TOML file.
 
     Given a path to a TOML file, write a Pydantic model to the file. Optionally add a
@@ -129,17 +119,10 @@ def dump_model(path: StrPath, model, schema_directive: Optional[str] = None):
         The path to a TOML file. Will create it if it doesn't exist.
     model: type[pydantic.BaseModel]
         An instance of the Pydantic model to dump.
-    schema_directive: Optional[str]
-        A schema directive to place in the header of the TOML file.
     """
-    schema_directive = schema_directive or ""
     path = get_file(path, create=True)
     # ensure one \n and no leading \n, Pydantic sometimes does more
-    path.write_text(
-        "\n\n".join(
-            [schema_directive, toml.dumps(model.dict()).strip() + "\n"]
-        ).lstrip()
-    )
+    path.write_text(yaml.safe_dump(model.dict()))
 
 
 def write_schema(path: StrPath, model: type[BaseModel]):
