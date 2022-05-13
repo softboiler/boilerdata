@@ -7,7 +7,7 @@ from pydantic import BaseModel
 
 from boilerdata.utils import dump_model, load_config
 
-TRIALS_PATH = "project/config/trials_raw.yaml"
+TRIALS_PATH = "project/config/trials.yaml"
 
 
 class PartialTrial(BaseModel):

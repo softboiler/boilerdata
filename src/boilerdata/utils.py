@@ -122,7 +122,7 @@ def dump_model(path: StrPath, model):
     """
     path = get_file(path, create=True)
     # ensure one \n and no leading \n, Pydantic sometimes does more
-    path.write_text(yaml.safe_dump(model.dict()))
+    path.write_text(yaml.safe_dump(model.dict(), sort_keys=False))
 
 
 def write_schema(path: StrPath, model: type[BaseModel]):
