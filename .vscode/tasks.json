@@ -8,17 +8,17 @@
     // * -------------------------------------------------------------------------- * //
     // * PROJECT-SPECIFIC * //
     {
-      "label": "boilerdata: Update schema",
+      "label": "proj: Update schema",
       "type": "process",
       "command": "pwsh",
-      "args": ["-Command", "boilerdata utils schema ${input:input}"],
+      "args": ["-Command", "python project/schema/update.py ${input:input}"],
       "problemMatcher": []
     },
     {
-      "label": "boilerdata: Update all schema",
+      "label": "proj: Update all schema",
       "type": "process",
       "command": "pwsh",
-      "args": ["-Command", "boilerdata utils schema all"],
+      "args": ["-Command", "python project/schema/update.py all"],
       "problemMatcher": []
     },
 

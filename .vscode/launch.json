@@ -2,7 +2,7 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Current File",
+      "name": "Current file",
       "type": "python",
       "request": "launch",
       "program": "${file}",
@@ -11,14 +11,14 @@
     // * -------------------------------------------------------------------------- * //
     // * PROJECT-SPECIFIC * //
     {
-      "name": "Update schema",
+      "name": "proj: Update schema",
       "type": "python",
       "request": "launch",
-      "module": "boilerdata",
-      "args": ["utils", "schema", "${input:schema}"]
+      "program": "project/schema/update.py",
+      "args": ["${input:schema}"]
     },
     {
-      "name": "Get trials",
+      "name": "proj: Get trials",
       "type": "python",
       "request": "launch",
       "module": "boilerdata",

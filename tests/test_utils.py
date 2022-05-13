@@ -83,7 +83,7 @@ def test_load_config(test_id, user_model, expected_schema_directive, tmp_path):
     assert schema_directive == expected_schema_directive
 
 
-def test_dump_model(tmp_path, capfd):
+def test_dump_model(tmp_path):
     user_model_path = tmp_path / "test.toml"
     dump_model(user_model_path, USER_MODEL_INSTANCE)
     assert user_model_path.read_text() == USER_MODEL_TOML_NO_SCHEMA
