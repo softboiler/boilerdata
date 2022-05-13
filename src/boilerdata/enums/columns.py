@@ -1,8 +1,7 @@
-from enum import auto, unique
+from enum import auto
 
 from boilerdata.enums import NameEnum
 
 
-@unique
 class Column(NameEnum):
     T1 = auto()

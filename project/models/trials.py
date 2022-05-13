@@ -1,12 +1,11 @@
 from datetime import date
-from enum import auto, unique
+from enum import auto
 
 from pydantic import BaseModel, Extra, Field
 
 from boilerdata.enums import GetNameEnum
 
 
-@unique
 class Rod(GetNameEnum):
     """The rod used in this trial."""
 
@@ -15,7 +14,6 @@ class Rod(GetNameEnum):
     Y = auto()
 
 
-@unique
 class Coupon(GetNameEnum):
     """The coupon attached to the rod for this trial."""
 
@@ -28,7 +26,6 @@ class Coupon(GetNameEnum):
     A9 = auto()
 
 
-@unique
 class Sample(GetNameEnum):
     """The sample attached to the coupon in this trial."""
 
@@ -36,7 +33,6 @@ class Sample(GetNameEnum):
     B3 = auto()
 
 
-@unique
 class Group(GetNameEnum):
     """The group that this sample belongs to."""
 
@@ -45,7 +41,6 @@ class Group(GetNameEnum):
     hybrid = auto()
 
 
-@unique
 class Joint(GetNameEnum):
     """The method used to join parts of the sample in this trial."""
 
