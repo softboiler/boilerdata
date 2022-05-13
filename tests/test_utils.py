@@ -1,7 +1,9 @@
+import re
+
 from pydantic import BaseModel
 from pytest import mark as m, raises
-import toml
 from typer.testing import CliRunner
+import yaml
 
 from boilerdata.utils import dump_model, load_config, write_schema
 
@@ -10,23 +12,14 @@ runner = CliRunner()
 
 class UserModel(BaseModel):
     test: str
+    other: str
 
 
-USER_MODEL_INSTANCE = UserModel(test="hello")
+USER_MODEL_INSTANCE = UserModel(test="hello", other="world")
 
-USER_MODEL_TOML = """\
-#:schema schema.json
+USER_MODEL_YAML = "test: hello\nother: world\n"
 
-test = "hello"
-\
-"""
-
-USER_MODEL_MISSING_KEY_TOML = """\
-#:schema schema.json
-\
-"""
-
-USER_MODEL_TOML_NO_SCHEMA = 'test = "hello"\n'
+USER_MODEL_MISSING_KEY_YAML = "test: hello\n"
 
 SCHEMA_JSON = """\
 {
@@ -36,10 +29,15 @@ SCHEMA_JSON = """\
     "test": {
       "title": "Test",
       "type": "string"
+    },
+    "other": {
+      "title": "Other",
+      "type": "string"
     }
   },
   "required": [
-    "test"
+    "test",
+    "other"
   ]
 }
 \
@@ -52,41 +50,40 @@ def test_load_config_raises(test_id, file, tmp_path):
         load_config(tmp_path / file, UserModel)
 
 
-def test_load_config_raises_not_toml(tmp_path):
-    file = tmp_path / "test.not_toml"
+def test_load_config_raises_not_yaml(tmp_path):
+    file = tmp_path / "test.not_yaml"
     file.touch()
-
-    with raises(ValueError):
+    with raises(ValueError, match=re.compile("yaml file", re.IGNORECASE)):
         load_config(file, UserModel)
 
 
-def test_load_config_raises_validation(tmp_path):
-    user_model_path = tmp_path / "test.toml"
-    user_model_path.write_text(USER_MODEL_MISSING_KEY_TOML)
+def test_load_config_raises_value_error(tmp_path):
+    user_model_path = tmp_path / "test.yaml"
+    user_model_path.write_text("\n")
     # Can't check for ValidationError directly for some reason
-    with raises(Exception, match="validation error"):
+    with raises(ValueError, match=re.compile("file is empty", re.IGNORECASE)):
         load_config(user_model_path, UserModel)
 
 
-@m.parametrize(
-    "test_id, user_model, expected_schema_directive",
-    [
-        ("schema", USER_MODEL_TOML, "#:schema schema.json"),
-        ("no_schema", USER_MODEL_TOML_NO_SCHEMA, None),
-    ],
-)
-def test_load_config(test_id, user_model, expected_schema_directive, tmp_path):
-    user_model_path = tmp_path / "user_model.toml"
-    user_model_path.write_text(user_model)
-    config, schema_directive = load_config(user_model_path, UserModel)
-    assert toml.load(user_model_path) == config.dict()  # type: ignore
-    assert schema_directive == expected_schema_directive
+def test_load_config_raises_validation(tmp_path):
+    user_model_path = tmp_path / "test.yaml"
+    user_model_path.write_text(USER_MODEL_MISSING_KEY_YAML)
+    # Can't check for ValidationError directly for some reason
+    with raises(Exception, match=re.compile("validation error", re.IGNORECASE)):
+        load_config(user_model_path, UserModel)
+
+
+def test_load_config(tmp_path):
+    user_model_path = tmp_path / "user_model.yaml"
+    user_model_path.write_text(USER_MODEL_YAML)
+    config = load_config(user_model_path, UserModel)
+    assert yaml.safe_load(user_model_path.read_text()) == config.dict()
 
 
 def test_dump_model(tmp_path):
     user_model_path = tmp_path / "test.toml"
     dump_model(user_model_path, USER_MODEL_INSTANCE)
-    assert user_model_path.read_text() == USER_MODEL_TOML_NO_SCHEMA
+    assert user_model_path.read_text() == USER_MODEL_YAML
 
 
 def test_write_schema_raises_not_json(tmp_path):

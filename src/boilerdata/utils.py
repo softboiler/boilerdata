@@ -64,18 +64,18 @@ def get_file(path: StrPath, create: bool = False) -> Path:
 
 
 def load_config(path: StrPath, model):
-    """Load a TOML file into a Pydantic model.
+    """Load a YAML file into a Pydantic model.
 
-    Given a path to a TOML file, automatically unpack its fields into the provided
-    Pydantic model. Also return the schema directive at the top of the TOML file, if it
+    Given a path to a YAML file, automatically unpack its fields into the provided
+    Pydantic model. Also return the schema directive at the top of the YAML file, if it
     happens to have one.
 
     Parameters
     ----------
     path: StrPath
-        The path to a TOML file.
+        The path to a YAML file.
     model: type[pydantic.BaseModel]
-        The Pydantic model class to which the contents of the TOML file will be passed.
+        The Pydantic model class to which the contents of the YAML file will be passed.
 
     Returns
     -------
@@ -85,15 +85,18 @@ def load_config(path: StrPath, model):
     Raises
     ------
     ValueError
-        If the path does not refer to a TOML file.
+        If the path does not refer to a YAML file, or the YAML file is empty.
     ValidationError
         If the configuration file is missing a required field.
     """
     path = get_file(path)
     if path.suffix != ".yaml":
-        raise ValueError(f"The path '{path}' does not refer to a TOML file.")
+        raise ValueError(f"The path '{path}' does not refer to a YAML file.")
 
     raw_config = yaml.safe_load(path.read_text())
+    if not raw_config:
+        raise ValueError("The configuration file is empty.")
+
     try:
         config = model(**{key: raw_config.get(key) for key in model.__fields__.keys()})
     except ValidationError as exception:
@@ -108,15 +111,15 @@ def load_config(path: StrPath, model):
 
 # Can't type annotate `model` for some reason
 def dump_model(path: StrPath, model):
-    """Dump a Pydantic model to a TOML file.
+    """Dump a Pydantic model to a YAML file.
 
-    Given a path to a TOML file, write a Pydantic model to the file. Optionally add a
+    Given a path to a YAML file, write a Pydantic model to the file. Optionally add a
     schema directive at the top of the file. Create the file if it doesn't exist.
 
     Parameters
     ----------
     path: StrPath
-        The path to a TOML file. Will create it if it doesn't exist.
+        The path to a YAML file. Will create it if it doesn't exist.
     model: type[pydantic.BaseModel]
         An instance of the Pydantic model to dump.
     """
