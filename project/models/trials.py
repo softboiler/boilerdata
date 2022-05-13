@@ -62,13 +62,13 @@ class Trial(BaseModel, extra=Extra.forbid):
     """A trial."""
 
     date: date
-    name: str
     rod: Rod
     coupon: Coupon
     sample: Sample
     group: Group
     monotonic: bool = Field(..., description="Whether the boiling curve is monotonic.")
     joint: Joint
+    comment: str
 
 
 class Trials(BaseModel):

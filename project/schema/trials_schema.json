@@ -73,10 +73,6 @@
           "type": "string",
           "format": "date"
         },
-        "name": {
-          "title": "Name",
-          "type": "string"
-        },
         "rod": {
           "$ref": "#/definitions/Rod"
         },
@@ -96,17 +92,21 @@
         },
         "joint": {
           "$ref": "#/definitions/Joint"
+        },
+        "comment": {
+          "title": "Comment",
+          "type": "string"
         }
       },
       "required": [
         "date",
-        "name",
         "rod",
         "coupon",
         "sample",
         "group",
         "monotonic",
-        "joint"
+        "joint",
+        "comment"
       ],
       "additionalProperties": false
     }
