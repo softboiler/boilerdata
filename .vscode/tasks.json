@@ -73,14 +73,13 @@
     {
       "label": "task: pytest-cov",
       "type": "process",
-      "command": ".venv/Scripts/python.exe",
-      "args": ["-m", "pytest", "-q", "-ra", "--cov", "--cov-report", "xml"],
+      "command": "pwsh",
+      "args": ["-Command", "pytest --cov --cov-report xml"],
       "problemMatcher": []
     },
     {
       "label": "task: Remove *.rej",
       "type": "process",
-
       "command": "pwsh",
       "args": [
         "-Command",
