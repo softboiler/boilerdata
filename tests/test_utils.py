@@ -21,6 +21,8 @@ USER_MODEL_YAML = "test: hello\nother: world\n"
 
 USER_MODEL_MISSING_KEY_YAML = "test: hello\n"
 
+USER_MODEL_CONTAINS_NULL_YAML = "test: hello\nother: null\n"
+
 SCHEMA_JSON = """\
 {
   "title": "UserModel",
@@ -65,11 +67,18 @@ def test_load_config_raises_value_error(tmp_path):
         load_config(user_model_path, UserModel)
 
 
-def test_load_config_raises_validation(tmp_path):
+@m.parametrize(
+    "test_id, model, match",
+    [
+        ("missing_key", USER_MODEL_MISSING_KEY_YAML, "validation error"),
+        ("contains_null", USER_MODEL_CONTAINS_NULL_YAML, "may be undefined"),
+    ],
+)
+def test_load_config_raises_validation(test_id, model, match, tmp_path):
     user_model_path = tmp_path / "test.yaml"
-    user_model_path.write_text(USER_MODEL_MISSING_KEY_YAML)
+    user_model_path.write_text(model)
     # Can't check for ValidationError directly for some reason
-    with raises(Exception, match=re.compile("validation error", re.IGNORECASE)):
+    with raises(Exception, match=re.compile(match, re.IGNORECASE)):
         load_config(user_model_path, UserModel)
 
 
