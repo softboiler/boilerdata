@@ -2,10 +2,10 @@
 
 from bisect import insort
 
-from models.project import Project
 from pydantic import BaseModel
 
 from boilerdata.utils import dump_model, load_config
+from models.project import Project
 
 TRIALS_PATH = "project/config/trials.yaml"
 
@@ -26,6 +26,13 @@ class PartialTrials(BaseModel):
 
 
 def main():
+    pass
+
+
+def get_partial_trials():
+
+    raise Exception("You have already run this migration.")
+
     config = load_config("project/config/project.yaml", Project)
     good_trials = list((config.trials / "Boiling Curves").iterdir())
     okay_trials = list((config.trials / "Test Runs").iterdir())

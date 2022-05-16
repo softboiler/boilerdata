@@ -1,20 +1,34 @@
 {
-  "title": "Boilerdata",
+  "title": "OldModel",
   "description": "Configuration for the package.",
   "type": "object",
   "properties": {
-    "data": {
-      "title": "Data",
-      "description": "Absolute or relative path to a folder containing a subfolder \"raw\" which has CSVs of experimental runs.",
+    "base": {
+      "title": "Base",
+      "description": "The base directory for the project data.",
       "format": "directory-path",
       "type": "string"
+    },
+    "trials": {
+      "title": "Trials",
+      "description": "The directory in which the individual trials are. Must be relative to the base directory.",
+      "format": "directory-path",
+      "type": "string"
+    },
+    "data_directory_per_trial": {
+      "title": "Data Directory Per Trial",
+      "description": "The directory in which the data are for a given trial. Must be relative to a trial folder, and all trials must share this pattern.",
+      "type": "string",
+      "format": "path"
     },
     "fit": {
       "$ref": "#/definitions/Fit"
     }
   },
   "required": [
-    "data",
+    "base",
+    "trials",
+    "data_directory_per_trial",
     "fit"
   ],
   "definitions": {

@@ -11,6 +11,9 @@ from pydantic import BaseModel, DirectoryPath, Field, validator
 from scipy.constants import convert_temperature
 from scipy.stats import linregress
 
+from boilerdata.utils import load_config
+from migrate import PartialTrials
+
 
 class Fit(BaseModel):
     """Configure the linear regression of thermocouple temperatures vs. position."""
@@ -26,35 +29,51 @@ class Fit(BaseModel):
 class OldModel(BaseModel):
     """Configuration for the package."""
 
-    data: DirectoryPath = Field(
+    base: DirectoryPath = Field(
         ...,
-        description='Absolute or relative path to a folder containing a subfolder "raw" which has CSVs of experimental runs.',
+        description="The base directory for the project data.",
+    )
+    trials: DirectoryPath = Field(
+        ...,
+        description="The directory in which the individual trials are. Must be relative to the base directory.",
+    )
+    data_directory_per_trial: Path = Field(
+        ...,
+        description="The directory in which the data are for a given trial. Must be relative to a trial folder, and all trials must share this pattern.",
     )
     fit: Fit
 
+    @validator("trials", pre=True)
+    def _(cls, trials, values):
+        return values["base"] / Path(trials)
+
 
 def run():
-    pass
+    config = load_config("project/config/config_old.yaml", OldModel)
+    trials = load_config("project/config/trials.yaml", PartialTrials)
+    dfs: list[pd.DataFrame] = []
+    for trial in trials.trials:
+        if trial.monotonic:
+            path = config.trials / trial.date / config.data_directory_per_trial
+            df = run_one(config.base, path, config.fit)
+            dfs.append(df)
+    df = pd.concat(dfs)
+    df.to_csv(config.base / "results.csv", index_label="Run")
 
-    # result = get_trials("config/config.toml")
-    # run_one(Path())
 
+def run_one(base: Path, path: Path, fit_params: Fit) -> pd.DataFrame:
 
-def run_one(data: Path):
-    pass
-
-    # config, _ = load_config("config/old.toml", OldModel)
-    # points_to_average = 120
-    # files: list[Path] = sorted((data / "raw").glob("*.csv"))
-    # run_names: list[str] = [file.stem for file in files]
-    # runs_full: list[pd.DataFrame] = [pd.read_csv(file, index_col=0) for file in files]
-    # runs_steady_state: list[pd.Series] = [
-    #     df.iloc[-points_to_average:, :].mean() for df in runs_full
-    # ]
-    # df: pd.DataFrame = pd.DataFrame(runs_steady_state, index=run_names).pipe(
-    #     fit, **config.fit.dict(), points_averaged=points_to_average
-    # )
-    # df.to_csv(data / "fitted.csv", index_label="Run")
+    points_to_average = 60
+    files: list[Path] = sorted(path.glob("*.csv"))
+    run_names: list[str] = [file.stem for file in files]
+    runs_full: list[pd.DataFrame] = [pd.read_csv(file, index_col=0) for file in files]
+    runs_steady_state: list[pd.Series] = [
+        df.iloc[-points_to_average:, :].mean() for df in runs_full
+    ]
+    df: pd.DataFrame = pd.DataFrame(runs_steady_state, index=run_names).pipe(
+        fit, **fit_params.dict(), points_averaged=points_to_average
+    )
+    return df
 
 
 # * -------------------------------------------------------------------------------- * #
