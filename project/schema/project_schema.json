@@ -1,24 +1,61 @@
 {
   "title": "Project",
-  "description": "Base configuration for boilerdata.",
+  "description": "Configuration for the package.",
   "type": "object",
   "properties": {
-    "trials": {
-      "title": "Trials",
-      "description": "The path to a directory containing trials.",
+    "base": {
+      "title": "Base",
+      "description": "The base directory for the project data.",
       "format": "directory-path",
       "type": "string"
     },
-    "data": {
-      "title": "Data",
-      "description": "The relative path inside each trial directory to its data.",
+    "trials": {
+      "title": "Trials",
+      "description": "The directory in which the individual trials are. Must be relative to the base directory.",
+      "format": "directory-path",
+      "type": "string"
+    },
+    "data_directory_per_trial": {
+      "title": "Data Directory Per Trial",
+      "description": "The directory in which the data are for a given trial. Must be relative to a trial folder, and all trials must share this pattern.",
       "type": "string",
       "format": "path"
+    },
+    "fit": {
+      "$ref": "#/definitions/Fit"
     }
   },
   "required": [
+    "base",
     "trials",
-    "data"
+    "data_directory_per_trial",
+    "fit"
   ],
-  "additionalProperties": false
+  "additionalProperties": false,
+  "definitions": {
+    "Fit": {
+      "title": "Fit",
+      "description": "Configure the linear regression of thermocouple temperatures vs. position.",
+      "type": "object",
+      "properties": {
+        "thermocouple_pos": {
+          "title": "Thermocouple Pos",
+          "description": "Thermocouple positions.",
+          "type": "array",
+          "items": {
+            "type": "number"
+          }
+        },
+        "do_plot": {
+          "title": "Do Plot",
+          "description": "Whether to plot the linear regression.",
+          "default": false,
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "thermocouple_pos"
+      ]
+    }
+  }
 }

@@ -7,50 +7,40 @@ import numpy as np
 import pandas as pd
 from propshop import get_prop
 from propshop.library import Mat, Prop
-from pydantic import BaseModel, DirectoryPath, Field, validator
+from pydantic import BaseModel
 from scipy.constants import convert_temperature
 from scipy.stats import linregress
 
 from boilerdata.utils import load_config
-from migrate import PartialTrials
+from models.project import Fit, Project
 
 
-class Fit(BaseModel):
-    """Configure the linear regression of thermocouple temperatures vs. position."""
+class Trial(BaseModel):
+    """Configuration for a single trial after Migration 1.
 
-    thermocouple_pos: list[float] = Field(..., description="Thermocouple positions.")
-    do_plot: bool = Field(False, description="Whether to plot the linear regression.")
+    This configuration is less strict because we aren't informing their values from
+    specified Enums.
+    """
 
-    @validator("thermocouple_pos")
-    def _(cls, thermocouple_pos):
-        return np.array(thermocouple_pos)
+    date: str
+    rod: str
+    coupon: str
+    sample: str
+    group: str
+    monotonic: bool
+    joint: str
+    comment: str
 
 
-class OldModel(BaseModel):
-    """Configuration for the package."""
+class Trials(BaseModel):
+    """Top-level configuration for a list of trials after Migration 1."""
 
-    base: DirectoryPath = Field(
-        ...,
-        description="The base directory for the project data.",
-    )
-    trials: DirectoryPath = Field(
-        ...,
-        description="The directory in which the individual trials are. Must be relative to the base directory.",
-    )
-    data_directory_per_trial: Path = Field(
-        ...,
-        description="The directory in which the data are for a given trial. Must be relative to a trial folder, and all trials must share this pattern.",
-    )
-    fit: Fit
-
-    @validator("trials", pre=True)
-    def _(cls, trials, values):
-        return values["base"] / Path(trials)
+    trials: list[Trial]
 
 
 def run():
-    config = load_config("project/config/config_old.yaml", OldModel)
-    trials = load_config("project/config/trials.yaml", PartialTrials)
+    config = load_config("project/config/project.yaml", Project)
+    trials = load_config("project/config/trials.yaml", Trials)
     dfs: list[pd.DataFrame] = []
     for trial in trials.trials:
         if trial.monotonic:
