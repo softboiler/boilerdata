@@ -5,7 +5,7 @@ trials:
     sample: NA
     group: control
     monotonic: true
-    joint: ""
+    joint:
     comment: ""
   - date: "2021-01-14"
     rod: W
@@ -13,7 +13,7 @@ trials:
     sample: NA
     group: control
     monotonic: true
-    joint: ""
+    joint:
     comment: ""
   - date: "2021-02-23"
     rod: W
@@ -21,7 +21,7 @@ trials:
     sample: NA
     group: control
     monotonic: true
-    joint: ""
+    joint:
     comment: ""
   - date: "2021-03-09"
     rod: W
@@ -29,7 +29,7 @@ trials:
     sample: NA
     group: control
     monotonic: true
-    joint: ""
+    joint:
     comment: ""
   - date: "2021-03-25"
     rod: W
@@ -37,7 +37,7 @@ trials:
     sample: NA
     group: control
     monotonic: true
-    joint: ""
+    joint:
     comment: ""
   - date: "2021-03-29"
     rod: W
@@ -45,7 +45,7 @@ trials:
     sample: NA
     group: control
     monotonic: true
-    joint: ""
+    joint:
     comment: ""
   - date: "2021-04-15"
     rod: W
@@ -53,7 +53,7 @@ trials:
     sample: NA
     group: control
     monotonic: true
-    joint: ""
+    joint:
     comment: ""
   - date: "2021-04-28"
     rod: W
@@ -61,7 +61,7 @@ trials:
     sample: NA
     group: control
     monotonic: true
-    joint: ""
+    joint:
     comment: ""
   - date: "2021-04-29"
     rod: W
@@ -69,7 +69,7 @@ trials:
     sample: NA
     group: control
     monotonic: true
-    joint: ""
+    joint:
     comment: ""
   - date: "2021-04-30"
     rod: W
@@ -77,23 +77,23 @@ trials:
     sample: NA
     group: control
     monotonic: true
-    joint: ""
+    joint:
     comment: ""
   - date: "2021-05-11"
-    rod: ""
-    coupon: ""
-    sample: ""
-    group: ""
+    rod:
+    coupon:
+    sample:
+    group:
     monotonic: false
-    joint: ""
+    joint:
     comment: PID Failsafe and TC Failure
   - date: "2021-05-24"
-    rod: ""
-    coupon: ""
-    sample: ""
-    group: ""
+    rod:
+    coupon:
+    sample:
+    group:
     monotonic: false
-    joint: ""
+    joint:
     comment: Thermocouple ground loop proven
   - date: "2021-06-16"
     rod: W
@@ -101,7 +101,7 @@ trials:
     sample: NA
     group: control
     monotonic: true
-    joint: ""
+    joint:
     comment: ""
   - date: "2021-06-17"
     rod: W
@@ -109,7 +109,7 @@ trials:
     sample: NA
     group: control
     monotonic: true
-    joint: ""
+    joint:
     comment: ""
   - date: "2021-06-21"
     rod: W
@@ -117,23 +117,23 @@ trials:
     sample: NA
     group: control
     monotonic: true
-    joint: ""
+    joint:
     comment: ""
   - date: "2021-06-22"
-    rod: ""
-    coupon: ""
-    sample: ""
-    group: ""
+    rod:
+    coupon:
+    sample:
+    group:
     monotonic: false
-    joint: ""
+    joint:
     comment: Second day water intrusion
   - date: "2021-08-30"
-    rod: ""
-    coupon: ""
-    sample: ""
-    group: ""
+    rod:
+    coupon:
+    sample:
+    group:
     monotonic: false
-    joint: ""
+    joint:
     comment: Poorly-wrapped sample
   - date: "2021-08-31"
     rod: W
@@ -141,7 +141,7 @@ trials:
     sample: NA
     group: control
     monotonic: true
-    joint: ""
+    joint:
     comment: ""
   - date: "2021-09-01"
     rod: W
@@ -149,15 +149,15 @@ trials:
     sample: NA
     group: control
     monotonic: false
-    joint: ""
+    joint:
     comment: No T5
   - date: "2021-09-13"
-    rod: ""
-    coupon: ""
-    sample: ""
-    group: ""
+    rod:
+    coupon:
+    sample:
+    group:
     monotonic: false
-    joint: ""
+    joint:
     comment: Untaped sample
   - date: "2021-09-14"
     rod: W
@@ -165,7 +165,7 @@ trials:
     sample: NA
     group: control
     monotonic: false
-    joint: ""
+    joint:
     comment: No T5
   - date: "2021-09-15"
     rod: W
@@ -173,7 +173,7 @@ trials:
     sample: NA
     group: control
     monotonic: false
-    joint: ""
+    joint:
     comment: No T5
   - date: "2021-09-16"
     rod: W
@@ -181,7 +181,7 @@ trials:
     sample: NA
     group: control
     monotonic: false
-    joint: ""
+    joint:
     comment: No T5
   - date: "2021-09-29"
     rod: W
@@ -189,7 +189,7 @@ trials:
     sample: NA
     group: control
     monotonic: true
-    joint: ""
+    joint:
     comment: ""
   - date: "2021-10-12"
     rod: W
@@ -197,7 +197,7 @@ trials:
     sample: NA
     group: control
     monotonic: true
-    joint: ""
+    joint: epoxy
     comment: ""
   - date: "2021-10-13"
     rod: W
@@ -205,7 +205,7 @@ trials:
     sample: NA
     group: control
     monotonic: true
-    joint: ""
+    joint:
     comment: ""
   - date: "2021-12-09"
     rod: Y
@@ -213,7 +213,7 @@ trials:
     sample: NA
     group: control
     monotonic: true
-    joint: ""
+    joint:
     comment: ""
   - date: "2022-01-06"
     rod: Y
@@ -221,7 +221,7 @@ trials:
     sample: NA
     group: control
     monotonic: true
-    joint: ""
+    joint:
     comment: ""
   - date: "2022-01-19"
     rod: X
@@ -229,29 +229,29 @@ trials:
     sample: B3
     group: porous
     monotonic: true
-    joint: ""
+    joint:
     comment: ""
   - date: "2022-01-20"
-    rod: ""
-    coupon: ""
-    sample: ""
-    group: ""
+    rod:
+    coupon:
+    sample:
+    group:
     monotonic: false
-    joint: ""
+    joint:
     comment: Copper X-A6-B3-2
   - date: "2022-03-29"
-    rod: ""
-    coupon: ""
-    sample: ""
-    group: ""
+    rod:
+    coupon:
+    sample:
+    group:
     monotonic: false
-    joint: ""
+    joint:
     comment: Copper X-A6-fail2
   - date: "2022-04-08"
-    rod: ""
-    coupon: ""
-    sample: ""
-    group: ""
+    rod:
+    coupon:
+    sample:
+    group:
     monotonic: false
-    joint: ""
+    joint:
     comment: Copper X-A9-newcam
