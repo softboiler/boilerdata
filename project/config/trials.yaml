@@ -5,7 +5,7 @@ trials:
     sample: NA
     group: control
     monotonic: true
-    joint:
+    joint: paste
     comment: ""
 
   - date: "2021-01-14"
@@ -14,7 +14,7 @@ trials:
     sample: NA
     group: control
     monotonic: true
-    joint:
+    joint: paste
     comment: ""
 
   - date: "2021-02-23"
@@ -23,7 +23,7 @@ trials:
     sample: NA
     group: control
     monotonic: true
-    joint:
+    joint: paste
     comment: ""
 
   - date: "2021-03-09"
@@ -32,7 +32,7 @@ trials:
     sample: NA
     group: control
     monotonic: true
-    joint:
+    joint: paste
     comment: ""
 
   - date: "2021-03-25"
@@ -41,7 +41,7 @@ trials:
     sample: NA
     group: control
     monotonic: true
-    joint:
+    joint: paste
     comment: ""
 
   - date: "2021-03-29"
@@ -50,7 +50,7 @@ trials:
     sample: NA
     group: control
     monotonic: true
-    joint:
+    joint: paste
     comment: ""
 
   - date: "2021-04-15"
@@ -59,7 +59,7 @@ trials:
     sample: NA
     group: control
     monotonic: true
-    joint:
+    joint: paste
     comment: ""
 
   - date: "2021-04-28"
@@ -68,8 +68,8 @@ trials:
     sample: NA
     group: control
     monotonic: true
-    joint:
-    comment: ""
+    joint: paste
+    comment: A4-1
 
   - date: "2021-04-29"
     rod: W
@@ -77,8 +77,8 @@ trials:
     sample: NA
     group: control
     monotonic: true
-    joint:
-    comment: ""
+    joint: paste
+    comment: A4-2
 
   - date: "2021-04-30"
     rod: W
@@ -86,25 +86,25 @@ trials:
     sample: NA
     group: control
     monotonic: true
-    joint:
-    comment: ""
+    joint: paste
+    comment: A4-3
 
   - date: "2021-05-11"
-    rod:
-    coupon:
-    sample:
-    group:
+    rod: W
+    coupon: A4
+    sample: NA
+    group: control
     monotonic: false
-    joint:
+    joint: paste
     comment: PID Failsafe and TC Failure
 
   - date: "2021-05-24"
-    rod:
-    coupon:
-    sample:
-    group:
+    rod: W
+    coupon: A4
+    sample: NA
+    group: control
     monotonic: false
-    joint:
+    joint: paste
     comment: Thermocouple ground loop proven
 
   - date: "2021-06-16"
@@ -113,8 +113,8 @@ trials:
     sample: NA
     group: control
     monotonic: true
-    joint:
-    comment: ""
+    joint: paste
+    comment: A4-4. See "21.09.03 Progress.pptx".
 
   - date: "2021-06-17"
     rod: W
@@ -122,8 +122,8 @@ trials:
     sample: NA
     group: control
     monotonic: true
-    joint:
-    comment: ""
+    joint: paste
+    comment: A4-5. See "21.09.03 Progress.pptx".
 
   - date: "2021-06-21"
     rod: W
@@ -131,25 +131,25 @@ trials:
     sample: NA
     group: control
     monotonic: true
-    joint:
-    comment: ""
+    joint: paste
+    comment: A4-6
 
   - date: "2021-06-22"
-    rod:
-    coupon:
-    sample:
-    group:
+    rod: W
+    coupon: A4
+    sample: NA
+    group: control
     monotonic: false
-    joint:
+    joint: paste
     comment: Second day water intrusion
 
   - date: "2021-08-30"
-    rod:
-    coupon:
-    sample:
-    group:
+    rod: W
+    coupon: A4
+    sample: NA
+    group: control
     monotonic: false
-    joint:
+    joint: paste
     comment: Poorly-wrapped sample
 
   - date: "2021-08-31"
@@ -158,8 +158,8 @@ trials:
     sample: NA
     group: control
     monotonic: true
-    joint:
-    comment: ""
+    joint: paste
+    comment: A4-7
 
   - date: "2021-09-01"
     rod: W
@@ -167,17 +167,17 @@ trials:
     sample: NA
     group: control
     monotonic: false
-    joint:
-    comment: No T5
+    joint: paste
+    comment: A4-8. No T5
 
   - date: "2021-09-13"
-    rod:
-    coupon:
-    sample:
-    group:
+    rod: W
+    coupon: A4
+    sample: NA
+    group: control
     monotonic: false
-    joint:
-    comment: Untaped sample
+    joint: paste
+    comment: Untaped sample. Thermocouple installation trouble. Looks pretty bad.
 
   - date: "2021-09-14"
     rod: W
@@ -185,8 +185,8 @@ trials:
     sample: NA
     group: control
     monotonic: false
-    joint:
-    comment: No T5
+    joint: paste
+    comment: A4-9. No T5
 
   - date: "2021-09-15"
     rod: W
@@ -194,8 +194,8 @@ trials:
     sample: NA
     group: control
     monotonic: false
-    joint:
-    comment: No T5
+    joint: paste
+    comment: A4-10. No T5. A4-10.
 
   - date: "2021-09-16"
     rod: W
@@ -203,8 +203,8 @@ trials:
     sample: NA
     group: control
     monotonic: false
-    joint:
-    comment: No T5
+    joint: paste
+    comment: No T5. A4-11.
 
   - date: "2021-09-29"
     rod: W
@@ -212,8 +212,8 @@ trials:
     sample: NA
     group: control
     monotonic: true
-    joint:
-    comment: ""
+    joint: epoxy
+    comment: Silver epoxy. Separated during this trial.  Need to cure at higher temp. See <https://trello.com/c/mlVNKOQm/28-bond-sample-a4-to-post-0>. A4-12.
 
   - date: "2021-10-12"
     rod: W
@@ -222,7 +222,7 @@ trials:
     group: control
     monotonic: true
     joint: epoxy
-    comment: ""
+    comment: First run with silver epoxy cured at higher temperature. Vertical anomaly. See "21.10.15 Progress.pptx". See <https://trello.com/c/L6AmQDJR/26-bond-sample-a4-to-warped-post>. A4-13
 
   - date: "2021-10-13"
     rod: W
@@ -230,26 +230,26 @@ trials:
     sample: NA
     group: control
     monotonic: true
-    joint:
-    comment: ""
+    joint: epoxy
+    comment: Second run with silver epoxy cured at higher temperature. See "21.10.15 Progress.pptx". A4-14. Broke clean off after trial, see <https://trello.com/c/8w9swkNl/19-run-experiment-a4>
 
   - date: "2021-12-09"
-    rod: Y
+    rod: "Y"
     coupon: A7
     sample: NA
     group: control
     monotonic: true
-    joint:
-    comment: ""
+    joint: epoxy
+    comment: See "22.01.07 Progress.pptx". Epoxy stays intact?
 
   - date: "2022-01-06"
-    rod: Y
+    rod: "Y"
     coupon: A7
     sample: NA
     group: control
     monotonic: true
-    joint:
-    comment: ""
+    joint: epoxy
+    comment: Duralco 132-1. See "22.01.07 Progress.pptx". Still, there's a minor vertical jump.
 
   - date: "2022-01-19"
     rod: X
@@ -257,32 +257,32 @@ trials:
     sample: B3
     group: porous
     monotonic: true
-    joint:
-    comment: ""
+    joint: epoxy
+    comment: Copper X-A6-B3-1. Duralco 132-1. Epoxy failed during this trial?
 
   - date: "2022-01-20"
-    rod:
-    coupon:
-    sample:
-    group:
+    rod: X
+    coupon: A6
+    sample: B3
+    group: porous
     monotonic: false
-    joint:
-    comment: Copper X-A6-B3-2
+    joint: epoxy
+    comment: Copper X-A6-B3-2. Duralco 132-1. See "22.01 Report.docx". Epoxy intact based on observation in <https://trello.com/c/qH01qs50/43-run-experiment-x-a6-b3>. Detached B3 after this trial.
 
   - date: "2022-03-29"
-    rod:
-    coupon:
-    sample:
-    group:
+    rod: X
+    coupon: A6
+    sample: NA
+    group: control
     monotonic: false
-    joint:
-    comment: Copper X-A6-fail2
+    joint: solder
+    comment: Copper X-A6-fail2. fail1 has no data, see "Other". First trial with data since detaching B3 and making X-A6 a solder joint.
 
   - date: "2022-04-08"
-    rod:
-    coupon:
-    sample:
-    group:
+    rod: X
+    coupon: A9
+    sample: NA
+    group: control
     monotonic: false
-    joint:
+    joint: solder
     comment: Copper X-A9-newcam

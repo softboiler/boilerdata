@@ -12,3 +12,4 @@ fit:
     - 0.06740144
     - 0.02358136
   do_plot: false
+# Introduce post dimensions to be referenced in `trials.yaml`. For "No T5" modified post W, use different post definition for that. Mapping assumes T1 and up associated with post dimensions. Need sample lengths as well, then a position calculator.

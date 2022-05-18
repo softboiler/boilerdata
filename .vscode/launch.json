@@ -15,6 +15,13 @@
       "type": "python",
       "request": "launch",
       "program": "project/update_schema.py"
+    },
+    {
+      "name": "PowerShell: Current File",
+      "type": "PowerShell",
+      "request": "launch",
+      "script": "${file}",
+      "cwd": "${file}"
     }
   ]
 }
