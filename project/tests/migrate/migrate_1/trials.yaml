@@ -1,0 +1,73 @@
+trials:
+  - date: "2020-03-12"
+    rod: W
+    coupon: A1
+    sample: NA
+    group: control
+    monotonic: true
+    joint: ""
+    comment: ""
+  - date: "2021-05-11"
+    rod: ""
+    coupon: ""
+    sample: ""
+    group: ""
+    monotonic: false
+    joint: ""
+    comment: PID Failsafe and TC Failure
+  - date: "2021-05-24"
+    rod: ""
+    coupon: ""
+    sample: ""
+    group: ""
+    monotonic: false
+    joint: ""
+    comment: Thermocouple ground loop proven
+  - date: "2021-06-22"
+    rod: ""
+    coupon: ""
+    sample: ""
+    group: ""
+    monotonic: false
+    joint: ""
+    comment: Second day water intrusion
+  - date: "2021-09-29"
+    rod: W
+    coupon: A4
+    sample: NA
+    group: control
+    monotonic: true
+    joint: ""
+    comment: ""
+  - date: "2022-01-06"
+    rod: Y
+    coupon: A7
+    sample: NA
+    group: control
+    monotonic: true
+    joint: ""
+    comment: ""
+  - date: "2022-01-20"
+    rod: ""
+    coupon: ""
+    sample: ""
+    group: ""
+    monotonic: false
+    joint: ""
+    comment: Copper X-A6-B3-2
+  - date: "2022-03-29"
+    rod: ""
+    coupon: ""
+    sample: ""
+    group: ""
+    monotonic: false
+    joint: ""
+    comment: Copper X-A6-fail2
+  - date: "2022-04-08"
+    rod: ""
+    coupon: ""
+    sample: ""
+    group: ""
+    monotonic: false
+    joint: ""
+    comment: Copper X-A9-newcam
