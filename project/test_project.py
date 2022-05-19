@@ -22,7 +22,10 @@ def test_run(tmp_path):
     """Ensure the same result is coming out of the pipeline as before."""
 
     old_commit = "ddb93d9463f116187cf8b57d914c2afef48c7313"
-    old_results_file = f"results_{old_commit}.csv"
+    try:
+        old_file = next((PROJECT.results / "Old").glob(f"results_*_{old_commit}.csv"))
+    except StopIteration as exception:
+        raise StopIteration("Old results file is missing.") from exception
 
     for csv in PROJECT.trials.glob(f"**/{PROJECT.directory_per_trial}/**/*.csv"):
         dst = tmp_path / csv.relative_to(PROJECT.base)
@@ -38,6 +41,6 @@ def test_run(tmp_path):
     )
     main(new_project)
 
-    old = pd.read_csv(PROJECT.results / old_results_file)
+    old = pd.read_csv(old_file)
     new = pd.read_csv(new_project.results_file, usecols=old.columns)
     assert_frame_equal(old, new)

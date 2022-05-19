@@ -50,20 +50,21 @@ class Project(BaseModel, extra=Extra.forbid):
     )
     fit: Fit
 
-    @validator("trials", pre=True)
+    @validator("trials", pre=True)  # "pre" because dir must exist pre-validation
     def validate_trials(cls, trials, values):
         return values["base"] / Path(trials)
 
-    @validator("results", pre=True)
+    @validator("results", pre=True)  # "pre" because dir must exist pre-validation
     def validate_results(cls, results, values):
         results = values["base"] / Path(results)
         results.mkdir(parents=True, exist_ok=True)
         return results
 
-    @validator("results_file")
-    def validate_results_file(cls, results_file):
+    @validator("results_file", always=True)  # "always" so it'll run even if not in YAML
+    def validate_results_file(cls, results_file, values):
         if results_file.suffix != ".csv":
             raise ValueError("The supplied results filename is not a CSV.")
+        return values["results"] / results_file
 
 
 # * -------------------------------------------------------------------------------- * #
