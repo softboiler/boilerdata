@@ -70,8 +70,8 @@ def test_load_config_raises_value_error(tmp_path):
 @m.parametrize(
     "test_id, model, match",
     [
-        ("missing_key", USER_MODEL_MISSING_KEY_YAML, "validation error"),
-        ("contains_null", USER_MODEL_CONTAINS_NULL_YAML, "may be undefined"),
+        ("contains_null", USER_MODEL_CONTAINS_NULL_YAML, "none is not an allowed"),
+        ("missing_key", USER_MODEL_MISSING_KEY_YAML, "may be undefined"),
     ],
 )
 def test_load_config_raises_validation(test_id, model, match, tmp_path):

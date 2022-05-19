@@ -18,7 +18,7 @@ PROJECT = load_config("project/config/project.yaml", Project)
 TRIALS = load_config("project/config/trials.yaml", Trials)
 
 
-def run(project: Project = PROJECT, trials: Trials = TRIALS):
+def main(project: Project = PROJECT, trials: Trials = TRIALS):
     dfs: list[pd.DataFrame] = []
     for trial in trials.trials:
         if trial.monotonic:
@@ -216,4 +216,4 @@ def get_units(label: str) -> str:
 
 
 if __name__ == "__main__":
-    run()
+    main()

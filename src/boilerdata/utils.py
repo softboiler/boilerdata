@@ -3,7 +3,7 @@
 from os import PathLike
 from pathlib import Path
 
-from pydantic import BaseModel, NoneIsNotAllowedError, ValidationError
+from pydantic import BaseModel, MissingError, ValidationError
 import yaml
 
 StrPath = str | PathLike[str]
@@ -98,11 +98,11 @@ def load_config(path: StrPath, model):
         raise ValueError("The configuration file is empty.")
 
     try:
-        config = model(**{key: raw_config.get(key) for key in model.__fields__.keys()})
+        config = model(**{key: raw_config.get(key) for key in raw_config.keys()})
     except ValidationError as exception:
         addendum = "\n  The field may be undefined in the configuration file."
         for error in exception.errors():
-            if NoneIsNotAllowedError.code in error["type"]:
+            if error["msg"] == MissingError.msg_template:
                 error["msg"] += addendum
         raise exception
     return config
