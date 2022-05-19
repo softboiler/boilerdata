@@ -15,6 +15,19 @@
       "format": "directory-path",
       "type": "string"
     },
+    "results": {
+      "title": "Results",
+      "description": "The directory in which the results will go. Must be relative to the base directory. Will be created if it is missing.",
+      "format": "directory-path",
+      "type": "string"
+    },
+    "results_file": {
+      "title": "Results File",
+      "description": "The name of the results file. Will go in the results directory. Default: results.csv",
+      "default": "results.csv",
+      "type": "string",
+      "format": "path"
+    },
     "directory_per_trial": {
       "title": "Directory Per Trial",
       "description": "The directory in which the data are for a given trial. Must be relative to a trial folder, and all trials must share this pattern.",
@@ -28,6 +41,7 @@
   "required": [
     "base",
     "trials",
+    "results",
     "directory_per_trial",
     "fit"
   ],

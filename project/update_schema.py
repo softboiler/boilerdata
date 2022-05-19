@@ -2,10 +2,8 @@
 
 import re
 
-from models.project import Project
-from models.trials import Trials
-
 from boilerdata.utils import write_schema
+from models import Project, Trials
 
 models = [Project, Trials]
 

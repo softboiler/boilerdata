@@ -27,7 +27,7 @@ def run(project: Project = PROJECT, trials: Trials = TRIALS):
             )
             dfs.append(df)
     df = pd.concat(dfs)
-    df.to_csv(project.base / "results.csv", index_label="Run")
+    df.to_csv(project.results_file, index_label="Run")
 
 
 def run_one(path: Path, fit_params: Fit) -> pd.DataFrame:

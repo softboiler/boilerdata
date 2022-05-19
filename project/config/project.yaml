@@ -1,6 +1,6 @@
 base: "G:/My Drive/Blake/School/Grad/Projects/18.09 Nucleate Pool Boiling/Data"
-
 trials: "Boiling Curves"
+results: "Results"
 
 directory_per_trial: "data"
 
