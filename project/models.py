@@ -103,6 +103,10 @@ class Trial(BaseModel, extra=Extra.forbid):
     joint: Joint
     comment: str
 
+    def get_path(self, project: Project) -> Path:
+        """Get the path to the data for this trial."""
+        return project.trials / self.date.isoformat() / project.directory_per_trial
+
 
 class Trials(BaseModel):
     """The trials."""

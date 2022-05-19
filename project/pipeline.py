@@ -13,18 +13,18 @@ from scipy.stats import linregress
 from boilerdata.utils import load_config
 from models import Fit, Project, Trials
 
+PROJECT = load_config("project/config/project.yaml", Project)
+TRIALS = load_config("project/config/trials.yaml", Trials)
 
-def run():
-    config = load_config("project/config/project.yaml", Project)
-    trials = load_config("project/config/trials.yaml", Trials)
+
+def run(project: Project = PROJECT, trials: Trials = TRIALS):
     dfs: list[pd.DataFrame] = []
     for trial in trials.trials:
         if trial.monotonic:
-            path = config.trials / trial.date.isoformat() / config.directory_per_trial
-            df = run_one(config.base, path, config.fit)
+            df = run_one(project.base, trial.get_path(project), project.fit)
             dfs.append(df)
     df = pd.concat(dfs)
-    df.to_csv(config.base / "results.csv", index_label="Run")
+    df.to_csv(project.base / "results.csv", index_label="Run")
 
 
 def run_one(base: Path, path: Path, fit_params: Fit) -> pd.DataFrame:
