@@ -2,7 +2,7 @@ base: "G:/My Drive/Blake/School/Grad/Projects/18.09 Nucleate Pool Boiling/Data"
 
 trials: "Boiling Curves"
 
-data_directory_per_trial: "data"
+directory_per_trial: "data"
 
 fit:
   thermocouple_pos:

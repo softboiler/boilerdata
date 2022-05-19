@@ -26,7 +26,7 @@ class Project(BaseModel, extra=Extra.forbid):
         ...,
         description="The directory in which the individual trials are. Must be relative to the base directory.",
     )
-    data_directory_per_trial: Path = Field(
+    directory_per_trial: Path = Field(
         ...,
         description="The directory in which the data are for a given trial. Must be relative to a trial folder, and all trials must share this pattern.",
     )

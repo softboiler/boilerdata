@@ -15,8 +15,8 @@
       "format": "directory-path",
       "type": "string"
     },
-    "data_directory_per_trial": {
-      "title": "Data Directory Per Trial",
+    "directory_per_trial": {
+      "title": "Directory Per Trial",
       "description": "The directory in which the data are for a given trial. Must be relative to a trial folder, and all trials must share this pattern.",
       "type": "string",
       "format": "path"
@@ -28,7 +28,7 @@
   "required": [
     "base",
     "trials",
-    "data_directory_per_trial",
+    "directory_per_trial",
     "fit"
   ],
   "additionalProperties": false,

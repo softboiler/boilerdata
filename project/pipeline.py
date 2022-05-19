@@ -7,35 +7,12 @@ import numpy as np
 import pandas as pd
 from propshop import get_prop
 from propshop.library import Mat, Prop
-from pydantic import BaseModel
 from scipy.constants import convert_temperature
 from scipy.stats import linregress
 
 from boilerdata.utils import load_config
 from models.project import Fit, Project
-
-
-class Trial(BaseModel):
-    """Configuration for a single trial after Migration 1.
-
-    This configuration is less strict because we aren't informing their values from
-    specified Enums.
-    """
-
-    date: str
-    rod: str
-    coupon: str
-    sample: str
-    group: str
-    monotonic: bool
-    joint: str
-    comment: str
-
-
-class Trials(BaseModel):
-    """Top-level configuration for a list of trials after Migration 1."""
-
-    trials: list[Trial]
+from models.trials import Trials
 
 
 def run():
@@ -44,7 +21,7 @@ def run():
     dfs: list[pd.DataFrame] = []
     for trial in trials.trials:
         if trial.monotonic:
-            path = config.trials / trial.date / config.data_directory_per_trial
+            path = config.trials / trial.date.isoformat() / config.directory_per_trial
             df = run_one(config.base, path, config.fit)
             dfs.append(df)
     df = pd.concat(dfs)
