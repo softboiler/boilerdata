@@ -1,5 +1,6 @@
 """Pipeline functions."""
 
+import json
 from pathlib import Path
 
 from numpy import typing as npt
@@ -21,13 +22,15 @@ def run(project: Project = PROJECT, trials: Trials = TRIALS):
     dfs: list[pd.DataFrame] = []
     for trial in trials.trials:
         if trial.monotonic:
-            df = run_one(project.base, trial.get_path(project), project.fit)
+            df = run_one(trial.get_path(project), project.fit).assign(
+                **json.loads(trial.json())
+            )
             dfs.append(df)
     df = pd.concat(dfs)
     df.to_csv(project.base / "results.csv", index_label="Run")
 
 
-def run_one(base: Path, path: Path, fit_params: Fit) -> pd.DataFrame:
+def run_one(path: Path, fit_params: Fit) -> pd.DataFrame:
 
     points_to_average = 60
     files: list[Path] = sorted(path.glob("*.csv"))
