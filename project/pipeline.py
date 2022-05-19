@@ -152,17 +152,17 @@ def fit(
         df.apply(plot, axis="columns")
         plt.show()
 
-    # Move units out of column labels and into a row just below the column labels
-    labels = (get_label(label) for label in df.columns)
-    units = (get_units(label) for label in df.columns)
-    columns_mapping = {old: new for old, new in zip(df.columns, labels)}
-    units_row = pd.DataFrame(
-        {
-            label: pd.Series(unit, index=["Units"])
-            for label, unit in zip(df.columns, units)
-        }
-    )
-    df = pd.concat([units_row, df]).rename(columns=columns_mapping)
+    # # Move units out of column labels and into a row just below the column labels
+    # labels = (get_label(label) for label in df.columns)
+    # units = (get_units(label) for label in df.columns)
+    # columns_mapping = {old: new for old, new in zip(df.columns, labels)}
+    # units_row = pd.DataFrame(
+    #     {
+    #         label: pd.Series(unit, index=["Units"])
+    #         for label, unit in zip(df.columns, units)
+    #     }
+    # )
+    # df = pd.concat([units_row, df]).rename(columns=columns_mapping)
 
     return df
 
