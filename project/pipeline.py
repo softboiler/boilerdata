@@ -11,8 +11,7 @@ from scipy.constants import convert_temperature
 from scipy.stats import linregress
 
 from boilerdata.utils import load_config
-from models.project import Fit, Project
-from models.trials import Trials
+from models import Fit, Project, Trials
 
 
 def run():
