@@ -14,11 +14,14 @@ from scipy.stats import linregress
 from boilerdata.utils import load_config
 from models import Fit, Project, Trials
 
-PROJECT = load_config("project/config/project.yaml", Project)
-TRIALS = load_config("project/config/trials.yaml", Trials)
+
+def get_defaults():
+    project = load_config("project/config/project.yaml", Project)
+    trials = load_config("project/config/trials.yaml", Trials)
+    return project, trials
 
 
-def main(project: Project = PROJECT, trials: Trials = TRIALS):
+def main(project: Project, trials: Trials):
     dfs: list[pd.DataFrame] = []
     for trial in trials.trials:
         if trial.monotonic:
@@ -216,4 +219,4 @@ def get_units(label: str) -> str:
 
 
 if __name__ == "__main__":
-    main()
+    main(*get_defaults())
