@@ -1,64 +1,64 @@
 columns:
   V:
-    units: V
+    units: "V"
   I:
-    units: A
+    units: "A"
   T0:
-    units: C
+    units: "C"
   T1:
-    units: C
+    units: "C"
   T2:
-    units: C
+    units: "C"
   T3:
-    units: C
+    units: "C"
   T4:
-    units: C
+    units: "C"
   T5:
-    units: C
+    units: "C"
   Tw1:
-    units: C
+    units: "C"
   Tw2:
-    units: C
+    units: "C"
   Tw3:
-    units: C
+    units: "C"
   P:
-    units: V
+    units: "V"
   T0cal:
-    units: C
+    units: "C"
   T1cal:
-    units: C
+    units: "C"
   T2cal:
-    units: C
+    units: "C"
   T3cal:
-    units: C
+    units: "C"
   T4cal:
-    units: C
+    units: "C"
   T5cal:
-    units: C
+    units: "C"
   Tw1cal:
-    units: C
+    units: "C"
   Tw2cal:
-    units: C
+    units: "C"
   Tw3cal:
-    units: C
+    units: "C"
   Pcal:
-    units: psi
+    units: "psi"
   Q01:
-    units: W
+    units: "W"
   Q12:
-    units: W
+    units: "W"
   Q23:
-    units: W
+    units: "W"
   Q34:
-    units: W
+    units: "W"
   Q45:
-    units: W
+    units: "W"
   T6ext:
-    units: C
+    units: "C"
   dT_dx:
-    units: K/m
+    units: "K/m"
   TLfit:
-    units: C
+    units: "C"
   rvalue:
     units: ""
   pvalue:
@@ -68,25 +68,25 @@ columns:
   intercept_stderr:
     units: ""
   dT_dx_err:
-    units: K/m
+    units: "K/m"
   k:
-    units: W/m-K
+    units: "W/m-K"
   q:
-    units: W/m^2
+    units: "W/cm^2"
+    originlab_column_designation: "Y"
   q_err:
-    units: W/m^2
+    units: "W/cm^2"
+    originlab_column_designation: "E"
   Q:
-    units: W
+    units: "W"
   DT:
     pretty_name: ∆T
-    units: K
+    units: "K"
+    originlab_column_designation: "X"
   DT_err:
     pretty_name: ∆T_err
-    units: K
-  q_dupe:
-    units: W/cm^2
-  q_err_dupe:
-    units: W/cm^2
+    units: "K"
+    originlab_column_designation: "M"
   date:
     units: ""
   rod:

@@ -1,6 +1,6 @@
 {
   "title": "Columns",
-  "description": "Configuration for a column after Migration 3.",
+  "description": "Columns in the dataframe.",
   "type": "object",
   "properties": {
     "columns": {
@@ -17,7 +17,7 @@
   "definitions": {
     "Column": {
       "title": "Column",
-      "description": "Configuration for a column after Migration 3.",
+      "description": "Metadata for a column in the dataframe.",
       "type": "object",
       "properties": {
         "pretty_name": {
@@ -28,6 +28,11 @@
         "units": {
           "title": "Units",
           "description": "The units for this column's values.",
+          "type": "string"
+        },
+        "originlab_column_designation": {
+          "title": "Originlab Column Designation",
+          "description": "The column designation for plotting in OriginLab.",
           "type": "string"
         }
       },

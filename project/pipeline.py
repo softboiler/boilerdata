@@ -2,6 +2,7 @@
 
 import json
 from pathlib import Path
+import re
 
 from numpy import typing as npt
 import numpy as np
@@ -29,9 +30,24 @@ def main(project: Project, trials: Trials):
                 **json.loads(trial.json())
             )
             dfs.append(df)
-    pd.concat(dfs).pipe(set_units_row).pipe(prettify).to_csv(
-        project.results_file, index_label="Run"
+    pd.concat(dfs).pipe(set_units_row).pipe(transform_units_for_originlab).pipe(
+        prettify
+    ).to_csv(project.results_file, index_label="Run")
+
+
+def run_one(path: Path, fit_params: Fit) -> pd.DataFrame:
+
+    points_to_average = 60
+    files: list[Path] = sorted(path.glob("*.csv"))
+    run_names: list[str] = [file.stem for file in files]
+    runs_full: list[pd.DataFrame] = [pd.read_csv(file, index_col=0) for file in files]
+    runs_steady_state: list[pd.Series] = [
+        df.iloc[-points_to_average:, :].mean() for df in runs_full
+    ]
+    df: pd.DataFrame = pd.DataFrame(runs_steady_state, index=run_names).pipe(
+        fit, **fit_params.dict(), points_averaged=points_to_average
     )
+    return df
 
 
 def set_units_row(df: pd.DataFrame) -> pd.DataFrame:
@@ -58,18 +74,9 @@ def prettify(df: pd.DataFrame) -> pd.DataFrame:
     )
 
 
-def run_one(path: Path, fit_params: Fit) -> pd.DataFrame:
-
-    points_to_average = 60
-    files: list[Path] = sorted(path.glob("*.csv"))
-    run_names: list[str] = [file.stem for file in files]
-    runs_full: list[pd.DataFrame] = [pd.read_csv(file, index_col=0) for file in files]
-    runs_steady_state: list[pd.Series] = [
-        df.iloc[-points_to_average:, :].mean() for df in runs_full
-    ]
-    df: pd.DataFrame = pd.DataFrame(runs_steady_state, index=run_names).pipe(
-        fit, **fit_params.dict(), points_averaged=points_to_average
-    )
+def transform_units_for_originlab(df: pd.DataFrame) -> pd.DataFrame:
+    units = df.loc["Units", :].replace(re.compile(r"\^"), r"\+")
+    df.loc["Units", :] = units
     return df
 
 
@@ -95,8 +102,8 @@ def fit(
     extrap_surf_temp = "TLfit (C)"
     slope_err = "dT/dx_err (K/m)"  # total magnitude of the error bar for slope
     k = "k (W/m-K)"  # thermal conductivity
-    q = "q (W/m^2)"  # heat flux
-    q_err = "q_err (W/m^2)"  # total magnitude of the error bar for heat flux
+    q = "q (W/cm^2)"  # heat flux
+    q_err = "q_err (W/cm^2)"  # total magnitude of the error bar for heat flux
     inter_err = "∆T_err (K)"  # total magnitude of the error bar for slope
     temps_to_regress = ["T1cal (C)", "T2cal (C)", "T3cal (C)", "T4cal (C)", "T5cal (C)"]
     water_temps = ["Tw1cal (C)", "Tw2cal (C)", "Tw3cal (C)"]
@@ -132,15 +139,13 @@ def fit(
                 convert_temperature(temperature_cols.mean(axis="columns"), "C", "K"),
             ),
             q: lambda df: df[k] * df[slope],  # no negative due to reversed x-coordinate
-            q_err: lambda df: (df[k] * df[slope_err]).abs(),
-            "Q (W)": lambda df: df[q] * cross_sectional_area,
+            q_err: lambda df: (df[k] * df[slope_err]).abs() / cm2_p_m2,
+            "Q (W)": lambda df: df[q] * cross_sectional_area / cm2_p_m2,
             # "∆T (K)": lambda df: (
             #     df[extrap_surf_temp] - water_temp_cols.mean(axis="columns")
             # ),
             "∆T (K)": lambda df: (df[extrap_surf_temp] - water_temp_cols.mean().mean()),
             inter_err: lambda df: (4 * df["intercept_stderr"]).abs(),
-            "q (W/cm^2)": lambda df: df[q] / cm2_p_m2,
-            "q_err (W/cm^2)": lambda df: df[q_err] / cm2_p_m2,
         }
     )
 

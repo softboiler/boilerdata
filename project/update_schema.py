@@ -3,9 +3,9 @@
 import re
 
 from boilerdata.utils import write_schema
-from models import Project, Trials
+from models import Columns, Project, Trials
 
-models = [Project, Trials]
+models = [Project, Trials, Columns]
 
 
 def main():

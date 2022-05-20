@@ -47,8 +47,6 @@ class Columns(GetNameEnum):
     Q = auto()
     DT = auto()
     DT_err = auto()
-    q_dupe = auto()
-    q_err_dupe = auto()
     date = auto()
     rod = auto()
     coupon = auto()

@@ -1,6 +1,7 @@
 from datetime import date
 from enum import auto
 from pathlib import Path
+from typing import Optional
 
 import numpy as np
 from pydantic import BaseModel, DirectoryPath, Extra, Field, validator
@@ -147,7 +148,7 @@ class Trials(BaseModel):
 class Column(BaseModel):
     """Metadata for a column in the dataframe."""
 
-    pretty_name: str = Field(
+    pretty_name: Optional[str] = Field(
         default=None,
         description="The column name.",
     )
@@ -155,9 +156,23 @@ class Column(BaseModel):
         default=...,
         description="The units for this column's values.",
     )
+    originlab_column_designation: str = Field(
+        default=None,
+        description="The column designation for plotting in OriginLab.",
+    )
+
+    # "always" so it'll run even if not in YAML
+    @validator("originlab_column_designation", pre=True, always=True)
+    def _(cls, v):
+        return v or "N"
 
 
 class Columns(BaseModel):
     """Columns in the dataframe."""
 
     columns: dict[str, Column]
+
+    def generate_originlab_column_designation_string(self) -> str:
+        return "".join(
+            [column.originlab_column_designation for column in self.columns.values()]
+        )
