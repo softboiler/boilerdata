@@ -1,8 +1,15 @@
+from os import getenv
 from pathlib import Path
+from shutil import copy
 
+import pandas as pd
+from pandas.testing import assert_frame_equal
+from pytest import mark as m
 import yaml
 
 from migrate import migrate_1
+from models import Project
+from pipeline import get_defaults, main
 
 
 def test_migrate_1(tmp_path):
@@ -13,25 +20,31 @@ def test_migrate_1(tmp_path):
     assert result == expected
 
 
-# DATA = Path("tests/data")
-# RESULT = Path("fitted.csv")
+@m.skipif(bool(getenv("CI")), reason="Skip on CI.")
+def test_run(tmp_path):
+    """Ensure the same result is coming out of the pipeline as before."""
 
-# @contextmanager
-# def working_directory(path: Path):
-#     original_working_directory = getcwd()
-#     try:
-#         chdir(path)
-#         yield
-#     finally:
-#         chdir(original_working_directory)
+    project, trials = get_defaults()
+    old_commit = "ddb93d9463f116187cf8b57d914c2afef48c7313"
+    try:
+        old_file = next((project.results / "Old").glob(f"results_*_{old_commit}.csv"))
+    except StopIteration as exception:
+        raise StopIteration("Old results file is missing.") from exception
 
-# @m.skip
-# def test_run(tmp_path):
-#     """Ensure the same result is coming out of the pipeline as before."""
-#     test_data = tmp_path / "data"
-#     copytree(DATA, test_data)
-#     with working_directory(test_data):
-#         pipeline.run()
-#     result = pd.read_csv(test_data / RESULT)
-#     expected = pd.read_csv(DATA / RESULT)
-#     pd.testing.assert_frame_equal(result, expected)
+    for csv in project.trials.glob(f"**/{project.directory_per_trial}/**/*.csv"):
+        dst = tmp_path / csv.relative_to(project.base)
+        dst.parent.mkdir(parents=True, exist_ok=True)
+        copy(csv, dst)
+
+    new_project = Project(
+        base=tmp_path,
+        trials=tmp_path / (project.trials.relative_to(project.base)),
+        results=tmp_path / (project.results.relative_to(project.base)),
+        directory_per_trial=project.directory_per_trial,
+        fit=project.fit,
+    )
+    main(new_project, trials)
+
+    old = pd.read_csv(old_file)
+    new = pd.read_csv(new_project.results_file, usecols=old.columns)
+    assert_frame_equal(old, new)

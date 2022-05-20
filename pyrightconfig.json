@@ -1,7 +1,7 @@
 {
   "ignore": [".tools"],
   "include": ["src"],
-  "extraPaths": ["project", "tests", "examples"],
+  "extraPaths": ["project", "tests"],
   "typeCheckingMode": "strict",
   "reportMissingParameterType": "none",
   "reportMissingTypeStubs": "none",

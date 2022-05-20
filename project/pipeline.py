@@ -1,5 +1,6 @@
 """Pipeline functions."""
 
+import json
 from pathlib import Path
 
 from numpy import typing as npt
@@ -7,51 +8,32 @@ import numpy as np
 import pandas as pd
 from propshop import get_prop
 from propshop.library import Mat, Prop
-from pydantic import BaseModel
 from scipy.constants import convert_temperature
 from scipy.stats import linregress
 
 from boilerdata.utils import load_config
-from models.project import Fit, Project
+from models import Fit, Project, Trials
 
 
-class Trial(BaseModel):
-    """Configuration for a single trial after Migration 1.
-
-    This configuration is less strict because we aren't informing their values from
-    specified Enums.
-    """
-
-    date: str
-    rod: str
-    coupon: str
-    sample: str
-    group: str
-    monotonic: bool
-    joint: str
-    comment: str
-
-
-class Trials(BaseModel):
-    """Top-level configuration for a list of trials after Migration 1."""
-
-    trials: list[Trial]
-
-
-def run():
-    config = load_config("project/config/project.yaml", Project)
+def get_defaults():
+    project = load_config("project/config/project.yaml", Project)
     trials = load_config("project/config/trials.yaml", Trials)
+    return project, trials
+
+
+def main(project: Project, trials: Trials):
     dfs: list[pd.DataFrame] = []
     for trial in trials.trials:
         if trial.monotonic:
-            path = config.trials / trial.date / config.data_directory_per_trial
-            df = run_one(config.base, path, config.fit)
+            df = run_one(trial.get_path(project), project.fit).assign(
+                **json.loads(trial.json())
+            )
             dfs.append(df)
     df = pd.concat(dfs)
-    df.to_csv(config.base / "results.csv", index_label="Run")
+    df.to_csv(project.results_file, index_label="Run")
 
 
-def run_one(base: Path, path: Path, fit_params: Fit) -> pd.DataFrame:
+def run_one(path: Path, fit_params: Fit) -> pd.DataFrame:
 
     points_to_average = 60
     files: list[Path] = sorted(path.glob("*.csv"))
@@ -176,17 +158,17 @@ def fit(
         df.apply(plot, axis="columns")
         plt.show()
 
-    # Move units out of column labels and into a row just below the column labels
-    labels = (get_label(label) for label in df.columns)
-    units = (get_units(label) for label in df.columns)
-    columns_mapping = {old: new for old, new in zip(df.columns, labels)}
-    units_row = pd.DataFrame(
-        {
-            label: pd.Series(unit, index=["Units"])
-            for label, unit in zip(df.columns, units)
-        }
-    )
-    df = pd.concat([units_row, df]).rename(columns=columns_mapping)
+    # # Move units out of column labels and into a row just below the column labels
+    # labels = (get_label(label) for label in df.columns)
+    # units = (get_units(label) for label in df.columns)
+    # columns_mapping = {old: new for old, new in zip(df.columns, labels)}
+    # units_row = pd.DataFrame(
+    #     {
+    #         label: pd.Series(unit, index=["Units"])
+    #         for label, unit in zip(df.columns, units)
+    #     }
+    # )
+    # df = pd.concat([units_row, df]).rename(columns=columns_mapping)
 
     return df
 
@@ -237,4 +219,4 @@ def get_units(label: str) -> str:
 
 
 if __name__ == "__main__":
-    run()
+    main(*get_defaults())
