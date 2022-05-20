@@ -44,6 +44,7 @@ def migrate_3(project: Project, columns_schema_path: StrPath, columns_path: StrP
         ]
         columns = Columns(columns={column.label: column for column in columns})
 
+        write_schema(columns_schema_path, Columns)
         dump_model(columns_path, columns)
 
     class Column(BaseModel):
@@ -62,8 +63,6 @@ def migrate_3(project: Project, columns_schema_path: StrPath, columns_path: StrP
         """Configuration for a column after Migration 3."""
 
         columns: dict[str, Column]
-
-    write_schema(columns_schema_path, Columns)
 
     main()
 
