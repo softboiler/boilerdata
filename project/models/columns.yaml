@@ -1,0 +1,154 @@
+columns:
+  V:
+    label: V
+    units: V
+  I:
+    label: I
+    units: A
+  T0:
+    label: T0
+    units: C
+  T1:
+    label: T1
+    units: C
+  T2:
+    label: T2
+    units: C
+  T3:
+    label: T3
+    units: C
+  T4:
+    label: T4
+    units: C
+  T5:
+    label: T5
+    units: C
+  Tw1:
+    label: Tw1
+    units: C
+  Tw2:
+    label: Tw2
+    units: C
+  Tw3:
+    label: Tw3
+    units: C
+  P:
+    label: P
+    units: V
+  T0cal:
+    label: T0cal
+    units: C
+  T1cal:
+    label: T1cal
+    units: C
+  T2cal:
+    label: T2cal
+    units: C
+  T3cal:
+    label: T3cal
+    units: C
+  T4cal:
+    label: T4cal
+    units: C
+  T5cal:
+    label: T5cal
+    units: C
+  Tw1cal:
+    label: Tw1cal
+    units: C
+  Tw2cal:
+    label: Tw2cal
+    units: C
+  Tw3cal:
+    label: Tw3cal
+    units: C
+  Pcal:
+    label: Pcal
+    units: psi
+  Q01:
+    label: Q01
+    units: W
+  Q12:
+    label: Q12
+    units: W
+  Q23:
+    label: Q23
+    units: W
+  Q34:
+    label: Q34
+    units: W
+  Q45:
+    label: Q45
+    units: W
+  T6ext:
+    label: T6ext
+    units: C
+  dT_dx:
+    label: dT_dx
+    units: K/m
+  TLfit:
+    label: TLfit
+    units: C
+  rvalue:
+    label: rvalue
+    units: ''
+  pvalue:
+    label: pvalue
+    units: ''
+  stderr:
+    label: stderr
+    units: ''
+  intercept_stderr:
+    label: intercept_stderr
+    units: ''
+  dT_dx_err:
+    label: dT_dx_err
+    units: K/m
+  k:
+    label: k
+    units: W/m-K
+  q:
+    label: q
+    units: W/m^2
+  q_err:
+    label: q_err
+    units: W/m^2
+  Q:
+    label: Q
+    units: W
+  DT:
+    label: DT
+    units: K
+  DT_err:
+    label: DT_err
+    units: K
+  q_dupe:
+    label: q_dupe
+    units: W/cm^2
+  q_err_dupe:
+    label: q_err_dupe
+    units: W/cm^2
+  date:
+    label: date
+    units: ''
+  rod:
+    label: rod
+    units: ''
+  coupon:
+    label: coupon
+    units: ''
+  sample:
+    label: sample
+    units: ''
+  group:
+    label: group
+    units: ''
+  monotonic:
+    label: monotonic
+    units: ''
+  joint:
+    label: joint
+    units: ''
+  comment:
+    label: comment
+    units: ''

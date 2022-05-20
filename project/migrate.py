@@ -7,16 +7,65 @@ from pathlib import Path
 from textwrap import dedent
 
 import pandas as pd
-from pydantic import BaseModel, DirectoryPath
+from pydantic import BaseModel, DirectoryPath, Field
 
-from boilerdata.utils import StrPath, dump_model, load_config
+from boilerdata.utils import StrPath, dump_model, load_config, write_schema
 from models import Project
-from pipeline import get_defaults, get_label, get_units
+from pipeline import get_defaults, get_units
 
 
 def main():
     project, _ = get_defaults()
-    migrate_2(project, Path("project/columns.py"))
+    migrate_3(project, "project/columns_schema.json", "project/columns.yaml")
+
+
+def migrate_3(project: Project, columns_schema_path: StrPath, columns_path: StrPath):
+    """Migration 3: Generate columns config.
+
+    Parameters
+    ----------
+    project: Project
+        The project model.
+    columns_schema_path: StrPath
+        The path to the columns schema.
+    columns_path: StrPath
+        The path to the columns configuration file.
+    """
+
+    def main():
+
+        df = pd.read_csv(project.results_file, index_col=0)
+        units = [get_units(label) for label in df.columns]
+
+        labels = dedupe_labels(df)
+
+        columns = [
+            Column(label=label, units=unit) for label, unit in zip(labels, units)
+        ]
+        columns = Columns(columns={column.label: column for column in columns})
+
+        dump_model(columns_path, columns)
+
+    class Column(BaseModel):
+        """Configuration for a column after Migration 3."""
+
+        label: str = Field(
+            default="...",
+            description="The column name.",
+        )
+        units: str = Field(
+            default="...",
+            description="The units for this column's values.",
+        )
+
+    class Columns(BaseModel):
+        """Configuration for a column after Migration 3."""
+
+        columns: dict[str, Column]
+
+    write_schema(columns_schema_path, Columns)
+
+    main()
 
 
 def migrate_2(project: Project, columns_path: Path):
@@ -33,23 +82,7 @@ def migrate_2(project: Project, columns_path: Path):
     def main():
 
         df = pd.read_csv(project.results_file, index_col=0)
-        labels = [get_label(label) for label in df.columns]
-        units = [get_units(label) for label in df.columns]
-
-        counter = Counter(labels).items()
-        dupes = []
-        for label, count in counter:
-            if count > 2:
-                raise NotImplementedError("Can't handle triplicates or higher.")
-            elif count > 1:
-                dupes.append(rindex(labels, label))
-
-        for index in dupes:
-            labels[index] += "_dupe"
-
-        columns = [
-            Column(label=label, units=unit) for label, unit in zip(labels, units)
-        ]
+        labels = dedupe_labels(df)
 
         text = dedent(
             """\
@@ -63,20 +96,9 @@ def migrate_2(project: Project, columns_path: Path):
             class Columns(GetNameEnum):
             """
         )
-        for column in columns:
-            label = column.label.replace("\u2206", "D").replace("/", "_")
+        for label in labels:
             text += f"    {label} = auto()\n"
         columns_path.write_text(text)
-
-    class Column(BaseModel):
-        """Configuration for a column after Migration 2."""
-
-        label: str
-        units: str
-
-    # https://stackoverflow.com/a/63834895
-    def rindex(lst, value):
-        return len(lst) - indexOf(reversed(lst), value) - 1
 
     main()
 
@@ -180,6 +202,37 @@ def migrate_1(project_path: StrPath, trials_path: StrPath):
         trials: list[Trial]
 
     main()
+
+
+# * -------------------------------------------------------------------------------- * #
+# * COMMON FUNCTIONS
+
+
+def dedupe_labels(df):
+    labels = [
+        label.split()[0].replace("\u2206", "D").replace("/", "_")
+        for label in df.columns
+    ]
+    counter = Counter(labels).items()
+    dupes = []
+    for label, count in counter:
+        if count > 2:
+            raise NotImplementedError("Can't handle triplicates or higher.")
+        elif count > 1:
+            dupes.append(rindex(labels, label))
+
+    for index in dupes:
+        labels[index] += "_dupe"
+    return labels
+
+
+# https://stackoverflow.com/a/63834895
+def rindex(lst, value):
+    return len(lst) - indexOf(reversed(lst), value) - 1
+
+
+# * -------------------------------------------------------------------------------- * #
+# * MAIN
 
 
 if __name__ == "__main__":

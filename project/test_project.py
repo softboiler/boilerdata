@@ -7,7 +7,7 @@ from pandas.testing import assert_frame_equal
 from pytest import mark as m
 import yaml
 
-from migrate import migrate_1, migrate_2
+from migrate import migrate_1, migrate_2, migrate_3
 from models import Project
 from pipeline import get_defaults, main
 
@@ -18,11 +18,25 @@ CI = "Skip on CI."
 # * MIGRATIONS
 
 
-def test_migrate_1(tmp_path):
-    base = Path("project/tests/migrate/migrate_1")
-    migrate_1(base / "project.yaml", tmp_path / "trials.yaml")
-    result = yaml.safe_load((tmp_path / "trials.yaml").read_text())
-    expected = yaml.safe_load(Path(base / "trials.yaml").read_text())
+@m.skipif(bool(getenv("CI")), reason=CI)
+def test_migrate_3(tmp_path):
+    old_commit = "b4ddee04a3d7aee2a81eaed68f3b016873f924d1"
+    project, _ = get_defaults()
+    project.results_file = get_old_file(old_commit)
+    migrate_3(
+        project,
+        schema_path := tmp_path / "columns_schema.json",
+        columns_path := tmp_path / "columns.yaml",
+    )
+
+    result = schema_path.read_text()
+    expected = Path("project/tests/migrate/migrate_3/columns_schema.json").read_text()
+    assert result == expected
+
+    result = yaml.safe_load(columns_path.read_text())
+    expected = yaml.safe_load(
+        Path("project/tests/migrate/migrate_3/columns.yaml").read_text()
+    )
     assert result == expected
 
 
@@ -34,6 +48,14 @@ def test_migrate_2(tmp_path):
     migrate_2(project, path := tmp_path / "columns.py")
     result = path.read_text()
     expected = Path("project/tests/migrate/migrate_2/columns.py").read_text()
+    assert result == expected
+
+
+def test_migrate_1(tmp_path):
+    base = Path("project/tests/migrate/migrate_1")
+    migrate_1(base / "project.yaml", tmp_path / "trials.yaml")
+    result = yaml.safe_load((tmp_path / "trials.yaml").read_text())
+    expected = yaml.safe_load(Path(base / "trials.yaml").read_text())
     assert result == expected
 
 

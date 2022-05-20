@@ -4,9 +4,10 @@
 
   //! Schema
   "yaml.schemas": {
-    "project/schema/trials_schema.json": "trials*.yaml",
+    "project/schema/columns_schema.json": "columns.yaml",
+    "project/schema/config_old_schema.json": "config_old.yaml",
     "project/schema/project_schema.json": "project*.yaml",
-    "project/schema/config_old_schema.json": "config_old.yaml"
+    "project/schema/trials_schema.json": "trials*.yaml"
   },
 
   //! Pylance
