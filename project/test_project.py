@@ -1,8 +1,10 @@
+from os import getenv
 from pathlib import Path
 from shutil import copy
 
 import pandas as pd
 from pandas.testing import assert_frame_equal
+from pytest import mark as m
 import yaml
 
 from migrate import migrate_1
@@ -18,7 +20,7 @@ def test_migrate_1(tmp_path):
     assert result == expected
 
 
-# @m.skipif(bool(getenv("CI")))
+@m.skipif(bool(getenv("CI")))
 def test_run(tmp_path):
     """Ensure the same result is coming out of the pipeline as before."""
 
