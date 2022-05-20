@@ -1,16 +1,71 @@
 """Generate configs for trials given their old layout."""
 
 from bisect import insort
+from collections import Counter
+from operator import indexOf
 
+import pandas as pd
 from pydantic import BaseModel, DirectoryPath
 
 from boilerdata.utils import StrPath, dump_model, load_config
-
-TRIALS_PATH = "project/config/trials.yaml"
+from models import Project
+from pipeline import get_defaults, get_label, get_units
 
 
 def main():
-    pass
+    project, _ = get_defaults()
+    migrate_2(project, "project/config/columns.yaml")
+
+
+def migrate_2(project: Project, columns_path: StrPath):
+    """Migration 2
+
+    Parameters
+    ----------
+    project: Project
+        The project model.
+    columns_path: StrPath
+        The path to `columns.yaml`.
+    """
+
+    def main():
+
+        df = pd.read_csv(project.results_file, index_col=0)
+        labels = [get_label(label) for label in df.columns]
+        units = [get_units(label) for label in df.columns]
+
+        counter = Counter(labels).items()
+        dupes = []
+        for label, count in counter:
+            if count > 2:
+                raise NotImplementedError("Can't handle triplicates or higher.")
+            elif count > 1:
+                dupes.append(rindex(labels, label))
+
+        for index in dupes:
+            labels[index] += "_dupe"
+
+        columns = [
+            Column(label=label, units=unit) for label, unit in zip(labels, units)
+        ]
+        dump_model(columns_path, Columns(columns=columns))
+
+    class Column(BaseModel):
+        """Configuration for a column after Migration 2."""
+
+        label: str
+        units: str
+
+    class Columns(BaseModel):
+        """Top-level configuration for a list of columns after Migration 2."""
+
+        columns: list[Column]
+
+    def rindex(lst, value):
+        # https://stackoverflow.com/a/63834895
+        return len(lst) - indexOf(reversed(lst), value) - 1
+
+    main()
 
 
 def migrate_1(project_path: StrPath, trials_path: StrPath):

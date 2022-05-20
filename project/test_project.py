@@ -20,6 +20,10 @@ def test_migrate_1(tmp_path):
     assert result == expected
 
 
+def test_migrate_2():
+    ...
+
+
 @m.skipif(bool(getenv("CI")), reason="Skip on CI.")
 def test_run(tmp_path):
     """Ensure the same result is coming out of the pipeline as before."""
