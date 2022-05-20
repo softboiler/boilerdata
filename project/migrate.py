@@ -20,7 +20,7 @@ def main():
 
 
 def migrate_2(project: Project, columns_path: Path):
-    """Migration 2: Generate code for the columns.
+    """Migration 2: Generate columns enum.
 
     Parameters
     ----------
@@ -55,20 +55,17 @@ def migrate_2(project: Project, columns_path: Path):
             """\
             # flake8: noqa
 
-            from models import Column
+            from enum import auto
+
+            from boilerdata.enums import GetNameEnum
+
+
+            class Columns(GetNameEnum):
             """
         )
         for column in columns:
             label = column.label.replace("\u2206", "D").replace("/", "_")
-            text += dedent(
-                f"""\
-
-            {label} = Column(
-                units="{column.units}",
-            )
-            """
-            )
-
+            text += f"    {label} = auto()\n"
         columns_path.write_text(text)
 
     class Column(BaseModel):
