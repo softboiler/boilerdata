@@ -138,3 +138,11 @@ class Trials(BaseModel):
     """The trials."""
 
     trials: list[Trial]
+
+
+# * -------------------------------------------------------------------------------- * #
+# * COLUMNS
+
+
+class Column(BaseModel):
+    units: str

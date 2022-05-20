@@ -3,6 +3,8 @@
 from bisect import insort
 from collections import Counter
 from operator import indexOf
+from pathlib import Path
+from textwrap import dedent
 
 import pandas as pd
 from pydantic import BaseModel, DirectoryPath
@@ -14,18 +16,18 @@ from pipeline import get_defaults, get_label, get_units
 
 def main():
     project, _ = get_defaults()
-    migrate_2(project, "project/config/columns.yaml")
+    migrate_2(project, Path("project/columns.py"))
 
 
-def migrate_2(project: Project, columns_path: StrPath):
-    """Migration 2
+def migrate_2(project: Project, columns_path: Path):
+    """Migration 2: Generate code for the columns.
 
     Parameters
     ----------
     project: Project
         The project model.
     columns_path: StrPath
-        The path to `columns.yaml`.
+        The path to `columns.py`.
     """
 
     def main():
@@ -48,7 +50,26 @@ def migrate_2(project: Project, columns_path: StrPath):
         columns = [
             Column(label=label, units=unit) for label, unit in zip(labels, units)
         ]
-        dump_model(columns_path, Columns(columns=columns))
+
+        text = dedent(
+            """\
+            # flake8: noqa
+
+            from models import Column
+            """
+        )
+        for column in columns:
+            label = column.label.replace("\u2206", "D").replace("/", "_")
+            text += dedent(
+                f"""\
+
+            {label} = Column(
+                units="{column.units}",
+            )
+            """
+            )
+
+        columns_path.write_text(text)
 
     class Column(BaseModel):
         """Configuration for a column after Migration 2."""
@@ -56,13 +77,8 @@ def migrate_2(project: Project, columns_path: StrPath):
         label: str
         units: str
 
-    class Columns(BaseModel):
-        """Top-level configuration for a list of columns after Migration 2."""
-
-        columns: list[Column]
-
+    # https://stackoverflow.com/a/63834895
     def rindex(lst, value):
-        # https://stackoverflow.com/a/63834895
         return len(lst) - indexOf(reversed(lst), value) - 1
 
     main()
