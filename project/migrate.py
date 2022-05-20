@@ -1,16 +1,111 @@
 """Generate configs for trials given their old layout."""
 
 from bisect import insort
+from collections import Counter
+from operator import indexOf
+from pathlib import Path
+from textwrap import dedent
 
-from pydantic import BaseModel, DirectoryPath
+import pandas as pd
+from pydantic import BaseModel, DirectoryPath, Field
 
-from boilerdata.utils import StrPath, dump_model, load_config
-
-TRIALS_PATH = "project/config/trials.yaml"
+from boilerdata.utils import StrPath, dump_model, load_config, write_schema
+from models import Project
+from pipeline import get_defaults
 
 
 def main():
-    pass
+    project, _ = get_defaults()
+    migrate_3(
+        project, "project/schema/columns_schema.json", "project/config/columns.yaml"
+    )
+
+
+def migrate_3(project: Project, columns_schema_path: StrPath, columns_path: StrPath):
+    """Migration 3: Generate columns config.
+
+    Parameters
+    ----------
+    project: Project
+        The project model.
+    columns_schema_path: StrPath
+        The path to the columns schema.
+    columns_path: StrPath
+        The path to the columns configuration file.
+    """
+
+    def main():
+
+        df = pd.read_csv(project.results_file, index_col=0)
+        units = [get_units(column) for column in df.columns]
+
+        names = dedupe_columns(df)
+        columns = [Column(units=unit) for unit in units]
+        columns = Columns(columns=dict(zip(names, columns)))
+
+        write_schema(columns_schema_path, Columns)
+        dump_model(columns_path, columns)
+
+    def get_units(label: str) -> str:
+        match label.split():
+            case label, units:
+                return units.strip("()")
+            case _:
+                return ""
+
+    class Column(BaseModel):
+        """Configuration for a column after Migration 3."""
+
+        pretty_name: str = Field(
+            default=None,
+            description="The column name.",
+        )
+        units: str = Field(
+            default=...,
+            description="The units for this column's values.",
+        )
+
+    class Columns(BaseModel):
+        """Configuration for a column after Migration 3."""
+
+        columns: dict[str, Column]
+
+    main()
+
+
+def migrate_2(project: Project, columns_path: Path):
+    """Migration 2: Generate columns enum.
+
+    Parameters
+    ----------
+    project: Project
+        The project model.
+    columns_path: StrPath
+        The path to `columns.py`.
+    """
+
+    def main():
+
+        df = pd.read_csv(project.results_file, index_col=0)
+        labels = dedupe_columns(df)
+
+        text = dedent(
+            """\
+            # flake8: noqa
+
+            from enum import auto
+
+            from boilerdata.enums import GetNameEnum
+
+
+            class Columns(GetNameEnum):
+            """
+        )
+        for label in labels:
+            text += f"    {label} = auto()\n"
+        columns_path.write_text(text, encoding="utf-8")
+
+    main()
 
 
 def migrate_1(project_path: StrPath, trials_path: StrPath):
@@ -112,6 +207,37 @@ def migrate_1(project_path: StrPath, trials_path: StrPath):
         trials: list[Trial]
 
     main()
+
+
+# * -------------------------------------------------------------------------------- * #
+# * COMMON FUNCTIONS
+
+
+def dedupe_columns(df):
+    labels = [
+        label.split()[0].replace("\u2206", "D").replace("/", "_")
+        for label in df.columns
+    ]
+    counter = Counter(labels).items()
+    dupes = []
+    for label, count in counter:
+        if count > 2:
+            raise NotImplementedError("Can't handle triplicates or higher.")
+        elif count > 1:
+            dupes.append(rindex(labels, label))
+
+    for index in dupes:
+        labels[index] += "_dupe"
+    return labels
+
+
+# https://stackoverflow.com/a/63834895
+def rindex(lst, value):
+    return len(lst) - indexOf(reversed(lst), value) - 1
+
+
+# * -------------------------------------------------------------------------------- * #
+# * MAIN
 
 
 if __name__ == "__main__":

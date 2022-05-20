@@ -12,7 +12,7 @@ from scipy.constants import convert_temperature
 from scipy.stats import linregress
 
 from boilerdata.utils import load_config
-from models import Fit, Project, Trials
+from models import Columns, Fit, Project, Trials
 
 
 def get_defaults():
@@ -29,8 +29,33 @@ def main(project: Project, trials: Trials):
                 **json.loads(trial.json())
             )
             dfs.append(df)
-    df = pd.concat(dfs)
-    df.to_csv(project.results_file, index_label="Run")
+    pd.concat(dfs).pipe(set_units_row).pipe(prettify).to_csv(
+        project.results_file, index_label="Run"
+    )
+
+
+def set_units_row(df: pd.DataFrame) -> pd.DataFrame:
+    """Move units out of column labels and into a row just below the column labels."""
+    columns = load_config("project/config/columns.yaml", Columns).columns
+    columns_mapping = dict(zip(df.columns, columns.keys()))
+    df = df.rename(columns_mapping, axis="columns")
+    units_row = pd.DataFrame(
+        {
+            name: pd.Series(column.units, index=["Units"])
+            # Don't simplify to "columns.items()" because df.columns are prettified
+            for name, column in zip(df.columns, columns.values())
+        }
+    )
+
+    return pd.concat([units_row, df])
+
+
+def prettify(df: pd.DataFrame) -> pd.DataFrame:
+    columns = load_config("project/config/columns.yaml", Columns).columns
+    return df.rename(
+        {"DT": columns["DT"].pretty_name, "DT_err": columns["DT_err"].pretty_name},
+        axis="columns",
+    )
 
 
 def run_one(path: Path, fit_params: Fit) -> pd.DataFrame:
@@ -158,18 +183,6 @@ def fit(
         df.apply(plot, axis="columns")
         plt.show()
 
-    # # Move units out of column labels and into a row just below the column labels
-    # labels = (get_label(label) for label in df.columns)
-    # units = (get_units(label) for label in df.columns)
-    # columns_mapping = {old: new for old, new in zip(df.columns, labels)}
-    # units_row = pd.DataFrame(
-    #     {
-    #         label: pd.Series(unit, index=["Units"])
-    #         for label, unit in zip(df.columns, units)
-    #     }
-    # )
-    # df = pd.concat([units_row, df]).rename(columns=columns_mapping)
-
     return df
 
 
@@ -204,18 +217,6 @@ def linregress_series(
         [r.slope, r.intercept, r.rvalue, r.pvalue, r.stderr, r.intercept_stderr],
         index=labels,
     )
-
-
-def get_label(label: str) -> str:
-    return label.split()[0]
-
-
-def get_units(label: str) -> str:
-    match label.split():
-        case label, units:
-            return units.strip("()")
-        case _:
-            return ""
 
 
 if __name__ == "__main__":

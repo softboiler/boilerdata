@@ -93,7 +93,7 @@ def load_config(path: StrPath, model):
     if path.suffix != ".yaml":
         raise ValueError(f"The path '{path}' does not refer to a YAML file.")
 
-    raw_config = yaml.safe_load(path.read_text())
+    raw_config = yaml.safe_load(path.read_text(encoding="utf-8"))
     if not raw_config:
         raise ValueError("The configuration file is empty.")
 
@@ -124,7 +124,9 @@ def dump_model(path: StrPath, model):
     """
     path = get_file(path, create=True)
     # ensure one \n and no leading \n, Pydantic sometimes does more
-    path.write_text(yaml.safe_dump(model.dict(), sort_keys=False))
+    path.write_text(
+        yaml.safe_dump(model.dict(exclude_none=True), sort_keys=False), encoding="utf-8"
+    )
 
 
 def write_schema(path: StrPath, model: type[BaseModel]):
@@ -143,4 +145,4 @@ def write_schema(path: StrPath, model: type[BaseModel]):
     path = get_file(path, create=True)
     if path.suffix != ".json":
         raise ValueError(f"The path '{path}' does not refer to a JSON file.")
-    path.write_text(model.schema_json(indent=2) + "\n")
+    path.write_text(model.schema_json(indent=2) + "\n", encoding="utf-8")
