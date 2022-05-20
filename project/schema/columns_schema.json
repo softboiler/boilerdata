@@ -20,19 +20,20 @@
       "description": "Configuration for a column after Migration 3.",
       "type": "object",
       "properties": {
-        "label": {
-          "title": "Label",
+        "pretty_name": {
+          "title": "Pretty Name",
           "description": "The column name.",
-          "default": "...",
           "type": "string"
         },
         "units": {
           "title": "Units",
           "description": "The units for this column's values.",
-          "default": "...",
           "type": "string"
         }
-      }
+      },
+      "required": [
+        "units"
+      ]
     }
   }
 }

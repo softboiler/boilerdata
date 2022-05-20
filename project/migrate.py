@@ -16,7 +16,9 @@ from pipeline import get_defaults, get_units
 
 def main():
     project, _ = get_defaults()
-    migrate_3(project, "project/columns_schema.json", "project/columns.yaml")
+    migrate_3(
+        project, "project/schema/columns_schema.json", "project/config/columns.yaml"
+    )
 
 
 def migrate_3(project: Project, columns_schema_path: StrPath, columns_path: StrPath):
@@ -35,14 +37,11 @@ def migrate_3(project: Project, columns_schema_path: StrPath, columns_path: StrP
     def main():
 
         df = pd.read_csv(project.results_file, index_col=0)
-        units = [get_units(label) for label in df.columns]
+        units = [get_units(column) for column in df.columns]
 
-        labels = dedupe_labels(df)
-
-        columns = [
-            Column(label=label, units=unit) for label, unit in zip(labels, units)
-        ]
-        columns = Columns(columns={column.label: column for column in columns})
+        names = dedupe_columns(df)
+        columns = [Column(units=unit) for unit in units]
+        columns = Columns(columns=dict(zip(names, columns)))
 
         write_schema(columns_schema_path, Columns)
         dump_model(columns_path, columns)
@@ -50,12 +49,12 @@ def migrate_3(project: Project, columns_schema_path: StrPath, columns_path: StrP
     class Column(BaseModel):
         """Configuration for a column after Migration 3."""
 
-        label: str = Field(
-            default="...",
+        pretty_name: str = Field(
+            default=None,
             description="The column name.",
         )
         units: str = Field(
-            default="...",
+            default=...,
             description="The units for this column's values.",
         )
 
@@ -81,7 +80,7 @@ def migrate_2(project: Project, columns_path: Path):
     def main():
 
         df = pd.read_csv(project.results_file, index_col=0)
-        labels = dedupe_labels(df)
+        labels = dedupe_columns(df)
 
         text = dedent(
             """\
@@ -207,7 +206,7 @@ def migrate_1(project_path: StrPath, trials_path: StrPath):
 # * COMMON FUNCTIONS
 
 
-def dedupe_labels(df):
+def dedupe_columns(df):
     labels = [
         label.split()[0].replace("\u2206", "D").replace("/", "_")
         for label in df.columns

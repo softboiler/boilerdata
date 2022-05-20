@@ -60,13 +60,13 @@ columns:
   TLfit:
     units: C
   rvalue:
-    units: ''
+    units: ""
   pvalue:
-    units: ''
+    units: ""
   stderr:
-    units: ''
+    units: ""
   intercept_stderr:
-    units: ''
+    units: ""
   dT_dx_err:
     units: K/m
   k:
@@ -78,26 +78,28 @@ columns:
   Q:
     units: W
   DT:
+    pretty_name: ∆T
     units: K
   DT_err:
+    pretty_name: ∆T_err
     units: K
   q_dupe:
     units: W/cm^2
   q_err_dupe:
     units: W/cm^2
   date:
-    units: ''
+    units: ""
   rod:
-    units: ''
+    units: ""
   coupon:
-    units: ''
+    units: ""
   sample:
-    units: ''
+    units: ""
   group:
-    units: ''
+    units: ""
   monotonic:
-    units: ''
+    units: ""
   joint:
-    units: ''
+    units: ""
   comment:
-    units: ''
+    units: ""
