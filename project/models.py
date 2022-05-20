@@ -173,6 +173,6 @@ class Columns(BaseModel):
     columns: dict[str, Column]
 
     def generate_originlab_column_designation_string(self) -> str:
-        return "".join(
+        return "N" + "".join(
             [column.originlab_column_designation for column in self.columns.values()]
         )

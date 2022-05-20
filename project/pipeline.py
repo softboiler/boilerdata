@@ -75,7 +75,7 @@ def prettify(df: pd.DataFrame) -> pd.DataFrame:
 
 
 def transform_units_for_originlab(df: pd.DataFrame) -> pd.DataFrame:
-    units = df.loc["Units", :].replace(re.compile(r"\^"), r"\+")
+    units = df.loc["Units", :].replace(re.compile(r"\^(\d)"), r"\+(\1)")
     df.loc["Units", :] = units
     return df
 
@@ -138,7 +138,8 @@ def fit(
                 Prop.THERMAL_CONDUCTIVITY,
                 convert_temperature(temperature_cols.mean(axis="columns"), "C", "K"),
             ),
-            q: lambda df: df[k] * df[slope],  # no negative due to reversed x-coordinate
+            # no negative due to reversed x-coordinate
+            q: lambda df: df[k] * df[slope] / cm2_p_m2,
             q_err: lambda df: (df[k] * df[slope_err]).abs() / cm2_p_m2,
             "Q (W)": lambda df: df[q] * cross_sectional_area / cm2_p_m2,
             # "∆T (K)": lambda df: (
