@@ -11,7 +11,7 @@ from pydantic import BaseModel, DirectoryPath, Field
 
 from boilerdata.utils import StrPath, dump_model, load_config, write_schema
 from models import Project
-from pipeline import get_defaults, get_units
+from pipeline import get_defaults
 
 
 def main():
@@ -45,6 +45,13 @@ def migrate_3(project: Project, columns_schema_path: StrPath, columns_path: StrP
 
         write_schema(columns_schema_path, Columns)
         dump_model(columns_path, columns)
+
+    def get_units(label: str) -> str:
+        match label.split():
+            case label, units:
+                return units.strip("()")
+            case _:
+                return ""
 
     class Column(BaseModel):
         """Configuration for a column after Migration 3."""
@@ -96,7 +103,7 @@ def migrate_2(project: Project, columns_path: Path):
         )
         for label in labels:
             text += f"    {label} = auto()\n"
-        columns_path.write_text(text)
+        columns_path.write_text(text, encoding="utf-8")
 
     main()
 

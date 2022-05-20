@@ -29,13 +29,15 @@ def test_migrate_3(tmp_path):
         columns_path := tmp_path / "columns.yaml",
     )
 
-    result = schema_path.read_text()
-    expected = Path("project/tests/migrate/migrate_3/columns_schema.json").read_text()
+    result = schema_path.read_text(encoding="utf-8")
+    expected = Path("project/tests/migrate/migrate_3/columns_schema.json").read_text(
+        encoding="utf-8"
+    )
     assert result == expected
 
-    result = yaml.safe_load(columns_path.read_text())
+    result = yaml.safe_load(columns_path.read_text(encoding="utf-8"))
     expected = yaml.safe_load(
-        Path("project/tests/migrate/migrate_3/columns.yaml").read_text()
+        Path("project/tests/migrate/migrate_3/columns.yaml").read_text(encoding="utf-8")
     )
     assert result == expected
 
@@ -46,16 +48,18 @@ def test_migrate_2(tmp_path):
     project, _ = get_defaults()
     project.results_file = get_old_file(old_commit)
     migrate_2(project, path := tmp_path / "columns.py")
-    result = path.read_text()
-    expected = Path("project/tests/migrate/migrate_2/columns.py").read_text()
+    result = path.read_text(encoding="utf-8")
+    expected = Path("project/tests/migrate/migrate_2/columns.py").read_text(
+        encoding="utf-8"
+    )
     assert result == expected
 
 
 def test_migrate_1(tmp_path):
     base = Path("project/tests/migrate/migrate_1")
     migrate_1(base / "project.yaml", tmp_path / "trials.yaml")
-    result = yaml.safe_load((tmp_path / "trials.yaml").read_text())
-    expected = yaml.safe_load(Path(base / "trials.yaml").read_text())
+    result = yaml.safe_load((tmp_path / "trials.yaml").read_text(encoding="utf-8"))
+    expected = yaml.safe_load(Path(base / "trials.yaml").read_text(encoding="utf-8"))
     assert result == expected
 
 
@@ -63,6 +67,7 @@ def test_migrate_1(tmp_path):
 # * PIPELINE
 
 
+@m.skip("slow")
 @m.skipif(bool(getenv("CI")), reason=CI)
 def test_run(tmp_path):
     """Ensure the same result is coming out of the pipeline as before."""

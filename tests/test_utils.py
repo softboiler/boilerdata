@@ -61,7 +61,7 @@ def test_load_config_raises_not_yaml(tmp_path):
 
 def test_load_config_raises_value_error(tmp_path):
     user_model_path = tmp_path / "test.yaml"
-    user_model_path.write_text("\n")
+    user_model_path.write_text("\n", encoding="utf-8")
     # Can't check for ValidationError directly for some reason
     with raises(ValueError, match=re.compile("file is empty", re.IGNORECASE)):
         load_config(user_model_path, UserModel)
@@ -76,7 +76,7 @@ def test_load_config_raises_value_error(tmp_path):
 )
 def test_load_config_raises_validation(test_id, model, match, tmp_path):
     user_model_path = tmp_path / "test.yaml"
-    user_model_path.write_text(model)
+    user_model_path.write_text(model, encoding="utf-8")
     # Can't check for ValidationError directly for some reason
     with raises(Exception, match=re.compile(match, re.IGNORECASE)):
         load_config(user_model_path, UserModel)
@@ -84,15 +84,15 @@ def test_load_config_raises_validation(test_id, model, match, tmp_path):
 
 def test_load_config(tmp_path):
     user_model_path = tmp_path / "user_model.yaml"
-    user_model_path.write_text(USER_MODEL_YAML)
+    user_model_path.write_text(USER_MODEL_YAML, encoding="utf-8")
     config = load_config(user_model_path, UserModel)
-    assert yaml.safe_load(user_model_path.read_text()) == config.dict()
+    assert yaml.safe_load(user_model_path.read_text(encoding="utf-8")) == config.dict()
 
 
 def test_dump_model(tmp_path):
     user_model_path = tmp_path / "test.toml"
     dump_model(user_model_path, USER_MODEL_INSTANCE)
-    assert user_model_path.read_text() == USER_MODEL_YAML
+    assert user_model_path.read_text(encoding="utf-8") == USER_MODEL_YAML
 
 
 def test_write_schema_raises_not_json(tmp_path):
@@ -105,4 +105,4 @@ def test_write_schema(tmp_path):
     """Ensure the schema can be written and is up to date."""
     schema_path = tmp_path / "test.json"
     write_schema(schema_path, UserModel)
-    assert schema_path.read_text() == SCHEMA_JSON
+    assert schema_path.read_text(encoding="utf-8") == SCHEMA_JSON

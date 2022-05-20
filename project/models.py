@@ -145,4 +145,19 @@ class Trials(BaseModel):
 
 
 class Column(BaseModel):
-    units: str
+    """Metadata for a column in the dataframe."""
+
+    pretty_name: str = Field(
+        default=None,
+        description="The column name.",
+    )
+    units: str = Field(
+        default=...,
+        description="The units for this column's values.",
+    )
+
+
+class Columns(BaseModel):
+    """Columns in the dataframe."""
+
+    columns: dict[str, Column]
