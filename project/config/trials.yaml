@@ -274,7 +274,7 @@ trials:
     coupon: A6
     sample: NA
     group: control
-    monotonic: false
+    monotonic: true
     joint: solder
     comment: Copper X-A6-fail2. fail1 has no data, see "Other". First trial with data since detaching B3 and making X-A6 a solder joint.
 
@@ -283,6 +283,6 @@ trials:
     coupon: A9
     sample: NA
     group: control
-    monotonic: false
+    monotonic: true
     joint: solder
     comment: Copper X-A9-newcam
