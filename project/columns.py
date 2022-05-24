@@ -52,6 +52,6 @@ class Columns(GetNameEnum):
     coupon = auto()
     sample = auto()
     group = auto()
-    monotonic = auto()
     joint = auto()
+    monotonic = auto()
     comment = auto()
