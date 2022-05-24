@@ -123,11 +123,11 @@ class Trial(BaseModel, extra=Extra.forbid):
     coupon: Coupon
     sample: Sample
     group: Group
+    joint: Joint
     monotonic: bool = Field(
         default=...,
         description="Whether the boiling curve is monotonic.",
     )
-    joint: Joint
     comment: str
 
     def get_path(self, project: Project) -> Path:
