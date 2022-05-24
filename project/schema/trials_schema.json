@@ -85,13 +85,13 @@
         "group": {
           "$ref": "#/definitions/Group"
         },
+        "joint": {
+          "$ref": "#/definitions/Joint"
+        },
         "monotonic": {
           "title": "Monotonic",
           "description": "Whether the boiling curve is monotonic.",
           "type": "boolean"
-        },
-        "joint": {
-          "$ref": "#/definitions/Joint"
         },
         "comment": {
           "title": "Comment",
@@ -104,8 +104,8 @@
         "coupon",
         "sample",
         "group",
-        "monotonic",
         "joint",
+        "monotonic",
         "comment"
       ],
       "additionalProperties": false

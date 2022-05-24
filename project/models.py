@@ -7,6 +7,7 @@ import numpy as np
 from pydantic import BaseModel, DirectoryPath, Extra, Field, validator
 
 from boilerdata.enums import GetNameEnum
+from boilerdata.utils import expanduser2, load_config
 
 # * -------------------------------------------------------------------------------- * #
 # * PROJECT
@@ -26,46 +27,74 @@ class Fit(BaseModel):
         return np.array(thermocouple_pos)
 
 
-class Project(BaseModel, extra=Extra.forbid):
-    """Configuration for the package."""
+class Dirs(BaseModel, extra=Extra.forbid):
+    """Directories relevant to the project."""
 
     base: DirectoryPath = Field(
         default=...,
         description="The base directory for the project data.",
     )
+    config: DirectoryPath = Field(
+        default=...,
+        description="The directory in which the config files are. Must be relative to the base directory or an absolute path that exists.",
+    )
     trials: DirectoryPath = Field(
         default=...,
-        description="The directory in which the individual trials are. Must be relative to the base directory.",
+        description="The directory in which the individual trials are. Must be relative to the base directory or an absolute path that exists.",
     )
     results: DirectoryPath = Field(
         default=...,
-        description="The directory in which the results will go. Must be relative to the base directory. Will be created if it is missing.",
+        description="The directory in which the results will go. Must be relative to the base directory or an absolute path that exists. Will be created if it is relative to the base directory.",
     )
     results_file: Path = Field(
         default="results.csv",
-        description="The name of the results file. Will go in the results directory. Default: results.csv",
+        description="The path to the results file. Must be relative to the results directory. Default: results.csv",
     )
-    directory_per_trial: Path = Field(
+    per_trial: Path = Field(
         default=...,
         description="The directory in which the data are for a given trial. Must be relative to a trial folder, and all trials must share this pattern.",
     )
-    fit: Fit
 
     @validator("trials", pre=True)  # "pre" because dir must exist pre-validation
     def validate_trials(cls, trials, values):
-        return values["base"] / Path(trials)
+        trials = expanduser2(trials)
+        return trials if trials.is_absolute() else values["base"] / trials
+
+    @validator("config", pre=True)  # "pre" because dir must exist pre-validation
+    def validate_configs(cls, config, values):
+        config = expanduser2(config)
+        return config if config.is_absolute() else values["base"] / config
 
     @validator("results", pre=True)  # "pre" because dir must exist pre-validation
     def validate_results(cls, results, values):
-        results = values["base"] / Path(results)
+        if (results := expanduser2(results)).is_absolute():
+            return results
         results.mkdir(parents=True, exist_ok=True)
-        return results
+        return values["base"] / results
 
     @validator("results_file", always=True)  # "always" so it'll run even if not in YAML
-    def validate_results_file(cls, results_file, values):
+    def validate_results_file(cls, results_file: Path, values):
+        if results_file.is_absolute():
+            raise ValueError(
+                "The results file path must be given relative to the results directory."
+            )
         if results_file.suffix != ".csv":
-            raise ValueError("The supplied results filename is not a CSV.")
+            raise ValueError("The supplied results file is not a CSV.")
+        results_file.parent.mkdir(parents=True, exist_ok=True)
         return values["results"] / results_file
+
+
+# Extra fields are allowed so we can pack trials and columns into this
+class Project(BaseModel, extra=Extra.allow):
+    """Configuration for the package."""
+
+    dirs: Dirs
+    fit: Fit
+
+    def __init__(self, **data):
+        super().__init__(**data)
+        self.trials = load_config(self.dirs.config / "trials.yaml", Trials).trials
+        self.columns = load_config(self.dirs.config / "columns.yaml", Columns).columns
 
 
 # * -------------------------------------------------------------------------------- * #
@@ -132,7 +161,7 @@ class Trial(BaseModel, extra=Extra.forbid):
 
     def get_path(self, project: Project) -> Path:
         """Get the path to the data for this trial."""
-        return project.trials / self.date.isoformat() / project.directory_per_trial
+        return project.dirs.trials / self.date.isoformat() / project.dirs.per_trial
 
 
 class Trials(BaseModel):

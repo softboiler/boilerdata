@@ -1,6 +1,5 @@
 from os import getenv
 from pathlib import Path
-from shutil import copy
 
 import pandas as pd
 from pandas.testing import assert_frame_equal
@@ -8,7 +7,7 @@ from pytest import mark as m
 import yaml
 
 from migrate import migrate_1, migrate_2, migrate_3
-from models import Coupon, Group, Joint, Project, Rod, Sample
+from models import Coupon, Group, Joint, Rod, Sample
 from pipeline import get_defaults, main as pipeline_main
 
 CI = "Skip on CI."
@@ -21,7 +20,7 @@ CI = "Skip on CI."
 @m.skipif(bool(getenv("CI")), reason=CI)
 def test_migrate_3(tmp_path):
     old_commit = "b4ddee04a3d7aee2a81eaed68f3b016873f924d1"
-    project, _ = get_defaults()
+    project = get_defaults()
     project.results_file = get_old_file(old_commit)
     migrate_3(
         project,
@@ -45,7 +44,7 @@ def test_migrate_3(tmp_path):
 @m.skipif(bool(getenv("CI")), reason=CI)
 def test_migrate_2(tmp_path):
     old_commit = "b4ddee04a3d7aee2a81eaed68f3b016873f924d1"
-    project, _ = get_defaults()
+    project = get_defaults()
     project.results_file = get_old_file(old_commit)
     migrate_2(project, path := tmp_path / "columns.py")
     result = path.read_text(encoding="utf-8")
@@ -67,9 +66,8 @@ def test_migrate_1(tmp_path):
 # * PIPELINE
 
 
-@m.skip("slow")
 @m.skipif(bool(getenv("CI")), reason=CI)
-def test_run(tmp_path):
+def test_run(tmp_path: Path):
     """Ensure the same result is coming out of the pipeline as before."""
 
     pd.options.mode.string_storage = "pyarrow"
@@ -115,26 +113,26 @@ def test_run(tmp_path):
         dtype=dtypes,
         parse_dates=["date"],
     )
-
     col_order = list(dtypes.keys())[1:]
-    project, trials = get_defaults()
-    old = pd.read_csv(get_old_file(old_commit), **read_csv_params)[col_order]
 
-    for csv in project.trials.glob(f"**/{project.directory_per_trial}/**/*.csv"):
-        dst = tmp_path / csv.relative_to(project.base)
-        dst.parent.mkdir(parents=True, exist_ok=True)
-        copy(csv, dst)
-
-    new_project = Project(
-        base=tmp_path,
-        trials=tmp_path / (project.trials.relative_to(project.base)),
-        results=tmp_path / (project.results.relative_to(project.base)),
-        directory_per_trial=project.directory_per_trial,
-        fit=project.fit,
+    old_proj = get_defaults()
+    new_results_file = tmp_path / old_proj.dirs.results_file.relative_to(
+        old_proj.dirs.base
     )
-    pipeline_main(new_project, trials)
-    new = pd.read_csv(new_project.results_file, **read_csv_params)[col_order]
+    new_results_file.parent.mkdir()  # Needed because copying won't run the validators
+    new_proj = old_proj.copy(
+        update=dict(
+            dirs=old_proj.dirs.copy(
+                update=dict(
+                    results_file=new_results_file,
+                )
+            )
+        )
+    )
+    pipeline_main(new_proj)
 
+    old = pd.read_csv(get_old_file(old_commit), **read_csv_params)[col_order]
+    new = pd.read_csv(new_proj.dirs.results_file, **read_csv_params)[col_order]
     assert_frame_equal(old, new)
 
 
@@ -143,8 +141,8 @@ def test_run(tmp_path):
 
 
 def get_old_file(old_commit):
-    project, _ = get_defaults()
+    project = get_defaults()
     try:
-        return next((project.results / "Old").glob(f"results_*_{old_commit}.csv"))
+        return next((project.dirs.results / "Old").glob(f"results_*_{old_commit}.csv"))
     except StopIteration as exception:
         raise StopIteration("Old results file is missing.") from exception
