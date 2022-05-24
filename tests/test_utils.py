@@ -62,7 +62,6 @@ def test_load_config_raises_not_yaml(tmp_path):
 def test_load_config_raises_value_error(tmp_path):
     user_model_path = tmp_path / "test.yaml"
     user_model_path.write_text("\n", encoding="utf-8")
-    # Can't check for ValidationError directly for some reason
     with raises(ValueError, match=re.compile("file is empty", re.IGNORECASE)):
         load_config(user_model_path, UserModel)
 
