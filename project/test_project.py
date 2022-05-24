@@ -8,8 +8,8 @@ from pytest import mark as m
 import yaml
 
 from migrate import migrate_1, migrate_2, migrate_3
-from models import Project
-from pipeline import get_defaults, main
+from models import Coupon, Group, Joint, Project, Rod, Sample
+from pipeline import get_defaults, main as pipeline_main
 
 CI = "Skip on CI."
 
@@ -72,8 +72,53 @@ def test_migrate_1(tmp_path):
 def test_run(tmp_path):
     """Ensure the same result is coming out of the pipeline as before."""
 
-    old_commit = "ddb93d9463f116187cf8b57d914c2afef48c7313"
+    pd.options.mode.string_storage = "pyarrow"
+    old_commit = "02731650edf4ea0f4e08f1148f2bed57ed2515ca"
+    common_records_count = 322
+    dtypes = {
+        "Run": pd.StringDtype(),
+        "V": float,
+        "T0cal": float,
+        "T1cal": float,
+        "T2cal": float,
+        "T3cal": float,
+        "T4cal": float,
+        "T5cal": float,
+        "dT_dx": float,
+        "TLfit": float,
+        "rvalue": float,
+        "pvalue": float,
+        "stderr": float,
+        "intercept_stderr": float,
+        "dT_dx_err": float,
+        "k": float,
+        # "q": float,  #! These units are different.
+        # "q_err": float,
+        # "Q": float,
+        # "∆T": float,  #! These names are different.
+        # "∆T_err": float,
+        "date": pd.StringDtype(),  # Will become datetime64[ns] after parsing
+        "rod": pd.CategoricalDtype([cat.name for cat in Rod]),
+        "coupon": pd.CategoricalDtype([cat.name for cat in Coupon]),
+        "sample": pd.CategoricalDtype([cat.name for cat in Sample]),
+        "group": pd.CategoricalDtype([cat.name for cat in Group]),
+        "joint": pd.CategoricalDtype([cat.name for cat in Joint]),
+        "monotonic": bool,
+        "comment": pd.StringDtype(),
+    }
+
+    read_csv_params = dict(
+        index_col="Run",
+        skiprows=[1],
+        nrows=common_records_count,
+        usecols=dtypes.keys(),
+        dtype=dtypes,
+        parse_dates=["date"],
+    )
+
+    col_order = list(dtypes.keys())[1:]
     project, trials = get_defaults()
+    old = pd.read_csv(get_old_file(old_commit), **read_csv_params)[col_order]
 
     for csv in project.trials.glob(f"**/{project.directory_per_trial}/**/*.csv"):
         dst = tmp_path / csv.relative_to(project.base)
@@ -87,19 +132,14 @@ def test_run(tmp_path):
         directory_per_trial=project.directory_per_trial,
         fit=project.fit,
     )
-    main(new_project, trials)
+    pipeline_main(new_project, trials)
+    new = pd.read_csv(new_project.results_file, **read_csv_params)[col_order]
 
-    old = get_old_data(old_commit)
-    new = pd.read_csv(new_project.results_file, usecols=old.columns)
     assert_frame_equal(old, new)
 
 
 # * -------------------------------------------------------------------------------- * #
 # * HELPER FUNCTIONS
-
-
-def get_old_data(old_commit):
-    return pd.read_csv(get_old_file(old_commit))
 
 
 def get_old_file(old_commit):
