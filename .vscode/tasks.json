@@ -88,6 +88,13 @@
       "problemMatcher": []
     },
     {
+      "label": "task: Ignore magic comma in this file",
+      "type": "process",
+      "command": "pwsh",
+      "args": ["-Command", "black -C ${file}"],
+      "problemMatcher": []
+    },
+    {
       "label": "task: Ignore magic comma in all project files",
       "type": "process",
       "command": "pwsh",
