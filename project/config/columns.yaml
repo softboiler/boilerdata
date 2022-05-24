@@ -97,9 +97,9 @@ columns:
     units: ""
   group:
     units: ""
-  monotonic:
-    units: ""
   joint:
+    units: ""
+  monotonic:
     units: ""
   comment:
     units: ""
