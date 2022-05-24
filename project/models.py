@@ -7,7 +7,7 @@ import numpy as np
 from pydantic import BaseModel, DirectoryPath, Extra, Field, validator
 
 from boilerdata.enums import GetNameEnum
-from boilerdata.utils import expanduser2, load_config
+from boilerdata.utils import StrPath, expanduser2, load_config
 
 # * -------------------------------------------------------------------------------- * #
 # * PROJECT
@@ -56,32 +56,32 @@ class Dirs(BaseModel, extra=Extra.forbid):
     )
 
     @validator("trials", pre=True)  # "pre" because dir must exist pre-validation
-    def validate_trials(cls, trials, values):
+    def validate_trials(cls, trials: StrPath, values: dict[str, Path]):
         trials = expanduser2(trials)
         return trials if trials.is_absolute() else values["base"] / trials
 
     @validator("config", pre=True)  # "pre" because dir must exist pre-validation
-    def validate_configs(cls, config, values):
+    def validate_configs(cls, config: StrPath, values: dict[str, Path]):
         config = expanduser2(config)
         return config if config.is_absolute() else values["base"] / config
 
     @validator("results", pre=True)  # "pre" because dir must exist pre-validation
-    def validate_results(cls, results, values):
-        if (results := expanduser2(results)).is_absolute():
+    def validate_results(cls, results: StrPath, values: dict[str, Path]):
+        if expanduser2(results).is_absolute():
             return results
+        results = values["base"] / results
         results.mkdir(parents=True, exist_ok=True)
         return values["base"] / results
 
     @validator("results_file", always=True)  # "always" so it'll run even if not in YAML
-    def validate_results_file(cls, results_file: Path, values):
+    def validate_results_file(cls, results_file: Path, values: dict[str, Path]):
         if results_file.is_absolute():
-            raise ValueError(
-                "The results file path must be given relative to the results directory."
-            )
+            raise ValueError("The file must be relative to the results directory.")
         if results_file.suffix != ".csv":
             raise ValueError("The supplied results file is not a CSV.")
+        results_file = values["results"] / results_file
         results_file.parent.mkdir(parents=True, exist_ok=True)
-        return values["results"] / results_file
+        return results_file
 
 
 # Extra fields are allowed so we can pack trials and columns into this
