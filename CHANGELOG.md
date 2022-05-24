@@ -7,5 +7,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- Generalize `expanduser2`
 - Implement basic CLI
 - Implement basic configs

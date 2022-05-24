@@ -13,18 +13,16 @@ from scipy.constants import convert_temperature
 from scipy.stats import linregress
 
 from boilerdata.utils import load_config
-from models import Columns, Fit, Project, Trials
+from models import Columns, Fit, Project
 
 
 def get_defaults():
-    project = load_config("project/config/project.yaml", Project)
-    trials = load_config("project/config/trials.yaml", Trials)
-    return project, trials
+    return load_config("project/config/project.yaml", Project)
 
 
-def main(project: Project, trials: Trials):
+def main(project: Project):
     dfs: list[pd.DataFrame] = []
-    for trial in trials.trials:
+    for trial in project.trials:
         if trial.monotonic:
             df = run_one(trial.get_path(project), project.fit).assign(
                 **json.loads(trial.json())
@@ -32,7 +30,7 @@ def main(project: Project, trials: Trials):
             dfs.append(df)
     pd.concat(dfs).pipe(set_units_row).pipe(transform_units_for_originlab).pipe(
         prettify
-    ).to_csv(project.results_file, index_label="Run")
+    ).to_csv(project.dirs.results_file, index_label="Run")
 
 
 def run_one(path: Path, fit_params: Fit) -> pd.DataFrame:
@@ -226,4 +224,4 @@ def linregress_series(
 
 
 if __name__ == "__main__":
-    main(*get_defaults())
+    main()

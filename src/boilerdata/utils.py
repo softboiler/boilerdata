@@ -9,7 +9,7 @@ import yaml
 StrPath = str | PathLike[str]
 
 
-def expanduser2(path: str) -> Path:
+def expanduser2(path: StrPath) -> Path:
     """Expand the "~" user construction.
 
     Unlike the builtin `posixpath.expanduser`, this always works on Windows, and returns
@@ -26,7 +26,10 @@ def expanduser2(path: str) -> Path:
         The path after user expansion.
     """
     home = "~/"
-    return Path.home() / path.lstrip(home) if path.startswith(home) else Path(path)
+    if isinstance(path, str) and path.startswith(home):
+        return Path.home() / path.lstrip(home)
+    else:
+        return Path(path)
 
 
 def get_file(path: StrPath, create: bool = False) -> Path:

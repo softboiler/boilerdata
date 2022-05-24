@@ -3,50 +3,70 @@
   "description": "Configuration for the package.",
   "type": "object",
   "properties": {
-    "base": {
-      "title": "Base",
-      "description": "The base directory for the project data.",
-      "format": "directory-path",
-      "type": "string"
-    },
-    "trials": {
-      "title": "Trials",
-      "description": "The directory in which the individual trials are. Must be relative to the base directory.",
-      "format": "directory-path",
-      "type": "string"
-    },
-    "results": {
-      "title": "Results",
-      "description": "The directory in which the results will go. Must be relative to the base directory. Will be created if it is missing.",
-      "format": "directory-path",
-      "type": "string"
-    },
-    "results_file": {
-      "title": "Results File",
-      "description": "The name of the results file. Will go in the results directory. Default: results.csv",
-      "default": "results.csv",
-      "type": "string",
-      "format": "path"
-    },
-    "directory_per_trial": {
-      "title": "Directory Per Trial",
-      "description": "The directory in which the data are for a given trial. Must be relative to a trial folder, and all trials must share this pattern.",
-      "type": "string",
-      "format": "path"
+    "dirs": {
+      "$ref": "#/definitions/Dirs"
     },
     "fit": {
       "$ref": "#/definitions/Fit"
     }
   },
   "required": [
-    "base",
-    "trials",
-    "results",
-    "directory_per_trial",
+    "dirs",
     "fit"
   ],
-  "additionalProperties": false,
   "definitions": {
+    "Dirs": {
+      "title": "Dirs",
+      "description": "Directories relevant to the project.",
+      "type": "object",
+      "properties": {
+        "base": {
+          "title": "Base",
+          "description": "The base directory for the project data.",
+          "format": "directory-path",
+          "type": "string"
+        },
+        "config": {
+          "title": "Config",
+          "description": "The directory in which the config files are. Must be relative to the base directory or an absolute path that exists.",
+          "format": "directory-path",
+          "type": "string"
+        },
+        "trials": {
+          "title": "Trials",
+          "description": "The directory in which the individual trials are. Must be relative to the base directory or an absolute path that exists.",
+          "format": "directory-path",
+          "type": "string"
+        },
+        "results": {
+          "title": "Results",
+          "description": "The directory in which the results will go. Must be relative to the base directory or an absolute path that exists. Will be created if it is relative to the base directory.",
+          "format": "directory-path",
+          "type": "string"
+        },
+        "results_file": {
+          "title": "Results File",
+          "description": "The path to the results file. Must be relative to the results directory. Default: results.csv",
+          "default": "results.csv",
+          "type": "string",
+          "format": "path"
+        },
+        "per_trial": {
+          "title": "Per Trial",
+          "description": "The directory in which the data are for a given trial. Must be relative to a trial folder, and all trials must share this pattern.",
+          "type": "string",
+          "format": "path"
+        }
+      },
+      "required": [
+        "base",
+        "config",
+        "trials",
+        "results",
+        "per_trial"
+      ],
+      "additionalProperties": false
+    },
     "Fit": {
       "title": "Fit",
       "description": "Configure the linear regression of thermocouple temperatures vs. position.",
