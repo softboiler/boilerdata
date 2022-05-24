@@ -29,10 +29,10 @@ def main(project: Project):
     for trial in project.trials:
         if trial.monotonic:
             df = (
-                get_steady_state(trial.path, project, POINTS_TO_AVERAGE)
+                get_steady_state(trial.path, POINTS_TO_AVERAGE)
                 .pipe(rename_columns, project)
                 .pipe(run_one, project, POINTS_TO_AVERAGE)
-                .assign(**json.loads(trial.json()))
+                .assign(**json.loads(trial.json()))  # Assign trial metadata
             )
             dfs.append(df)
     pd.concat(dfs).pipe(set_units_row, project).pipe(
@@ -40,9 +40,7 @@ def main(project: Project):
     ).pipe(prettify, project).to_csv(project.dirs.results_file, index_label="Run")
 
 
-def get_steady_state(
-    path: Path, project: Project, points_to_average: int
-) -> pd.DataFrame:
+def get_steady_state(path: Path, points_to_average: int) -> pd.DataFrame:
     """Get steady-state values for the run."""
     files: list[Path] = sorted(path.glob("*.csv"))
     run_names: list[str] = [file.stem for file in files]
