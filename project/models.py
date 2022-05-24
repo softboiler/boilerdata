@@ -27,7 +27,7 @@ class Fit(BaseModel):
         return np.array(thermocouple_pos)
 
 
-class Dirs(BaseModel, extra=Extra.forbid):
+class Dirs(BaseModel):
     """Directories relevant to the project."""
 
     base: DirectoryPath = Field(
@@ -93,7 +93,11 @@ class Project(BaseModel, extra=Extra.allow):
 
     def __init__(self, **data):
         super().__init__(**data)
+
         self.trials = load_config(self.dirs.config / "trials.yaml", Trials).trials
+        for trial in self.trials:
+            trial.get_path(self.dirs)
+
         self.columns = load_config(self.dirs.config / "columns.yaml", Columns).columns
 
 
@@ -144,7 +148,7 @@ class Joint(GetNameEnum):
     solder = auto()
 
 
-class Trial(BaseModel, extra=Extra.forbid):
+class Trial(BaseModel, extra=Extra.allow):
     """A trial."""
 
     date: date
@@ -159,9 +163,9 @@ class Trial(BaseModel, extra=Extra.forbid):
     )
     comment: str
 
-    def get_path(self, project: Project) -> Path:
+    def get_path(self, dirs: Dirs):
         """Get the path to the data for this trial."""
-        return project.dirs.trials / self.date.isoformat() / project.dirs.per_trial
+        self.path = dirs.trials / self.date.isoformat() / dirs.per_trial
 
 
 class Trials(BaseModel):

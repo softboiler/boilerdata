@@ -8,7 +8,7 @@ import yaml
 
 from migrate import migrate_1, migrate_2, migrate_3
 from models import Coupon, Group, Joint, Rod, Sample
-from pipeline import get_defaults, main as pipeline_main
+from pipeline import get_project, main as pipeline_main
 
 CI = "Skip on CI."
 
@@ -20,7 +20,7 @@ CI = "Skip on CI."
 @m.skipif(bool(getenv("CI")), reason=CI)
 def test_migrate_3(tmp_path):
     old_commit = "b4ddee04a3d7aee2a81eaed68f3b016873f924d1"
-    project = get_defaults()
+    project = get_project()
     project.results_file = get_old_file(old_commit)
     migrate_3(
         project,
@@ -44,7 +44,7 @@ def test_migrate_3(tmp_path):
 @m.skipif(bool(getenv("CI")), reason=CI)
 def test_migrate_2(tmp_path):
     old_commit = "b4ddee04a3d7aee2a81eaed68f3b016873f924d1"
-    project = get_defaults()
+    project = get_project()
     project.results_file = get_old_file(old_commit)
     migrate_2(project, path := tmp_path / "columns.py")
     result = path.read_text(encoding="utf-8")
@@ -115,7 +115,7 @@ def test_run(tmp_path: Path):
     )
     col_order = list(dtypes.keys())[1:]
 
-    old_proj = get_defaults()
+    old_proj = get_project()
     new_results_file = tmp_path / old_proj.dirs.results_file.relative_to(
         old_proj.dirs.base
     )
@@ -141,7 +141,7 @@ def test_run(tmp_path: Path):
 
 
 def get_old_file(old_commit):
-    project = get_defaults()
+    project = get_project()
     try:
         return next((project.dirs.results / "Old").glob(f"results_*_{old_commit}.csv"))
     except StopIteration as exception:
