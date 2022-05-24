@@ -3,18 +3,18 @@ jupyter~=1.0.0
 nbstripout~=0.5.0
 
 # For `python` and `ipython` via `pythonrc.py`
-rich~=12.4.1
+rich~=12.4.4
 
 # Format
 black~=22.3.0  # doesn't follow semver
 
 # Lint
-flake8-codes~=0.2.0  # flake8 error code introspection
+flake8-codes~=0.2.2  # flake8 error code introspection
 
 # Pre-commit
 pre-commit~=2.19.0
 
 # For local publishing to PyPi with flit
-keyring~=23.5.0
+keyring~=23.5.1
 
 -r requirements_both.txt
