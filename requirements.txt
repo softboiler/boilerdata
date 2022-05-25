@@ -19,6 +19,6 @@ PyQt6~=6.3.0
 # For user-friendly CLI
 typer[all]~=0.4.1
 # For improved interactivity
-rich~=12.4.3
+rich~=12.4.4
 # Project-specific
 pyperclip~=1.8.2
