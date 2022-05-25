@@ -10,7 +10,7 @@ from boilerdata.enums import GetNameEnum
 from boilerdata.utils import StrPath, expanduser2, load_config
 
 # * -------------------------------------------------------------------------------- * #
-# * PROJECT
+# * DIRS
 
 
 class Fit(BaseModel):
@@ -92,23 +92,6 @@ class Dirs(BaseModel):
         results_file = values["results"] / results_file
         results_file.parent.mkdir(parents=True, exist_ok=True)
         return results_file
-
-
-# Extra fields are allowed so we can pack trials and columns into this
-class Project(BaseModel, extra=Extra.allow):
-    """Configuration for the package."""
-
-    dirs: Dirs
-    fit: Fit
-
-    def __init__(self, **data):
-        super().__init__(**data)
-
-        self.trials = load_config(self.dirs.config / "trials.yaml", Trials).trials
-        for trial in self.trials:
-            trial.get_path(self.dirs)
-
-        self.columns = load_config(self.dirs.config / "columns.yaml", Columns).columns
 
 
 # * -------------------------------------------------------------------------------- * #
@@ -199,14 +182,23 @@ class Column(BaseModel):
         default=...,
         description="The units for this column's values.",
     )
+    source: str = Field(
+        default=None,  # Sentinel value for non-source columns
+        description="The name of the input column that this column is based off of.",
+    )
     originlab_column_designation: str = Field(
         default=None,
         description="The column designation for plotting in OriginLab.",
     )
 
     # "always" so it'll run even if not in YAML
+    @validator("source")
+    def validate_source(cls, source, values):
+        return f"{source} ({values['units']})" if values["units"] else source
+
+    # "always" so it'll run even if not in YAML
     @validator("originlab_column_designation", pre=True, always=True)
-    def _(cls, v):
+    def validate_coldes(cls, v):
         return v or "N"
 
 
@@ -214,6 +206,29 @@ class Columns(BaseModel):
     """Columns in the dataframe."""
 
     columns: dict[str, Column]
+
+
+# * -------------------------------------------------------------------------------- * #
+# * PROJECT
+
+# Extra fields are allowed so we can pack trials and columns into this
+class Project(BaseModel, extra=Extra.allow):
+    """Configuration for the package."""
+
+    dirs: Dirs
+    fit: Fit
+
+    def __init__(self, **data):
+        super().__init__(**data)
+
+        self.trials = load_config(self.dirs.config / "trials.yaml", Trials).trials
+        for trial in self.trials:
+            trial.get_path(self.dirs)
+
+        self.columns = load_config(self.dirs.config / "columns.yaml", Columns).columns
+
+    def get_source_columns(self) -> list[Column]:
+        return [column for column in self.columns.values() if column.source]
 
     def generate_originlab_column_designation_string(self) -> str:
         return "N" + "".join(

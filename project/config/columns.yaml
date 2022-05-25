@@ -1,61 +1,40 @@
 columns:
   V:
     units: "V"
+    source: "V"
   I:
     units: "A"
-  T0:
+    source: "I"
+  T_0:
     units: "C"
     source: "T0cal"
-  T1:
+  T_1:
     units: "C"
-  T2:
+    source: "T1cal"
+  T_2:
     units: "C"
-  T3:
+    source: "T2cal"
+  T_3:
     units: "C"
-  T4:
+    source: "T3cal"
+  T_4:
     units: "C"
-  T5:
+    source: "T4cal"
+  T_5:
     units: "C"
-  Tw1:
+    source: "T5cal"
+  T_w1:
     units: "C"
-  Tw2:
+    source: "Tw1cal"
+  T_w2:
     units: "C"
-  Tw3:
+    source: "Tw2cal"
+  T_w3:
     units: "C"
+    source: "Tw3cal"
   P:
-    units: "V"
-  T0cal:
-    units: "C"
-  T1cal:
-    units: "C"
-  T2cal:
-    units: "C"
-  T3cal:
-    units: "C"
-  T4cal:
-    units: "C"
-  T5cal:
-    units: "C"
-  Tw1cal:
-    units: "C"
-  Tw2cal:
-    units: "C"
-  Tw3cal:
-    units: "C"
-  Pcal:
     units: "psi"
-  Q01:
-    units: "W"
-  Q12:
-    units: "W"
-  Q23:
-    units: "W"
-  Q34:
-    units: "W"
-  Q45:
-    units: "W"
-  T6ext:
-    units: "C"
+    source: "Pcal"
   dT_dx:
     units: "K/m"
   TLfit:

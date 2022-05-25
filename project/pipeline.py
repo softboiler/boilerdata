@@ -25,7 +25,7 @@ def main(project: Project):
     for trial in project.trials:
         if trial.monotonic:
             df = (
-                get_steady_state(trial.path, POINTS_TO_AVERAGE)
+                get_steady_state(trial.path, project, POINTS_TO_AVERAGE)
                 .pipe(rename_columns, project)
                 .pipe(run_one, project, POINTS_TO_AVERAGE)
                 .assign(**json.loads(trial.json()))  # Assign trial metadata
@@ -36,11 +36,20 @@ def main(project: Project):
     ).pipe(prettify, project).to_csv(project.dirs.results_file, index_label="Run")
 
 
-def get_steady_state(path: Path, points_to_average: int) -> pd.DataFrame:
+def get_steady_state(path: Path, project, points_to_average: int) -> pd.DataFrame:
     """Get steady-state values for the run."""
+    source_cols = project.get_source_columns()
     files: list[Path] = sorted(path.glob("*.csv"))
     run_names: list[str] = [file.stem for file in files]
-    runs_full: list[pd.DataFrame] = [pd.read_csv(file, index_col=0) for file in files]
+    runs_full: list[pd.DataFrame] = [
+        pd.read_csv(
+            file,
+            index_col=0,
+            usecols=[col.source for col in source_cols],  # pyright: ignore
+        )
+        for file in files
+    ]
+    # TODO: First column gets lost here, perhaps to do with indexing?
     runs_steady_state: list[pd.Series] = [
         df.iloc[-points_to_average:, :].mean() for df in runs_full
     ]
