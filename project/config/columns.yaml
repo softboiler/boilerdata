@@ -1,4 +1,8 @@
 columns:
+  run:
+    dtype: string
+    source: "time"
+    index: true
   V:
     units: "V"
     source: "V"
@@ -39,14 +43,10 @@ columns:
     units: "K/m"
   TLfit:
     units: "C"
-  rvalue:
-    units: ""
-  pvalue:
-    units: ""
-  stderr:
-    units: ""
-  intercept_stderr:
-    units: ""
+  rvalue: {}
+  pvalue: {}
+  stderr: {}
+  intercept_stderr: {}
   dT_dx_err:
     units: "K/m"
   k:
@@ -60,26 +60,26 @@ columns:
   Q:
     units: "W"
   DT:
-    pretty_name: ∆T
+    pretty_name: "∆T"
     units: "K"
     originlab_coldes: "X"
   DT_err:
-    pretty_name: ∆T_err
+    pretty_name: "∆T_err"
     units: "K"
     originlab_coldes: "M"
   date:
-    units: ""
+    dtype: datetime64[ns]
   rod:
-    units: ""
+    dtype: category
   coupon:
-    units: ""
+    dtype: category
   sample:
-    units: ""
+    dtype: category
   group:
-    units: ""
+    dtype: category
   joint:
-    units: ""
+    dtype: category
   monotonic:
-    units: ""
+    dtype: category
   comment:
-    units: ""
+    dtype: category

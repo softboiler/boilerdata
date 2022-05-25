@@ -4,27 +4,13 @@ from pathlib import Path
 from typing import Optional
 
 import numpy as np
-from pydantic import BaseModel, DirectoryPath, Extra, Field, validator
+from pydantic import BaseModel, DirectoryPath, Field, validator
 
-from boilerdata.enums import GetNameEnum
-from boilerdata.utils import StrPath, expanduser2, load_config
+from boilerdata.enums import NameEnum
+from boilerdata.utils import StrPath, allow_extra, expanduser2, load_config
 
 # * -------------------------------------------------------------------------------- * #
 # * DIRS
-
-
-class Fit(BaseModel):
-    """Configure the linear regression of thermocouple temperatures vs. position."""
-
-    thermocouple_pos: list[float] = Field(
-        default=...,
-        description="Thermocouple positions.",
-    )
-    do_plot: bool = Field(False, description="Whether to plot the linear regression.")
-
-    @validator("thermocouple_pos")
-    def _(cls, thermocouple_pos):
-        return np.array(thermocouple_pos)
 
 
 class Dirs(BaseModel):
@@ -95,10 +81,37 @@ class Dirs(BaseModel):
 
 
 # * -------------------------------------------------------------------------------- * #
+# * PARAMS
+
+
+class Fit(BaseModel):
+    """Configure the linear regression of thermocouple temperatures vs. position."""
+
+    thermocouple_pos: list[float] = Field(
+        default=...,
+        description="Thermocouple positions.",
+    )
+    do_plot: bool = Field(False, description="Whether to plot the linear regression.")
+
+    @validator("thermocouple_pos")
+    def _(cls, thermocouple_pos):
+        return np.array(thermocouple_pos)
+
+
+class Params(BaseModel):
+    """Parameters of the pipeline."""
+
+    records_to_average: int = Field(
+        default=60,
+        description="The number of records over which to average in a given trial.",
+    )
+
+
+# * -------------------------------------------------------------------------------- * #
 # * TRIALS
 
 
-class Rod(GetNameEnum):
+class Rod(NameEnum):
     """The rod used in this trial."""
 
     W = auto()
@@ -106,7 +119,7 @@ class Rod(GetNameEnum):
     Y = auto()
 
 
-class Coupon(GetNameEnum):
+class Coupon(NameEnum):
     """The coupon attached to the rod for this trial."""
 
     A1 = auto()
@@ -118,14 +131,14 @@ class Coupon(GetNameEnum):
     A9 = auto()
 
 
-class Sample(GetNameEnum):
+class Sample(NameEnum):
     """The sample attached to the coupon in this trial."""
 
     NA = auto()  # If no sample is attached to the coupon.
     B3 = auto()
 
 
-class Group(GetNameEnum):
+class Group(NameEnum):
     """The group that this sample belongs to."""
 
     control = auto()
@@ -133,7 +146,7 @@ class Group(GetNameEnum):
     hybrid = auto()
 
 
-class Joint(GetNameEnum):
+class Joint(NameEnum):
     """The method used to join parts of the sample in this trial."""
 
     paste = auto()
@@ -141,7 +154,7 @@ class Joint(GetNameEnum):
     solder = auto()
 
 
-class Trial(BaseModel, extra=Extra.allow):
+class Trial(BaseModel):
     """A trial."""
 
     date: date
@@ -158,7 +171,9 @@ class Trial(BaseModel, extra=Extra.allow):
 
     def get_path(self, dirs: Dirs):
         """Get the path to the data for this trial."""
-        self.path = dirs.trials / self.date.isoformat() / dirs.per_trial
+
+        with allow_extra(self):
+            self.path = dirs.trials / self.date.isoformat() / dirs.per_trial
 
 
 class Trials(BaseModel):
@@ -170,28 +185,61 @@ class Trials(BaseModel):
 # * -------------------------------------------------------------------------------- * #
 # * COLUMNS
 
+# sourcery skip: avoid-builtin-shadow
+class PandasDtype(NameEnum):
+    float = auto()  # noqa: A003
+    int = auto()  # noqa: A003
+    bool = auto()  # noqa: A003
+    timedelta64ns = "timedelta64[ns]"
+    datetime64ns = "datetime64[ns]"
+    string = auto()
+    boolean = auto()
+    category = auto()
+    Sparse = auto()
+    interval = auto()
+    Int8 = auto()
+    Int16 = auto()
+    Int32 = auto()
+    Int64 = auto()
+    UInt8 = auto()
+    UInt16 = auto()
+    Uint32 = auto()
+    UInt64 = auto()
+
 
 class Column(BaseModel):
     """Metadata for a column in the dataframe."""
 
+    index: bool = Field(  # Validator ensures this is set even if omitted.
+        default=False,
+        description="Whether this column is to be the index.",
+    )
+    dtype: PandasDtype = Field(
+        default=PandasDtype.float,
+        description="The Pandas data type to be used to represent this column.",
+    )
+    units: str = Field(
+        default="",
+        description="The units for this column's values.",
+    )
+    source: Optional[str] = Field(
+        default=None,
+        description="The name of the input column that this column is based off of.",
+    )
+    originlab_coldes: str = Field(  # Validator ensures this is set even if omitted.
+        default=None,
+        description="The column designation for plotting in OriginLab.",
+    )
     pretty_name: Optional[str] = Field(
         default=None,
         description="The column name.",
     )
-    units: str = Field(
-        default=...,
-        description="The units for this column's values.",
-    )
-    source: str = Field(
-        default=None,  # Sentinel value for non-source columns
-        description="The name of the input column that this column is based off of.",
-    )
-    originlab_coldes: str = Field(
-        default=None,
-        description="The column designation for plotting in OriginLab.",
-    )
 
     # "always" so it'll run even if not in YAML
+    @validator("index", pre=True, always=True)
+    def validate_index(cls, index):
+        return index or False
+
     @validator("source")
     def validate_source(cls, source, values):
         return f"{source} ({values['units']})" if values["units"] else source
@@ -201,34 +249,61 @@ class Column(BaseModel):
     def validate_coldes(cls, v):
         return v or "N"
 
+    def __init__(self, **data):
+        super().__init__(**data)
+        self.name: str = ""  # Should never stay this way. Columns.__init__() sets it.
+
 
 class Columns(BaseModel):
     """Columns in the dataframe."""
 
     columns: dict[str, Column]
 
+    def __init__(self, **data):
+        super().__init__(**data)
+
+        for name, column in self.columns.items():
+            column.name = name
+
 
 # * -------------------------------------------------------------------------------- * #
 # * PROJECT
 
-# Extra fields are allowed so we can pack trials and columns into this
-class Project(BaseModel, extra=Extra.allow):
+
+class Project(BaseModel):
     """Configuration for the package."""
 
     dirs: Dirs
+    params: Params
     fit: Fit
 
     def __init__(self, **data):
         super().__init__(**data)
 
-        self.trials = load_config(self.dirs.config / "trials.yaml", Trials).trials
+        with allow_extra(self):
+            self.trials = load_config(self.dirs.config / "trials.yaml", Trials).trials
+            self.columns = load_config(
+                self.dirs.config / "columns.yaml", Columns
+            ).columns
+
         for trial in self.trials:
             trial.get_path(self.dirs)
 
-        self.columns = load_config(self.dirs.config / "columns.yaml", Columns).columns
-
     def get_source_cols(self) -> list[Column]:
         return [column for column in self.columns.values() if column.source]
+
+    def get_index(self) -> Column:
+        index_cols = [column for column in self.columns.values() if column.index]
+        match index_cols:
+            case [index]:
+                return index
+            case []:
+                raise ValueError("One column must be designated as the index.")
+            case [*indices]:
+                indices = [index.name for index in indices]
+                raise ValueError(
+                    f"Only one column may be designated as the index. You specified the following: {', '.join(indices)}"
+                )
 
     def get_originlab_coldes(self) -> str:
         return "N" + "".join(

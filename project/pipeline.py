@@ -7,6 +7,7 @@ import re
 from numpy import typing as npt
 import numpy as np
 import pandas as pd
+import pandera as pa
 from propshop import get_prop
 from propshop.library import Mat, Prop
 from scipy.constants import convert_temperature
@@ -16,18 +17,18 @@ from config.columns import Columns as C  # noqa: N817
 from models import Project
 from utils import get_project
 
+pd.options.mode.string_storage = "pyarrow"
+
 
 def main(project: Project):
-
-    POINTS_TO_AVERAGE = 60  # noqa: N806
 
     dfs: list[pd.DataFrame] = []
     for trial in project.trials:
         if trial.monotonic:
             df = (
-                get_steady_state(trial.path, project, POINTS_TO_AVERAGE)
+                get_steady_state(trial.path, project)
                 .pipe(rename_columns, project)
-                .pipe(run_one, project, POINTS_TO_AVERAGE)
+                .pipe(run_one, project, project.params.records_to_average)
                 .assign(**json.loads(trial.json()))  # Assign trial metadata
             )
             dfs.append(df)
@@ -36,22 +37,41 @@ def main(project: Project):
     ).pipe(prettify, project).to_csv(project.dirs.results_file, index_label="Run")
 
 
-def get_steady_state(path: Path, project, points_to_average: int) -> pd.DataFrame:
+# * -------------------------------------------------------------------------------- * #
+# * PER-TRIAL STAGES
+
+
+def get_steady_state(path: Path, project) -> pd.DataFrame:
     """Get steady-state values for the run."""
-    source_cols = project.get_source_columns()
+
+    schema = pa.DataFrameSchema(
+        checks=pa.Check(
+            lambda df: len(df) > project.params.records_to_average,
+            name="whether there are enough records to compute steady-state",
+        )
+    )
+
+    source_cols = project.get_source_cols()
     files: list[Path] = sorted(path.glob("*.csv"))
     run_names: list[str] = [file.stem for file in files]
-    runs_full: list[pd.DataFrame] = [
-        pd.read_csv(
-            file,
-            index_col=0,
-            usecols=[col.source for col in source_cols],  # pyright: ignore
-        )
-        for file in files
-    ]
-    # TODO: First column gets lost here, perhaps to do with indexing?
+    runs_full: list[pd.DataFrame] = []
+    for file in files:
+        try:
+            runs_full.append(
+                schema(
+                    pd.read_csv(
+                        file,
+                        usecols=[col.source for col in source_cols],  # pyright: ignore
+                        index_col=project.get_index().source,
+                    )
+                )
+            )
+        except pa.errors.SchemaError as exception:
+            raise ValueError(
+                f"There are not enough records in {file.name} to compute steady-state."
+            ) from exception
     runs_steady_state: list[pd.Series] = [
-        df.iloc[-points_to_average:, :].mean() for df in runs_full
+        df.iloc[-project.params.records_to_average :, :].mean() for df in runs_full
     ]
     return pd.DataFrame(runs_steady_state, index=run_names)
 
@@ -64,6 +84,10 @@ def rename_columns(df: pd.DataFrame, project: Project) -> pd.DataFrame:
 
 def run_one(df: pd.DataFrame, project: Project, points_to_average: int) -> pd.DataFrame:
     return df.pipe(fit, project, points_to_average)
+
+
+# * -------------------------------------------------------------------------------- * #
+# * FINALIZING STAGES
 
 
 def set_units_row(df: pd.DataFrame, project: Project) -> pd.DataFrame:
@@ -102,7 +126,6 @@ def prettify(df: pd.DataFrame, project: Project) -> pd.DataFrame:
 def fit(
     df: pd.DataFrame,
     project: Project,
-    points_to_average: int,
 ):
     """Fit the data assuming one-dimensional, steady-state conduction."""
 
@@ -131,7 +154,7 @@ def fit(
                     func=lambda ser: linregress_series(
                         project.fit.thermocouple_pos,
                         ser,
-                        points_to_average,
+                        project.params.records_to_average,
                         (C.dT_dx, C.TLfit),
                     ),
                 ),

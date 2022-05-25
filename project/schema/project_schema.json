@@ -6,12 +6,16 @@
     "dirs": {
       "$ref": "#/definitions/Dirs"
     },
+    "params": {
+      "$ref": "#/definitions/Params"
+    },
     "fit": {
       "$ref": "#/definitions/Fit"
     }
   },
   "required": [
     "dirs",
+    "params",
     "fit"
   ],
   "definitions": {
@@ -71,8 +75,20 @@
         "trials",
         "results",
         "per_trial"
-      ],
-      "additionalProperties": false
+      ]
+    },
+    "Params": {
+      "title": "Params",
+      "description": "Parameters of the pipeline.",
+      "type": "object",
+      "properties": {
+        "records_to_average": {
+          "title": "Records To Average",
+          "description": "The number of records over which to average in a given trial.",
+          "default": 60,
+          "type": "integer"
+        }
+      }
     },
     "Fit": {
       "title": "Fit",
@@ -96,8 +112,7 @@
       },
       "required": [
         "thermocouple_pos"
-      ],
-      "additionalProperties": false
+      ]
     }
   }
 }

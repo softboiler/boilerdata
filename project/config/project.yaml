@@ -6,6 +6,8 @@ dirs:
   results: "Results"
   per_trial: "data"
 
+params: {}
+
 fit:
   thermocouple_pos:
     - 0.10358882

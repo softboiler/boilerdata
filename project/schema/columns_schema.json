@@ -14,21 +14,55 @@
   "required": [
     "columns"
   ],
-  "additionalProperties": false,
   "definitions": {
+    "PandasDtype": {
+      "title": "PandasDtype",
+      "description": "An enumeration.",
+      "enum": [
+        "float",
+        "int",
+        "bool",
+        "timedelta64[ns]",
+        "datetime64[ns]",
+        "string",
+        "boolean",
+        "category",
+        "Sparse",
+        "interval",
+        "Int8",
+        "Int16",
+        "Int32",
+        "Int64",
+        "UInt8",
+        "UInt16",
+        "Uint32",
+        "UInt64"
+      ]
+    },
     "Column": {
       "title": "Column",
       "description": "Metadata for a column in the dataframe.",
       "type": "object",
       "properties": {
-        "pretty_name": {
-          "title": "Pretty Name",
-          "description": "The column name.",
-          "type": "string"
+        "index": {
+          "title": "Index",
+          "description": "Whether this column is to be the index.",
+          "default": false,
+          "type": "boolean"
+        },
+        "dtype": {
+          "description": "The Pandas data type to be used to represent this column.",
+          "default": "float",
+          "allOf": [
+            {
+              "$ref": "#/definitions/PandasDtype"
+            }
+          ]
         },
         "units": {
           "title": "Units",
           "description": "The units for this column's values.",
+          "default": "",
           "type": "string"
         },
         "source": {
@@ -40,12 +74,13 @@
           "title": "Originlab Coldes",
           "description": "The column designation for plotting in OriginLab.",
           "type": "string"
+        },
+        "pretty_name": {
+          "title": "Pretty Name",
+          "description": "The column name.",
+          "type": "string"
         }
-      },
-      "required": [
-        "units"
-      ],
-      "additionalProperties": false
+      }
     }
   }
 }

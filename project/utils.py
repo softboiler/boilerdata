@@ -2,7 +2,7 @@
 
 import re
 
-from pydantic import Extra
+from pydantic import ValidationError
 
 from boilerdata.enums import generate_columns_enum
 from boilerdata.utils import load_config, write_schema
@@ -13,12 +13,14 @@ models = [Project, Trials, Columns]
 
 def update_schema():
 
-    project = get_project()
+    try:
+        project = get_project()
+    except ValidationError as exception:
+        raise ValueError(
+            "Schema not updated. Resolve validation errors first."
+        ) from exception
 
     for model in models:
-
-        # Forbid extra properties when writing the schema.
-        model.Config.extra = Extra.forbid
 
         write_schema(
             project.dirs.project_schema

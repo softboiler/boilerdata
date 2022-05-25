@@ -6,6 +6,7 @@ from boilerdata.enums import GetNameEnum
 
 
 class Columns(GetNameEnum):
+    run = auto()
     V = auto()
     I = auto()
     T_0 = auto()
