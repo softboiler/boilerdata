@@ -17,6 +17,7 @@ CI = "Skip on CI."
 # * MIGRATIONS
 
 
+@m.skip("outdated")
 @m.skipif(bool(getenv("CI")), reason=CI)
 def test_migrate_3(tmp_path):
     old_commit = "b4ddee04a3d7aee2a81eaed68f3b016873f924d1"
@@ -41,6 +42,7 @@ def test_migrate_3(tmp_path):
     assert result == expected
 
 
+@m.skip("outdated")
 @m.skipif(bool(getenv("CI")), reason=CI)
 def test_migrate_2(tmp_path):
     old_commit = "b4ddee04a3d7aee2a81eaed68f3b016873f924d1"
