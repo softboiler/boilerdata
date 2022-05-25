@@ -186,7 +186,7 @@ class Column(BaseModel):
         default=None,  # Sentinel value for non-source columns
         description="The name of the input column that this column is based off of.",
     )
-    originlab_column_designation: str = Field(
+    originlab_coldes: str = Field(
         default=None,
         description="The column designation for plotting in OriginLab.",
     )
@@ -197,7 +197,7 @@ class Column(BaseModel):
         return f"{source} ({values['units']})" if values["units"] else source
 
     # "always" so it'll run even if not in YAML
-    @validator("originlab_column_designation", pre=True, always=True)
+    @validator("originlab_coldes", pre=True, always=True)
     def validate_coldes(cls, v):
         return v or "N"
 
@@ -227,10 +227,10 @@ class Project(BaseModel, extra=Extra.allow):
 
         self.columns = load_config(self.dirs.config / "columns.yaml", Columns).columns
 
-    def get_source_columns(self) -> list[Column]:
+    def get_source_cols(self) -> list[Column]:
         return [column for column in self.columns.values() if column.source]
 
-    def generate_originlab_column_designation_string(self) -> str:
+    def get_originlab_coldes(self) -> str:
         return "N" + "".join(
-            [column.originlab_column_designation for column in self.columns.values()]
+            [column.originlab_coldes for column in self.columns.values()]
         )

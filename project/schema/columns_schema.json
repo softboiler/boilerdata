@@ -14,6 +14,7 @@
   "required": [
     "columns"
   ],
+  "additionalProperties": false,
   "definitions": {
     "Column": {
       "title": "Column",
@@ -30,15 +31,21 @@
           "description": "The units for this column's values.",
           "type": "string"
         },
-        "originlab_column_designation": {
-          "title": "Originlab Column Designation",
+        "source": {
+          "title": "Source",
+          "description": "The name of the input column that this column is based off of.",
+          "type": "string"
+        },
+        "originlab_coldes": {
+          "title": "Originlab Coldes",
           "description": "The column designation for plotting in OriginLab.",
           "type": "string"
         }
       },
       "required": [
         "units"
-      ]
+      ],
+      "additionalProperties": false
     }
   }
 }

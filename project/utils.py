@@ -2,6 +2,8 @@
 
 import re
 
+from pydantic import Extra
+
 from boilerdata.enums import generate_columns_enum
 from boilerdata.utils import load_config, write_schema
 from models import Columns, Project, Trials
@@ -14,6 +16,9 @@ def update_schema():
     project = get_project()
 
     for model in models:
+
+        # Forbid extra properties when writing the schema.
+        model.Config.extra = Extra.forbid
 
         write_schema(
             project.dirs.project_schema

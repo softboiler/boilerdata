@@ -53,20 +53,20 @@ columns:
     units: "W/m-K"
   q:
     units: "W/cm^2"
-    originlab_column_designation: "Y"
+    originlab_coldes: "Y"
   q_err:
     units: "W/cm^2"
-    originlab_column_designation: "E"
+    originlab_coldes: "E"
   Q:
     units: "W"
   DT:
     pretty_name: ∆T
     units: "K"
-    originlab_column_designation: "X"
+    originlab_coldes: "X"
   DT_err:
     pretty_name: ∆T_err
     units: "K"
-    originlab_column_designation: "M"
+    originlab_coldes: "M"
   date:
     units: ""
   rod:

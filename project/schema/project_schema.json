@@ -71,7 +71,8 @@
         "trials",
         "results",
         "per_trial"
-      ]
+      ],
+      "additionalProperties": false
     },
     "Fit": {
       "title": "Fit",
@@ -95,7 +96,8 @@
       },
       "required": [
         "thermocouple_pos"
-      ]
+      ],
+      "additionalProperties": false
     }
   }
 }

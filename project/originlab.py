@@ -1,7 +1,6 @@
 import pyperclip
 
-from boilerdata.utils import load_config
-from models import Columns
+from utils import get_project
 
-columns = load_config("project/config/columns.yaml", Columns)
-pyperclip.copy(columns.generate_originlab_column_designation_string())
+project = get_project()
+pyperclip.copy(project.get_originlab_coldes())

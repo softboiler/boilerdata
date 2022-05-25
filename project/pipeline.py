@@ -112,8 +112,8 @@ def fit(
     diameter = 0.009525 * cm_p_m  # (cm) 3/8"
 
     # Column names
-    temps_to_regress = [C.T1cal, C.T2cal, C.T3cal, C.T4cal, C.T5cal]
-    water_temps = [C.Tw1cal, C.Tw2cal, C.Tw3cal]
+    temps_to_regress = [C.T_1, C.T_2, C.T_3, C.T_4, C.T_5]
+    water_temps = [C.T_w1, C.T_w2, C.T_w3]
 
     # Computed values
     temperature_cols: pd.DataFrame = df.loc[:, temps_to_regress]
