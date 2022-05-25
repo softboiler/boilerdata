@@ -1,9 +1,10 @@
 """Configuration utilities for loading and dumping Pydantic models and their schema."""
 
+from contextlib import contextmanager
 from os import PathLike
 from pathlib import Path
 
-from pydantic import BaseModel, MissingError, ValidationError
+from pydantic import BaseModel, Extra, MissingError, ValidationError
 import yaml
 
 StrPath = str | PathLike[str]
@@ -149,3 +150,24 @@ def write_schema(path: StrPath, model: type[BaseModel]):
     if path.suffix != ".json":
         raise ValueError(f"The path '{path}' does not refer to a JSON file.")
     path.write_text(model.schema_json(indent=2) + "\n", encoding="utf-8")
+
+
+@contextmanager
+def allow_extra(model: BaseModel):
+    """Temporarily allow extra properties to be set on a Pydantic model.
+
+    This is useful when writing a custom `__init__`, where not explicitly allowing extra
+    properties will result in errors, but you don't want to allow extra properties
+    forevermore.
+
+    Parameters
+    ----------
+    model: BaseModel
+        The model to allow extras on.
+    """
+    original_config = model.Config.extra
+    model.Config.extra = Extra.allow
+    try:
+        yield
+    finally:
+        model.Config.extra = original_config

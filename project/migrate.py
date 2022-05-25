@@ -11,11 +11,11 @@ from pydantic import BaseModel, DirectoryPath, Field
 
 from boilerdata.utils import StrPath, dump_model, load_config, write_schema
 from models import Project
-from pipeline import get_defaults
+from pipeline import get_project
 
 
 def main():
-    project, _ = get_defaults()
+    project = get_project()
     migrate_3(
         project, "project/schema/columns_schema.json", "project/config/columns.yaml"
     )

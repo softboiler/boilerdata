@@ -1,14 +1,17 @@
+from math import inf
 from os import getenv
 from pathlib import Path
 
 import pandas as pd
 from pandas.testing import assert_frame_equal
-from pytest import mark as m
+from pydantic import Extra
+from pytest import fixture, mark as m, raises
 import yaml
 
 from migrate import migrate_1, migrate_2, migrate_3
 from models import Coupon, Group, Joint, Rod, Sample
-from pipeline import get_defaults, main as pipeline_main
+from pipeline import main as pipeline_main
+from utils import get_project
 
 CI = "Skip on CI."
 
@@ -17,10 +20,11 @@ CI = "Skip on CI."
 # * MIGRATIONS
 
 
+@m.skip("outdated")
 @m.skipif(bool(getenv("CI")), reason=CI)
 def test_migrate_3(tmp_path):
     old_commit = "b4ddee04a3d7aee2a81eaed68f3b016873f924d1"
-    project = get_defaults()
+    project = get_project()
     project.results_file = get_old_file(old_commit)
     migrate_3(
         project,
@@ -41,10 +45,11 @@ def test_migrate_3(tmp_path):
     assert result == expected
 
 
+@m.skip("outdated")
 @m.skipif(bool(getenv("CI")), reason=CI)
 def test_migrate_2(tmp_path):
     old_commit = "b4ddee04a3d7aee2a81eaed68f3b016873f924d1"
-    project = get_defaults()
+    project = get_project()
     project.results_file = get_old_file(old_commit)
     migrate_2(project, path := tmp_path / "columns.py")
     result = path.read_text(encoding="utf-8")
@@ -67,10 +72,16 @@ def test_migrate_1(tmp_path):
 
 
 @m.skipif(bool(getenv("CI")), reason=CI)
-def test_run(tmp_path: Path):
+def test_get_steady_state_raises(tmp_proj):
+    tmp_proj.params.records_to_average = inf
+    with raises(ValueError, match="not enough records"):
+        pipeline_main(tmp_proj)
+
+
+@m.skipif(bool(getenv("CI")), reason=CI)
+def test_run(tmp_proj):
     """Ensure the same result is coming out of the pipeline as before."""
 
-    pd.options.mode.string_storage = "pyarrow"
     old_commit = "02731650edf4ea0f4e08f1148f2bed57ed2515ca"
     common_records_count = 322
     dtypes = {
@@ -115,24 +126,10 @@ def test_run(tmp_path: Path):
     )
     col_order = list(dtypes.keys())[1:]
 
-    old_proj = get_defaults()
-    new_results_file = tmp_path / old_proj.dirs.results_file.relative_to(
-        old_proj.dirs.base
-    )
-    new_results_file.parent.mkdir()  # Needed because copying won't run the validators
-    new_proj = old_proj.copy(
-        update=dict(
-            dirs=old_proj.dirs.copy(
-                update=dict(
-                    results_file=new_results_file,
-                )
-            )
-        )
-    )
-    pipeline_main(new_proj)
+    pipeline_main(tmp_proj)
 
     old = pd.read_csv(get_old_file(old_commit), **read_csv_params)[col_order]
-    new = pd.read_csv(new_proj.dirs.results_file, **read_csv_params)[col_order]
+    new = pd.read_csv(tmp_proj.dirs.results_file, **read_csv_params)[col_order]
     assert_frame_equal(old, new)
 
 
@@ -141,8 +138,29 @@ def test_run(tmp_path: Path):
 
 
 def get_old_file(old_commit):
-    project = get_defaults()
+    project = get_project()
     try:
         return next((project.dirs.results / "Old").glob(f"results_*_{old_commit}.csv"))
     except StopIteration as exception:
         raise StopIteration("Old results file is missing.") from exception
+
+
+@fixture
+def tmp_proj(tmp_path):
+    old_proj = get_project()
+    new_results_file = tmp_path / old_proj.dirs.results_file.relative_to(
+        old_proj.dirs.base
+    )
+    new_results_file.parent.mkdir()  # Needed because copying won't run the validators
+    tmp_proj = old_proj.copy(
+        update=dict(
+            dirs=old_proj.dirs.copy(
+                update=dict(
+                    results_file=new_results_file,
+                )
+            )
+        )
+    )
+    tmp_proj.dirs.Config.extra = Extra.allow
+    tmp_proj.dirs.tmp_path = tmp_path
+    return tmp_proj

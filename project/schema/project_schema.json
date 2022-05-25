@@ -6,12 +6,16 @@
     "dirs": {
       "$ref": "#/definitions/Dirs"
     },
+    "params": {
+      "$ref": "#/definitions/Params"
+    },
     "fit": {
       "$ref": "#/definitions/Fit"
     }
   },
   "required": [
     "dirs",
+    "params",
     "fit"
   ],
   "definitions": {
@@ -29,6 +33,12 @@
         "config": {
           "title": "Config",
           "description": "The directory in which the config files are. Must be relative to the base directory or an absolute path that exists.",
+          "format": "directory-path",
+          "type": "string"
+        },
+        "project_schema": {
+          "title": "Project Schema",
+          "description": "The directory in which the schema are. Must be relative to the base directory or an absolute path that exists.",
           "format": "directory-path",
           "type": "string"
         },
@@ -61,11 +71,24 @@
       "required": [
         "base",
         "config",
+        "project_schema",
         "trials",
         "results",
         "per_trial"
-      ],
-      "additionalProperties": false
+      ]
+    },
+    "Params": {
+      "title": "Params",
+      "description": "Parameters of the pipeline.",
+      "type": "object",
+      "properties": {
+        "records_to_average": {
+          "title": "Records To Average",
+          "description": "The number of records over which to average in a given trial.",
+          "default": 60,
+          "type": "integer"
+        }
+      }
     },
     "Fit": {
       "title": "Fit",

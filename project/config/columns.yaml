@@ -1,105 +1,85 @@
 columns:
+  run:
+    dtype: string
+    source: "time"
+    index: true
   V:
     units: "V"
+    source: "V"
   I:
     units: "A"
-  T0:
+    source: "I"
+  T_0:
     units: "C"
-  T1:
+    source: "T0cal"
+  T_1:
     units: "C"
-  T2:
+    source: "T1cal"
+  T_2:
     units: "C"
-  T3:
+    source: "T2cal"
+  T_3:
     units: "C"
-  T4:
+    source: "T3cal"
+  T_4:
     units: "C"
-  T5:
+    source: "T4cal"
+  T_5:
     units: "C"
-  Tw1:
+    source: "T5cal"
+  T_w1:
     units: "C"
-  Tw2:
+    source: "Tw1cal"
+  T_w2:
     units: "C"
-  Tw3:
+    source: "Tw2cal"
+  T_w3:
     units: "C"
+    source: "Tw3cal"
   P:
-    units: "V"
-  T0cal:
-    units: "C"
-  T1cal:
-    units: "C"
-  T2cal:
-    units: "C"
-  T3cal:
-    units: "C"
-  T4cal:
-    units: "C"
-  T5cal:
-    units: "C"
-  Tw1cal:
-    units: "C"
-  Tw2cal:
-    units: "C"
-  Tw3cal:
-    units: "C"
-  Pcal:
     units: "psi"
-  Q01:
-    units: "W"
-  Q12:
-    units: "W"
-  Q23:
-    units: "W"
-  Q34:
-    units: "W"
-  Q45:
-    units: "W"
-  T6ext:
-    units: "C"
+    source: "Pcal"
   dT_dx:
     units: "K/m"
   TLfit:
     units: "C"
-  rvalue:
-    units: ""
-  pvalue:
-    units: ""
-  stderr:
-    units: ""
-  intercept_stderr:
-    units: ""
+  rvalue: {}
+  pvalue: {}
+  stderr: {}
+  intercept_stderr: {}
   dT_dx_err:
     units: "K/m"
   k:
     units: "W/m-K"
   q:
     units: "W/cm^2"
-    originlab_column_designation: "Y"
+    originlab_coldes: "Y"
   q_err:
     units: "W/cm^2"
-    originlab_column_designation: "E"
+    originlab_coldes: "E"
   Q:
     units: "W"
   DT:
-    pretty_name: ∆T
+    pretty_name: "∆T"
     units: "K"
-    originlab_column_designation: "X"
+    originlab_coldes: "X"
   DT_err:
-    pretty_name: ∆T_err
+    pretty_name: "∆T_err"
     units: "K"
-    originlab_column_designation: "M"
+    originlab_coldes: "M"
   date:
-    units: ""
+    dtype: datetime64[ns]
   rod:
-    units: ""
+    dtype: category
   coupon:
-    units: ""
+    dtype: category
   sample:
-    units: ""
+    dtype: category
   group:
-    units: ""
+    dtype: category
   joint:
-    units: ""
+    dtype: category
   monotonic:
-    units: ""
+    dtype: category
   comment:
-    units: ""
+    dtype: category

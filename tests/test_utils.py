@@ -89,7 +89,7 @@ def test_load_config(tmp_path):
 
 
 def test_dump_model(tmp_path):
-    user_model_path = tmp_path / "test.toml"
+    user_model_path = tmp_path / "test.yaml"
     dump_model(user_model_path, USER_MODEL_INSTANCE)
     assert user_model_path.read_text(encoding="utf-8") == USER_MODEL_YAML
 
