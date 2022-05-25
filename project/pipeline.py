@@ -4,7 +4,6 @@ import json
 from pathlib import Path
 import re
 
-from columns import Columns as C  # noqa: N817
 from numpy import typing as npt
 import numpy as np
 import pandas as pd
@@ -13,6 +12,7 @@ from propshop.library import Mat, Prop
 from scipy.constants import convert_temperature
 from scipy.stats import linregress
 
+from config.columns import Columns as C  # noqa: N817
 from models import Project
 from utils import get_project
 
