@@ -7,7 +7,6 @@ import re
 from numpy import typing as npt
 import numpy as np
 import pandas as pd
-import pandera as pa
 from propshop import get_prop
 from propshop.library import Mat, Prop
 from scipy.constants import convert_temperature
@@ -44,31 +43,16 @@ def main(project: Project):
 def get_steady_state(path: Path, project: Project) -> pd.DataFrame:
     """Get steady-state values for the trial."""
 
-    @pa.check_output(
-        pa.DataFrameSchema(
-            checks=pa.Check(lambda df: len(df) > project.params.records_to_average)
-        )
-    )
-    def get_run(project: Project, file: Path) -> pd.DataFrame:
-        """Get a run"""
-        return pd.read_csv(
-            file,
-            usecols=[
-                col.source for col in project.get_source_cols()  # pyright: ignore
-            ],
-            index_col=project.get_index().source,
-        )
-
     files: list[Path] = sorted(path.glob("*.csv"))
     run_names: list[str] = [file.stem for file in files]
     runs: list[pd.DataFrame] = []
     for file in files:
-        try:
-            runs.append(get_run(project, file))
-        except pa.errors.SchemaError as exception:
+        run = get_run(project, file)
+        if len(run) < project.params.records_to_average:
             raise ValueError(
                 f"There are not enough records in {file.name} to compute steady-state."
-            ) from exception
+            )
+        runs.append(run)
 
     runs_steady_state: list[pd.Series] = [
         df.iloc[-project.params.records_to_average :, :].mean() for df in runs
@@ -76,38 +60,12 @@ def get_steady_state(path: Path, project: Project) -> pd.DataFrame:
     return pd.DataFrame(runs_steady_state, index=run_names)
 
 
-def get_runs(path: Path, project: Project) -> tuple[list[str], list[pd.DataFrame]]:
-    """Get runs and names of runs for the trial.
-
-    Only get as many columns as needed.
-    """
-
-    schema = pa.DataFrameSchema(
-        checks=pa.Check(
-            lambda df: len(df) > project.params.records_to_average,
-            name="whether there are enough records to compute steady-state",
-        )
+def get_run(project: Project, file: Path) -> pd.DataFrame:
+    return pd.read_csv(
+        file,
+        usecols=[col.source for col in project.get_source_cols()],  # pyright: ignore
+        index_col=project.get_index().source,
     )
-
-    source_cols = project.get_source_cols()
-    files: list[Path] = sorted(path.glob("*.csv"))
-    run_names: list[str] = [file.stem for file in files]
-    runs: list[pd.DataFrame] = []
-    for file in files:
-        try:
-            run = pd.read_csv(
-                file,
-                usecols=[col.source for col in source_cols],  # pyright: ignore
-                index_col=project.get_index().source,
-            )
-
-            runs.append(schema(run))
-        except pa.errors.SchemaError as exception:
-            raise ValueError(
-                f"There are not enough records in {file.name} to compute steady-state."
-            ) from exception
-
-    return run_names, runs
 
 
 def rename_columns(df: pd.DataFrame, project: Project) -> pd.DataFrame:
