@@ -8,7 +8,8 @@ import yaml
 
 from migrate import migrate_1, migrate_2, migrate_3
 from models import Coupon, Group, Joint, Rod, Sample
-from pipeline import get_project, main as pipeline_main
+from pipeline import main as pipeline_main
+from utils import get_project
 
 CI = "Skip on CI."
 

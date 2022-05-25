@@ -34,9 +34,17 @@ class Dirs(BaseModel):
         default=...,
         description="The base directory for the project data.",
     )
+
+    # Careful, "Config" is a special member of BaseClass
     config: DirectoryPath = Field(
         default=...,
         description="The directory in which the config files are. Must be relative to the base directory or an absolute path that exists.",
+    )
+
+    # Can't be "schema", which is a special member of BaseClass
+    project_schema: DirectoryPath = Field(
+        default=...,
+        description="The directory in which the schema are. Must be relative to the base directory or an absolute path that exists.",
     )
     trials: DirectoryPath = Field(
         default=...,
@@ -60,10 +68,12 @@ class Dirs(BaseModel):
         trials = expanduser2(trials)
         return trials if trials.is_absolute() else values["base"] / trials
 
-    @validator("config", pre=True)  # "pre" because dir must exist pre-validation
-    def validate_configs(cls, config: StrPath, values: dict[str, Path]):
-        config = expanduser2(config)
-        return config if config.is_absolute() else values["base"] / config
+    @validator(
+        "config", "project_schema", pre=True
+    )  # "pre" because dir must exist pre-validation
+    def validate_configs(cls, v: StrPath, values: dict[str, Path]):
+        v = expanduser2(v)
+        return v if v.is_absolute() else values["base"] / v
 
     @validator("results", pre=True)  # "pre" because dir must exist pre-validation
     def validate_results(cls, results: StrPath, values: dict[str, Path]):

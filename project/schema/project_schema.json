@@ -32,6 +32,12 @@
           "format": "directory-path",
           "type": "string"
         },
+        "project_schema": {
+          "title": "Project Schema",
+          "description": "The directory in which the schema are. Must be relative to the base directory or an absolute path that exists.",
+          "format": "directory-path",
+          "type": "string"
+        },
         "trials": {
           "title": "Trials",
           "description": "The directory in which the individual trials are. Must be relative to the base directory or an absolute path that exists.",
@@ -61,6 +67,7 @@
       "required": [
         "base",
         "config",
+        "project_schema",
         "trials",
         "results",
         "per_trial"

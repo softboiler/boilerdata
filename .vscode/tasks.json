@@ -11,7 +11,7 @@
       "label": "proj: Update schema",
       "type": "process",
       "command": "pwsh",
-      "args": ["-Command", "python project/update_schema.py"],
+      "args": ["-Command", "python project/utils.py"],
       "problemMatcher": []
     },
 

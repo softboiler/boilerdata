@@ -14,7 +14,7 @@
       "name": "proj: Update schema",
       "type": "python",
       "request": "launch",
-      "program": "project/update_schema.py"
+      "program": "project/utils.py"
     },
     {
       "name": "PowerShell: Current File",

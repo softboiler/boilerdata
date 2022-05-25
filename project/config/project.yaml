@@ -1,6 +1,7 @@
 dirs:
   base: "G:/My Drive/Blake/School/Grad/Projects/18.09 Nucleate Pool Boiling/Data"
   config: "~/Code/boilerdata/project/config"
+  project_schema: "~/Code/boilerdata/project/schema"
   trials: "Boiling Curves"
   results: "Results"
   per_trial: "data"
