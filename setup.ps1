@@ -1,4 +1,4 @@
-copier -f -r c9d1024
+copier -f -r 38bebe4
 Remove-Item .venv -Recurse -ErrorAction SilentlyContinue
 py -3.10 -m venv .venv --upgrade-deps
-. .tools/setup/update.ps1
+. ./update.ps1

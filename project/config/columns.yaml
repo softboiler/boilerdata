@@ -1,4 +1,4 @@
-columns:
+cols:
   run:
     dtype: string
     source: "time"

@@ -1,19 +1,31 @@
 from datetime import date
-from enum import auto
 from pathlib import Path
 from typing import Optional
 
 import numpy as np
 from pydantic import BaseModel, DirectoryPath, Field, validator
 
-from boilerdata.enums import NameEnum
+from boilerdata.typing import NpNDArray
 from boilerdata.utils import StrPath, allow_extra, expanduser2, load_config
+from enums import Coupon, Group, Joint, PandasDtype, Rod, Sample
+
+# * -------------------------------------------------------------------------------- * #
+# * BASE
+
+
+class MyBaseModel(
+    BaseModel,
+    use_enum_values=True,  # To use enums for schemas, but not in code
+    arbitrary_types_allowed=True,  # To use Numpy types
+):
+    pass
+
 
 # * -------------------------------------------------------------------------------- * #
 # * DIRS
 
 
-class Dirs(BaseModel):
+class Dirs(MyBaseModel):
     """Directories relevant to the project."""
 
     base: DirectoryPath = Field(
@@ -84,7 +96,7 @@ class Dirs(BaseModel):
 # * PARAMS
 
 
-class Fit(BaseModel):
+class Fit(MyBaseModel):
     """Configure the linear regression of thermocouple temperatures vs. position."""
 
     thermocouple_pos: list[float] = Field(
@@ -98,7 +110,7 @@ class Fit(BaseModel):
         return np.array(thermocouple_pos)
 
 
-class Params(BaseModel):
+class Params(MyBaseModel):
     """Parameters of the pipeline."""
 
     records_to_average: int = Field(
@@ -108,106 +120,10 @@ class Params(BaseModel):
 
 
 # * -------------------------------------------------------------------------------- * #
-# * TRIALS
-
-
-class Rod(NameEnum):
-    """The rod used in this trial."""
-
-    W = auto()
-    X = auto()
-    Y = auto()
-
-
-class Coupon(NameEnum):
-    """The coupon attached to the rod for this trial."""
-
-    A1 = auto()
-    A2 = auto()
-    A3 = auto()
-    A4 = auto()
-    A6 = auto()
-    A7 = auto()
-    A9 = auto()
-
-
-class Sample(NameEnum):
-    """The sample attached to the coupon in this trial."""
-
-    NA = auto()  # If no sample is attached to the coupon.
-    B3 = auto()
-
-
-class Group(NameEnum):
-    """The group that this sample belongs to."""
-
-    control = auto()
-    porous = auto()
-    hybrid = auto()
-
-
-class Joint(NameEnum):
-    """The method used to join parts of the sample in this trial."""
-
-    paste = auto()
-    epoxy = auto()
-    solder = auto()
-
-
-class Trial(BaseModel):
-    """A trial."""
-
-    date: date
-    rod: Rod
-    coupon: Coupon
-    sample: Sample
-    group: Group
-    joint: Joint
-    monotonic: bool = Field(
-        default=...,
-        description="Whether the boiling curve is monotonic.",
-    )
-    comment: str
-
-    def get_path(self, dirs: Dirs):
-        """Get the path to the data for this trial."""
-
-        with allow_extra(self):
-            self.path = dirs.trials / self.date.isoformat() / dirs.per_trial
-
-
-class Trials(BaseModel):
-    """The trials."""
-
-    trials: list[Trial]
-
-
-# * -------------------------------------------------------------------------------- * #
 # * COLUMNS
 
-# sourcery skip: avoid-builtin-shadow
-class PandasDtype(NameEnum):
-    float = auto()  # noqa: A003
-    int = auto()  # noqa: A003
-    bool = auto()  # noqa: A003
-    timedelta64ns = "timedelta64[ns]"
-    datetime64ns = "datetime64[ns]"
-    string = auto()
-    boolean = auto()
-    category = auto()
-    Sparse = auto()
-    interval = auto()
-    Int8 = auto()
-    Int16 = auto()
-    Int32 = auto()
-    Int64 = auto()
-    UInt8 = auto()
-    UInt16 = auto()
-    Uint32 = auto()
-    UInt64 = auto()
 
-
-class Column(BaseModel):
+class Column(MyBaseModel):
     """Metadata for a column in the dataframe."""
 
     index: bool = Field(  # Validator ensures this is set even if omitted.
@@ -230,9 +146,10 @@ class Column(BaseModel):
         default=None,
         description="The column designation for plotting in OriginLab.",
     )
-    pretty_name: Optional[str] = Field(
+    pretty_name_: Optional[str] = Field(
         default=None,
-        description="The column name.",
+        alias="pretty_name",  # So we can make this a dynamic property below
+        description="The pretty version of the column name.",
     )
 
     # "always" so it'll run even if not in YAML
@@ -253,27 +170,94 @@ class Column(BaseModel):
         super().__init__(**data)
         self.name: str = ""  # Should never stay this way. Columns.__init__() sets it.
 
+    @property
+    def pretty_name(self):
+        return self.pretty_name_ or self.name
 
-class Columns(BaseModel):
+
+class Columns(MyBaseModel):
     """Columns in the dataframe."""
 
-    columns: dict[str, Column]
+    cols: dict[str, Column]
 
     def __init__(self, **data):
         super().__init__(**data)
 
-        for name, column in self.columns.items():
+        for name, column in self.cols.items():
             column.name = name
+
+
+# * -------------------------------------------------------------------------------- * #
+# * GEOMETRY
+
+
+class Geometry(MyBaseModel):
+    """The geometry."""
+
+    rods: dict[Rod, NpNDArray] = Field(
+        default=...,
+        description="Distance of each thermocouple from the cool side of the rod, starting with TC1. Fifth thermocouple may be omitted. Input: inch. Output: meter.",
+    )
+    coupons: dict[Coupon, float] = Field(
+        default=...,
+        description="Length of the coupon. Input: inch. Output: meter.",
+    )
+    _in_p_m: float = 39.3701
+
+    @validator("rods", pre=True)
+    def validate_rods(cls, rods):
+        return {rod: np.array(values) / cls._in_p_m for rod, values in rods.items()}
+
+    @validator("coupons")
+    def validate_coupons(cls, coupons):
+        return {coupon: value / cls._in_p_m for coupon, value in coupons.items()}
+
+
+# * -------------------------------------------------------------------------------- * #
+# * TRIALS
+
+
+class Trial(MyBaseModel):
+    """A trial."""
+
+    date: date
+    rod: Rod
+    coupon: Coupon
+    sample: Sample
+    group: Group
+    joint: Joint
+    monotonic: bool = Field(
+        default=...,
+        description="Whether the boiling curve is monotonic.",
+    )
+    comment: str
+    thermocouple_pos: NpNDArray = Field(default=None, exclude=True)
+
+    def get_path(self, dirs: Dirs):
+        """Get the path to the data for this trial. Called during project setup."""
+        with allow_extra(self):
+            self.path = dirs.trials / self.date.isoformat() / dirs.per_trial
+
+    def get_geometry(self, geometry: Geometry):
+        """Get relevant geometry for the trial."""
+        self.thermocouple_pos = geometry.rods[self.rod] + geometry.coupons[self.coupon]  # type: ignore
+
+
+class Trials(MyBaseModel):
+    """The trials."""
+
+    trials: list[Trial]
 
 
 # * -------------------------------------------------------------------------------- * #
 # * PROJECT
 
 
-class Project(BaseModel):
+class Project(MyBaseModel):
     """Configuration for the package."""
 
     dirs: Dirs
+    geometry: Geometry
     params: Params
     fit: Fit
 
@@ -282,18 +266,14 @@ class Project(BaseModel):
 
         with allow_extra(self):
             self.trials = load_config(self.dirs.config / "trials.yaml", Trials).trials
-            self.columns = load_config(
-                self.dirs.config / "columns.yaml", Columns
-            ).columns
+            self.cols = load_config(self.dirs.config / "columns.yaml", Columns).cols
 
         for trial in self.trials:
             trial.get_path(self.dirs)
-
-    def get_source_cols(self) -> list[Column]:
-        return [column for column in self.columns.values() if column.source]
+            trial.get_geometry(self.geometry)
 
     def get_index(self) -> Column:
-        index_cols = [column for column in self.columns.values() if column.index]
+        index_cols = [col for col in self.cols.values() if col.index]
         match index_cols:
             case [index]:
                 return index
@@ -305,7 +285,8 @@ class Project(BaseModel):
                     f"Only one column may be designated as the index. You specified the following: {', '.join(indices)}"
                 )
 
+    def get_non_index_cols(self) -> list[Column]:
+        return [col for col in self.cols.values() if not col.index]
+
     def get_originlab_coldes(self) -> str:
-        return "N" + "".join(
-            [column.originlab_coldes for column in self.columns.values()]
-        )
+        return "".join([column.originlab_coldes for column in self.cols.values()])

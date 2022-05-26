@@ -13,12 +13,15 @@ class NameEnum(Enum):
         return name
 
 
-class GetNameEnum(Enum):
+class GetNameEnum(NameEnum):
     """When getting a value from an enum, return the name."""
 
-    @staticmethod
-    def _generate_next_value_(name: str, *_) -> str:
-        return name
+    def __get__(self, *_):
+        return self.name
+
+
+class GetValueNameEnum(NameEnum):
+    """When getting a value from an enum, return the value."""
 
     def __get__(self, *_):
         return self.name

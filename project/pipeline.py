@@ -3,6 +3,7 @@
 import json
 from pathlib import Path
 import re
+from types import ModuleType
 
 from numpy import typing as npt
 import numpy as np
@@ -13,224 +14,277 @@ from scipy.constants import convert_temperature
 from scipy.stats import linregress
 
 from config.columns import Columns as C  # noqa: N817
-from models import Project
+from models import Project, Trial
 from utils import get_project
+
+# * -------------------------------------------------------------------------------- * #
+# * MAIN
 
 pd.options.mode.string_storage = "pyarrow"
 
+UNITS_INDEX = "units"
 
-def main(project: Project):
 
-    dfs: list[pd.DataFrame] = []
-    for trial in project.trials:
-        if trial.monotonic:
-            df = (
-                get_steady_state(trial.path, project)
-                .pipe(rename_columns, project)
-                .pipe(run_one, project, project.params.records_to_average)
-                .assign(**json.loads(trial.json()))  # Assign trial metadata
-            )
-            dfs.append(df)
-    pd.concat(dfs).pipe(set_units_row, project).pipe(
-        transform_units_for_originlab
-    ).pipe(prettify, project).to_csv(project.dirs.results_file, index_label="Run")
+def pipeline(proj: Project):
+
+    # Column names
+    temps_to_regress = [C.T_1, C.T_2, C.T_3, C.T_4, C.T_5]
+    water_temps = [C.T_w1, C.T_w2, C.T_w3]
+
+    # Reduce data from CSV's of runs within trials, to single df w/ trials as records
+    dfs = [
+        get_steady_state(proj, trial)  # Reduce many CSV's to one df
+        .pipe(rename_columns, proj, trial)  # Pull units out of columns for cleaner ref
+        .pipe(fit, proj, trial, temps_to_regress)
+        .pipe(plot_fit_apply, proj, trial, temps_to_regress)
+        .pipe(get_heat_transfer, proj, trial, temps_to_regress, water_temps)
+        .pipe(assign_trial_metadata, proj, trial)
+        for trial in proj.trials
+        if trial.monotonic
+    ]
+
+    # Post-process the dataframe for writing to OriginLab-flavored CSV
+    (
+        pd.concat(dfs)
+        .pipe(set_units_row_for_originlab, proj)
+        .pipe(transform_units_for_originlab, proj)
+        .pipe(prettify_for_originlab, proj)
+        .to_csv(proj.dirs.results_file, index_label=proj.get_index().name)
+    )
 
 
 # * -------------------------------------------------------------------------------- * #
-# * PER-TRIAL STAGES
+# * PRIMARY STAGES
 
 
-def get_steady_state(path: Path, project: Project) -> pd.DataFrame:
+def get_steady_state(proj: Project, trial: Trial) -> pd.DataFrame:
     """Get steady-state values for the trial."""
 
-    files: list[Path] = sorted(path.glob("*.csv"))
+    files: list[Path] = sorted(trial.path.glob("*.csv"))
     run_names: list[str] = [file.stem for file in files]
     runs: list[pd.DataFrame] = []
     for file in files:
-        run = get_run(project, file)
-        if len(run) < project.params.records_to_average:
+        run = get_run(proj, file)
+        if len(run) < proj.params.records_to_average:
             raise ValueError(
                 f"There are not enough records in {file.name} to compute steady-state."
             )
         runs.append(run)
 
     runs_steady_state: list[pd.Series] = [
-        df.iloc[-project.params.records_to_average :, :].mean() for df in runs
+        df.iloc[-proj.params.records_to_average :, :].mean() for df in runs
     ]
-    return pd.DataFrame(runs_steady_state, index=run_names)
-
-
-def get_run(project: Project, file: Path) -> pd.DataFrame:
-    return pd.read_csv(
-        file,
-        usecols=[col.source for col in project.get_source_cols()],  # pyright: ignore
-        index_col=project.get_index().source,
+    return pd.DataFrame(runs_steady_state, index=run_names).rename_axis(
+        proj.get_index().name, axis="index"
     )
 
 
-def rename_columns(df: pd.DataFrame, project: Project) -> pd.DataFrame:
+def rename_columns(df: pd.DataFrame, proj: Project, trial: Trial) -> pd.DataFrame:
     """Remove units from column labels."""
-    columns_mapping = dict(zip(df.columns, project.columns.keys()))
-    return df.rename(columns_mapping, axis="columns")
+
+    return df.rename(
+        {col.source: name for name, col in proj.cols.items() if not col.index},
+        axis="columns",
+    )
 
 
-def run_one(df: pd.DataFrame, project: Project, points_to_average: int) -> pd.DataFrame:
-    return df.pipe(fit, project, points_to_average)
+def fit(
+    df: pd.DataFrame, proj: Project, trial: Trial, temps_to_regress: list[str]
+) -> pd.DataFrame:
+    """Fit the data assuming one-dimensional, steady-state conduction."""
+
+    # Main pipeline
+    df = df.pipe(
+        linregress_apply,
+        proj,
+        trial,
+        df[temps_to_regress],
+        result_cols=[
+            C.dT_dx,
+            C.TLfit,
+            C.rvalue,
+            C.pvalue,
+            C.stderr,
+            C.intercept_stderr,
+        ],
+    )
+
+    return df
+
+
+def plot_fit_apply(
+    df: pd.DataFrame, proj: Project, trial: Trial, temps_to_regress: list[str]
+) -> pd.DataFrame:
+    """Plot the goodness of fit for each run in the trial."""
+
+    if proj.fit.do_plot:
+        import matplotlib
+        from matplotlib import pyplot as plt
+
+        matplotlib.use("QtAgg")
+
+        df.apply(plot_fit_ser, args=(proj, temps_to_regress, plt), axis="columns")
+        plt.show()
+
+    return df
+
+
+def get_heat_transfer(
+    df: pd.DataFrame,
+    proj: Project,
+    trial: Trial,
+    temps_to_regress: list[str],
+    water_temps: list[str],
+) -> pd.DataFrame:
+    """Calculate heat transfer and superheat based on one-dimensional approximation."""
+    # Constants
+    cm_p_m = 100  # (cm/m) Conversion factor
+    cm2_p_m2 = cm_p_m**2  # ((cm/m)^2) Conversion factor
+    diameter = 0.009525 * cm_p_m  # (cm) 3/8"
+    cross_sectional_area = np.pi / 4 * diameter**2  # (cm^2)
+
+    return df.assign(
+        **{
+            C.dT_dx_err: lambda df: (4 * df["stderr"]).abs(),
+            C.k: get_prop(
+                Mat.COPPER,
+                Prop.THERMAL_CONDUCTIVITY,
+                convert_temperature(
+                    df[temps_to_regress].mean(axis="columns"), "C", "K"
+                ),
+            ),
+            # no negative due to reversed x-coordinate
+            C.q: lambda df: df[C.k] * df[C.dT_dx] / cm2_p_m2,
+            C.q_err: lambda df: (df[C.k] * df[C.dT_dx_err]).abs() / cm2_p_m2,
+            C.Q: lambda df: df[C.q] * cross_sectional_area,
+            C.DT: lambda df: (df[C.TLfit] - df[water_temps].mean().mean()),
+            C.DT_err: lambda df: (4 * df["intercept_stderr"]).abs(),
+        }
+    )
+
+
+def assign_trial_metadata(
+    df: pd.DataFrame, proj: Project, trial: Trial
+) -> pd.DataFrame:
+    """Assign metadata sourced from configs to the dataframe."""
+    return df.assign(**json.loads(trial.json()))
 
 
 # * -------------------------------------------------------------------------------- * #
-# * FINALIZING STAGES
+# * POST-PROCESSING
 
 
-def set_units_row(df: pd.DataFrame, project: Project) -> pd.DataFrame:
+def set_units_row_for_originlab(df: pd.DataFrame, proj: Project) -> pd.DataFrame:
     """Move units out of column labels and into a row just below the column labels."""
     units_row = pd.DataFrame(
         {
-            name: pd.Series(column.units, index=["Units"])
-            # Don't simplify to "columns.items()" because df.columns are prettified
-            for name, column in zip(df.columns, project.columns.values())
+            name: pd.Series(col.units, index=[UNITS_INDEX])
+            for name, col in proj.cols.items()
+            if not col.index
         }
     )
 
     return pd.concat([units_row, df])
 
 
-def transform_units_for_originlab(df: pd.DataFrame) -> pd.DataFrame:
-    units = df.loc["Units", :].replace(re.compile(r"\^(\d)"), r"\+(\1)")
-    df.loc["Units", :] = units
+SUPERSCRIPT = re.compile(r"\^(.*)")
+SUPERSCRIPT_REPL = r"\+(\1)"
+SUBSCRIPT = re.compile(r"\_(.*)")
+SUBSCRIPT_REPL = r"\-(\1)"
+
+
+def transform_units_for_originlab(df: pd.DataFrame, proj: Project) -> pd.DataFrame:
+    """Convert super/subscripts in units to their OriginLab representation.
+
+    See: <https://www.originlab.com/doc/en/Origin-Help/Escape-Sequences>
+    """
+    units = (
+        df.loc[UNITS_INDEX, :]
+        .replace(SUPERSCRIPT, SUPERSCRIPT_REPL)
+        .replace(SUBSCRIPT, SUBSCRIPT_REPL)
+    )
+    df.loc[UNITS_INDEX, :] = units
     return df
 
 
-def prettify(df: pd.DataFrame, project: Project) -> pd.DataFrame:
+def prettify_for_originlab(df: pd.DataFrame, proj: Project) -> pd.DataFrame:
+    """Rename columns with Greek symbols, superscripts, and subscripts transformed.
+
+    See: <https://www.originlab.com/doc/en/Origin-Help/Escape-Sequences>
+    """
     return df.rename(
         {
-            "DT": project.columns["DT"].pretty_name,
-            "DT_err": project.columns["DT_err"].pretty_name,
+            name: replace_for_originlab(col.pretty_name)
+            for name, col in proj.cols.items()
         },
         axis="columns",
     )
 
 
-# * -------------------------------------------------------------------------------- * #
-# * FUNCTIONS
+def replace_for_originlab(text: str) -> str:
+    """Transform superscripts and subscripts to their OriginLab representation.
 
-
-def fit(
-    df: pd.DataFrame,
-    project: Project,
-):
-    """Fit the data assuming one-dimensional, steady-state conduction."""
-
-    # Constants
-    cm_p_m = 100  # (cm/m) Conversion factor
-    cm2_p_m2 = cm_p_m**2  # (cm/m)^2 Conversion factor
-    diameter = 0.009525 * cm_p_m  # (cm) 3/8"
-
-    # Column names
-    temps_to_regress = [C.T_1, C.T_2, C.T_3, C.T_4, C.T_5]
-    water_temps = [C.T_w1, C.T_w2, C.T_w3]
-
-    # Computed values
-    temperature_cols: pd.DataFrame = df.loc[:, temps_to_regress]
-    water_temp_cols: pd.DataFrame = df.loc[:, water_temps]
-    cross_sectional_area = np.pi / 4 * diameter**2
-
-    # Main pipeline
-    df = df.pipe(
-        lambda df: pd.concat(  # Compute regression stats for each run
-            axis="columns",
-            objs=[
-                df,
-                temperature_cols.apply(
-                    axis="columns",
-                    func=lambda ser: linregress_series(
-                        project.fit.thermocouple_pos,
-                        ser,
-                        project.params.records_to_average,
-                        (C.dT_dx, C.TLfit),
-                    ),
-                ),
-            ],
-        )
-    ).assign(
-        **{
-            C.dT_dx_err: lambda df: (4 * df["stderr"]).abs(),
-            C.k: get_prop(
-                Mat.COPPER,
-                Prop.THERMAL_CONDUCTIVITY,
-                convert_temperature(temperature_cols.mean(axis="columns"), "C", "K"),
-            ),
-            # no negative due to reversed x-coordinate
-            C.q: lambda df: df[C.k] * df[C.dT_dx] / cm2_p_m2,
-            C.q_err: lambda df: (df[C.k] * df[C.dT_dx_err]).abs() / cm2_p_m2,
-            C.Q: lambda df: df[C.q] * cross_sectional_area,
-            C.DT: lambda df: (df[C.TLfit] - water_temp_cols.mean().mean()),
-            C.DT_err: lambda df: (4 * df["intercept_stderr"]).abs(),
-        }
-    )
-
-    # Plotting
-    if project.fit.do_plot:
-
-        import matplotlib
-
-        matplotlib.use("QtAgg")
-        from matplotlib import pyplot as plt
-
-        def plot(ser):
-            plt.figure()
-            plt.title("Temperature Profile in Post")
-            plt.xlabel("x (m)")
-            plt.ylabel("T (C)")
-            plt.plot(
-                project.fit.thermocouple_pos,
-                ser.loc[temps_to_regress],
-                "*",
-                label="Measured Temperatures",
-                color=[0.2, 0.2, 0.2],
-            )
-            x_smooth = np.linspace(thermocouple_pos[0], thermocouple_pos[-1])  # type: ignore
-            plt.plot(
-                x_smooth,
-                ser[C.TLfit] + ser[C.dT_dx] * x_smooth,
-                "--",
-                label=f"Linear Regression $(r^2={round(ser.rvalue**2,4)})$",
-            )
-            plt.plot(
-                0,
-                ser[C.TLfit],
-                "x",
-                label="Extrapolated Surface Temperature",
-                color=[1, 0, 0],
-            )
-            plt.legend()
-
-        df.apply(plot, axis="columns")
-        plt.show()
-
-    return df
+    See: <https://www.originlab.com/doc/en/Origin-Help/Escape-Sequences>
+    """
+    return SUBSCRIPT.sub(SUBSCRIPT_REPL, SUPERSCRIPT.sub(SUPERSCRIPT_REPL, text))
 
 
 # * -------------------------------------------------------------------------------- * #
 # * HELPER FUNCTIONS
 
 
-def linregress_series(
+def get_run(proj: Project, run: Path) -> pd.DataFrame:
+    """Get an individual run in a trial."""
+    source_cols = {name: col for name, col in proj.cols.items() if col.source}
+    dtypes = {name: col.dtype for name, col in source_cols.items()}
+    return pd.read_csv(
+        run,
+        usecols=[col.source for col in source_cols.values()],  # pyright: ignore
+        index_col=proj.get_index().source,
+        dtype=dtypes,
+    )
+
+
+def linregress_apply(
+    df: pd.DataFrame,
+    proj: Project,
+    trial: Trial,
+    temperature_cols: pd.DataFrame,
+    result_cols: list[str],
+) -> pd.DataFrame:
+    """Apply linear regression across the temperature columns."""
+    return pd.concat(
+        axis="columns",
+        objs=[
+            df,
+            temperature_cols.apply(
+                axis="columns",
+                func=lambda ser: linregress_ser(
+                    x=trial.thermocouple_pos,
+                    series_of_y=ser,
+                    repeats_per_pair=proj.params.records_to_average,
+                    regression_stats=result_cols,
+                ),
+            ),
+        ],
+    )
+
+
+# * -------------------------------------------------------------------------------- * #
+# * FUNCTIONS OPERATING ON SERIES
+
+
+def linregress_ser(
     x: npt.ArrayLike,
     series_of_y: pd.Series,
     repeats_per_pair: int,
-    label: tuple[str, str] = ("slope", "intercept"),
-    prefix: str = "",
+    regression_stats: list[str],
 ) -> pd.Series:
     """Perform linear regression of a series of y's with respect to given x's.
 
     Given x-values and a series of y-values, return a series of linear regression
     statistics.
     """
-    labels = [*label, "rvalue", "pvalue", "stderr", "intercept_stderr"]
-    if prefix:
-        labels = [*label, *("_".join(label) for label in labels[-4:])]
-
     # Assume the ordered pairs are repeated with zero standard deviation in x and y
     x = np.repeat(x, repeats_per_pair)
     y = np.repeat(series_of_y, repeats_per_pair)
@@ -240,9 +294,43 @@ def linregress_series(
     # See "Notes" section of SciPy documentation for more info.
     return pd.Series(
         [r.slope, r.intercept, r.rvalue, r.pvalue, r.stderr, r.intercept_stderr],
-        index=labels,
+        index=regression_stats,
     )
 
 
+def plot_fit_ser(
+    ser: pd.Series,
+    proj: Project,
+    trial: Trial,
+    temps_to_regress: list[str],
+    plt: ModuleType,
+):
+    """Plot the goodness of fit for a series of temperatures and positions."""
+    plt.figure()
+    plt.title("Temperature Profile in Post")
+    plt.xlabel("x (m)")
+    plt.ylabel("T (C)")
+    plt.plot(
+        trial.thermocouple_pos,
+        ser[temps_to_regress],  # type: ignore
+        "*",
+        label="Measured Temperatures",
+        color=[0.2, 0.2, 0.2],
+    )
+    x_smooth = np.linspace(0, trial.thermocouple_pos[-1])
+    plt.plot(
+        x_smooth,
+        ser[C.TLfit] + ser[C.dT_dx] * x_smooth,
+        "--",
+        label=f"Linear Regression $(r^2={round(ser.rvalue**2,4)})$",
+    )
+    plt.plot(
+        0, ser[C.TLfit], "x", label="Extrapolated Surface Temperature", color=[1, 0, 0]
+    )
+    plt.legend()
+
+
+# * -------------------------------------------------------------------------------- * #
+
 if __name__ == "__main__":
-    main(get_project())
+    pipeline(get_project())

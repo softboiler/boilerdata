@@ -28,9 +28,7 @@ def update_schema():
             model,
         )
 
-    generate_columns_enum(
-        list(project.columns.keys()), project.dirs.config / "columns.py"
-    )
+    generate_columns_enum(list(project.cols.keys()), project.dirs.config / "columns.py")
 
 
 # https://github.com/samuelcolvin/pydantic/blob/4f4e22ef47ab04b289976bb4ba4904e3c701e72d/pydantic/utils.py#L127-L131
