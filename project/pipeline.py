@@ -54,7 +54,7 @@ def pipeline(proj: Project):
 
 
 # * -------------------------------------------------------------------------------- * #
-# * PER-TRIAL STAGES
+# * PRIMARY STAGES
 
 
 def get_steady_state(trial: Trial, proj: Project) -> pd.DataFrame:
@@ -77,10 +77,6 @@ def get_steady_state(trial: Trial, proj: Project) -> pd.DataFrame:
     return pd.DataFrame(runs_steady_state, index=run_names).rename_axis(
         proj.get_index().name, axis="index"
     )
-
-
-# * -------------------------------------------------------------------------------- * #
-# * PRIMARY STAGES
 
 
 def rename_columns(df: pd.DataFrame, proj: Project) -> pd.DataFrame:
@@ -166,7 +162,7 @@ def assign_trial_metadata(df: pd.DataFrame, trial: Trial) -> pd.DataFrame:
 
 
 # * -------------------------------------------------------------------------------- * #
-# * FINISHING STAGES
+# * POST-PROCESSING
 
 
 def set_units_row_for_originlab(df: pd.DataFrame, proj: Project) -> pd.DataFrame:
@@ -265,7 +261,7 @@ def linregress_apply(
 
 
 # * -------------------------------------------------------------------------------- * #
-# * HELPER FUNCTIONS
+# * FUNCTIONS OPERATING ON SERIES
 
 
 def linregress_ser(
