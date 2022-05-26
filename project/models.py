@@ -13,8 +13,11 @@ from boilerdata.utils import StrPath, allow_extra, expanduser2, load_config
 # * BASE
 
 
-class MyBaseModel(BaseModel, use_enum_values=True):
-    """Need both `GetValueNameEnum` and `use_enum_values` so that strings are passed."""
+class MyBaseModel(
+    BaseModel,
+    use_enum_values=True,  # To use enums for schemas, but not in code
+):
+    pass
 
 
 # * -------------------------------------------------------------------------------- * #
@@ -248,9 +251,10 @@ class Column(MyBaseModel):
         default=None,
         description="The column designation for plotting in OriginLab.",
     )
-    pretty_name: Optional[str] = Field(
+    pretty_name_: Optional[str] = Field(
         default=None,
-        description="The column name.",
+        alias="pretty_name",  # So we can make this a dynamic property below
+        description="The pretty version of the column name.",
     )
 
     # "always" so it'll run even if not in YAML
@@ -270,6 +274,10 @@ class Column(MyBaseModel):
     def __init__(self, **data):
         super().__init__(**data)
         self.name: str = ""  # Should never stay this way. Columns.__init__() sets it.
+
+    @property
+    def pretty_name(self):
+        return self.pretty_name_ or self.name
 
 
 class Columns(MyBaseModel):

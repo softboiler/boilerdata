@@ -16,12 +16,15 @@ from config.columns import Columns as C  # noqa: N817
 from models import Project
 from utils import get_project
 
+# * -------------------------------------------------------------------------------- * #
+# * MAIN
+
 pd.options.mode.string_storage = "pyarrow"
 
 UNITS_INDEX = "units"
 
 
-def main(proj: Project):
+def pipeline(proj: Project):
 
     dfs: list[pd.DataFrame] = []
 
@@ -169,7 +172,7 @@ def transform_units_for_originlab(df: pd.DataFrame) -> pd.DataFrame:
 
 def prettify(df: pd.DataFrame, proj: Project) -> pd.DataFrame:
     return df.rename(
-        {"DT": proj.cols["DT"].pretty_name, "DT_err": proj.cols["DT_err"].pretty_name},
+        {name: col.pretty_name for name, col in proj.cols.items()},
         axis="columns",
     )
 
@@ -252,4 +255,4 @@ def plot(ser, proj, temps_to_regress):
 # * -------------------------------------------------------------------------------- * #
 
 if __name__ == "__main__":
-    main(get_project())
+    pipeline(get_project())

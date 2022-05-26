@@ -4,16 +4,61 @@ from pathlib import Path
 
 import pandas as pd
 from pandas.testing import assert_frame_equal
-from pydantic import Extra
-from pytest import fixture, mark as m, raises
+from pytest import mark as m, raises
 import yaml
 
+from config.columns import Columns as C  # noqa: N817
 from migrate import migrate_1, migrate_2, migrate_3
-from models import Coupon, Group, Joint, Rod, Sample
-from pipeline import main as pipeline_main
+from pipeline import pipeline
 from utils import get_project
 
 CI = "Skip on CI."
+
+
+# * -------------------------------------------------------------------------------- * #
+# * PIPELINE
+
+
+@m.skipif(bool(getenv("CI")), reason=CI)
+def test_get_steady_state_raises(tmp_proj):
+    tmp_proj.params.records_to_average = inf
+    with raises(ValueError, match="not enough records"):
+        pipeline(tmp_proj)
+
+
+@m.skipif(bool(getenv("CI")), reason=CI)
+def test_run(tmp_proj):
+    """Ensure the same result is coming out of the pipeline as before."""
+
+    old_commit = "ccd7affba00d0cf6b4b80b94a638dcfa3d3404f5"
+
+    rest_of_read_csv_params = dict(
+        usecols=[col.pretty_name for col in tmp_proj.cols.values()],
+        index_col=tmp_proj.get_index().name,
+        parse_dates=[C.date],  # Can't handle date column in dtypes parameter below
+        dtype={
+            name: col.dtype for name, col in tmp_proj.cols.items() if name != C.date
+        },
+        skiprows=[1],  # Skip the "units" row as it won't be coerced to dtype nicely
+    )
+
+    pipeline(tmp_proj)
+
+    old = pd.read_csv(get_old_file(old_commit), **rest_of_read_csv_params)
+    new = pd.read_csv(tmp_proj.dirs.results_file, **rest_of_read_csv_params)
+    assert_frame_equal(old, new)
+
+
+# * -------------------------------------------------------------------------------- * #
+# * HELPER FUNCTIONS
+
+
+def get_old_file(old_commit):
+    project = get_project()
+    try:
+        return next((project.dirs.results / "Old").glob(f"results_*_{old_commit}.csv"))
+    except StopIteration as exception:
+        raise StopIteration("Old results file is missing.") from exception
 
 
 # * -------------------------------------------------------------------------------- * #
@@ -65,102 +110,3 @@ def test_migrate_1(tmp_path):
     result = yaml.safe_load((tmp_path / "trials.yaml").read_text(encoding="utf-8"))
     expected = yaml.safe_load(Path(base / "trials.yaml").read_text(encoding="utf-8"))
     assert result == expected
-
-
-# * -------------------------------------------------------------------------------- * #
-# * PIPELINE
-
-
-@m.skipif(bool(getenv("CI")), reason=CI)
-def test_get_steady_state_raises(tmp_proj):
-    tmp_proj.params.records_to_average = inf
-    with raises(ValueError, match="not enough records"):
-        pipeline_main(tmp_proj)
-
-
-@m.skipif(bool(getenv("CI")), reason=CI)
-def test_run(tmp_proj):
-    """Ensure the same result is coming out of the pipeline as before."""
-
-    old_commit = "02731650edf4ea0f4e08f1148f2bed57ed2515ca"
-    common_records_count = 322
-    dtypes = {
-        "Run": pd.StringDtype(),
-        "V": float,
-        "T0cal": float,
-        "T1cal": float,
-        "T2cal": float,
-        "T3cal": float,
-        "T4cal": float,
-        "T5cal": float,
-        "dT_dx": float,
-        "TLfit": float,
-        "rvalue": float,
-        "pvalue": float,
-        "stderr": float,
-        "intercept_stderr": float,
-        "dT_dx_err": float,
-        "k": float,
-        # "q": float,  #! These units are different.
-        # "q_err": float,
-        # "Q": float,
-        # "∆T": float,  #! These names are different.
-        # "∆T_err": float,
-        "date": pd.StringDtype(),  # Will become datetime64[ns] after parsing
-        "rod": pd.CategoricalDtype([cat.name for cat in Rod]),
-        "coupon": pd.CategoricalDtype([cat.name for cat in Coupon]),
-        "sample": pd.CategoricalDtype([cat.name for cat in Sample]),
-        "group": pd.CategoricalDtype([cat.name for cat in Group]),
-        "joint": pd.CategoricalDtype([cat.name for cat in Joint]),
-        "monotonic": bool,
-        "comment": pd.StringDtype(),
-    }
-
-    read_csv_params = dict(
-        index_col="Run",
-        skiprows=[1],
-        nrows=common_records_count,
-        usecols=dtypes.keys(),
-        dtype=dtypes,
-        parse_dates=["date"],
-    )
-    col_order = list(dtypes.keys())[1:]
-
-    pipeline_main(tmp_proj)
-
-    old = pd.read_csv(get_old_file(old_commit), **read_csv_params)[col_order]
-    new = pd.read_csv(tmp_proj.dirs.results_file, **read_csv_params)[col_order]
-    assert_frame_equal(old, new)
-
-
-# * -------------------------------------------------------------------------------- * #
-# * HELPER FUNCTIONS
-
-
-def get_old_file(old_commit):
-    project = get_project()
-    try:
-        return next((project.dirs.results / "Old").glob(f"results_*_{old_commit}.csv"))
-    except StopIteration as exception:
-        raise StopIteration("Old results file is missing.") from exception
-
-
-@fixture
-def tmp_proj(tmp_path):
-    old_proj = get_project()
-    new_results_file = tmp_path / old_proj.dirs.results_file.relative_to(
-        old_proj.dirs.base
-    )
-    new_results_file.parent.mkdir()  # Needed because copying won't run the validators
-    tmp_proj = old_proj.copy(
-        update=dict(
-            dirs=old_proj.dirs.copy(
-                update=dict(
-                    results_file=new_results_file,
-                )
-            )
-        )
-    )
-    tmp_proj.dirs.Config.extra = Extra.allow
-    tmp_proj.dirs.tmp_path = tmp_path
-    return tmp_proj

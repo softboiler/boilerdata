@@ -3,8 +3,8 @@
   "description": "Columns in the dataframe.",
   "type": "object",
   "properties": {
-    "columns": {
-      "title": "Columns",
+    "cols": {
+      "title": "Cols",
       "type": "object",
       "additionalProperties": {
         "$ref": "#/definitions/Column"
@@ -12,7 +12,7 @@
     }
   },
   "required": [
-    "columns"
+    "cols"
   ],
   "definitions": {
     "PandasDtype": {
