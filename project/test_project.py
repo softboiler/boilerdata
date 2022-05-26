@@ -26,7 +26,7 @@ def test_get_steady_state_raises(tmp_proj):
 
 
 @m.skipif(bool(getenv("CI")), reason=CI)
-def test_run(tmp_proj):
+def test_pipeline(tmp_proj):
     """Ensure the same result is coming out of the pipeline as before."""
 
     old_commit = "94aa76e955da36aef0c92041f4840ec99795623e"
