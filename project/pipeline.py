@@ -3,6 +3,7 @@
 import json
 from pathlib import Path
 import re
+from types import ModuleType
 
 from numpy import typing as npt
 import numpy as np
@@ -26,21 +27,24 @@ UNITS_INDEX = "units"
 
 def pipeline(proj: Project):
 
-    dfs: list[pd.DataFrame] = []
+    # Column names
+    temps_to_regress = [C.T_1, C.T_2, C.T_3, C.T_4, C.T_5]
+    water_temps = [C.T_w1, C.T_w2, C.T_w3]
 
     # Reduce data from CSV's of runs within trials, to single df w/ trials as records
-    for trial in proj.trials:
-        if trial.monotonic:
-            df = (
-                get_steady_state(trial.path, proj)  # Reduce many CSV's to one df
-                .pipe(rename_columns, proj)  # Pull units out of columns for cleaner ref
-                .pipe(fit, proj)
-                .assign(**json.loads(trial.json()))  # Assign trial metadata
-            )
-            dfs.append(df)
-    # TODO: Transform superscript/subscript in column names AND units. Prioritize renaming to pretty names. Also check on units
+    dfs = [
+        get_steady_state(trial.path, proj)  # Reduce many CSV's to one df
+        .pipe(rename_columns, proj)  # Pull units out of columns for cleaner ref
+        .pipe(fit, proj, temps_to_regress)
+        .pipe(plot_fit_apply, proj, temps_to_regress)
+        .pipe(get_heat_transfer, temps_to_regress, water_temps)
+        .assign(**json.loads(trial.json()))
+        for trial in proj.trials
+        if trial.monotonic
+    ]
 
-    # Post-processing
+    # TODO: Transform superscript/subscript in column names AND units. Prioritize renaming to pretty names. Also check on units
+    # Post-process the dataframe for writing to OriginLab-flavored CSV
     (
         pd.concat(dfs)
         .pipe(set_units_row, proj)
@@ -89,29 +93,14 @@ def rename_columns(df: pd.DataFrame, proj: Project) -> pd.DataFrame:
     )
 
 
-def fit(df: pd.DataFrame, proj: Project) -> pd.DataFrame:
+def fit(df: pd.DataFrame, proj: Project, temps_to_regress: list[str]) -> pd.DataFrame:
     """Fit the data assuming one-dimensional, steady-state conduction."""
-
-    # Constants
-    cm_p_m = 100  # (cm/m) Conversion factor
-    cm2_p_m2 = cm_p_m**2  # ((cm/m)^2) Conversion factor
-    diameter = 0.009525 * cm_p_m  # (cm) 3/8"
-    cross_sectional_area = np.pi / 4 * diameter**2  # (cm^2)
-
-    # Column names
-    temps_to_regress = [C.T_1, C.T_2, C.T_3, C.T_4, C.T_5]
-    water_temps = [C.T_w1, C.T_w2, C.T_w3]
-
-    # Computed values
-    temperature_cols: pd.DataFrame = df.loc[:, temps_to_regress]
-    water_temp_cols: pd.DataFrame = df.loc[:, water_temps]
 
     # Main pipeline
     df = df.pipe(
         linregress_apply,
         proj,
-        temperature_cols,
-        repeats_per_pair=proj.params.records_to_average,
+        df[temps_to_regress],
         result_cols=[
             C.dT_dx,
             C.TLfit,
@@ -120,27 +109,56 @@ def fit(df: pd.DataFrame, proj: Project) -> pd.DataFrame:
             C.stderr,
             C.intercept_stderr,
         ],
-    ).assign(
+    )
+
+    return df
+
+
+def plot_fit_apply(
+    df: pd.DataFrame, proj: Project, temps_to_regress: list[str]
+) -> pd.DataFrame:
+    """Plot the goodness of fit for each run in the trial."""
+
+    if proj.fit.do_plot:
+        import matplotlib
+        from matplotlib import pyplot as plt
+
+        matplotlib.use("QtAgg")
+
+        df.apply(plot_fit_ser, args=(proj, temps_to_regress, plt), axis="columns")
+        plt.show()
+
+    return df
+
+
+def get_heat_transfer(
+    df: pd.DataFrame, temps_to_regress: list[str], water_temps: list[str]
+) -> pd.DataFrame:
+    """Calculate heat transfer and superheat based on one-dimensional approximation."""
+    # Constants
+    cm_p_m = 100  # (cm/m) Conversion factor
+    cm2_p_m2 = cm_p_m**2  # ((cm/m)^2) Conversion factor
+    diameter = 0.009525 * cm_p_m  # (cm) 3/8"
+    cross_sectional_area = np.pi / 4 * diameter**2  # (cm^2)
+
+    return df.assign(
         **{
             C.dT_dx_err: lambda df: (4 * df["stderr"]).abs(),
             C.k: get_prop(
                 Mat.COPPER,
                 Prop.THERMAL_CONDUCTIVITY,
-                convert_temperature(temperature_cols.mean(axis="columns"), "C", "K"),
+                convert_temperature(
+                    df[temps_to_regress].mean(axis="columns"), "C", "K"
+                ),
             ),
             # no negative due to reversed x-coordinate
             C.q: lambda df: df[C.k] * df[C.dT_dx] / cm2_p_m2,
             C.q_err: lambda df: (df[C.k] * df[C.dT_dx_err]).abs() / cm2_p_m2,
             C.Q: lambda df: df[C.q] * cross_sectional_area,
-            C.DT: lambda df: (df[C.TLfit] - water_temp_cols.mean().mean()),
+            C.DT: lambda df: (df[C.TLfit] - df[water_temps].mean().mean()),
             C.DT_err: lambda df: (4 * df["intercept_stderr"]).abs(),
         }
     )
-
-    if proj.fit.do_plot:
-        df.apply(plot, args=(proj, temps_to_regress), axis="columns")
-
-    return df
 
 
 # * -------------------------------------------------------------------------------- * #
@@ -167,6 +185,7 @@ def transform_units_for_originlab(df: pd.DataFrame) -> pd.DataFrame:
 
 
 def prettify(df: pd.DataFrame, proj: Project) -> pd.DataFrame:
+    """Rename columns"""
     return df.rename(
         {name: col.pretty_name for name, col in proj.cols.items()}, axis="columns"
     )
@@ -177,6 +196,7 @@ def prettify(df: pd.DataFrame, proj: Project) -> pd.DataFrame:
 
 
 def get_run(file: Path, proj: Project) -> pd.DataFrame:
+    """Get an individual run in a trial."""
     source_cols = {name: col for name, col in proj.cols.items() if col.source}
     dtypes = {name: col.dtype for name, col in source_cols.items()}
     return pd.read_csv(
@@ -190,20 +210,20 @@ def get_run(file: Path, proj: Project) -> pd.DataFrame:
 def linregress_apply(
     df: pd.DataFrame,
     proj: Project,
-    repeats_per_pair: int,
     temperature_cols: pd.DataFrame,
     result_cols: list[str],
 ) -> pd.DataFrame:
+    """Apply linear regression across the temperature columns."""
     return pd.concat(
         axis="columns",
         objs=[
             df,
             temperature_cols.apply(
                 axis="columns",
-                func=lambda ser: linregress_series(
+                func=lambda ser: linregress_ser(
                     x=proj.fit.thermocouple_pos,
                     series_of_y=ser,
-                    repeats_per_pair=repeats_per_pair,
+                    repeats_per_pair=proj.params.records_to_average,
                     regression_stats=result_cols,
                 ),
             ),
@@ -211,7 +231,11 @@ def linregress_apply(
     )
 
 
-def linregress_series(
+# * -------------------------------------------------------------------------------- * #
+# * HELPER FUNCTIONS
+
+
+def linregress_ser(
     x: npt.ArrayLike,
     series_of_y: pd.Series,
     repeats_per_pair: int,
@@ -222,7 +246,6 @@ def linregress_series(
     Given x-values and a series of y-values, return a series of linear regression
     statistics.
     """
-
     # Assume the ordered pairs are repeated with zero standard deviation in x and y
     x = np.repeat(x, repeats_per_pair)
     y = np.repeat(series_of_y, repeats_per_pair)
@@ -236,24 +259,22 @@ def linregress_series(
     )
 
 
-def plot(ser, proj, temps_to_regress):
-    import matplotlib
-    from matplotlib import pyplot as plt
-
-    matplotlib.use("QtAgg")
-
+def plot_fit_ser(
+    ser: pd.Series, proj: Project, temps_to_regress: list[str], plt: ModuleType
+):
+    """Plot the goodness of fit for a series of temperatures and positions."""
     plt.figure()
     plt.title("Temperature Profile in Post")
     plt.xlabel("x (m)")
     plt.ylabel("T (C)")
     plt.plot(
         proj.fit.thermocouple_pos,
-        ser.loc[temps_to_regress],
+        ser[temps_to_regress],  # type: ignore
         "*",
         label="Measured Temperatures",
         color=[0.2, 0.2, 0.2],
     )
-    x_smooth = np.linspace(thermocouple_pos[0], thermocouple_pos[-1])  # type: ignore
+    x_smooth = np.linspace(0, proj.fit.thermocouple_pos[-1])
     plt.plot(
         x_smooth,
         ser[C.TLfit] + ser[C.dT_dx] * x_smooth,
@@ -264,7 +285,6 @@ def plot(ser, proj, temps_to_regress):
         0, ser[C.TLfit], "x", label="Extrapolated Surface Temperature", color=[1, 0, 0]
     )
     plt.legend()
-    plt.show()
 
 
 # * -------------------------------------------------------------------------------- * #
