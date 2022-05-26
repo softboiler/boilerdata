@@ -260,9 +260,9 @@ def linregress_apply(
             df,
             temperature_cols.apply(
                 axis="columns",
-                func=lambda ser: linregress_ser(
+                func=linregress_ser,
+                **dict(
                     x=trial.thermocouple_pos,
-                    series_of_y=ser,
                     repeats_per_pair=proj.params.records_to_average,
                     regression_stats=result_cols,
                 ),
@@ -276,8 +276,8 @@ def linregress_apply(
 
 
 def linregress_ser(
-    x: npt.ArrayLike,
     series_of_y: pd.Series,
+    x: npt.ArrayLike,
     repeats_per_pair: int,
     regression_stats: list[str],
 ) -> pd.Series:
