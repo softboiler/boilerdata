@@ -159,7 +159,7 @@ def get_heat_transfer(
             C.q_err: lambda df: (df[C.k] * df[C.dT_dx_err]).abs() / cm2_p_m2,
             C.Q: lambda df: df[C.q] * cross_sectional_area,
             C.DT: lambda df: (df[C.TLfit] - df[water_temps].mean().mean()),
-            C.DT_err: lambda df: (4 * df["intercept_stderr"]).abs(),
+            C.DT_err: lambda df: (4 * df[C.intercept_stderr]).abs(),
         }
     )
 
