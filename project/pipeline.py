@@ -117,7 +117,7 @@ def plot_fit_apply(
 ) -> pd.DataFrame:
     """Plot the goodness of fit for each run in the trial."""
 
-    if proj.fit.do_plot:
+    if proj.params.do_plot:
         import matplotlib
         from matplotlib import pyplot as plt
 

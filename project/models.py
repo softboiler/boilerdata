@@ -96,26 +96,16 @@ class Dirs(MyBaseModel):
 # * PARAMS
 
 
-class Fit(MyBaseModel):
-    """Configure the linear regression of thermocouple temperatures vs. position."""
-
-    thermocouple_pos: list[float] = Field(
-        default=...,
-        description="Thermocouple positions.",
-    )
-    do_plot: bool = Field(False, description="Whether to plot the linear regression.")
-
-    @validator("thermocouple_pos")
-    def _(cls, thermocouple_pos):
-        return np.array(thermocouple_pos)
-
-
 class Params(MyBaseModel):
     """Parameters of the pipeline."""
 
     records_to_average: int = Field(
         default=60,
         description="The number of records over which to average in a given trial.",
+    )
+    do_plot: bool = Field(
+        default=False,
+        description="Whether to plot the fits of the individual runs.",
     )
 
 
@@ -259,7 +249,6 @@ class Project(MyBaseModel):
     dirs: Dirs
     geometry: Geometry
     params: Params
-    fit: Fit
 
     def __init__(self, **data):
         super().__init__(**data)

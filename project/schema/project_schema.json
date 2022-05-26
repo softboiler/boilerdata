@@ -11,16 +11,12 @@
     },
     "params": {
       "$ref": "#/definitions/Params"
-    },
-    "fit": {
-      "$ref": "#/definitions/Fit"
     }
   },
   "required": [
     "dirs",
     "geometry",
-    "params",
-    "fit"
+    "params"
   ],
   "definitions": {
     "Dirs": {
@@ -126,32 +122,14 @@
           "description": "The number of records over which to average in a given trial.",
           "default": 60,
           "type": "integer"
-        }
-      }
-    },
-    "Fit": {
-      "title": "Fit",
-      "description": "Configure the linear regression of thermocouple temperatures vs. position.",
-      "type": "object",
-      "properties": {
-        "thermocouple_pos": {
-          "title": "Thermocouple Pos",
-          "description": "Thermocouple positions.",
-          "type": "array",
-          "items": {
-            "type": "number"
-          }
         },
         "do_plot": {
           "title": "Do Plot",
-          "description": "Whether to plot the linear regression.",
+          "description": "Whether to plot the fits of the individual runs.",
           "default": false,
           "type": "boolean"
         }
-      },
-      "required": [
-        "thermocouple_pos"
-      ]
+      }
     }
   }
 }
