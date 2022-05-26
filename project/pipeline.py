@@ -43,13 +43,12 @@ def pipeline(proj: Project):
         if trial.monotonic
     ]
 
-    # TODO: Transform superscript/subscript in column names AND units. Prioritize renaming to pretty names. Also check on units
     # Post-process the dataframe for writing to OriginLab-flavored CSV
     (
         pd.concat(dfs)
         .pipe(set_units_row, proj)
         .pipe(transform_units_for_originlab)
-        .pipe(prettify, proj)
+        .pipe(prettify_for_originlab, proj)
         .to_csv(proj.dirs.results_file, index_label=proj.get_index().name)
     )
 
@@ -178,17 +177,46 @@ def set_units_row(df: pd.DataFrame, proj: Project) -> pd.DataFrame:
     return pd.concat([units_row, df])
 
 
+SUPERSCRIPT = re.compile(r"\^(.*)")
+SUPERSCRIPT_REPL = r"\+(\1)"
+SUBSCRIPT = re.compile(r"\_(.*)")
+SUBSCRIPT_REPL = r"\-(\1)"
+
+
 def transform_units_for_originlab(df: pd.DataFrame) -> pd.DataFrame:
-    units = df.loc[UNITS_INDEX, :].replace(re.compile(r"\^(\d)"), r"\+(\1)")
+    """Convert super/subscripts in units to their OriginLab representation.
+
+    See: <https://www.originlab.com/doc/en/Origin-Help/Escape-Sequences>
+    """
+    units = (
+        df.loc[UNITS_INDEX, :]
+        .replace(SUPERSCRIPT, SUPERSCRIPT_REPL)
+        .replace(SUBSCRIPT, SUBSCRIPT_REPL)
+    )
     df.loc[UNITS_INDEX, :] = units
     return df
 
 
-def prettify(df: pd.DataFrame, proj: Project) -> pd.DataFrame:
-    """Rename columns"""
+def prettify_for_originlab(df: pd.DataFrame, proj: Project) -> pd.DataFrame:
+    """Rename columns with Greek symbols, superscripts, and subscripts transformed.
+
+    See: <https://www.originlab.com/doc/en/Origin-Help/Escape-Sequences>
+    """
     return df.rename(
-        {name: col.pretty_name for name, col in proj.cols.items()}, axis="columns"
+        {
+            name: replace_for_originlab(col.pretty_name)
+            for name, col in proj.cols.items()
+        },
+        axis="columns",
     )
+
+
+def replace_for_originlab(text: str) -> str:
+    """Transform superscripts and subscripts to their OriginLab representation.
+
+    See: <https://www.originlab.com/doc/en/Origin-Help/Escape-Sequences>
+    """
+    return SUBSCRIPT.sub(SUBSCRIPT_REPL, SUPERSCRIPT.sub(SUPERSCRIPT_REPL, text))
 
 
 # * -------------------------------------------------------------------------------- * #
