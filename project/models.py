@@ -275,12 +275,12 @@ class Column(MyBaseModel):
 class Columns(MyBaseModel):
     """Columns in the dataframe."""
 
-    columns: dict[str, Column]
+    cols: dict[str, Column]
 
     def __init__(self, **data):
         super().__init__(**data)
 
-        for name, column in self.columns.items():
+        for name, column in self.cols.items():
             column.name = name
 
 
@@ -301,15 +301,13 @@ class Project(MyBaseModel):
 
         with allow_extra(self):
             self.trials = load_config(self.dirs.config / "trials.yaml", Trials).trials
-            self.columns = load_config(
-                self.dirs.config / "columns.yaml", Columns
-            ).columns
+            self.cols = load_config(self.dirs.config / "columns.yaml", Columns).cols
 
         for trial in self.trials:
             trial.get_path(self.dirs)
 
     def get_index(self) -> Column:
-        index_cols = [column for column in self.columns.values() if column.index]
+        index_cols = [col for col in self.cols.values() if col.index]
         match index_cols:
             case [index]:
                 return index
@@ -322,7 +320,7 @@ class Project(MyBaseModel):
                 )
 
     def get_non_index_cols(self) -> list[Column]:
-        return [col for col in self.columns.values() if not col.index]
+        return [col for col in self.cols.values() if not col.index]
 
     def get_originlab_coldes(self) -> str:
-        return "".join([column.originlab_coldes for column in self.columns.values()])
+        return "".join([column.originlab_coldes for column in self.cols.values()])
