@@ -46,7 +46,7 @@ def pipeline(proj: Project):
     # Post-process the dataframe for writing to OriginLab-flavored CSV
     (
         pd.concat(dfs)
-        .pipe(set_units_row, proj)
+        .pipe(set_units_row_for_originlab, proj)
         .pipe(transform_units_for_originlab)
         .pipe(prettify_for_originlab, proj)
         .to_csv(proj.dirs.results_file, index_label=proj.get_index().name)
@@ -164,7 +164,7 @@ def get_heat_transfer(
 # * FINISHING STAGES
 
 
-def set_units_row(df: pd.DataFrame, proj: Project) -> pd.DataFrame:
+def set_units_row_for_originlab(df: pd.DataFrame, proj: Project) -> pd.DataFrame:
     """Move units out of column labels and into a row just below the column labels."""
     units_row = pd.DataFrame(
         {

@@ -30,22 +30,16 @@ def test_get_steady_state_raises(tmp_proj):
 def test_run(tmp_proj):
     """Ensure the same result is coming out of the pipeline as before."""
 
-    old_commit = "ccd7affba00d0cf6b4b80b94a638dcfa3d3404f5"
+    old_commit = "94aa76e955da36aef0c92041f4840ec99795623e"
 
-    rest_of_read_csv_params = dict(
-        usecols=[col.pretty_name for col in tmp_proj.cols.values()],
-        index_col=tmp_proj.get_index().name,
-        parse_dates=[C.date],  # Can't handle date column in dtypes parameter below
-        dtype={
-            name: col.dtype for name, col in tmp_proj.cols.items() if name != C.date
-        },
-        skiprows=[1],  # Skip the "units" row as it won't be coerced to dtype nicely
+    common_read_csv_params = dict(
+        skiprows=[1],  # Skip the "units" row so dtype detection works properly
     )
 
     pipeline(tmp_proj)
 
-    old = pd.read_csv(get_old_file(old_commit), **rest_of_read_csv_params)
-    new = pd.read_csv(tmp_proj.dirs.results_file, **rest_of_read_csv_params)
+    old = pd.read_csv(get_old_file(old_commit), **common_read_csv_params)
+    new = pd.read_csv(tmp_proj.dirs.results_file, **common_read_csv_params)
     assert_frame_equal(old, new)
 
 
