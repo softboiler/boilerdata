@@ -7,7 +7,6 @@ from pandas.testing import assert_frame_equal
 from pytest import mark as m, raises
 import yaml
 
-from config.columns import Columns as C  # noqa: N817
 from migrate import migrate_1, migrate_2, migrate_3
 from pipeline import pipeline
 from utils import get_project
