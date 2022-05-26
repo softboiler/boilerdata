@@ -14,7 +14,7 @@ from scipy.constants import convert_temperature
 from scipy.stats import linregress
 
 from config.columns import Columns as C  # noqa: N817
-from models import Project
+from models import Project, Trial
 from utils import get_project
 
 # * -------------------------------------------------------------------------------- * #
@@ -33,12 +33,12 @@ def pipeline(proj: Project):
 
     # Reduce data from CSV's of runs within trials, to single df w/ trials as records
     dfs = [
-        get_steady_state(trial.path, proj)  # Reduce many CSV's to one df
+        get_steady_state(trial, proj)  # Reduce many CSV's to one df
         .pipe(rename_columns, proj)  # Pull units out of columns for cleaner ref
         .pipe(fit, proj, temps_to_regress)
         .pipe(plot_fit_apply, proj, temps_to_regress)
         .pipe(get_heat_transfer, temps_to_regress, water_temps)
-        .assign(**json.loads(trial.json()))
+        .pipe(assign_trial_metadata, trial)
         for trial in proj.trials
         if trial.monotonic
     ]
@@ -57,10 +57,10 @@ def pipeline(proj: Project):
 # * PER-TRIAL STAGES
 
 
-def get_steady_state(path: Path, proj: Project) -> pd.DataFrame:
+def get_steady_state(trial: Trial, proj: Project) -> pd.DataFrame:
     """Get steady-state values for the trial."""
 
-    files: list[Path] = sorted(path.glob("*.csv"))
+    files: list[Path] = sorted(trial.path.glob("*.csv"))
     run_names: list[str] = [file.stem for file in files]
     runs: list[pd.DataFrame] = []
     for file in files:
@@ -158,6 +158,11 @@ def get_heat_transfer(
             C.DT_err: lambda df: (4 * df["intercept_stderr"]).abs(),
         }
     )
+
+
+def assign_trial_metadata(df: pd.DataFrame, trial: Trial) -> pd.DataFrame:
+    """Assign metadata sourced from configs to the dataframe."""
+    return df.assign(**json.loads(trial.json()))
 
 
 # * -------------------------------------------------------------------------------- * #
