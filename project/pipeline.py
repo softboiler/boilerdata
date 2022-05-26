@@ -96,17 +96,19 @@ def fit(
     # Main pipeline
     df = df.pipe(
         linregress_apply,
-        proj,
-        trial,
-        df[temps_to_regress],
-        result_cols=[
-            C.dT_dx,
-            C.TLfit,
-            C.rvalue,
-            C.pvalue,
-            C.stderr,
-            C.intercept_stderr,
-        ],
+        **dict(
+            proj=proj,
+            trial=trial,
+            temperature_cols=df[temps_to_regress],
+            result_cols=[
+                C.dT_dx,
+                C.TLfit,
+                C.rvalue,
+                C.pvalue,
+                C.stderr,
+                C.intercept_stderr,
+            ],
+        ),
     )
 
     return df
@@ -123,7 +125,11 @@ def plot_fit_apply(
 
         matplotlib.use("QtAgg")
 
-        df.apply(plot_fit_ser, args=(proj, temps_to_regress, plt), axis="columns")
+        df.apply(
+            axis="columns",
+            func=plot_fit_ser,
+            **dict(proj=proj, trial=trial, temps_to_regress=temps_to_regress, plt=plt),
+        )
         plt.show()
 
     return df
