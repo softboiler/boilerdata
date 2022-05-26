@@ -6,6 +6,9 @@
     "dirs": {
       "$ref": "#/definitions/Dirs"
     },
+    "geometry": {
+      "$ref": "#/definitions/Geometry"
+    },
     "params": {
       "$ref": "#/definitions/Params"
     },
@@ -15,6 +18,7 @@
   },
   "required": [
     "dirs",
+    "geometry",
     "params",
     "fit"
   ],
@@ -75,6 +79,26 @@
         "trials",
         "results",
         "per_trial"
+      ]
+    },
+    "Geometry": {
+      "title": "Geometry",
+      "description": "The geometry.",
+      "type": "object",
+      "properties": {
+        "rods": {
+          "title": "Rods",
+          "type": "object",
+          "additionalProperties": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            }
+          }
+        }
+      },
+      "required": [
+        "rods"
       ]
     },
     "Params": {

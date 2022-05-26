@@ -6,6 +6,10 @@ dirs:
   results: "Results"
   per_trial: "data"
 
+geometry:
+  rods:
+    W: [0, 0]
+
 params: {}
 
 fit:

@@ -27,13 +27,16 @@ def main(project: Project):
             df = (
                 get_steady_state(trial.path, project)
                 .pipe(rename_columns, project)
-                .pipe(run_one, project, project.params.records_to_average)
+                .pipe(run_one, project)
                 .assign(**json.loads(trial.json()))  # Assign trial metadata
             )
             dfs.append(df)
+    # TODO: Transform superscript/subscript in column names AND units. Prioritize renaming to pretty names. Also check on units
     pd.concat(dfs).pipe(set_units_row, project).pipe(
         transform_units_for_originlab
-    ).pipe(prettify, project).to_csv(project.dirs.results_file, index_label="Run")
+    ).pipe(prettify, project).to_csv(
+        project.dirs.results_file, index_label=project.get_index().name
+    )
 
 
 # * -------------------------------------------------------------------------------- * #
@@ -57,25 +60,37 @@ def get_steady_state(path: Path, project: Project) -> pd.DataFrame:
     runs_steady_state: list[pd.Series] = [
         df.iloc[-project.params.records_to_average :, :].mean() for df in runs
     ]
-    return pd.DataFrame(runs_steady_state, index=run_names)
+    return pd.DataFrame(runs_steady_state, index=run_names).rename_axis(
+        project.get_index().name, axis="index"
+    )
 
 
 def get_run(project: Project, file: Path) -> pd.DataFrame:
+    source_cols = {name: col for name, col in project.columns.items() if col.source}
+    dtypes = {name: col.dtype for name, col in source_cols.items()}
     return pd.read_csv(
         file,
-        usecols=[col.source for col in project.get_source_cols()],  # pyright: ignore
+        usecols=[col.source for col in source_cols.values()],  # pyright: ignore
         index_col=project.get_index().source,
+        dtype=dtypes,
     )
+
+
+# * -------------------------------------------------------------------------------- * #
+# * PRIMARY STAGES
 
 
 def rename_columns(df: pd.DataFrame, project: Project) -> pd.DataFrame:
     """Remove units from column labels."""
-    columns_mapping = dict(zip(df.columns, project.columns.keys()))
-    return df.rename(columns_mapping, axis="columns")
+
+    return df.rename(
+        {col.source: name for name, col in project.columns.items() if not col.index},
+        axis="columns",
+    )
 
 
-def run_one(df: pd.DataFrame, project: Project, points_to_average: int) -> pd.DataFrame:
-    return df.pipe(fit, project, points_to_average)
+def run_one(df: pd.DataFrame, project: Project) -> pd.DataFrame:
+    return df.pipe(fit, project)
 
 
 # * -------------------------------------------------------------------------------- * #
@@ -86,9 +101,9 @@ def set_units_row(df: pd.DataFrame, project: Project) -> pd.DataFrame:
     """Move units out of column labels and into a row just below the column labels."""
     units_row = pd.DataFrame(
         {
-            name: pd.Series(column.units, index=["Units"])
-            # Don't simplify to "columns.items()" because df.columns are prettified
-            for name, column in zip(df.columns, project.columns.values())
+            name: pd.Series(col.units, index=["units"])
+            for name, col in project.columns.items()
+            if not col.index
         }
     )
 
@@ -96,8 +111,8 @@ def set_units_row(df: pd.DataFrame, project: Project) -> pd.DataFrame:
 
 
 def transform_units_for_originlab(df: pd.DataFrame) -> pd.DataFrame:
-    units = df.loc["Units", :].replace(re.compile(r"\^(\d)"), r"\+(\1)")
-    df.loc["Units", :] = units
+    units = df.loc["units", :].replace(re.compile(r"\^(\d)"), r"\+(\1)")
+    df.loc["units", :] = units
     return df
 
 
@@ -123,8 +138,9 @@ def fit(
 
     # Constants
     cm_p_m = 100  # (cm/m) Conversion factor
-    cm2_p_m2 = cm_p_m**2  # (cm/m)^2 Conversion factor
+    cm2_p_m2 = cm_p_m**2  # ((cm/m)^2) Conversion factor
     diameter = 0.009525 * cm_p_m  # (cm) 3/8"
+    cross_sectional_area = np.pi / 4 * diameter**2  # (cm^2)
 
     # Column names
     temps_to_regress = [C.T_1, C.T_2, C.T_3, C.T_4, C.T_5]
@@ -133,7 +149,6 @@ def fit(
     # Computed values
     temperature_cols: pd.DataFrame = df.loc[:, temps_to_regress]
     water_temp_cols: pd.DataFrame = df.loc[:, water_temps]
-    cross_sectional_area = np.pi / 4 * diameter**2
 
     # Main pipeline
     df = df.pipe(

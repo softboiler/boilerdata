@@ -6,14 +6,22 @@ from typing import Optional
 import numpy as np
 from pydantic import BaseModel, DirectoryPath, Field, validator
 
-from boilerdata.enums import NameEnum
+from boilerdata.enums import GetValueNameEnum
 from boilerdata.utils import StrPath, allow_extra, expanduser2, load_config
+
+# * -------------------------------------------------------------------------------- * #
+# * BASE
+
+
+class MyBaseModel(BaseModel, use_enum_values=True):
+    """Need both `GetValueNameEnum` and `use_enum_values` so that strings are passed."""
+
 
 # * -------------------------------------------------------------------------------- * #
 # * DIRS
 
 
-class Dirs(BaseModel):
+class Dirs(MyBaseModel):
     """Directories relevant to the project."""
 
     base: DirectoryPath = Field(
@@ -84,7 +92,7 @@ class Dirs(BaseModel):
 # * PARAMS
 
 
-class Fit(BaseModel):
+class Fit(MyBaseModel):
     """Configure the linear regression of thermocouple temperatures vs. position."""
 
     thermocouple_pos: list[float] = Field(
@@ -98,7 +106,7 @@ class Fit(BaseModel):
         return np.array(thermocouple_pos)
 
 
-class Params(BaseModel):
+class Params(MyBaseModel):
     """Parameters of the pipeline."""
 
     records_to_average: int = Field(
@@ -111,7 +119,7 @@ class Params(BaseModel):
 # * TRIALS
 
 
-class Rod(NameEnum):
+class Rod(GetValueNameEnum):
     """The rod used in this trial."""
 
     W = auto()
@@ -119,7 +127,7 @@ class Rod(NameEnum):
     Y = auto()
 
 
-class Coupon(NameEnum):
+class Coupon(GetValueNameEnum):
     """The coupon attached to the rod for this trial."""
 
     A1 = auto()
@@ -131,14 +139,14 @@ class Coupon(NameEnum):
     A9 = auto()
 
 
-class Sample(NameEnum):
+class Sample(GetValueNameEnum):
     """The sample attached to the coupon in this trial."""
 
     NA = auto()  # If no sample is attached to the coupon.
     B3 = auto()
 
 
-class Group(NameEnum):
+class Group(GetValueNameEnum):
     """The group that this sample belongs to."""
 
     control = auto()
@@ -146,7 +154,7 @@ class Group(NameEnum):
     hybrid = auto()
 
 
-class Joint(NameEnum):
+class Joint(GetValueNameEnum):
     """The method used to join parts of the sample in this trial."""
 
     paste = auto()
@@ -154,7 +162,7 @@ class Joint(NameEnum):
     solder = auto()
 
 
-class Trial(BaseModel):
+class Trial(MyBaseModel):
     """A trial."""
 
     date: date
@@ -176,17 +184,27 @@ class Trial(BaseModel):
             self.path = dirs.trials / self.date.isoformat() / dirs.per_trial
 
 
-class Trials(BaseModel):
+class Trials(MyBaseModel):
     """The trials."""
 
     trials: list[Trial]
 
 
 # * -------------------------------------------------------------------------------- * #
+# * GEOMETRY
+
+
+class Geometry(MyBaseModel):
+    """The geometry."""
+
+    rods: dict[Rod, list[float]]
+
+
+# * -------------------------------------------------------------------------------- * #
 # * COLUMNS
 
 # sourcery skip: avoid-builtin-shadow
-class PandasDtype(NameEnum):
+class PandasDtype(GetValueNameEnum):
     float = auto()  # noqa: A003
     int = auto()  # noqa: A003
     bool = auto()  # noqa: A003
@@ -207,7 +225,7 @@ class PandasDtype(NameEnum):
     UInt64 = auto()
 
 
-class Column(BaseModel):
+class Column(MyBaseModel):
     """Metadata for a column in the dataframe."""
 
     index: bool = Field(  # Validator ensures this is set even if omitted.
@@ -254,7 +272,7 @@ class Column(BaseModel):
         self.name: str = ""  # Should never stay this way. Columns.__init__() sets it.
 
 
-class Columns(BaseModel):
+class Columns(MyBaseModel):
     """Columns in the dataframe."""
 
     columns: dict[str, Column]
@@ -270,10 +288,11 @@ class Columns(BaseModel):
 # * PROJECT
 
 
-class Project(BaseModel):
+class Project(MyBaseModel):
     """Configuration for the package."""
 
     dirs: Dirs
+    geometry: Geometry
     params: Params
     fit: Fit
 
@@ -289,9 +308,6 @@ class Project(BaseModel):
         for trial in self.trials:
             trial.get_path(self.dirs)
 
-    def get_source_cols(self) -> list[Column]:
-        return [column for column in self.columns.values() if column.source]
-
     def get_index(self) -> Column:
         index_cols = [column for column in self.columns.values() if column.index]
         match index_cols:
@@ -305,7 +321,8 @@ class Project(BaseModel):
                     f"Only one column may be designated as the index. You specified the following: {', '.join(indices)}"
                 )
 
+    def get_non_index_cols(self) -> list[Column]:
+        return [col for col in self.columns.values() if not col.index]
+
     def get_originlab_coldes(self) -> str:
-        return "N" + "".join(
-            [column.originlab_coldes for column in self.columns.values()]
-        )
+        return "".join([column.originlab_coldes for column in self.columns.values()])
