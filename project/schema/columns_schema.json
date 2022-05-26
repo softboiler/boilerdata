@@ -77,7 +77,7 @@
         },
         "pretty_name": {
           "title": "Pretty Name",
-          "description": "The column name.",
+          "description": "The pretty version of the column name.",
           "type": "string"
         }
       }

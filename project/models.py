@@ -1,13 +1,13 @@
 from datetime import date
-from enum import auto
 from pathlib import Path
 from typing import Optional
 
 import numpy as np
 from pydantic import BaseModel, DirectoryPath, Field, validator
 
-from boilerdata.enums import GetValueNameEnum
+from boilerdata.typing import NpNDArray
 from boilerdata.utils import StrPath, allow_extra, expanduser2, load_config
+from enums import Coupon, Group, Joint, PandasDtype, Rod, Sample
 
 # * -------------------------------------------------------------------------------- * #
 # * BASE
@@ -16,6 +16,7 @@ from boilerdata.utils import StrPath, allow_extra, expanduser2, load_config
 class MyBaseModel(
     BaseModel,
     use_enum_values=True,  # To use enums for schemas, but not in code
+    arbitrary_types_allowed=True,  # To use Numpy types
 ):
     pass
 
@@ -119,113 +120,7 @@ class Params(MyBaseModel):
 
 
 # * -------------------------------------------------------------------------------- * #
-# * TRIALS
-
-
-class Rod(GetValueNameEnum):
-    """The rod used in this trial."""
-
-    W = auto()
-    X = auto()
-    Y = auto()
-
-
-class Coupon(GetValueNameEnum):
-    """The coupon attached to the rod for this trial."""
-
-    A1 = auto()
-    A2 = auto()
-    A3 = auto()
-    A4 = auto()
-    A6 = auto()
-    A7 = auto()
-    A9 = auto()
-
-
-class Sample(GetValueNameEnum):
-    """The sample attached to the coupon in this trial."""
-
-    NA = auto()  # If no sample is attached to the coupon.
-    B3 = auto()
-
-
-class Group(GetValueNameEnum):
-    """The group that this sample belongs to."""
-
-    control = auto()
-    porous = auto()
-    hybrid = auto()
-
-
-class Joint(GetValueNameEnum):
-    """The method used to join parts of the sample in this trial."""
-
-    paste = auto()
-    epoxy = auto()
-    solder = auto()
-
-
-class Trial(MyBaseModel):
-    """A trial."""
-
-    date: date
-    rod: Rod
-    coupon: Coupon
-    sample: Sample
-    group: Group
-    joint: Joint
-    monotonic: bool = Field(
-        default=...,
-        description="Whether the boiling curve is monotonic.",
-    )
-    comment: str
-
-    def get_path(self, dirs: Dirs):
-        """Get the path to the data for this trial."""
-
-        with allow_extra(self):
-            self.path = dirs.trials / self.date.isoformat() / dirs.per_trial
-
-
-class Trials(MyBaseModel):
-    """The trials."""
-
-    trials: list[Trial]
-
-
-# * -------------------------------------------------------------------------------- * #
-# * GEOMETRY
-
-
-class Geometry(MyBaseModel):
-    """The geometry."""
-
-    rods: dict[Rod, list[float]]
-
-
-# * -------------------------------------------------------------------------------- * #
 # * COLUMNS
-
-# sourcery skip: avoid-builtin-shadow
-class PandasDtype(GetValueNameEnum):
-    float = auto()  # noqa: A003
-    int = auto()  # noqa: A003
-    bool = auto()  # noqa: A003
-    timedelta64ns = "timedelta64[ns]"
-    datetime64ns = "datetime64[ns]"
-    string = auto()
-    boolean = auto()
-    category = auto()
-    Sparse = auto()
-    interval = auto()
-    Int8 = auto()
-    Int16 = auto()
-    Int32 = auto()
-    Int64 = auto()
-    UInt8 = auto()
-    UInt16 = auto()
-    Uint32 = auto()
-    UInt64 = auto()
 
 
 class Column(MyBaseModel):
@@ -293,6 +188,68 @@ class Columns(MyBaseModel):
 
 
 # * -------------------------------------------------------------------------------- * #
+# * GEOMETRY
+
+
+class Geometry(MyBaseModel):
+    """The geometry."""
+
+    rods: dict[Rod, NpNDArray] = Field(
+        default=...,
+        description="Distance of each thermocouple from the cool side of the rod, starting with TC1. Fifth thermocouple may be omitted. Input: inch. Output: meter.",
+    )
+    coupons: dict[Coupon, float] = Field(
+        default=...,
+        description="Length of the coupon. Input: inch. Output: meter.",
+    )
+    _in_p_m: float = 39.3701
+
+    @validator("rods", pre=True)
+    def validate_rods(cls, rods):
+        return {rod: np.array(values) / cls._in_p_m for rod, values in rods.items()}
+
+    @validator("coupons")
+    def validate_coupons(cls, coupons):
+        return {coupon: value / cls._in_p_m for coupon, value in coupons.items()}
+
+
+# * -------------------------------------------------------------------------------- * #
+# * TRIALS
+
+
+class Trial(MyBaseModel):
+    """A trial."""
+
+    date: date
+    rod: Rod
+    coupon: Coupon
+    sample: Sample
+    group: Group
+    joint: Joint
+    monotonic: bool = Field(
+        default=...,
+        description="Whether the boiling curve is monotonic.",
+    )
+    comment: str
+    thermocouple_pos: NpNDArray = Field(default=None, exclude=True)
+
+    def get_path(self, dirs: Dirs):
+        """Get the path to the data for this trial. Called during project setup."""
+        with allow_extra(self):
+            self.path = dirs.trials / self.date.isoformat() / dirs.per_trial
+
+    def get_geometry(self, geometry: Geometry):
+        """Get relevant geometry for the trial."""
+        self.thermocouple_pos = geometry.rods[self.rod] + geometry.coupons[self.coupon]  # type: ignore
+
+
+class Trials(MyBaseModel):
+    """The trials."""
+
+    trials: list[Trial]
+
+
+# * -------------------------------------------------------------------------------- * #
 # * PROJECT
 
 
@@ -313,6 +270,7 @@ class Project(MyBaseModel):
 
         for trial in self.trials:
             trial.get_path(self.dirs)
+            trial.get_geometry(self.geometry)
 
     def get_index(self) -> Column:
         index_cols = [col for col in self.cols.values() if col.index]

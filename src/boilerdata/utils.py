@@ -1,13 +1,12 @@
 """Configuration utilities for loading and dumping Pydantic models and their schema."""
 
 from contextlib import contextmanager
-from os import PathLike
 from pathlib import Path
 
 from pydantic import BaseModel, Extra, MissingError, ValidationError
 import yaml
 
-StrPath = str | PathLike[str]
+from boilerdata.typing import StrPath
 
 
 def expanduser2(path: StrPath) -> Path:

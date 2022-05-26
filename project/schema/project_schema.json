@@ -88,17 +88,32 @@
       "properties": {
         "rods": {
           "title": "Rods",
+          "description": "Distance of each thermocouple from the cool side of the rod, starting with TC1. Fifth thermocouple may be omitted. Input: inch. Output: meter.",
           "type": "object",
           "additionalProperties": {
-            "type": "array",
-            "items": {
-              "type": "number"
-            }
+            "allOf": [
+              {
+                "type": "array",
+                "items": [
+                  {},
+                  {}
+                ]
+              }
+            ]
+          }
+        },
+        "coupons": {
+          "title": "Coupons",
+          "description": "Length of the coupon. Input: inch. Output: meter.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "number"
           }
         }
       },
       "required": [
-        "rods"
+        "rods",
+        "coupons"
       ]
     },
     "Params": {

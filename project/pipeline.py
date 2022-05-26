@@ -33,12 +33,12 @@ def pipeline(proj: Project):
 
     # Reduce data from CSV's of runs within trials, to single df w/ trials as records
     dfs = [
-        get_steady_state(trial, proj)  # Reduce many CSV's to one df
-        .pipe(rename_columns, proj)  # Pull units out of columns for cleaner ref
-        .pipe(fit, proj, temps_to_regress)
-        .pipe(plot_fit_apply, proj, temps_to_regress)
-        .pipe(get_heat_transfer, temps_to_regress, water_temps)
-        .pipe(assign_trial_metadata, trial)
+        get_steady_state(proj, trial)  # Reduce many CSV's to one df
+        .pipe(rename_columns, proj, trial)  # Pull units out of columns for cleaner ref
+        .pipe(fit, proj, trial, temps_to_regress)
+        .pipe(plot_fit_apply, proj, trial, temps_to_regress)
+        .pipe(get_heat_transfer, proj, trial, temps_to_regress, water_temps)
+        .pipe(assign_trial_metadata, proj, trial)
         for trial in proj.trials
         if trial.monotonic
     ]
@@ -47,7 +47,7 @@ def pipeline(proj: Project):
     (
         pd.concat(dfs)
         .pipe(set_units_row_for_originlab, proj)
-        .pipe(transform_units_for_originlab)
+        .pipe(transform_units_for_originlab, proj)
         .pipe(prettify_for_originlab, proj)
         .to_csv(proj.dirs.results_file, index_label=proj.get_index().name)
     )
@@ -57,14 +57,14 @@ def pipeline(proj: Project):
 # * PRIMARY STAGES
 
 
-def get_steady_state(trial: Trial, proj: Project) -> pd.DataFrame:
+def get_steady_state(proj: Project, trial: Trial) -> pd.DataFrame:
     """Get steady-state values for the trial."""
 
     files: list[Path] = sorted(trial.path.glob("*.csv"))
     run_names: list[str] = [file.stem for file in files]
     runs: list[pd.DataFrame] = []
     for file in files:
-        run = get_run(file, proj)
+        run = get_run(proj, file)
         if len(run) < proj.params.records_to_average:
             raise ValueError(
                 f"There are not enough records in {file.name} to compute steady-state."
@@ -79,7 +79,7 @@ def get_steady_state(trial: Trial, proj: Project) -> pd.DataFrame:
     )
 
 
-def rename_columns(df: pd.DataFrame, proj: Project) -> pd.DataFrame:
+def rename_columns(df: pd.DataFrame, proj: Project, trial: Trial) -> pd.DataFrame:
     """Remove units from column labels."""
 
     return df.rename(
@@ -88,13 +88,16 @@ def rename_columns(df: pd.DataFrame, proj: Project) -> pd.DataFrame:
     )
 
 
-def fit(df: pd.DataFrame, proj: Project, temps_to_regress: list[str]) -> pd.DataFrame:
+def fit(
+    df: pd.DataFrame, proj: Project, trial: Trial, temps_to_regress: list[str]
+) -> pd.DataFrame:
     """Fit the data assuming one-dimensional, steady-state conduction."""
 
     # Main pipeline
     df = df.pipe(
         linregress_apply,
         proj,
+        trial,
         df[temps_to_regress],
         result_cols=[
             C.dT_dx,
@@ -110,7 +113,7 @@ def fit(df: pd.DataFrame, proj: Project, temps_to_regress: list[str]) -> pd.Data
 
 
 def plot_fit_apply(
-    df: pd.DataFrame, proj: Project, temps_to_regress: list[str]
+    df: pd.DataFrame, proj: Project, trial: Trial, temps_to_regress: list[str]
 ) -> pd.DataFrame:
     """Plot the goodness of fit for each run in the trial."""
 
@@ -127,7 +130,11 @@ def plot_fit_apply(
 
 
 def get_heat_transfer(
-    df: pd.DataFrame, temps_to_regress: list[str], water_temps: list[str]
+    df: pd.DataFrame,
+    proj: Project,
+    trial: Trial,
+    temps_to_regress: list[str],
+    water_temps: list[str],
 ) -> pd.DataFrame:
     """Calculate heat transfer and superheat based on one-dimensional approximation."""
     # Constants
@@ -156,7 +163,9 @@ def get_heat_transfer(
     )
 
 
-def assign_trial_metadata(df: pd.DataFrame, trial: Trial) -> pd.DataFrame:
+def assign_trial_metadata(
+    df: pd.DataFrame, proj: Project, trial: Trial
+) -> pd.DataFrame:
     """Assign metadata sourced from configs to the dataframe."""
     return df.assign(**json.loads(trial.json()))
 
@@ -184,7 +193,7 @@ SUBSCRIPT = re.compile(r"\_(.*)")
 SUBSCRIPT_REPL = r"\-(\1)"
 
 
-def transform_units_for_originlab(df: pd.DataFrame) -> pd.DataFrame:
+def transform_units_for_originlab(df: pd.DataFrame, proj: Project) -> pd.DataFrame:
     """Convert super/subscripts in units to their OriginLab representation.
 
     See: <https://www.originlab.com/doc/en/Origin-Help/Escape-Sequences>
@@ -224,12 +233,12 @@ def replace_for_originlab(text: str) -> str:
 # * HELPER FUNCTIONS
 
 
-def get_run(file: Path, proj: Project) -> pd.DataFrame:
+def get_run(proj: Project, run: Path) -> pd.DataFrame:
     """Get an individual run in a trial."""
     source_cols = {name: col for name, col in proj.cols.items() if col.source}
     dtypes = {name: col.dtype for name, col in source_cols.items()}
     return pd.read_csv(
-        file,
+        run,
         usecols=[col.source for col in source_cols.values()],  # pyright: ignore
         index_col=proj.get_index().source,
         dtype=dtypes,
@@ -239,6 +248,7 @@ def get_run(file: Path, proj: Project) -> pd.DataFrame:
 def linregress_apply(
     df: pd.DataFrame,
     proj: Project,
+    trial: Trial,
     temperature_cols: pd.DataFrame,
     result_cols: list[str],
 ) -> pd.DataFrame:
@@ -250,7 +260,7 @@ def linregress_apply(
             temperature_cols.apply(
                 axis="columns",
                 func=lambda ser: linregress_ser(
-                    x=proj.fit.thermocouple_pos,
+                    x=trial.thermocouple_pos,
                     series_of_y=ser,
                     repeats_per_pair=proj.params.records_to_average,
                     regression_stats=result_cols,
@@ -289,7 +299,11 @@ def linregress_ser(
 
 
 def plot_fit_ser(
-    ser: pd.Series, proj: Project, temps_to_regress: list[str], plt: ModuleType
+    ser: pd.Series,
+    proj: Project,
+    trial: Trial,
+    temps_to_regress: list[str],
+    plt: ModuleType,
 ):
     """Plot the goodness of fit for a series of temperatures and positions."""
     plt.figure()
@@ -297,13 +311,13 @@ def plot_fit_ser(
     plt.xlabel("x (m)")
     plt.ylabel("T (C)")
     plt.plot(
-        proj.fit.thermocouple_pos,
+        trial.thermocouple_pos,
         ser[temps_to_regress],  # type: ignore
         "*",
         label="Measured Temperatures",
         color=[0.2, 0.2, 0.2],
     )
-    x_smooth = np.linspace(0, proj.fit.thermocouple_pos[-1])
+    x_smooth = np.linspace(0, trial.thermocouple_pos[-1])
     plt.plot(
         x_smooth,
         ser[C.TLfit] + ser[C.dT_dx] * x_smooth,
