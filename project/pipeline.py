@@ -106,24 +106,20 @@ def fit(df: pd.DataFrame, proj: Project) -> pd.DataFrame:
     temperature_cols: pd.DataFrame = df.loc[:, temps_to_regress]
     water_temp_cols: pd.DataFrame = df.loc[:, water_temps]
 
-    # TODO: Refactor out regression block into own function.
     # Main pipeline
     df = df.pipe(
-        lambda df: pd.concat(  # Compute regression stats for each run
-            axis="columns",
-            objs=[
-                df,
-                temperature_cols.apply(
-                    axis="columns",
-                    func=lambda ser: linregress_series(
-                        proj.fit.thermocouple_pos,
-                        ser,
-                        proj.params.records_to_average,
-                        (C.dT_dx, C.TLfit),
-                    ),
-                ),
-            ],
-        )
+        linregress_apply,
+        proj,
+        temperature_cols,
+        repeats_per_pair=proj.params.records_to_average,
+        result_cols=[
+            C.dT_dx,
+            C.TLfit,
+            C.rvalue,
+            C.pvalue,
+            C.stderr,
+            C.intercept_stderr,
+        ],
     ).assign(
         **{
             C.dT_dx_err: lambda df: (4 * df["stderr"]).abs(),
@@ -172,8 +168,7 @@ def transform_units_for_originlab(df: pd.DataFrame) -> pd.DataFrame:
 
 def prettify(df: pd.DataFrame, proj: Project) -> pd.DataFrame:
     return df.rename(
-        {name: col.pretty_name for name, col in proj.cols.items()},
-        axis="columns",
+        {name: col.pretty_name for name, col in proj.cols.items()}, axis="columns"
     )
 
 
@@ -192,21 +187,41 @@ def get_run(file: Path, proj: Project) -> pd.DataFrame:
     )
 
 
+def linregress_apply(
+    df: pd.DataFrame,
+    proj: Project,
+    repeats_per_pair: int,
+    temperature_cols: pd.DataFrame,
+    result_cols: list[str],
+) -> pd.DataFrame:
+    return pd.concat(
+        axis="columns",
+        objs=[
+            df,
+            temperature_cols.apply(
+                axis="columns",
+                func=lambda ser: linregress_series(
+                    x=proj.fit.thermocouple_pos,
+                    series_of_y=ser,
+                    repeats_per_pair=repeats_per_pair,
+                    regression_stats=result_cols,
+                ),
+            ),
+        ],
+    )
+
+
 def linregress_series(
     x: npt.ArrayLike,
     series_of_y: pd.Series,
     repeats_per_pair: int,
-    label: tuple[str, str] = ("slope", "intercept"),
-    prefix: str = "",
+    regression_stats: list[str],
 ) -> pd.Series:
     """Perform linear regression of a series of y's with respect to given x's.
 
     Given x-values and a series of y-values, return a series of linear regression
     statistics.
     """
-    labels = [*label, "rvalue", "pvalue", "stderr", "intercept_stderr"]
-    if prefix:
-        labels = [*label, *("_".join(label) for label in labels[-4:])]
 
     # Assume the ordered pairs are repeated with zero standard deviation in x and y
     x = np.repeat(x, repeats_per_pair)
@@ -217,7 +232,7 @@ def linregress_series(
     # See "Notes" section of SciPy documentation for more info.
     return pd.Series(
         [r.slope, r.intercept, r.rvalue, r.pvalue, r.stderr, r.intercept_stderr],
-        index=labels,
+        index=regression_stats,
     )
 
 
