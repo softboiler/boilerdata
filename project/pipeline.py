@@ -60,8 +60,8 @@ def pipeline(proj: Project):
 def get_steady_state(proj: Project, trial: Trial) -> pd.DataFrame:
     """Get steady-state values for the trial."""
 
-    files: list[Path] = sorted(trial.path.glob("*.csv"))
-    run_names: list[str] = [file.stem for file in files]
+    files = sorted(trial.path.glob("*.csv"))
+    run_names = [file.stem for file in files]
     runs: list[pd.DataFrame] = []
     for file in files:
         run = get_run(proj, file)
@@ -137,6 +137,7 @@ def get_heat_transfer(
     water_temps: list[str],
 ) -> pd.DataFrame:
     """Calculate heat transfer and superheat based on one-dimensional approximation."""
+
     # Constants
     cm_p_m = 100  # (cm/m) Conversion factor
     cm2_p_m2 = cm_p_m**2  # ((cm/m)^2) Conversion factor
