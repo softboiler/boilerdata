@@ -227,7 +227,7 @@ class Trial(MyBaseModel):
     comment: str
 
     # Can't be None. Set in Project.__init__()
-    path: DirectoryPath = Field(default=None)
+    path: DirectoryPath = Field(default=None, exclude=True)
     thermocouple_pos: NpNDArray = Field(default=None, exclude=True)
 
     def get_path(self, dirs: Dirs):
