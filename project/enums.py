@@ -2,10 +2,10 @@
 
 from enum import auto
 
-from boilerdata.enums import GetValueNameEnum
+from boilerdata.enums import GetNameEnum
 
 
-class Rod(GetValueNameEnum):
+class Rod(GetNameEnum):
     """The rod used in this trial."""
 
     W = auto()
@@ -13,7 +13,7 @@ class Rod(GetValueNameEnum):
     Y = auto()
 
 
-class Coupon(GetValueNameEnum):
+class Coupon(GetNameEnum):
     """The coupon attached to the rod for this trial."""
 
     A1 = auto()
@@ -27,14 +27,14 @@ class Coupon(GetValueNameEnum):
     A9 = auto()
 
 
-class Sample(GetValueNameEnum):
+class Sample(GetNameEnum):
     """The sample attached to the coupon in this trial."""
 
     NA = auto()  # If no sample is attached to the coupon.
     B3 = auto()
 
 
-class Group(GetValueNameEnum):
+class Group(GetNameEnum):
     """The group that this sample belongs to."""
 
     control = auto()
@@ -42,7 +42,7 @@ class Group(GetValueNameEnum):
     hybrid = auto()
 
 
-class Joint(GetValueNameEnum):
+class Joint(GetNameEnum):
     """The method used to join parts of the sample in this trial."""
 
     paste = auto()
@@ -51,7 +51,7 @@ class Joint(GetValueNameEnum):
 
 
 # sourcery skip: avoid-builtin-shadow
-class PandasDtype(GetValueNameEnum):
+class PandasDtype(GetNameEnum):
     float = auto()  # noqa: A003
     int = auto()  # noqa: A003
     bool = auto()  # noqa: A003
