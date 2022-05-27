@@ -11,6 +11,20 @@
     },
     "params": {
       "$ref": "#/definitions/Params"
+    },
+    "trials": {
+      "title": "Trials",
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/Trial"
+      }
+    },
+    "cols": {
+      "title": "Cols",
+      "type": "object",
+      "additionalProperties": {
+        "$ref": "#/definitions/Column"
+      }
     }
   },
   "required": [
@@ -128,6 +142,191 @@
           "description": "Whether to plot the fits of the individual runs.",
           "default": false,
           "type": "boolean"
+        }
+      }
+    },
+    "Rod": {
+      "title": "Rod",
+      "description": "The rod used in this trial.",
+      "enum": [
+        "W",
+        "X",
+        "Y"
+      ]
+    },
+    "Coupon": {
+      "title": "Coupon",
+      "description": "The coupon attached to the rod for this trial.",
+      "enum": [
+        "A1",
+        "A2",
+        "A3",
+        "A4",
+        "A5",
+        "A6",
+        "A7",
+        "A8",
+        "A9"
+      ]
+    },
+    "Sample": {
+      "title": "Sample",
+      "description": "The sample attached to the coupon in this trial.",
+      "enum": [
+        "NA",
+        "B3"
+      ]
+    },
+    "Group": {
+      "title": "Group",
+      "description": "The group that this sample belongs to.",
+      "enum": [
+        "control",
+        "porous",
+        "hybrid"
+      ]
+    },
+    "Joint": {
+      "title": "Joint",
+      "description": "The method used to join parts of the sample in this trial.",
+      "enum": [
+        "paste",
+        "epoxy",
+        "solder"
+      ]
+    },
+    "Trial": {
+      "title": "Trial",
+      "description": "A trial.",
+      "type": "object",
+      "properties": {
+        "date": {
+          "title": "Date",
+          "type": "string",
+          "format": "date"
+        },
+        "rod": {
+          "$ref": "#/definitions/Rod"
+        },
+        "coupon": {
+          "$ref": "#/definitions/Coupon"
+        },
+        "sample": {
+          "$ref": "#/definitions/Sample"
+        },
+        "group": {
+          "$ref": "#/definitions/Group"
+        },
+        "joint": {
+          "$ref": "#/definitions/Joint"
+        },
+        "monotonic": {
+          "title": "Monotonic",
+          "description": "Whether the boiling curve is monotonic.",
+          "type": "boolean"
+        },
+        "comment": {
+          "title": "Comment",
+          "type": "string"
+        },
+        "path": {
+          "title": "Path",
+          "format": "directory-path",
+          "type": "string"
+        },
+        "thermocouple_pos": {
+          "title": "Thermocouple Pos",
+          "allOf": [
+            {
+              "type": "array",
+              "items": [
+                {},
+                {}
+              ]
+            }
+          ]
+        }
+      },
+      "required": [
+        "date",
+        "rod",
+        "coupon",
+        "sample",
+        "group",
+        "joint",
+        "monotonic",
+        "comment"
+      ]
+    },
+    "PandasDtype": {
+      "title": "PandasDtype",
+      "description": "An enumeration.",
+      "enum": [
+        "float",
+        "int",
+        "bool",
+        "timedelta64[ns]",
+        "datetime64[ns]",
+        "string",
+        "boolean",
+        "category",
+        "Sparse",
+        "interval",
+        "Int8",
+        "Int16",
+        "Int32",
+        "Int64",
+        "UInt8",
+        "UInt16",
+        "Uint32",
+        "UInt64"
+      ]
+    },
+    "Column": {
+      "title": "Column",
+      "description": "Metadata for a column in the dataframe.",
+      "type": "object",
+      "properties": {
+        "index": {
+          "title": "Index",
+          "description": "Whether this column is to be the index.",
+          "default": false,
+          "type": "boolean"
+        },
+        "dtype": {
+          "description": "The Pandas data type to be used to represent this column.",
+          "default": "float",
+          "allOf": [
+            {
+              "$ref": "#/definitions/PandasDtype"
+            }
+          ]
+        },
+        "units": {
+          "title": "Units",
+          "description": "The units for this column's values.",
+          "default": "",
+          "type": "string"
+        },
+        "source": {
+          "title": "Source",
+          "description": "The name of the input column that this column is based off of.",
+          "type": "string"
+        },
+        "originlab_coldes": {
+          "title": "Originlab Coldes",
+          "description": "The column designation for plotting in OriginLab.",
+          "default": "N",
+          "type": "string"
+        },
+        "name": {
+          "title": "Name",
+          "type": "string"
+        },
+        "pretty_name": {
+          "title": "Pretty Name",
+          "description": "The pretty version of the column name.",
+          "type": "string"
         }
       }
     }

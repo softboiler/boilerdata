@@ -6,7 +6,7 @@ import numpy as np
 from pydantic import BaseModel, DirectoryPath, Field, validator
 
 from boilerdata.typing import NpNDArray
-from boilerdata.utils import StrPath, allow_extra, expanduser2, load_config
+from boilerdata.utils import StrPath, expanduser2, load_config
 from enums import Coupon, Group, Joint, PandasDtype, Rod, Sample
 
 # * -------------------------------------------------------------------------------- * #
@@ -140,7 +140,7 @@ class Column(MyBaseModel):
     )
 
     # Can't be None. Set in Columns.__init__()
-    name: str = Field(default=None, exclude=True)
+    name: str = Field(default=None)
 
     # Can be None, but never accessed directly.
     pretty_name_: Optional[str] = Field(
@@ -188,6 +188,7 @@ class Geometry(MyBaseModel):
     rods: dict[Rod, NpNDArray] = Field(
         default=...,
         description="Distance of each thermocouple from the cool side of the rod, starting with TC1. Fifth thermocouple may be omitted. Input: inch. Output: meter.",
+        exclude=True,
     )
     coupons: dict[Coupon, float] = Field(
         default=...,
@@ -224,12 +225,12 @@ class Trial(MyBaseModel):
     comment: str
 
     # Can't be None. Set in Project.__init__()
+    path: DirectoryPath = Field(default=None)
     thermocouple_pos: NpNDArray = Field(default=None, exclude=True)
 
     def get_path(self, dirs: Dirs):
         """Get the path to the data for this trial. Called during project setup."""
-        with allow_extra(self):
-            self.path = dirs.trials / self.date.isoformat() / dirs.per_trial
+        self.path = dirs.trials / self.date.isoformat() / dirs.per_trial
 
     def get_geometry(self, geometry: Geometry):
         """Get relevant geometry for the trial."""
@@ -253,10 +254,9 @@ class Project(MyBaseModel):
     geometry: Geometry
     params: Params
 
-    # These are loaded from a different config. They shouldn't be part of this schema.
-    # They can't be None, as they are set in Project.__init__()
-    trials: list[Trial] = Field(default=None, exclude=True)
-    cols: dict[str, Column] = Field(default=None, exclude=True)
+    # These can't be None, as they are set in Project.__init__()
+    trials: list[Trial] = Field(default=None)
+    cols: dict[str, Column] = Field(default=None)
 
     def __init__(self, **data):
         super().__init__(**data)

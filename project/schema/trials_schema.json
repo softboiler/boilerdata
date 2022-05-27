@@ -99,6 +99,11 @@
           "title": "Comment",
           "type": "string"
         },
+        "path": {
+          "title": "Path",
+          "format": "directory-path",
+          "type": "string"
+        },
         "thermocouple_pos": {
           "title": "Thermocouple Pos",
           "allOf": [

@@ -73,6 +73,11 @@
         "originlab_coldes": {
           "title": "Originlab Coldes",
           "description": "The column designation for plotting in OriginLab.",
+          "default": "N",
+          "type": "string"
+        },
+        "name": {
+          "title": "Name",
           "type": "string"
         },
         "pretty_name": {
