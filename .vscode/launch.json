@@ -8,13 +8,22 @@
       "program": "${file}",
       "console": "internalConsole"
     },
+    {
+      "name": "Current file: Not just my code",
+      "type": "python",
+      "request": "launch",
+      "program": "${file}",
+      "justMyCode": false,
+      "console": "internalConsole"
+    },
     // * -------------------------------------------------------------------------- * //
     // * PROJECT-SPECIFIC * //
     {
       "name": "proj: Update schema",
       "type": "python",
       "request": "launch",
-      "program": "project/utils.py"
+      "program": "project/utils.py",
+      "console": "internalConsole"
     },
     {
       "name": "PowerShell: Current File",

@@ -3,8 +3,8 @@ dirs:
   config: "~/Code/mine/boilerdata/project/config"
   project_schema: "~/Code/mine/boilerdata/project/schema"
   trials: "Boiling Curves"
-  results: "Results"
   per_trial: "data"
+  results: "Results"
 
 geometry:
   rods:

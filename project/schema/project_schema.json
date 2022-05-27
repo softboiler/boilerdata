@@ -62,6 +62,12 @@
           "format": "directory-path",
           "type": "string"
         },
+        "per_trial": {
+          "title": "Per Trial",
+          "description": "The directory in which the data are for a given trial. Must be relative to a trial folder, and all trials must share this pattern.",
+          "type": "string",
+          "format": "path"
+        },
         "results": {
           "title": "Results",
           "description": "The directory in which the results will go. Must be relative to the base directory or an absolute path that exists. Will be created if it is relative to the base directory.",
@@ -75,9 +81,10 @@
           "type": "string",
           "format": "path"
         },
-        "per_trial": {
-          "title": "Per Trial",
-          "description": "The directory in which the data are for a given trial. Must be relative to a trial folder, and all trials must share this pattern.",
+        "coldes_file": {
+          "title": "Coldes File",
+          "description": "The path to which the OriginLab column designation string will be written. Must be relative to the results directory. Default: coldes.txt",
+          "default": "coldes.txt",
           "type": "string",
           "format": "path"
         }
@@ -87,8 +94,8 @@
         "config",
         "project_schema",
         "trials",
-        "results",
-        "per_trial"
+        "per_trial",
+        "results"
       ]
     },
     "Geometry": {
@@ -262,12 +269,13 @@
       "title": "PandasDtype",
       "description": "An enumeration.",
       "enum": [
+        "object",
         "float",
         "int",
         "bool",
         "timedelta64[ns]",
         "datetime64[ns]",
-        "string",
+        "string[pyarrow]",
         "boolean",
         "category",
         "Sparse",

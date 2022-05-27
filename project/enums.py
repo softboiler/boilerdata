@@ -52,12 +52,13 @@ class Joint(GetNameEnum):
 
 # sourcery skip: avoid-builtin-shadow
 class PandasDtype(GetNameEnum):
+    object = auto()  # noqa: A003
     float = auto()  # noqa: A003
     int = auto()  # noqa: A003
     bool = auto()  # noqa: A003
     timedelta64ns = "timedelta64[ns]"
     datetime64ns = "datetime64[ns]"
-    string = auto()
+    string = "string[pyarrow]"
     boolean = auto()
     category = auto()
     Sparse = auto()

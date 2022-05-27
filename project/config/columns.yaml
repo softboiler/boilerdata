@@ -1,6 +1,6 @@
 cols:
   run:
-    dtype: string
+    dtype: string[pyarrow]
     source: "time"
     index: true
   V:
@@ -80,6 +80,6 @@ cols:
   joint:
     dtype: category
   monotonic:
-    dtype: category
+    dtype: boolean
   comment:
-    dtype: category
+    dtype: string[pyarrow]

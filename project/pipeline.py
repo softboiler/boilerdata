@@ -13,40 +13,36 @@ from propshop.library import Mat, Prop
 from scipy.constants import convert_temperature
 from scipy.stats import linregress
 
-from config.columns import Columns as C  # noqa: N817
+from columns import Columns as C  # noqa: N817
+from constants import TEMPS_TO_REGRESS, UNITS_INDEX, WATER_TEMPS
+from df_schema import df_schema
 from models import Project, Trial
 from utils import get_project
 
 # * -------------------------------------------------------------------------------- * #
 # * MAIN
 
-pd.options.mode.string_storage = "pyarrow"
-
-UNITS_INDEX = "units"
-
 
 def pipeline(proj: Project):
-
-    # Column names
-    temps_to_regress = [C.T_1, C.T_2, C.T_3, C.T_4, C.T_5]
-    water_temps = [C.T_w1, C.T_w2, C.T_w3]
 
     # Reduce data from CSV's of runs within trials, to single df w/ trials as records
     dfs = [
         get_steady_state(proj, trial)  # Reduce many CSV's to one df
         .pipe(rename_columns, proj, trial)  # Pull units out of columns for cleaner ref
-        .pipe(fit, proj, trial, temps_to_regress)
-        .pipe(plot_fit_apply, proj, trial, temps_to_regress)
-        .pipe(get_heat_transfer, proj, trial, temps_to_regress, water_temps)
+        .pipe(fit, proj, trial)
+        .pipe(plot_fit_apply, proj, trial)
+        .pipe(get_heat_transfer, proj, trial)
         .pipe(assign_trial_metadata, proj, trial)
         for trial in proj.trials
         if trial.monotonic
     ]
 
+    # Validate the dataframe
+    df = df_schema(concat_with_dtypes(dfs, proj))
+
     # Post-process the dataframe for writing to OriginLab-flavored CSV
     (
-        pd.concat(dfs)
-        .pipe(set_units_row_for_originlab, proj)
+        df.pipe(set_units_row_for_originlab, proj)
         .pipe(transform_units_for_originlab, proj)
         .pipe(prettify_for_originlab, proj)
         .to_csv(proj.dirs.results_file, index_label=proj.get_index().name)
@@ -89,9 +85,7 @@ def rename_columns(df: pd.DataFrame, proj: Project, trial: Trial) -> pd.DataFram
     )
 
 
-def fit(
-    df: pd.DataFrame, proj: Project, trial: Trial, temps_to_regress: list[str]
-) -> pd.DataFrame:
+def fit(df: pd.DataFrame, proj: Project, trial: Trial) -> pd.DataFrame:
     """Fit the data assuming one-dimensional, steady-state conduction."""
 
     # Main pipeline
@@ -99,7 +93,7 @@ def fit(
         linregress_apply,
         proj=proj,
         trial=trial,
-        temperature_cols=df[temps_to_regress],
+        temperature_cols=df[TEMPS_TO_REGRESS],
         result_cols=[
             C.dT_dx,
             C.TLfit,
@@ -113,9 +107,7 @@ def fit(
     return df
 
 
-def plot_fit_apply(
-    df: pd.DataFrame, proj: Project, trial: Trial, temps_to_regress: list[str]
-) -> pd.DataFrame:
+def plot_fit_apply(df: pd.DataFrame, proj: Project, trial: Trial) -> pd.DataFrame:
     """Plot the goodness of fit for each run in the trial."""
 
     if proj.params.do_plot:
@@ -129,7 +121,6 @@ def plot_fit_apply(
             func=plot_fit_ser,
             proj=proj,
             trial=trial,
-            temps_to_regress=temps_to_regress,
             plt=plt,
         )
         plt.show()
@@ -141,8 +132,6 @@ def get_heat_transfer(
     df: pd.DataFrame,
     proj: Project,
     trial: Trial,
-    temps_to_regress: list[str],
-    water_temps: list[str],
 ) -> pd.DataFrame:
     """Calculate heat transfer and superheat based on one-dimensional approximation."""
 
@@ -159,14 +148,14 @@ def get_heat_transfer(
                 Mat.COPPER,
                 Prop.THERMAL_CONDUCTIVITY,
                 convert_temperature(
-                    df[temps_to_regress].mean(axis="columns"), "C", "K"
+                    df[TEMPS_TO_REGRESS].mean(axis="columns"), "C", "K"
                 ),
             ),
             # no negative due to reversed x-coordinate
             C.q: lambda df: df[C.k] * df[C.dT_dx] / cm2_p_m2,
             C.q_err: lambda df: (df[C.k] * df[C.dT_dx_err]).abs() / cm2_p_m2,
             C.Q: lambda df: df[C.q] * cross_sectional_area,
-            C.DT: lambda df: (df[C.TLfit] - df[water_temps].mean().mean()),
+            C.DT: lambda df: (df[C.TLfit] - df[WATER_TEMPS].mean().mean()),
             C.DT_err: lambda df: (4 * df[C.intercept_stderr]).abs(),
         }
     )
@@ -177,6 +166,20 @@ def assign_trial_metadata(
 ) -> pd.DataFrame:
     """Assign metadata sourced from configs to the dataframe."""
     return df.assign(**json.loads(trial.json()))
+
+
+def concat_with_dtypes(dfs: list[pd.DataFrame], proj: Project) -> pd.DataFrame:
+    """Concatenate trials and set data types properly."""
+
+    df = pd.concat(dfs)
+    sers = (item[1] for item in df.items())
+    dtypes = {name: col.dtype for name, col in proj.cols.items() if not col.index}
+    return df.assign(
+        **{
+            name: ser.astype(dtype)
+            for name, dtype, ser in zip(dtypes, dtypes.values(), sers)
+        }
+    ).set_index(df.index.astype(proj.get_index().dtype))
 
 
 # * -------------------------------------------------------------------------------- * #
