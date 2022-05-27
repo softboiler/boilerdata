@@ -96,19 +96,17 @@ def fit(
     # Main pipeline
     df = df.pipe(
         linregress_apply,
-        **dict(
-            proj=proj,
-            trial=trial,
-            temperature_cols=df[temps_to_regress],
-            result_cols=[
-                C.dT_dx,
-                C.TLfit,
-                C.rvalue,
-                C.pvalue,
-                C.stderr,
-                C.intercept_stderr,
-            ],
-        ),
+        proj=proj,
+        trial=trial,
+        temperature_cols=df[temps_to_regress],
+        result_cols=[
+            C.dT_dx,
+            C.TLfit,
+            C.rvalue,
+            C.pvalue,
+            C.stderr,
+            C.intercept_stderr,
+        ],
     )
 
     return df
@@ -128,7 +126,10 @@ def plot_fit_apply(
         df.apply(
             axis="columns",
             func=plot_fit_ser,
-            **dict(proj=proj, trial=trial, temps_to_regress=temps_to_regress, plt=plt),
+            proj=proj,
+            trial=trial,
+            temps_to_regress=temps_to_regress,
+            plt=plt,
         )
         plt.show()
 
@@ -267,11 +268,9 @@ def linregress_apply(
             temperature_cols.apply(
                 axis="columns",
                 func=linregress_ser,
-                **dict(
-                    x=trial.thermocouple_pos,
-                    repeats_per_pair=proj.params.records_to_average,
-                    regression_stats=result_cols,
-                ),
+                x=trial.thermocouple_pos,
+                repeats_per_pair=proj.params.records_to_average,
+                regression_stats=result_cols,
             ),
         ],
     )
