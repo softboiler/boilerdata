@@ -1,5 +1,6 @@
 """Update all schema."""
 
+from pathlib import Path
 import re
 
 from pydantic import ValidationError
@@ -15,20 +16,26 @@ def update_schema():
 
     try:
         project = get_project()
+        path = project.dirs.project_schema
+        generate_columns_enum(
+            list(project.cols.keys()), project.dirs.config / "columns.py"
+        )
     except ValidationError as exception:
-        raise ValueError(
-            "Schema not updated. Resolve validation errors first."
-        ) from exception
+        path = Path("project/schema")
+        print(
+            f"Schema didn't validate, using default schema path: {path}.",
+            "Columns enum not generated.",
+            "Message from caught ValidationError:",
+            exception,
+            sep="\n",
+        )
 
     for model in models:
 
         write_schema(
-            project.dirs.project_schema
-            / f"{to_snake_case(model.__name__)}_schema.json",
+            path / f"{to_snake_case(model.__name__)}_schema.json",
             model,
         )
-
-    generate_columns_enum(list(project.cols.keys()), project.dirs.config / "columns.py")
 
 
 # https://github.com/samuelcolvin/pydantic/blob/4f4e22ef47ab04b289976bb4ba4904e3c701e72d/pydantic/utils.py#L127-L131

@@ -70,3 +70,15 @@ class PandasDtype(GetNameEnum):
     UInt16 = auto()
     Uint32 = auto()
     UInt64 = auto()
+
+
+class OriginLabColdes(GetNameEnum):
+    X = auto()
+    Y = auto()
+    Z = auto()
+    M = auto()  # xEr+-
+    E = auto()  # yEr+-
+    L = auto()  # Label
+    G = auto()  # Group
+    S = auto()  # Subject
+    N = auto()  # None

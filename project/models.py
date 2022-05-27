@@ -7,7 +7,7 @@ from pydantic import BaseModel, DirectoryPath, Field, validator
 
 from boilerdata.typing import NpNDArray
 from boilerdata.utils import StrPath, expanduser2, load_config
-from enums import Coupon, Group, Joint, PandasDtype, Rod, Sample
+from enums import Coupon, Group, Joint, OriginLabColdes, PandasDtype, Rod, Sample
 
 # * -------------------------------------------------------------------------------- * #
 # * BASE
@@ -48,6 +48,10 @@ class Dirs(MyBaseModel):
         default=...,
         description="The directory in which the individual trials are. Must be relative to the base directory or an absolute path that exists.",
     )
+    per_trial: Path = Field(
+        default=...,
+        description="The directory in which the data are for a given trial. Must be relative to a trial folder, and all trials must share this pattern.",
+    )
     results: DirectoryPath = Field(
         default=...,
         description="The directory in which the results will go. Must be relative to the base directory or an absolute path that exists. Will be created if it is relative to the base directory.",
@@ -56,9 +60,9 @@ class Dirs(MyBaseModel):
         default="results.csv",
         description="The path to the results file. Must be relative to the results directory. Default: results.csv",
     )
-    per_trial: Path = Field(
-        default=...,
-        description="The directory in which the data are for a given trial. Must be relative to a trial folder, and all trials must share this pattern.",
+    coldes_file: Path = Field(
+        default="coldes.txt",
+        description="The path to which the OriginLab column designation string will be written. Must be relative to the results directory. Default: coldes.txt",
     )
 
     @validator("trials", pre=True)  # "pre" because dir must exist pre-validation
@@ -81,15 +85,14 @@ class Dirs(MyBaseModel):
         results.mkdir(parents=True, exist_ok=True)
         return values["base"] / results
 
-    @validator("results_file", always=True)  # "always" so it'll run even if not in YAML
-    def validate_results_file(cls, results_file: Path, values: dict[str, Path]):
-        if results_file.is_absolute():
+    # "always" so it'll run even if not in YAML
+    @validator("results_file", "coldes_file", always=True)
+    def validate_files(cls, file: Path, values: dict[str, Path]):
+        if file.is_absolute():
             raise ValueError("The file must be relative to the results directory.")
-        if results_file.suffix != ".csv":
-            raise ValueError("The supplied results file is not a CSV.")
-        results_file = values["results"] / results_file
-        results_file.parent.mkdir(parents=True, exist_ok=True)
-        return results_file
+        file = values["results"] / file
+        file.parent.mkdir(parents=True, exist_ok=True)
+        return file
 
 
 # * -------------------------------------------------------------------------------- * #
@@ -133,8 +136,7 @@ class Column(MyBaseModel):
         description="The name of the input column that this column is based off of.",
     )
 
-    # TODO: Describe choices with an Enum.
-    originlab_coldes: str = Field(  # Validator ensures this is set even if omitted.
+    originlab_coldes: OriginLabColdes = Field(
         default="N",
         description="The column designation for plotting in OriginLab.",
     )

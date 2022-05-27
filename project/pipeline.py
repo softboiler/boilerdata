@@ -51,6 +51,7 @@ def pipeline(proj: Project):
         .pipe(prettify_for_originlab, proj)
         .to_csv(proj.dirs.results_file, index_label=proj.get_index().name)
     )
+    proj.dirs.coldes_file.write_text(proj.get_originlab_coldes())
 
 
 # * -------------------------------------------------------------------------------- * #

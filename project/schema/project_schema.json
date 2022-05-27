@@ -282,6 +282,21 @@
         "UInt64"
       ]
     },
+    "OriginLabColdes": {
+      "title": "OriginLabColdes",
+      "description": "An enumeration.",
+      "enum": [
+        "X",
+        "Y",
+        "Z",
+        "M",
+        "E",
+        "L",
+        "G",
+        "S",
+        "N"
+      ]
+    },
     "Column": {
       "title": "Column",
       "description": "Metadata for a column in the dataframe.",
@@ -314,10 +329,13 @@
           "type": "string"
         },
         "originlab_coldes": {
-          "title": "Originlab Coldes",
           "description": "The column designation for plotting in OriginLab.",
           "default": "N",
-          "type": "string"
+          "allOf": [
+            {
+              "$ref": "#/definitions/OriginLabColdes"
+            }
+          ]
         },
         "name": {
           "title": "Name",
