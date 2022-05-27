@@ -132,10 +132,17 @@ class Column(MyBaseModel):
         default=None,
         description="The name of the input column that this column is based off of.",
     )
+
+    # TODO: Describe choices with an Enum.
     originlab_coldes: str = Field(  # Validator ensures this is set even if omitted.
-        default=None,
+        default="N",
         description="The column designation for plotting in OriginLab.",
     )
+
+    # Can't be None. Set in Columns.__init__()
+    name: str = Field(default=None, exclude=True)
+
+    # Can be None, but never accessed directly.
     pretty_name_: Optional[str] = Field(
         default=None,
         alias="pretty_name",  # So we can make this a dynamic property below
@@ -151,14 +158,8 @@ class Column(MyBaseModel):
     def validate_source(cls, source, values):
         return f"{source} ({values['units']})" if values["units"] else source
 
-    # "always" so it'll run even if not in YAML
-    @validator("originlab_coldes", pre=True, always=True)
-    def validate_coldes(cls, v):
-        return v or "N"
-
     def __init__(self, **data):
         super().__init__(**data)
-        self.name: str = ""  # Should never stay this way. Columns.__init__() sets it.
 
     @property
     def pretty_name(self):
@@ -173,8 +174,8 @@ class Columns(MyBaseModel):
     def __init__(self, **data):
         super().__init__(**data)
 
-        for name, column in self.cols.items():
-            column.name = name
+        for name, col in self.cols.items():
+            col.name = name
 
 
 # * -------------------------------------------------------------------------------- * #
@@ -192,7 +193,7 @@ class Geometry(MyBaseModel):
         default=...,
         description="Length of the coupon. Input: inch. Output: meter.",
     )
-    _in_p_m: float = 39.3701
+    _in_p_m: float = 39.3701  # (in/m) Conversion factor
 
     @validator("rods", pre=True)
     def validate_rods(cls, rods):
@@ -221,6 +222,8 @@ class Trial(MyBaseModel):
         description="Whether the boiling curve is monotonic.",
     )
     comment: str
+
+    # Can't be None. Set in Project.__init__()
     thermocouple_pos: NpNDArray = Field(default=None, exclude=True)
 
     def get_path(self, dirs: Dirs):
@@ -250,12 +253,16 @@ class Project(MyBaseModel):
     geometry: Geometry
     params: Params
 
+    # These are loaded from a different config. They shouldn't be part of this schema.
+    # They can't be None, as they are set in Project.__init__()
+    trials: list[Trial] = Field(default=None, exclude=True)
+    cols: dict[str, Column] = Field(default=None, exclude=True)
+
     def __init__(self, **data):
         super().__init__(**data)
 
-        with allow_extra(self):
-            self.trials = load_config(self.dirs.config / "trials.yaml", Trials).trials
-            self.cols = load_config(self.dirs.config / "columns.yaml", Columns).cols
+        self.trials = load_config(self.dirs.config / "trials.yaml", Trials).trials
+        self.cols = load_config(self.dirs.config / "columns.yaml", Columns).cols
 
         for trial in self.trials:
             trial.get_path(self.dirs)
@@ -273,9 +280,6 @@ class Project(MyBaseModel):
                 raise ValueError(
                     f"Only one column may be designated as the index. You specified the following: {', '.join(indices)}"
                 )
-
-    def get_non_index_cols(self) -> list[Column]:
-        return [col for col in self.cols.values() if not col.index]
 
     def get_originlab_coldes(self) -> str:
         return "".join([column.originlab_coldes for column in self.cols.values()])

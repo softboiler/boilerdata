@@ -1,6 +1,5 @@
 """Enums for trials and geometry."""
 
-
 from enum import auto
 
 from boilerdata.enums import GetValueNameEnum
