@@ -29,7 +29,7 @@ def test_get_steady_state_raises(tmp_proj):
 def test_pipeline(tmp_proj):
     """Ensure the same result is coming out of the pipeline as before."""
 
-    old_commit = "76038a2631d5b40dc8f05fb9889854249e4e421d"
+    old_commit = "c1a6cbf1d62ce59c44b8ed4dc1e526d21e84f403"
 
     common_read_csv_params = dict(
         skiprows=[1],  # Skip the "units" row so dtype detection works properly
