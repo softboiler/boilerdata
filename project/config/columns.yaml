@@ -79,7 +79,9 @@ cols:
     dtype: category
   joint:
     dtype: category
-  monotonic:
+  good:
+    dtype: boolean
+  new:
     dtype: boolean
   comment:
     dtype: string[pyarrow]

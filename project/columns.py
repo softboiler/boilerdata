@@ -38,5 +38,6 @@ class Columns(GetNameEnum):
     sample = auto()
     group = auto()
     joint = auto()
-    monotonic = auto()
+    good = auto()
+    new = auto()
     comment = auto()

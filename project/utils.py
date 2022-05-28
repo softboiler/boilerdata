@@ -18,7 +18,7 @@ def update_schema():
         project = get_project()
         path = project.dirs.project_schema
         generate_columns_enum(
-            list(project.cols.keys()), project.dirs.config / "columns.py"
+            list(project.cols.keys()), project.dirs.base / "columns.py"
         )
     except ValidationError as exception:
         path = Path("project/schema")

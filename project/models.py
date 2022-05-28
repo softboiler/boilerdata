@@ -220,9 +220,12 @@ class Trial(MyBaseModel):
     sample: Sample
     group: Group
     joint: Joint
-    monotonic: bool = Field(
-        default=...,
-        description="Whether the boiling curve is monotonic.",
+    good: bool = Field(
+        default=True,
+        description="Whether the boiling curve is good.",
+    )
+    new: bool = Field(
+        default=False, description="Whether this is newly-collected data."
     )
     comment: str
 

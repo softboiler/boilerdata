@@ -5,7 +5,6 @@ trials:
     sample: NA
     group: control
     joint: paste
-    monotonic: true
     comment: ""
 
   - date: 2021-01-14
@@ -15,7 +14,6 @@ trials:
     group: control
     joint: paste
     comment: ""
-    monotonic: true
 
   - date: 2021-02-23
     rod: "W"
@@ -23,7 +21,6 @@ trials:
     sample: NA
     group: control
     joint: paste
-    monotonic: true
     comment: ""
 
   - date: 2021-03-09
@@ -32,7 +29,6 @@ trials:
     sample: NA
     group: control
     joint: paste
-    monotonic: true
     comment: ""
 
   - date: 2021-03-25
@@ -41,7 +37,6 @@ trials:
     sample: NA
     group: control
     joint: paste
-    monotonic: true
     comment: ""
 
   - date: 2021-03-29
@@ -50,7 +45,6 @@ trials:
     sample: NA
     group: control
     joint: paste
-    monotonic: true
     comment: ""
 
   - date: 2021-04-15
@@ -59,7 +53,6 @@ trials:
     sample: NA
     group: control
     joint: paste
-    monotonic: true
     comment: ""
 
   - date: 2021-04-28
@@ -68,7 +61,6 @@ trials:
     sample: NA
     group: control
     joint: paste
-    monotonic: true
     comment: A4-1
 
   - date: 2021-04-29
@@ -77,7 +69,6 @@ trials:
     sample: NA
     group: control
     joint: paste
-    monotonic: true
     comment: A4-2
 
   - date: 2021-04-30
@@ -86,7 +77,6 @@ trials:
     sample: NA
     group: control
     joint: paste
-    monotonic: true
     comment: A4-3
 
   - date: 2021-06-16
@@ -95,7 +85,6 @@ trials:
     sample: NA
     group: control
     joint: paste
-    monotonic: true
     comment: A4-4. See "21.09.03 Progress.pptx".
 
   - date: 2021-06-17
@@ -104,7 +93,6 @@ trials:
     sample: NA
     group: control
     joint: paste
-    monotonic: true
     comment: A4-5. See "21.09.03 Progress.pptx".
 
   - date: 2021-06-21
@@ -113,7 +101,6 @@ trials:
     sample: NA
     group: control
     joint: paste
-    monotonic: true
     comment: A4-6
 
   - date: 2021-06-22
@@ -122,7 +109,7 @@ trials:
     sample: NA
     group: control
     joint: paste
-    monotonic: false
+    good: false
     comment: Second day water intrusion
 
   - date: 2021-08-30
@@ -131,7 +118,7 @@ trials:
     sample: NA
     group: control
     joint: paste
-    monotonic: false
+    good: false
     comment: Poorly-wrapped sample
 
   - date: 2021-08-31
@@ -140,7 +127,6 @@ trials:
     sample: NA
     group: control
     joint: paste
-    monotonic: true
     comment: A4-7
 
   - date: 2021-09-29
@@ -149,7 +135,6 @@ trials:
     sample: NA
     group: control
     joint: epoxy
-    monotonic: true
     comment: Silver epoxy. Separated during this trial.  Need to cure at higher temp. See <https://trello.com/c/mlVNKOQm/28-bond-sample-a4-to-post-0>. A4-12.
 
   - date: 2021-10-12
@@ -158,7 +143,6 @@ trials:
     sample: NA
     group: control
     joint: epoxy
-    monotonic: true
     comment: First run with silver epoxy cured at higher temperature. Vertical anomaly. See "21.10.15 Progress.pptx". See <https://trello.com/c/L6AmQDJR/26-bond-sample-a4-to-warped-post>. A4-13
 
   - date: 2021-10-13
@@ -167,7 +151,6 @@ trials:
     sample: NA
     group: control
     joint: epoxy
-    monotonic: true
     comment: Second run with silver epoxy cured at higher temperature. See "21.10.15 Progress.pptx". A4-14. Broke clean off after trial, see <https://trello.com/c/8w9swkNl/19-run-experiment-a4>
 
   - date: 2021-12-09
@@ -176,7 +159,6 @@ trials:
     sample: NA
     group: control
     joint: epoxy
-    monotonic: true
     comment: See "22.01.07 Progress.pptx". Epoxy stays intact?
 
   - date: 2022-01-06
@@ -185,7 +167,6 @@ trials:
     sample: NA
     group: control
     joint: epoxy
-    monotonic: true
     comment: Duralco 132-1. See "22.01.07 Progress.pptx". Still, there's a minor vertical jump.
 
   - date: 2022-01-19
@@ -194,7 +175,6 @@ trials:
     sample: B3
     group: porous
     joint: epoxy
-    monotonic: true
     comment: Copper X-A6-B3-1. Duralco 132-1. Epoxy failed during this trial?
 
   - date: 2022-01-20
@@ -203,7 +183,7 @@ trials:
     sample: B3
     group: porous
     joint: epoxy
-    monotonic: false
+    good: false
     comment: Copper X-A6-B3-2. Duralco 132-1. See "22.01 Report.docx". Epoxy intact based on observation in <https://trello.com/c/qH01qs50/43-run-experiment-x-a6-b3>. Detached B3 after this trial.
 
   - date: 2022-03-29
@@ -212,7 +192,6 @@ trials:
     sample: NA
     group: control
     joint: solder
-    monotonic: true
     comment: Copper X-A6-fail2. fail1 has no data, see "Other". First trial with data since detaching B3 and making X-A6 a solder joint.
 
   - date: 2022-04-08
@@ -221,5 +200,4 @@ trials:
     sample: NA
     group: control
     joint: solder
-    monotonic: true
     comment: Copper X-A9-newcam

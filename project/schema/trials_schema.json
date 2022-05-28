@@ -90,9 +90,16 @@
         "joint": {
           "$ref": "#/definitions/Joint"
         },
-        "monotonic": {
-          "title": "Monotonic",
-          "description": "Whether the boiling curve is monotonic.",
+        "good": {
+          "title": "Good",
+          "description": "Whether the boiling curve is good.",
+          "default": true,
+          "type": "boolean"
+        },
+        "new": {
+          "title": "New",
+          "description": "Whether this is newly-collected data.",
+          "default": false,
           "type": "boolean"
         },
         "comment": {
@@ -124,7 +131,6 @@
         "sample",
         "group",
         "joint",
-        "monotonic",
         "comment"
       ]
     }

@@ -8,7 +8,9 @@ c = proj.cols
 tc_submerged_and_boiling = Check.in_range(95, 101)  # (C)
 
 df_schema = DataFrameSchema(
+    strict=True,
     ordered=True,
+    unique_column_names=True,
     index=Index(name="run"),  # Can't validate type due to pandera bug
     columns={
         "V": Column(c[C.V].dtype),
@@ -43,7 +45,8 @@ df_schema = DataFrameSchema(
         "sample": Column(c[C.sample].dtype),
         "group": Column(c[C.group].dtype),
         "joint": Column(c[C.joint].dtype),
-        "monotonic": Column(c[C.monotonic].dtype),
+        "good": Column(c[C.good].dtype),
+        "new": Column(c[C.new].dtype),
         "comment": Column(c[C.comment].dtype),
     },
 )
