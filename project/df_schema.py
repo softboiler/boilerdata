@@ -22,7 +22,8 @@ df_schema = DataFrameSchema(
         "T_w1": Column(c[C.T_w1].dtype, tc_submerged_and_boiling),
         "T_w2": Column(c[C.T_w2].dtype, tc_submerged_and_boiling),
         "T_w3": Column(c[C.T_w3].dtype, tc_submerged_and_boiling),
-        "P": Column(c[C.P].dtype, Check.greater_than(12)),
+        # "P": Column(c[C.P].dtype, Check.greater_than(12)),  # Strict check on pressure
+        "P": Column(c[C.P].dtype),
         "dT_dx": Column(c[C.dT_dx].dtype),
         "TLfit": Column(c[C.TLfit].dtype),
         "rvalue": Column(c[C.rvalue].dtype),

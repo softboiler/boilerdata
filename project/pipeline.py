@@ -16,6 +16,7 @@ from scipy.stats import linregress
 from columns import Columns as C  # noqa: N817
 from constants import TEMPS_TO_REGRESS, UNITS_INDEX, WATER_TEMPS
 from df_schema import df_schema
+from enums import PandasDtype
 from models import Project, Trial
 from utils import get_project
 
@@ -34,19 +35,18 @@ def pipeline(proj: Project):
         .pipe(get_heat_transfer, proj, trial)
         .pipe(assign_trial_metadata, proj, trial)
         for trial in proj.trials
-        if trial.monotonic
     ]
 
     # Validate the dataframe
     df = df_schema(concat_with_dtypes(dfs, proj))
 
     # Post-process the dataframe for writing to OriginLab-flavored CSV
-    (
+    df = (
         df.pipe(set_units_row_for_originlab, proj)
         .pipe(transform_units_for_originlab, proj)
         .pipe(prettify_for_originlab, proj)
-        .to_csv(proj.dirs.results_file, index_label=proj.get_index().name)
     )
+    df.to_csv(proj.dirs.results_file, index_label=proj.get_index().name)
     proj.dirs.coldes_file.write_text(proj.get_originlab_coldes())
 
 
@@ -185,6 +185,11 @@ def concat_with_dtypes(dfs: list[pd.DataFrame], proj: Project) -> pd.DataFrame:
 # * -------------------------------------------------------------------------------- * #
 # * POST-PROCESSING
 
+SUPERSCRIPT = re.compile(r"\^(.*)")
+SUPERSCRIPT_REPL = r"\+(\1)"
+SUBSCRIPT = re.compile(r"\_(.*)")
+SUBSCRIPT_REPL = r"\-(\1)"
+
 
 def set_units_row_for_originlab(df: pd.DataFrame, proj: Project) -> pd.DataFrame:
     """Move units out of column labels and into a row just below the column labels."""
@@ -193,16 +198,10 @@ def set_units_row_for_originlab(df: pd.DataFrame, proj: Project) -> pd.DataFrame
             name: pd.Series(col.units, index=[UNITS_INDEX])
             for name, col in proj.cols.items()
             if not col.index
-        }
+        },
+        dtype=PandasDtype.string,
     )
-
-    return pd.concat([units_row, df])
-
-
-SUPERSCRIPT = re.compile(r"\^(.*)")
-SUPERSCRIPT_REPL = r"\+(\1)"
-SUBSCRIPT = re.compile(r"\_(.*)")
-SUBSCRIPT_REPL = r"\-(\1)"
+    return pd.concat([units_row, df.astype(PandasDtype.string)])
 
 
 def transform_units_for_originlab(df: pd.DataFrame, proj: Project) -> pd.DataFrame:

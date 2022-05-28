@@ -89,24 +89,6 @@ trials:
     monotonic: true
     comment: A4-3
 
-  - date: 2021-05-11
-    rod: "W"
-    coupon: A4
-    sample: NA
-    group: control
-    joint: paste
-    monotonic: false
-    comment: PID Failsafe and TC Failure
-
-  - date: 2021-05-24
-    rod: "W"
-    coupon: A4
-    sample: NA
-    group: control
-    joint: paste
-    monotonic: false
-    comment: Thermocouple ground loop proven
-
   - date: 2021-06-16
     rod: "W"
     coupon: A4
@@ -160,51 +142,6 @@ trials:
     joint: paste
     monotonic: true
     comment: A4-7
-
-  - date: 2021-09-01
-    rod: "W"
-    coupon: A4
-    sample: NA
-    group: control
-    joint: paste
-    monotonic: false
-    comment: A4-8. No T5
-
-  - date: 2021-09-13
-    rod: "W"
-    coupon: A4
-    sample: NA
-    group: control
-    joint: paste
-    monotonic: false
-    comment: Untaped sample. Thermocouple installation trouble. Looks pretty bad.
-
-  - date: 2021-09-14
-    rod: "W"
-    coupon: A4
-    sample: NA
-    group: control
-    joint: paste
-    monotonic: false
-    comment: A4-9. No T5
-
-  - date: 2021-09-15
-    rod: "W"
-    coupon: A4
-    sample: NA
-    group: control
-    joint: paste
-    monotonic: false
-    comment: A4-10. No T5. A4-10.
-
-  - date: 2021-09-16
-    rod: "W"
-    coupon: A4
-    sample: NA
-    group: control
-    joint: paste
-    monotonic: false
-    comment: No T5. A4-11.
 
   - date: 2021-09-29
     rod: "W"
