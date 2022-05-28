@@ -8,6 +8,8 @@ from types import ModuleType
 from numpy import typing as npt
 import numpy as np
 import pandas as pd
+from pint import UnitRegistry
+from pint_pandas import PintType
 from propshop import get_prop
 from propshop.library import Mat, Prop
 from scipy.constants import convert_temperature
@@ -19,6 +21,11 @@ from df_schema import df_schema
 from enums import PandasDtype
 from models import Project, Trial
 from utils import get_project
+
+u = UnitRegistry()
+Q = u.Quantity
+u.load_definitions(Path("project/config/units.txt"))
+PintType.ureg = u
 
 # * -------------------------------------------------------------------------------- * #
 # * MAIN
@@ -50,10 +57,6 @@ def pipeline(proj: Project):
     proj.dirs.coldes_file.write_text(proj.get_originlab_coldes())
 
 
-def units_pipeline(proj: Project):
-    ...
-
-
 # * -------------------------------------------------------------------------------- * #
 # * PRIMARY STAGES
 
@@ -65,27 +68,20 @@ def get_steady_state(proj: Project, trial: Trial) -> pd.DataFrame:
     run_names = [file.stem for file in files]
     runs: list[pd.DataFrame] = []
     for file in files:
-        run = get_run(proj, file)
+        run = get_run(proj, file).pipe(rename_columns, proj, trial)
         if len(run) < proj.params.records_to_average:
             raise ValueError(
                 f"There are not enough records in {file.name} to compute steady-state."
             )
         runs.append(run)
 
+    # TODO: Can't take the mean like we were able to before.
+    first_run = runs[0].iloc[-proj.params.records_to_average :, :]
     runs_steady_state: list[pd.Series] = [
         df.iloc[-proj.params.records_to_average :, :].mean() for df in runs
     ]
     return pd.DataFrame(runs_steady_state, index=run_names).rename_axis(
         proj.get_index().name, axis="index"
-    )
-
-
-def rename_columns(df: pd.DataFrame, proj: Project, trial: Trial) -> pd.DataFrame:
-    """Remove units from column labels."""
-
-    return df.rename(
-        {col.source: name for name, col in proj.cols.items() if not col.index},
-        axis="columns",
     )
 
 
@@ -262,6 +258,36 @@ def get_run(proj: Project, run: Path) -> pd.DataFrame:
         index_col=proj.get_index().source,
         dtype=dtypes,
     )
+
+
+def rename_columns(df: pd.DataFrame, proj: Project, trial: Trial) -> pd.DataFrame:
+    """Move units into a MultiIndex."""
+
+    # Rename columns and extract them into a row
+    source_cols = {name: col for name, col in proj.cols.items() if col.source}
+    df = df.rename(
+        {col.source: name for name, col in proj.cols.items() if not col.index},
+        axis="columns",
+    )
+    quantity = df.columns.to_frame().rename({0: "quantity"}, axis="columns")
+
+    # Form units row and set df columns to a MultiIndex w/ the above and below combined
+    units = pd.DataFrame(
+        {
+            name: pd.Series(col.units, index=[UNITS_INDEX])
+            for name, col in source_cols.items()
+            if not col.index
+        },
+        dtype=PandasDtype.string,
+    ).T
+
+    # Quantify the columns with units
+    multi_index = pd.MultiIndex.from_frame(pd.concat([quantity, units], axis="columns"))
+    df.columns = multi_index  # Set the multi-index so quantify can work
+    df = df.pint.quantify()  # Changes column dtypes to unit-aware dtypes
+    df.columns = multi_index.droplevel(-1)  # Go back to the simple index
+
+    return df
 
 
 def linregress_apply(
