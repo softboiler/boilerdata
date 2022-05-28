@@ -192,7 +192,11 @@ SUBSCRIPT_REPL = r"\-(\1)"
 
 
 def set_units_row_for_originlab(df: pd.DataFrame, proj: Project) -> pd.DataFrame:
-    """Move units out of column labels and into a row just below the column labels."""
+    """Move units out of column labels and into a row just below the column labels.
+
+    Explicitly set all dtypes to string to avoid data rendering issues, especially with
+    dates.
+    """
     units_row = pd.DataFrame(
         {
             name: pd.Series(col.units, index=[UNITS_INDEX])
