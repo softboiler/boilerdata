@@ -191,6 +191,10 @@ SUBSCRIPT = re.compile(r"\_(.*)")
 SUBSCRIPT_REPL = r"\-(\1)"
 
 
+# TODO: This will need to be a bit different now that we put units in a MultiIndex. We
+# should instead stuff that MultiIndex into the `project` object and just fetch it here
+# to glue onto the dataframe. That way we don't have to carry it around teh pipeline to
+# facilitate "Data preview" in VSCode rendering it nicely.
 def set_units_row_for_originlab(df: pd.DataFrame, proj: Project) -> pd.DataFrame:
     """Move units out of column labels and into a row just below the column labels.
 
