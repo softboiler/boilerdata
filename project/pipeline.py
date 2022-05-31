@@ -1,6 +1,6 @@
 """Pipeline functions."""
 
-import json
+from datetime import datetime
 from pathlib import Path
 import re
 from types import ModuleType
@@ -33,16 +33,18 @@ PintType.ureg = u
 
 def pipeline(proj: Project):
 
+    df = get_df(proj)
+
     # Reduce data from CSV's of runs within trials, to single df w/ trials as records
-    dfs = [
-        get_steady_state(proj, trial)  # Reduce many CSV's to one df
-        .pipe(rename_columns, proj, trial)  # Pull units out of columns for cleaner ref
-        .pipe(fit, proj, trial)
-        .pipe(plot_fit_apply, proj, trial)
-        .pipe(get_heat_transfer, proj, trial)
-        .pipe(assign_trial_metadata, proj, trial)
-        for trial in proj.trials
-    ]
+    # dfs = [
+    #     get_run(proj, trial)
+    #     .pipe(get_steady_state, proj, trial)  # Reduce many CSV's to one df
+    #     .pipe(rename_columns, proj, trial)  # Pull units out of columns for cleaner ref
+    #     .pipe(fit, proj, trial)
+    #     .pipe(plot_fit_apply, proj, trial)
+    #     .pipe(get_heat_transfer, proj, trial)
+    #     for trial in proj.trials
+    # ]
 
     # Validate the dataframe
     df = df_schema(concat_with_dtypes(dfs, proj))
@@ -58,28 +60,132 @@ def pipeline(proj: Project):
 
 
 # * -------------------------------------------------------------------------------- * #
-# * PRIMARY STAGES
+# * AGG PER RUN
 
 
-def get_steady_state(proj: Project, trial: Trial) -> pd.DataFrame:
+def get_df(proj: Project) -> pd.DataFrame:
+    """Get an individual run in a trial."""
+
+    index = proj.get_index()
+    dtypes = {
+        name: col.dtype
+        for name, col in proj.cols.items()
+        if col.meta or col.source and not col.index
+    }
+
+    if any(trial.new for trial in proj.trials) or proj.params.refetch_runs:
+
+        run_re = re.compile(r"(?P<date>.*)T(?P<time>.*)")
+        runs: list[pd.DataFrame] = []
+
+        multi_index: list[tuple[datetime, datetime, datetime]] = []
+        for trial in proj.trials:
+            for run in trial.runs:
+                run_time = run.stem.removeprefix("results_")
+
+                if m := run_re.match(run_time):
+                    run_time = datetime.fromisoformat(
+                        f"{m['date']}T{m['time'].replace('-', ':')}"
+                    )
+                else:
+                    raise AttributeError(f"Could not parse run time: {run_time}")
+
+                run = get_run(proj, trial, run)
+                runs.append(run)
+                multi_index.extend(
+                    (
+                        datetime.fromisoformat(str(trial.trial)),
+                        run_time,
+                        datetime.fromisoformat(time),
+                    )
+                    for time in run.index
+                )
+
+        df = pd.concat(runs)
+        df.index = pd.MultiIndex.from_tuples(
+            multi_index, names=[idx.name for idx in index]
+        )
+        df = df.assign(**{name: df[name].astype(dtypes[name]) for name in dtypes})
+        df.to_csv(proj.dirs.runs_file)
+    else:
+        index_cols = list(range(len(index)))
+        df = pd.read_csv(
+            proj.dirs.runs_file,
+            index_col=index_cols,
+            dtype=dtypes,
+            parse_dates=index_cols,
+            encoding="utf-8",
+        )
+
+    return df
+
+
+# TODO: Check output for NaN with Pandera like in run "2022-03-29T14-01-41".
+def get_run(proj: Project, trial: Trial, run: Path) -> pd.DataFrame:
+
+    # Metadata
+    indices = proj.get_index()
+    meta_cols = {name: col for name, col in proj.cols.items() if col.meta}
+    metadata = {
+        k: v for k, v in trial.dict().items() if k not in [col.name for col in indices]
+    }
+
+    # Columns
+    index = proj.get_index()[-1].source
+    src_cols = {
+        col.source: col for col in proj.cols.values() if col.source and not col.index
+    }
+
+    # Data types
+    src_dtypes = {name: col.dtype for name, col in src_cols.items()}
+
+    return (
+        pd.DataFrame(columns=(meta_cols | src_cols).keys())
+        .assign(
+            **pd.read_csv(
+                run,
+                usecols=[index, *src_cols.keys()],  # type: ignore
+                index_col=index,
+                dtype=src_dtypes,
+                encoding="utf-8",
+            ),
+            **metadata,
+        )
+        .dropna()  # Rarely a run has a NaN record at the end
+        .tail(proj.params.records_to_average)
+        .pipe(rename_columns, proj)
+    )
+
+
+def rename_columns(df: pd.DataFrame, proj: Project) -> pd.DataFrame:
+    """Move units into a MultiIndex."""
+
+    return df.rename(
+        {col.source: name for name, col in proj.cols.items() if not col.index},
+        axis="columns",
+    )
+
+
+# ! TODO: Refactor into parallel pipeline
+# # Quantify the columns with units
+# df.columns = multi_index  # Set the multi-index so quantify can work
+# df = df.pint.quantify()  # Changes column dtypes to unit-aware dtypes
+# df.columns = multi_index.droplevel(-1)  # Go back to the simple index
+
+
+# * -------------------------------------------------------------------------------- * #
+# * PIPELINE
+
+
+def get_steady_state(df: pd.DataFrame, proj: Project, trial: Trial) -> pd.DataFrame:
     """Get steady-state values for the trial."""
 
-    files = sorted(trial.path.glob("*.csv"))
-    run_names = [file.stem for file in files]
-    runs: list[pd.DataFrame] = []
-    for file in files:
-        run = get_run(proj, file).pipe(rename_columns, proj, trial)
-        if len(run) < proj.params.records_to_average:
-            raise ValueError(
-                f"There are not enough records in {file.name} to compute steady-state."
-            )
-        runs.append(run)
+    return df.mean()
 
     # TODO: Can't take the mean like we were able to before.
-    first_run = runs[0].iloc[-proj.params.records_to_average :, :]
     runs_steady_state: list[pd.Series] = [
-        df.iloc[-proj.params.records_to_average :, :].mean() for df in runs
-    ]
+        df.tail(proj.params.records_to_average).mean() for df in runs
+    ]  # type: ignore
     return pd.DataFrame(runs_steady_state, index=run_names).rename_axis(
         proj.get_index().name, axis="index"
     )
@@ -116,23 +222,13 @@ def plot_fit_apply(df: pd.DataFrame, proj: Project, trial: Trial) -> pd.DataFram
 
         matplotlib.use("QtAgg")
 
-        df.apply(
-            axis="columns",
-            func=plot_fit_ser,
-            proj=proj,
-            trial=trial,
-            plt=plt,
-        )
+        df.apply(axis="columns", func=plot_fit_ser, proj=proj, trial=trial, plt=plt)
         plt.show()
 
     return df
 
 
-def get_heat_transfer(
-    df: pd.DataFrame,
-    proj: Project,
-    trial: Trial,
-) -> pd.DataFrame:
+def get_heat_transfer(df: pd.DataFrame, proj: Project, trial: Trial) -> pd.DataFrame:
     """Calculate heat transfer and superheat based on one-dimensional approximation."""
 
     # Constants
@@ -161,11 +257,27 @@ def get_heat_transfer(
     )
 
 
-def assign_trial_metadata(
-    df: pd.DataFrame, proj: Project, trial: Trial
+def linregress_apply(
+    df: pd.DataFrame,
+    proj: Project,
+    trial: Trial,
+    temperature_cols: pd.DataFrame,
+    result_cols: list[str],
 ) -> pd.DataFrame:
-    """Assign metadata sourced from configs to the dataframe."""
-    return df.assign(**json.loads(trial.json()))
+    """Apply linear regression across the temperature columns."""
+    return pd.concat(
+        axis="columns",
+        objs=[
+            df,
+            temperature_cols.apply(
+                axis="columns",
+                func=linregress_ser,
+                x=trial.thermocouple_pos,
+                repeats_per_pair=proj.params.records_to_average,
+                regression_stats=result_cols,
+            ),
+        ],
+    )
 
 
 def concat_with_dtypes(dfs: list[pd.DataFrame], proj: Project) -> pd.DataFrame:
@@ -246,75 +358,6 @@ def replace_for_originlab(text: str) -> str:
     See: <https://www.originlab.com/doc/en/Origin-Help/Escape-Sequences>
     """
     return SUBSCRIPT.sub(SUBSCRIPT_REPL, SUPERSCRIPT.sub(SUPERSCRIPT_REPL, text))
-
-
-# * -------------------------------------------------------------------------------- * #
-# * HELPER FUNCTIONS
-
-
-def get_run(proj: Project, run: Path) -> pd.DataFrame:
-    """Get an individual run in a trial."""
-    source_cols = {name: col for name, col in proj.cols.items() if col.source}
-    dtypes = {name: col.dtype for name, col in source_cols.items()}
-    return pd.read_csv(
-        run,
-        usecols=[col.source for col in source_cols.values()],  # pyright: ignore
-        index_col=proj.get_index().source,
-        dtype=dtypes,
-    )
-
-
-def rename_columns(df: pd.DataFrame, proj: Project, trial: Trial) -> pd.DataFrame:
-    """Move units into a MultiIndex."""
-
-    # Rename columns and extract them into a row
-    source_cols = {name: col for name, col in proj.cols.items() if col.source}
-    df = df.rename(
-        {col.source: name for name, col in proj.cols.items() if not col.index},
-        axis="columns",
-    )
-    quantity = df.columns.to_frame().rename({0: "quantity"}, axis="columns")
-
-    # Form units row and set df columns to a MultiIndex w/ the above and below combined
-    units = pd.DataFrame(
-        {
-            name: pd.Series(col.units, index=[UNITS_INDEX])
-            for name, col in source_cols.items()
-            if not col.index
-        },
-        dtype=PandasDtype.string,
-    ).T
-
-    # Quantify the columns with units
-    multi_index = pd.MultiIndex.from_frame(pd.concat([quantity, units], axis="columns"))
-    df.columns = multi_index  # Set the multi-index so quantify can work
-    df = df.pint.quantify()  # Changes column dtypes to unit-aware dtypes
-    df.columns = multi_index.droplevel(-1)  # Go back to the simple index
-
-    return df
-
-
-def linregress_apply(
-    df: pd.DataFrame,
-    proj: Project,
-    trial: Trial,
-    temperature_cols: pd.DataFrame,
-    result_cols: list[str],
-) -> pd.DataFrame:
-    """Apply linear regression across the temperature columns."""
-    return pd.concat(
-        axis="columns",
-        objs=[
-            df,
-            temperature_cols.apply(
-                axis="columns",
-                func=linregress_ser,
-                x=trial.thermocouple_pos,
-                repeats_per_pair=proj.params.records_to_average,
-                regression_stats=result_cols,
-            ),
-        ],
-    )
 
 
 # * -------------------------------------------------------------------------------- * #

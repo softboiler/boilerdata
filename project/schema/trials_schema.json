@@ -15,6 +15,15 @@
     "trials"
   ],
   "definitions": {
+    "Group": {
+      "title": "Group",
+      "description": "The group that this sample belongs to.",
+      "enum": [
+        "control",
+        "porous",
+        "hybrid"
+      ]
+    },
     "Rod": {
       "title": "Rod",
       "description": "The rod used in this trial.",
@@ -47,15 +56,6 @@
         "B3"
       ]
     },
-    "Group": {
-      "title": "Group",
-      "description": "The group that this sample belongs to.",
-      "enum": [
-        "control",
-        "porous",
-        "hybrid"
-      ]
-    },
     "Joint": {
       "title": "Joint",
       "description": "The method used to join parts of the sample in this trial.",
@@ -70,10 +70,13 @@
       "description": "A trial.",
       "type": "object",
       "properties": {
-        "date": {
-          "title": "Date",
+        "trial": {
+          "title": "Trial",
           "type": "string",
           "format": "date"
+        },
+        "group": {
+          "$ref": "#/definitions/Group"
         },
         "rod": {
           "$ref": "#/definitions/Rod"
@@ -83,9 +86,6 @@
         },
         "sample": {
           "$ref": "#/definitions/Sample"
-        },
-        "group": {
-          "$ref": "#/definitions/Group"
         },
         "joint": {
           "$ref": "#/definitions/Joint"
@@ -111,6 +111,14 @@
           "format": "directory-path",
           "type": "string"
         },
+        "runs": {
+          "title": "Runs",
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "file-path"
+          }
+        },
         "thermocouple_pos": {
           "title": "Thermocouple Pos",
           "allOf": [
@@ -125,11 +133,11 @@
         }
       },
       "required": [
-        "date",
+        "trial",
+        "group",
         "rod",
         "coupon",
         "sample",
-        "group",
         "joint",
         "comment"
       ]

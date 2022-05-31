@@ -3,7 +3,8 @@ from pathlib import Path
 from typing import Optional
 
 import numpy as np
-from pydantic import BaseModel, DirectoryPath, Field, validator
+import pandas as pd
+from pydantic import BaseModel, DirectoryPath, Field, FilePath, validator
 
 from boilerdata.typing import NpNDArray
 from boilerdata.utils import StrPath, expanduser2, load_config
@@ -56,6 +57,10 @@ class Dirs(MyBaseModel):
         default=...,
         description="The directory in which the results will go. Must be relative to the base directory or an absolute path that exists. Will be created if it is relative to the base directory.",
     )
+    runs_file: Path = Field(
+        default="runs.csv",
+        description="The path to the runs. Must be relative to the results directory. Default: runs.csv",
+    )
     results_file: Path = Field(
         default="results.csv",
         description="The path to the results file. Must be relative to the results directory. Default: results.csv",
@@ -86,7 +91,7 @@ class Dirs(MyBaseModel):
         return values["base"] / results
 
     # "always" so it'll run even if not in YAML
-    @validator("results_file", "coldes_file", always=True)
+    @validator("results_file", "coldes_file", "runs_file", always=True)
     def validate_files(cls, file: Path, values: dict[str, Path]):
         if file.is_absolute():
             raise ValueError("The file must be relative to the results directory.")
@@ -102,6 +107,10 @@ class Dirs(MyBaseModel):
 class Params(MyBaseModel):
     """Parameters of the pipeline."""
 
+    refetch_runs: bool = Field(
+        default=False,
+        description="Fetch the runs from their source files again even if there are no new runs.",
+    )
     records_to_average: int = Field(
         default=60,
         description="The number of records over which to average in a given trial.",
@@ -134,6 +143,10 @@ class Column(MyBaseModel):
     source: Optional[str] = Field(
         default=None,
         description="The name of the input column that this column is based off of.",
+    )
+    meta: bool = Field(
+        default=False,
+        description="Whether this column is informed by the trials config.",
     )
 
     originlab_coldes: OriginLabColdes = Field(
@@ -176,6 +189,7 @@ class Columns(MyBaseModel):
     def __init__(self, **data):
         super().__init__(**data)
 
+        # Set name as convenience property
         for name, col in self.cols.items():
             col.name = name
 
@@ -214,11 +228,11 @@ class Geometry(MyBaseModel):
 class Trial(MyBaseModel):
     """A trial."""
 
-    date: date
+    trial: date
+    group: Group
     rod: Rod
     coupon: Coupon
     sample: Sample
-    group: Group
     joint: Joint
     good: bool = Field(
         default=True,
@@ -231,13 +245,15 @@ class Trial(MyBaseModel):
 
     # Can't be None. Set in Project.__init__()
     path: DirectoryPath = Field(default=None, exclude=True)
+    runs: list[FilePath] = Field(default=None, exclude=True)
     thermocouple_pos: NpNDArray = Field(default=None, exclude=True)
 
-    def get_path(self, dirs: Dirs):
+    def set_path(self, dirs: Dirs):
         """Get the path to the data for this trial. Called during project setup."""
-        self.path = dirs.trials / self.date.isoformat() / dirs.per_trial
+        self.path = dirs.trials / self.trial.isoformat() / dirs.per_trial
+        self.runs = sorted(self.path.glob("*.csv"))
 
-    def get_geometry(self, geometry: Geometry):
+    def set_geometry(self, geometry: Geometry):
         """Get relevant geometry for the trial."""
         self.thermocouple_pos = geometry.rods[self.rod] + geometry.coupons[self.coupon]  # type: ignore
 
@@ -267,24 +283,38 @@ class Project(MyBaseModel):
         super().__init__(**data)
 
         self.trials = load_config(self.dirs.config / "trials.yaml", Trials).trials
-        self.cols = load_config(self.dirs.config / "columns.yaml", Columns).cols
+        cols = load_config(self.dirs.config / "columns.yaml", Columns)
+        self.cols = cols.cols
 
         for trial in self.trials:
-            trial.get_path(self.dirs)
-            trial.get_geometry(self.geometry)
+            trial.set_path(self.dirs)
+            trial.set_geometry(self.geometry)
 
-    def get_index(self) -> Column:
+    def get_index(self) -> list[Column]:
         index_cols = [col for col in self.cols.values() if col.index]
         match index_cols:
-            case [index]:
-                return index
             case []:
                 raise ValueError("One column must be designated as the index.")
+            case [index]:
+                return [index]
             case [*indices]:
-                indices = [index.name for index in indices]
-                raise ValueError(
-                    f"Only one column may be designated as the index. You specified the following: {', '.join(indices)}"
-                )
+                return indices
+
+    def get_col_index(self) -> pd.MultiIndex:
+
+        # Rename columns and extract them into a row
+        quantity = pd.DataFrame(self.cols.keys()).rename(
+            {0: "quantity"}, axis="columns"
+        )
+        units = pd.DataFrame(
+            {
+                name: pd.Series(col.units, index=["units"])
+                for name, col in self.cols.items()
+                if not col.index
+            },
+            dtype=PandasDtype.string,
+        ).T
+        return pd.MultiIndex.from_frame(pd.concat([quantity, units], axis="columns"))
 
     def get_originlab_coldes(self) -> str:
         return "".join([column.originlab_coldes for column in self.cols.values()])

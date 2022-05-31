@@ -86,6 +86,12 @@
           "description": "The name of the input column that this column is based off of.",
           "type": "string"
         },
+        "meta": {
+          "title": "Meta",
+          "description": "Whether this column is informed by the trials config.",
+          "default": false,
+          "type": "boolean"
+        },
         "originlab_coldes": {
           "description": "The column designation for plotting in OriginLab.",
           "default": "N",

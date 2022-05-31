@@ -33,6 +33,7 @@ def test_pipeline(tmp_proj):
 
     common_read_csv_params = dict(
         skiprows=[1],  # Skip the "units" row so dtype detection works properly
+        encoding="utf-8",
     )
 
     pipeline(tmp_proj)

@@ -1,8 +1,38 @@
 cols:
+  trial:
+    dtype: datetime64[ns]
+    index: true
   run:
-    dtype: string[pyarrow]
+    dtype: datetime64[ns]
+    index: true
+  time:
+    dtype: datetime64[ns]
     source: "time"
     index: true
+  group:
+    dtype: category
+    meta: true
+  rod:
+    dtype: category
+    meta: true
+  coupon:
+    dtype: category
+    meta: true
+  sample:
+    dtype: category
+    meta: true
+  joint:
+    dtype: category
+    meta: true
+  good:
+    dtype: boolean
+    meta: true
+  new:
+    dtype: boolean
+    meta: true
+  comment:
+    dtype: string[pyarrow]
+    meta: true
   V:
     units: "V"
     source: "V"
@@ -67,21 +97,3 @@ cols:
     pretty_name: "∆T_err"
     units: "K"
     originlab_coldes: "M"
-  date:
-    dtype: datetime64[ns]
-  rod:
-    dtype: category
-  coupon:
-    dtype: category
-  sample:
-    dtype: category
-  group:
-    dtype: category
-  joint:
-    dtype: category
-  good:
-    dtype: boolean
-  new:
-    dtype: boolean
-  comment:
-    dtype: string[pyarrow]
