@@ -1,5 +1,5 @@
 trials:
-  - trial: 2020-03-12
+  - date: 2020-03-12
     group: control
     rod: "W"
     coupon: A1
@@ -7,7 +7,7 @@ trials:
     joint: paste
     comment: ""
 
-  - trial: 2021-01-14
+  - date: 2021-01-14
     group: control
     rod: "W"
     coupon: A2
@@ -15,7 +15,7 @@ trials:
     joint: paste
     comment: ""
 
-  - trial: 2021-02-23
+  - date: 2021-02-23
     group: control
     rod: "W"
     coupon: A2
@@ -23,7 +23,7 @@ trials:
     joint: paste
     comment: ""
 
-  - trial: 2021-03-09
+  - date: 2021-03-09
     group: control
     rod: "W"
     coupon: A2
@@ -31,7 +31,7 @@ trials:
     joint: paste
     comment: ""
 
-  - trial: 2021-03-25
+  - date: 2021-03-25
     group: control
     rod: "W"
     coupon: A3
@@ -39,7 +39,7 @@ trials:
     joint: paste
     comment: ""
 
-  - trial: 2021-03-29
+  - date: 2021-03-29
     group: control
     rod: "W"
     coupon: A3
@@ -47,7 +47,7 @@ trials:
     joint: paste
     comment: ""
 
-  - trial: 2021-04-15
+  - date: 2021-04-15
     group: control
     rod: "W"
     coupon: A3
@@ -55,7 +55,7 @@ trials:
     joint: paste
     comment: ""
 
-  - trial: 2021-04-28
+  - date: 2021-04-28
     group: control
     rod: "W"
     coupon: A4
@@ -63,7 +63,7 @@ trials:
     joint: paste
     comment: A4-1
 
-  - trial: 2021-04-29
+  - date: 2021-04-29
     group: control
     rod: "W"
     coupon: A4
@@ -71,7 +71,7 @@ trials:
     joint: paste
     comment: A4-2
 
-  - trial: 2021-04-30
+  - date: 2021-04-30
     group: control
     rod: "W"
     coupon: A4
@@ -79,7 +79,7 @@ trials:
     joint: paste
     comment: A4-3
 
-  - trial: 2021-06-16
+  - date: 2021-06-16
     group: control
     rod: "W"
     coupon: A4
@@ -87,7 +87,7 @@ trials:
     joint: paste
     comment: A4-4. See "21.09.03 Progress.pptx".
 
-  - trial: 2021-06-17
+  - date: 2021-06-17
     group: control
     rod: "W"
     coupon: A4
@@ -95,7 +95,7 @@ trials:
     joint: paste
     comment: A4-5. See "21.09.03 Progress.pptx".
 
-  - trial: 2021-06-21
+  - date: 2021-06-21
     group: control
     rod: "W"
     coupon: A4
@@ -103,7 +103,7 @@ trials:
     joint: paste
     comment: A4-6
 
-  - trial: 2021-06-22
+  - date: 2021-06-22
     group: control
     rod: "W"
     coupon: A4
@@ -112,7 +112,7 @@ trials:
     good: false
     comment: Second day water intrusion
 
-  - trial: 2021-08-30
+  - date: 2021-08-30
     group: control
     rod: "W"
     coupon: A4
@@ -121,7 +121,7 @@ trials:
     good: false
     comment: Poorly-wrapped sample
 
-  - trial: 2021-08-31
+  - date: 2021-08-31
     group: control
     rod: "W"
     coupon: A4
@@ -129,7 +129,7 @@ trials:
     joint: paste
     comment: A4-7
 
-  - trial: 2021-09-29
+  - date: 2021-09-29
     group: control
     rod: "W"
     coupon: A4
@@ -137,7 +137,7 @@ trials:
     joint: epoxy
     comment: Silver epoxy. Separated during this trial.  Need to cure at higher temp. See <https://trello.com/c/mlVNKOQm/28-bond-sample-a4-to-post-0>. A4-12.
 
-  - trial: 2021-10-12
+  - date: 2021-10-12
     group: control
     rod: "W"
     coupon: A4
@@ -145,7 +145,7 @@ trials:
     joint: epoxy
     comment: First run with silver epoxy cured at higher temperature. Vertical anomaly. See "21.10.15 Progress.pptx". See <https://trello.com/c/L6AmQDJR/26-bond-sample-a4-to-warped-post>. A4-13
 
-  - trial: 2021-10-13
+  - date: 2021-10-13
     group: control
     rod: "W"
     coupon: A4
@@ -153,7 +153,7 @@ trials:
     joint: epoxy
     comment: Second run with silver epoxy cured at higher temperature. See "21.10.15 Progress.pptx". A4-14. Broke clean off after trial, see <https://trello.com/c/8w9swkNl/19-run-experiment-a4>
 
-  - trial: 2021-12-09
+  - date: 2021-12-09
     group: control
     rod: "Y"
     coupon: A7
@@ -161,7 +161,7 @@ trials:
     joint: epoxy
     comment: See "22.01.07 Progress.pptx". Epoxy stays intact?
 
-  - trial: 2022-01-06
+  - date: 2022-01-06
     group: control
     rod: "Y"
     coupon: A7
@@ -169,7 +169,7 @@ trials:
     joint: epoxy
     comment: Duralco 132-1. See "22.01.07 Progress.pptx". Still, there's a minor vertical jump.
 
-  - trial: 2022-01-19
+  - date: 2022-01-19
     group: porous
     rod: "X"
     coupon: A6
@@ -177,7 +177,7 @@ trials:
     joint: epoxy
     comment: Copper X-A6-B3-1. Duralco 132-1. Epoxy failed during this trial?
 
-  - trial: 2022-01-20
+  - date: 2022-01-20
     group: porous
     rod: "X"
     coupon: A6
@@ -186,7 +186,7 @@ trials:
     good: false
     comment: Copper X-A6-B3-2. Duralco 132-1. See "22.01 Report.docx". Epoxy intact based on observation in <https://trello.com/c/qH01qs50/43-run-experiment-x-a6-b3>. Detached B3 after this trial.
 
-  - trial: 2022-03-29
+  - date: 2022-03-29
     group: control
     rod: "X"
     coupon: A6
@@ -194,7 +194,7 @@ trials:
     joint: solder
     comment: Copper X-A6-fail2. fail1 has no data, see "Other". First trial with data since detaching B3 and making X-A6 a solder joint. For some reason, can't get all results from "2022-03-29T14-01-41".
 
-  - trial: 2022-04-08
+  - date: 2022-04-08
     group: control
     rod: "X"
     coupon: A9

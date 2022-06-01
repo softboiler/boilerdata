@@ -14,6 +14,13 @@
       "args": ["-Command", "python project/utils.py"],
       "problemMatcher": []
     },
+    {
+      "label": "proj: Profile the pipeline",
+      "type": "process",
+      "command": "pwsh",
+      "args": ["-Command", "python -m cProfile -o .prof project/pipeline.py"],
+      "problemMatcher": []
+    },
 
     // * -------------------------------------------------------------------------- * //
     // * GIT * //
@@ -70,6 +77,13 @@
     // * -------------------------------------------------------------------------- * //
     // * OTHER TASKS * //
 
+    {
+      "label": "task: snakeviz",
+      "type": "process",
+      "command": "pwsh",
+      "args": ["-Command", "snakeviz .prof"],
+      "problemMatcher": []
+    },
     {
       "label": "task: pytest-cov",
       "type": "process",

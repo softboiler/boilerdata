@@ -17,10 +17,10 @@ from scipy.stats import linregress
 
 from columns import Columns as C  # noqa: N817
 from constants import TEMPS_TO_REGRESS, UNITS_INDEX, WATER_TEMPS
-from df_schema import df_schema
 from enums import PandasDtype
 from models import Project, Trial
 from utils import get_project
+from validation import validate_df, validate_runs_df
 
 u = UnitRegistry()
 Q = u.Quantity
@@ -31,114 +31,128 @@ PintType.ureg = u
 # * MAIN
 
 
+# TODO: Refactor into parallel pipeline
+# # Quantify the columns with units
+# df.columns = multi_index  # Set the multi-index so quantify can work
+# df = df.pint.quantify()  # Changes column dtypes to unit-aware dtypes
+# df.columns = multi_index.droplevel(-1)  # Go back to the simple index
+
+
 def pipeline(proj: Project):
 
-    df = get_df(proj)
+    runs_df = validate_runs_df(get_df(proj))
 
-    # Reduce data from CSV's of runs within trials, to single df w/ trials as records
-    # dfs = [
-    #     get_run(proj, trial)
-    #     .pipe(get_steady_state, proj, trial)  # Reduce many CSV's to one df
-    #     .pipe(rename_columns, proj, trial)  # Pull units out of columns for cleaner ref
-    #     .pipe(fit, proj, trial)
-    #     .pipe(plot_fit_apply, proj, trial)
-    #     .pipe(get_heat_transfer, proj, trial)
-    #     for trial in proj.trials
-    # ]
+    cols = [
+        col for col in proj.cols if col not in [col.name for col in proj.get_index()]
+    ]
 
-    # Validate the dataframe
-    df = df_schema(concat_with_dtypes(dfs, proj))
+    df = pd.DataFrame(columns=cols).assign(**get_steady_state(runs_df, proj))  # type: ignore
 
-    # Post-process the dataframe for writing to OriginLab-flavored CSV
-    df = (
-        df.pipe(set_units_row_for_originlab, proj)
-        .pipe(transform_units_for_originlab, proj)
-        .pipe(prettify_for_originlab, proj)
-    )
-    df.to_csv(proj.dirs.results_file, index_label=proj.get_index().name)
-    proj.dirs.coldes_file.write_text(proj.get_originlab_coldes())
+    for trial in proj.trials:
+        df.update(
+            df.xs(trial.trial, level=C.trial, drop_level=False)
+            .pipe(fit, proj, trial)
+            .pipe(get_heat_transfer, proj, trial)
+        )
+
+    # Set dtypes after update. https://github.com/pandas-dev/pandas/issues/4094
+    dtypes = {name: col.dtype for name, col in proj.cols.items() if name in cols}
+    df = validate_df(df.pipe(set_dtypes, dtypes))
+
+    # TODO: Update post-processing to work with new dataframe
+    # TODO: Remember that you get your column index from a method.
+    df = df.set_axis(proj.get_col_index(), axis="columns")  # type: ignore
+    ...
+
+    # # Post-process the dataframe for writing to OriginLab-flavored CSV
+    # df = (
+    #     df.pipe(set_units_row_for_originlab, proj)  #! Change to use get_col_index()
+    #     .pipe(transform_units_for_originlab, proj)  #? Possibly write to units.csv instead?
+    #     .pipe(prettify_for_originlab, proj)
+    # )
+    # df.to_csv(proj.dirs.results_file, index_label=proj.get_index().name)
+    # proj.dirs.coldes_file.write_text(proj.get_originlab_coldes())
 
 
 # * -------------------------------------------------------------------------------- * #
-# * AGG PER RUN
+# * GET DATAFRAME OF ALL RUNS AND TIMES
 
 
 def get_df(proj: Project) -> pd.DataFrame:
-    """Get an individual run in a trial."""
+    """Get the dataframe of all runs."""
 
-    index = proj.get_index()
     dtypes = {
         name: col.dtype
         for name, col in proj.cols.items()
         if col.meta or col.source and not col.index
     }
 
+    # Fetch all runs from their original CSVs if needed.
     if any(trial.new for trial in proj.trials) or proj.params.refetch_runs:
+        return get_runs(proj, dtypes)
 
-        run_re = re.compile(r"(?P<date>.*)T(?P<time>.*)")
-        runs: list[pd.DataFrame] = []
+    # Otherwise, reload the dataframe last written by `get_runs()`
+    index_cols = list(range(len(proj.get_index())))
+    return pd.read_csv(
+        proj.dirs.runs_file,
+        index_col=index_cols,
+        dtype=dtypes,
+        parse_dates=index_cols,
+        encoding="utf-8",
+    )
 
-        multi_index: list[tuple[datetime, datetime, datetime]] = []
-        for trial in proj.trials:
-            for run in trial.runs:
-                run_time = run.stem.removeprefix("results_")
 
-                if m := run_re.match(run_time):
-                    run_time = datetime.fromisoformat(
-                        f"{m['date']}T{m['time'].replace('-', ':')}"
-                    )
-                else:
-                    raise AttributeError(f"Could not parse run time: {run_time}")
+def get_runs(proj: Project, dtypes: dict[str, str]) -> pd.DataFrame:
+    """Get runs from all the data CSVs."""
 
-                run = get_run(proj, trial, run)
-                runs.append(run)
-                multi_index.extend(
-                    (
-                        datetime.fromisoformat(str(trial.trial)),
-                        run_time,
-                        datetime.fromisoformat(time),
-                    )
-                    for time in run.index
+    # Get runs and multiindex
+    runs: list[pd.DataFrame] = []
+    multiindex: list[tuple[datetime, datetime, datetime]] = []
+    for trial in proj.trials:
+        for file, run_index in zip(trial.run_files, trial.run_index):
+
+            run = get_run(proj, trial, file)
+            runs.append(run)
+            multiindex.extend(
+                tuple(
+                    (*run_index, datetime.fromisoformat(record_time))
+                    for record_time in run.index
                 )
+            )
 
-        df = pd.concat(runs)
-        df.index = pd.MultiIndex.from_tuples(
-            multi_index, names=[idx.name for idx in index]
+    # Concatenate results from all runs and set the multiindex
+    df = pd.concat(runs).set_index(
+        pd.MultiIndex.from_tuples(
+            multiindex, names=[idx.name for idx in proj.get_index()]
         )
-        df = df.assign(**{name: df[name].astype(dtypes[name]) for name in dtypes})
-        df.to_csv(proj.dirs.runs_file)
-    else:
-        index_cols = list(range(len(index)))
-        df = pd.read_csv(
-            proj.dirs.runs_file,
-            index_col=index_cols,
-            dtype=dtypes,
-            parse_dates=index_cols,
-            encoding="utf-8",
-        )
+    )
+
+    # Ensure appropriate dtypes for each column. Validate number of records in each run.
+    df = set_dtypes(df, dtypes)
+
+    # Write the runs to disk for faster fetching later
+    df.to_csv(proj.dirs.runs_file, na_rep="na", encoding="utf-8")
 
     return df
 
 
-# TODO: Check output for NaN with Pandera like in run "2022-03-29T14-01-41".
 def get_run(proj: Project, trial: Trial, run: Path) -> pd.DataFrame:
 
-    # Metadata
+    # Get metadata
     indices = proj.get_index()
     meta_cols = {name: col for name, col in proj.cols.items() if col.meta}
     metadata = {
         k: v for k, v in trial.dict().items() if k not in [col.name for col in indices]
     }
 
-    # Columns
+    # Get source columns
     index = proj.get_index()[-1].source
     src_cols = {
         col.source: col for col in proj.cols.values() if col.source and not col.index
     }
-
-    # Data types
     src_dtypes = {name: col.dtype for name, col in src_cols.items()}
 
+    # Assign columns from CSV and metadata to the structured dataframe. Get the tail.
     return (
         pd.DataFrame(columns=(meta_cols | src_cols).keys())
         .assign(
@@ -166,29 +180,17 @@ def rename_columns(df: pd.DataFrame, proj: Project) -> pd.DataFrame:
     )
 
 
-# ! TODO: Refactor into parallel pipeline
-# # Quantify the columns with units
-# df.columns = multi_index  # Set the multi-index so quantify can work
-# df = df.pint.quantify()  # Changes column dtypes to unit-aware dtypes
-# df.columns = multi_index.droplevel(-1)  # Go back to the simple index
-
-
 # * -------------------------------------------------------------------------------- * #
-# * PIPELINE
+# * GET REDUCED DATA FOR EACH RUN
 
 
-def get_steady_state(df: pd.DataFrame, proj: Project, trial: Trial) -> pd.DataFrame:
-    """Get steady-state values for the trial."""
-
-    return df.mean()
-
-    # TODO: Can't take the mean like we were able to before.
-    runs_steady_state: list[pd.Series] = [
-        df.tail(proj.params.records_to_average).mean() for df in runs
-    ]  # type: ignore
-    return pd.DataFrame(runs_steady_state, index=run_names).rename_axis(
-        proj.get_index().name, axis="index"
-    )
+def get_steady_state(df: pd.DataFrame, proj: Project) -> pd.DataFrame:
+    """Get the steady-state values for each run."""
+    cols_to_mean = [
+        name for name, col in proj.cols.items() if col.source and col.dtype == "float"
+    ]
+    means = df[cols_to_mean].groupby(level=C.run, sort=False).transform("mean")
+    return df.assign(**means).droplevel(C.time)[:: proj.params.records_to_average]  # type: ignore
 
 
 def fit(df: pd.DataFrame, proj: Project, trial: Trial) -> pd.DataFrame:
@@ -265,18 +267,14 @@ def linregress_apply(
     result_cols: list[str],
 ) -> pd.DataFrame:
     """Apply linear regression across the temperature columns."""
-    return pd.concat(
-        axis="columns",
-        objs=[
-            df,
-            temperature_cols.apply(
-                axis="columns",
-                func=linregress_ser,
-                x=trial.thermocouple_pos,
-                repeats_per_pair=proj.params.records_to_average,
-                regression_stats=result_cols,
-            ),
-        ],
+    return df.assign(
+        **temperature_cols.apply(
+            axis="columns",
+            func=linregress_ser,
+            x=trial.thermocouple_pos,
+            repeats_per_pair=proj.params.records_to_average,
+            regression_stats=result_cols,
+        ),  # type: ignore
     )
 
 
@@ -330,11 +328,11 @@ def transform_units_for_originlab(df: pd.DataFrame, proj: Project) -> pd.DataFra
     See: <https://www.originlab.com/doc/en/Origin-Help/Escape-Sequences>
     """
     units = (
-        df.loc[UNITS_INDEX, :]
+        df.loc[UNITS_INDEX]
         .replace(SUPERSCRIPT, SUPERSCRIPT_REPL)
         .replace(SUBSCRIPT, SUBSCRIPT_REPL)
     )
-    df.loc[UNITS_INDEX, :] = units
+    df.loc[UNITS_INDEX] = units
     return df
 
 
@@ -418,6 +416,15 @@ def plot_fit_ser(
         0, ser[C.TLfit], "x", label="Extrapolated Surface Temperature", color=[1, 0, 0]
     )
     plt.legend()
+
+
+# * -------------------------------------------------------------------------------- * #
+# * OTHER HELPER FUNCTIONS
+
+
+def set_dtypes(df: pd.DataFrame, dtypes: dict[str, str]) -> pd.DataFrame:
+    """Set column datatypes in a dataframe."""
+    return df.assign(**{name: df[name].astype(dtype) for name, dtype in dtypes.items()})
 
 
 # * -------------------------------------------------------------------------------- * #

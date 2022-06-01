@@ -70,8 +70,9 @@
       "description": "A trial.",
       "type": "object",
       "properties": {
-        "trial": {
-          "title": "Trial",
+        "date": {
+          "title": "Date",
+          "description": "The date of the trial.",
           "type": "string",
           "format": "date"
         },
@@ -111,12 +112,31 @@
           "format": "directory-path",
           "type": "string"
         },
-        "runs": {
-          "title": "Runs",
+        "run_files": {
+          "title": "Run Files",
           "type": "array",
           "items": {
             "type": "string",
             "format": "file-path"
+          }
+        },
+        "run_index": {
+          "title": "Run Index",
+          "type": "array",
+          "items": {
+            "type": "array",
+            "minItems": 2,
+            "maxItems": 2,
+            "items": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "string",
+                "format": "date-time"
+              }
+            ]
           }
         },
         "thermocouple_pos": {
@@ -133,7 +153,7 @@
         }
       },
       "required": [
-        "trial",
+        "date",
         "group",
         "rod",
         "coupon",

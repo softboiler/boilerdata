@@ -1,5 +1,6 @@
-from datetime import date
+import datetime
 from pathlib import Path
+import re
 from typing import Optional
 
 import numpy as np
@@ -228,7 +229,9 @@ class Geometry(MyBaseModel):
 class Trial(MyBaseModel):
     """A trial."""
 
-    trial: date
+    date: datetime.date = Field(
+        default=..., description="The date of the trial.", exclude=True
+    )
     group: Group
     rod: Rod
     coupon: Coupon
@@ -245,13 +248,43 @@ class Trial(MyBaseModel):
 
     # Can't be None. Set in Project.__init__()
     path: DirectoryPath = Field(default=None, exclude=True)
-    runs: list[FilePath] = Field(default=None, exclude=True)
+    run_files: list[FilePath] = Field(default=None, exclude=True)
+    run_index: list[tuple[pd.Timestamp, pd.Timestamp]] = Field(
+        default=None, exclude=True
+    )
     thermocouple_pos: NpNDArray = Field(default=None, exclude=True)
 
-    def set_path(self, dirs: Dirs):
+    @property
+    def trial(self):
+        return pd.Timestamp(self.date)
+
+    def set_paths(self, dirs: Dirs):
         """Get the path to the data for this trial. Called during project setup."""
-        self.path = dirs.trials / self.trial.isoformat() / dirs.per_trial
-        self.runs = sorted(self.path.glob("*.csv"))
+
+        self.path = dirs.trials / str(self.trial.date()) / dirs.per_trial
+        self.run_files = sorted(self.path.glob("*.csv"))
+
+    def set_index(self):
+        """Get the multiindex for all runs. Called during project setup."""
+
+        run_re = re.compile(r"(?P<date>.*)T(?P<time>.*)")
+        run_index: list[tuple[pd.Timestamp, pd.Timestamp]] = []
+        for run_file in self.run_files:
+
+            run_time = run_file.stem.removeprefix("results_")
+
+            if m := run_re.match(run_time):
+                run_time = f"{m['date']}T{m['time'].replace('-', ':')}"
+            else:
+                raise AttributeError(f"Could not parse run time: {run_time}")
+
+            trial_date = self.trial.isoformat()  # for consistency across datetimes
+            run_index.append(
+                tuple(
+                    pd.Timestamp.fromisoformat(item) for item in [trial_date, run_time]
+                )
+            )
+        self.run_index = run_index
 
     def set_geometry(self, geometry: Geometry):
         """Get relevant geometry for the trial."""
@@ -287,8 +320,9 @@ class Project(MyBaseModel):
         self.cols = cols.cols
 
         for trial in self.trials:
-            trial.set_path(self.dirs)
+            trial.set_paths(self.dirs)
             trial.set_geometry(self.geometry)
+            trial.set_index()
 
     def get_index(self) -> list[Column]:
         index_cols = [col for col in self.cols.values() if col.index]
@@ -302,14 +336,18 @@ class Project(MyBaseModel):
 
     def get_col_index(self) -> pd.MultiIndex:
 
+        cols = {name: col for name, col in self.cols.items() if not col.index}
+
         # Rename columns and extract them into a row
-        quantity = pd.DataFrame(self.cols.keys()).rename(
-            {0: "quantity"}, axis="columns"
-        )
+        quantity = pd.DataFrame(
+            cols.keys(),
+            index=cols.keys(),
+            dtype=PandasDtype.string,
+        ).rename({0: "quantity"}, axis="columns")
         units = pd.DataFrame(
             {
                 name: pd.Series(col.units, index=["units"])
-                for name, col in self.cols.items()
+                for name, col in cols.items()
                 if not col.index
             },
             dtype=PandasDtype.string,
