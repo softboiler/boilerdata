@@ -52,7 +52,6 @@
       "title": "Sample",
       "description": "The sample attached to the coupon in this trial.",
       "enum": [
-        "NA",
         "B3"
       ]
     },
@@ -157,7 +156,6 @@
         "group",
         "rod",
         "coupon",
-        "sample",
         "joint",
         "comment"
       ]

@@ -16,8 +16,7 @@ from scipy.constants import convert_temperature
 from scipy.stats import linregress
 
 from columns import Columns as C  # noqa: N817
-from constants import TEMPS_TO_REGRESS, UNITS_INDEX, WATER_TEMPS
-from enums import PandasDtype
+from constants import TEMPS_TO_REGRESS, WATER_TEMPS
 from models import Project, Trial
 from utils import get_project
 from validation import validate_df, validate_runs_df
@@ -59,19 +58,13 @@ def pipeline(proj: Project):
     dtypes = {name: col.dtype for name, col in proj.cols.items() if name in cols}
     df = validate_df(df.pipe(set_dtypes, dtypes))
 
-    # TODO: Update post-processing to work with new dataframe
-    # TODO: Remember that you get your column index from a method.
-    df = df.set_axis(proj.get_col_index(), axis="columns")  # type: ignore
-    ...
-
-    # # Post-process the dataframe for writing to OriginLab-flavored CSV
-    # df = (
-    #     df.pipe(set_units_row_for_originlab, proj)  #! Change to use get_col_index()
-    #     .pipe(transform_units_for_originlab, proj)  #? Possibly write to units.csv instead?
-    #     .pipe(prettify_for_originlab, proj)
-    # )
-    # df.to_csv(proj.dirs.results_file, index_label=proj.get_index().name)
-    # proj.dirs.coldes_file.write_text(proj.get_originlab_coldes())
+    # Post-process the dataframe for writing to OriginLab-flavored CSV
+    df.pipe(transform_for_originlab, proj).to_csv(
+        proj.dirs.results_file,
+        index=False,
+        encoding="utf-8",
+    )
+    proj.dirs.coldes_file.write_text(proj.get_originlab_coldes())
 
 
 # * -------------------------------------------------------------------------------- * #
@@ -131,7 +124,7 @@ def get_runs(proj: Project, dtypes: dict[str, str]) -> pd.DataFrame:
     df = set_dtypes(df, dtypes)
 
     # Write the runs to disk for faster fetching later
-    df.to_csv(proj.dirs.runs_file, na_rep="na", encoding="utf-8")
+    df.to_csv(proj.dirs.runs_file, encoding="utf-8")
 
     return df
 
@@ -278,20 +271,6 @@ def linregress_apply(
     )
 
 
-def concat_with_dtypes(dfs: list[pd.DataFrame], proj: Project) -> pd.DataFrame:
-    """Concatenate trials and set data types properly."""
-
-    df = pd.concat(dfs)
-    sers = (item[1] for item in df.items())
-    dtypes = {name: col.dtype for name, col in proj.cols.items() if not col.index}
-    return df.assign(
-        **{
-            name: ser.astype(dtype)
-            for name, dtype, ser in zip(dtypes, dtypes.values(), sers)
-        }
-    ).set_index(df.index.astype(proj.get_index().dtype))
-
-
 # * -------------------------------------------------------------------------------- * #
 # * POST-PROCESSING
 
@@ -301,61 +280,32 @@ SUBSCRIPT = re.compile(r"\_(.*)")
 SUBSCRIPT_REPL = r"\-(\1)"
 
 
-# TODO: This will need to be a bit different now that we put units in a MultiIndex. We
-# should instead stuff that MultiIndex into the `project` object and just fetch it here
-# to glue onto the dataframe. That way we don't have to carry it around teh pipeline to
-# facilitate "Data preview" in VSCode rendering it nicely.
-def set_units_row_for_originlab(df: pd.DataFrame, proj: Project) -> pd.DataFrame:
+def transform_for_originlab(df: pd.DataFrame, proj: Project) -> pd.DataFrame:
     """Move units out of column labels and into a row just below the column labels.
 
     Explicitly set all dtypes to string to avoid data rendering issues, especially with
     dates.
-    """
-    units_row = pd.DataFrame(
-        {
-            name: pd.Series(col.units, index=[UNITS_INDEX])
-            for name, col in proj.cols.items()
-            if not col.index
-        },
-        dtype=PandasDtype.string,
-    )
-    return pd.concat([units_row, df.astype(PandasDtype.string)])
 
-
-def transform_units_for_originlab(df: pd.DataFrame, proj: Project) -> pd.DataFrame:
-    """Convert super/subscripts in units to their OriginLab representation.
+    Convert super/subscripts in units to their OriginLab representation.
 
     See: <https://www.originlab.com/doc/en/Origin-Help/Escape-Sequences>
     """
-    units = (
-        df.loc[UNITS_INDEX]
+
+    columns = proj.get_col_index()
+    quantity = columns.get_level_values("quantity").map(
+        {name: col.pretty_name for name, col in proj.cols.items()}
+    )
+    units = columns.get_level_values("units")
+    indices = [
+        index.to_series()
+        .reset_index(drop=True)
         .replace(SUPERSCRIPT, SUPERSCRIPT_REPL)
         .replace(SUBSCRIPT, SUBSCRIPT_REPL)
-    )
-    df.loc[UNITS_INDEX] = units
-    return df
+        for index in (quantity, units)
+    ]
+    columns = pd.MultiIndex.from_frame(pd.concat(indices, axis="columns"))
 
-
-def prettify_for_originlab(df: pd.DataFrame, proj: Project) -> pd.DataFrame:
-    """Rename columns with Greek symbols, superscripts, and subscripts transformed.
-
-    See: <https://www.originlab.com/doc/en/Origin-Help/Escape-Sequences>
-    """
-    return df.rename(
-        {
-            name: replace_for_originlab(col.pretty_name)
-            for name, col in proj.cols.items()
-        },
-        axis="columns",
-    )
-
-
-def replace_for_originlab(text: str) -> str:
-    """Transform superscripts and subscripts to their OriginLab representation.
-
-    See: <https://www.originlab.com/doc/en/Origin-Help/Escape-Sequences>
-    """
-    return SUBSCRIPT.sub(SUBSCRIPT_REPL, SUPERSCRIPT.sub(SUPERSCRIPT_REPL, text))
+    return df.set_axis(columns, axis="columns").reset_index()  # type: ignore
 
 
 # * -------------------------------------------------------------------------------- * #

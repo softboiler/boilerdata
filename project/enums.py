@@ -30,7 +30,6 @@ class Coupon(GetNameEnum):
 class Sample(GetNameEnum):
     """The sample attached to the coupon in this trial."""
 
-    NA = auto()  # If no sample is attached to the coupon.
     B3 = auto()
 
 

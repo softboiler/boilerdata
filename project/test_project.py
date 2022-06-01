@@ -8,7 +8,7 @@ from pytest import mark as m, raises
 import yaml
 
 from migrate import migrate_1, migrate_2, migrate_3
-from pipeline import pipeline
+from pipeline import get_df, pipeline
 from utils import get_project
 
 CI = "Skip on CI."
@@ -41,6 +41,19 @@ def test_pipeline(tmp_proj):
     old = pd.read_csv(get_old_file(old_commit), **common_read_csv_params)
     new = pd.read_csv(tmp_proj.dirs.results_file, **common_read_csv_params)
     assert_frame_equal(old, new)
+
+
+@m.skipif(bool(getenv("CI")), reason=CI)
+def test_get_df(tmp_proj):
+    """Ensure the same dataframe comes from disk and from fetching runs."""
+
+    tmp_proj.params.refetch_runs = True
+    fetched = get_df(tmp_proj)
+
+    tmp_proj.params.refetch_runs = False
+    loaded = get_df(tmp_proj)
+
+    assert_frame_equal(fetched, loaded)
 
 
 # * -------------------------------------------------------------------------------- * #

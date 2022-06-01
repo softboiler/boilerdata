@@ -9,15 +9,18 @@ def tmp_proj(tmp_path):
 
     old_proj = get_project()
 
+    # Redirect the column designation file
+    new_coldes_file = tmp_path / old_proj.dirs.coldes_file.relative_to(
+        old_proj.dirs.base
+    )
+
     # Redirect the results file
     new_results_file = tmp_path / old_proj.dirs.results_file.relative_to(
         old_proj.dirs.base
     )
 
-    # Redirect the column designation file
-    new_coldes_file = tmp_path / old_proj.dirs.coldes_file.relative_to(
-        old_proj.dirs.base
-    )
+    # Redirect the runs file
+    new_runs_file = tmp_path / old_proj.dirs.runs_file.relative_to(old_proj.dirs.base)
 
     new_results_file.parent.mkdir()  # Needed because copying won't run the validators
 
@@ -27,8 +30,9 @@ def tmp_proj(tmp_path):
         update=dict(
             dirs=old_proj.dirs.copy(
                 update=dict(
-                    results_file=new_results_file,
                     coldes_file=new_coldes_file,
+                    results_file=new_results_file,
+                    runs_file=new_runs_file,
                 )
             )
         ),

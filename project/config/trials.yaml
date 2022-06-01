@@ -3,7 +3,6 @@ trials:
     group: control
     rod: "W"
     coupon: A1
-    sample: NA
     joint: paste
     comment: ""
 
@@ -11,7 +10,6 @@ trials:
     group: control
     rod: "W"
     coupon: A2
-    sample: NA
     joint: paste
     comment: ""
 
@@ -19,7 +17,6 @@ trials:
     group: control
     rod: "W"
     coupon: A2
-    sample: NA
     joint: paste
     comment: ""
 
@@ -27,7 +24,6 @@ trials:
     group: control
     rod: "W"
     coupon: A2
-    sample: NA
     joint: paste
     comment: ""
 
@@ -35,7 +31,6 @@ trials:
     group: control
     rod: "W"
     coupon: A3
-    sample: NA
     joint: paste
     comment: ""
 
@@ -43,7 +38,6 @@ trials:
     group: control
     rod: "W"
     coupon: A3
-    sample: NA
     joint: paste
     comment: ""
 
@@ -51,7 +45,6 @@ trials:
     group: control
     rod: "W"
     coupon: A3
-    sample: NA
     joint: paste
     comment: ""
 
@@ -59,7 +52,6 @@ trials:
     group: control
     rod: "W"
     coupon: A4
-    sample: NA
     joint: paste
     comment: A4-1
 
@@ -67,7 +59,6 @@ trials:
     group: control
     rod: "W"
     coupon: A4
-    sample: NA
     joint: paste
     comment: A4-2
 
@@ -75,7 +66,6 @@ trials:
     group: control
     rod: "W"
     coupon: A4
-    sample: NA
     joint: paste
     comment: A4-3
 
@@ -83,7 +73,6 @@ trials:
     group: control
     rod: "W"
     coupon: A4
-    sample: NA
     joint: paste
     comment: A4-4. See "21.09.03 Progress.pptx".
 
@@ -91,7 +80,6 @@ trials:
     group: control
     rod: "W"
     coupon: A4
-    sample: NA
     joint: paste
     comment: A4-5. See "21.09.03 Progress.pptx".
 
@@ -99,7 +87,6 @@ trials:
     group: control
     rod: "W"
     coupon: A4
-    sample: NA
     joint: paste
     comment: A4-6
 
@@ -107,7 +94,6 @@ trials:
     group: control
     rod: "W"
     coupon: A4
-    sample: NA
     joint: paste
     good: false
     comment: Second day water intrusion
@@ -116,7 +102,6 @@ trials:
     group: control
     rod: "W"
     coupon: A4
-    sample: NA
     joint: paste
     good: false
     comment: Poorly-wrapped sample
@@ -125,7 +110,6 @@ trials:
     group: control
     rod: "W"
     coupon: A4
-    sample: NA
     joint: paste
     comment: A4-7
 
@@ -133,7 +117,6 @@ trials:
     group: control
     rod: "W"
     coupon: A4
-    sample: NA
     joint: epoxy
     comment: Silver epoxy. Separated during this trial.  Need to cure at higher temp. See <https://trello.com/c/mlVNKOQm/28-bond-sample-a4-to-post-0>. A4-12.
 
@@ -141,7 +124,6 @@ trials:
     group: control
     rod: "W"
     coupon: A4
-    sample: NA
     joint: epoxy
     comment: First run with silver epoxy cured at higher temperature. Vertical anomaly. See "21.10.15 Progress.pptx". See <https://trello.com/c/L6AmQDJR/26-bond-sample-a4-to-warped-post>. A4-13
 
@@ -149,7 +131,6 @@ trials:
     group: control
     rod: "W"
     coupon: A4
-    sample: NA
     joint: epoxy
     comment: Second run with silver epoxy cured at higher temperature. See "21.10.15 Progress.pptx". A4-14. Broke clean off after trial, see <https://trello.com/c/8w9swkNl/19-run-experiment-a4>
 
@@ -157,7 +138,6 @@ trials:
     group: control
     rod: "Y"
     coupon: A7
-    sample: NA
     joint: epoxy
     comment: See "22.01.07 Progress.pptx". Epoxy stays intact?
 
@@ -165,7 +145,6 @@ trials:
     group: control
     rod: "Y"
     coupon: A7
-    sample: NA
     joint: epoxy
     comment: Duralco 132-1. See "22.01.07 Progress.pptx". Still, there's a minor vertical jump.
 
@@ -190,7 +169,6 @@ trials:
     group: control
     rod: "X"
     coupon: A6
-    sample: NA
     joint: solder
     comment: Copper X-A6-fail2. fail1 has no data, see "Other". First trial with data since detaching B3 and making X-A6 a solder joint. For some reason, can't get all results from "2022-03-29T14-01-41".
 
@@ -198,6 +176,5 @@ trials:
     group: control
     rod: "X"
     coupon: A9
-    sample: NA
     joint: solder
     comment: Copper X-A9-newcam

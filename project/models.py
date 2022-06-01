@@ -235,7 +235,7 @@ class Trial(MyBaseModel):
     group: Group
     rod: Rod
     coupon: Coupon
-    sample: Sample
+    sample: Optional[Sample]
     joint: Joint
     good: bool = Field(
         default=True,
