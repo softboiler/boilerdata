@@ -185,10 +185,13 @@ def get_steady_state(df: pd.DataFrame, proj: Project) -> pd.DataFrame:
     return df.assign(**means).droplevel(A.time)[:: proj.params.records_to_average]  # type: ignore
 
 
+# * -------------------------------------------------------------------------------- * #
+# * PERFORM FITS AND COMPUTE HEAT TRANSFER
+
+
 def fit(df: pd.DataFrame, proj: Project, trial: Trial) -> pd.DataFrame:
     """Fit the data assuming one-dimensional, steady-state conduction."""
 
-    # Main pipeline
     df = df.pipe(
         linregress_apply,
         proj=proj,
