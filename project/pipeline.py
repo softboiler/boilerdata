@@ -86,13 +86,15 @@ def get_df(proj: Project) -> pd.DataFrame:
 
     # Otherwise, reload the dataframe last written by `get_runs()`
     index_cols = list(range(len(proj.get_index())))
+
+    # Special handling for the comment column where an empty string is not NA
     return pd.read_csv(
         proj.dirs.runs_file,
         index_col=index_cols,
         dtype=dtypes,
         parse_dates=index_cols,
         encoding="utf-8",
-    )
+    ).assign(**{C.comment: lambda df: df[C.comment].fillna("")})
 
 
 def get_runs(proj: Project, dtypes: dict[str, str]) -> pd.DataFrame:
@@ -146,7 +148,7 @@ def get_run(proj: Project, trial: Trial, run: Path) -> pd.DataFrame:
     src_dtypes = {name: col.dtype for name, col in src_cols.items()}
 
     # Assign columns from CSV and metadata to the structured dataframe. Get the tail.
-    return (
+    df = (
         pd.DataFrame(columns=(meta_cols | src_cols).keys())
         .assign(
             **pd.read_csv(
@@ -158,7 +160,11 @@ def get_run(proj: Project, trial: Trial, run: Path) -> pd.DataFrame:
             ),
             **metadata,
         )
-        .dropna()  # Rarely a run has a NaN record at the end
+        .dropna(how="all")  # Rarely a run has an all NA record at the end
+    )
+    # Need "df" defined so we can call "df.index.dropna()"
+    return (
+        df.reindex(index=df.index.dropna())  # Rarely a run has an NA index at the end
         .tail(proj.params.records_to_average)
         .pipe(rename_columns, proj)
     )

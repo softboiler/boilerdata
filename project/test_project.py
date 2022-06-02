@@ -1,10 +1,9 @@
-from math import inf
 from os import getenv
 from pathlib import Path
 
 import pandas as pd
 from pandas.testing import assert_frame_equal
-from pytest import mark as m, raises
+from pytest import mark as m
 import yaml
 
 from migrate import migrate_1, migrate_2, migrate_3
@@ -19,27 +18,25 @@ CI = "Skip on CI."
 
 
 @m.skipif(bool(getenv("CI")), reason=CI)
-def test_get_steady_state_raises(tmp_proj):
-    tmp_proj.params.records_to_average = inf
-    with raises(ValueError, match="not enough records"):
-        pipeline(tmp_proj)
-
-
-@m.skipif(bool(getenv("CI")), reason=CI)
 def test_pipeline(tmp_proj):
     """Ensure the same result is coming out of the pipeline as before."""
 
-    old_commit = "c1a6cbf1d62ce59c44b8ed4dc1e526d21e84f403"
+    old_commit = "acabf7067bf3d4ebc45654f045eb82f89adb1bac"
 
     common_read_csv_params = dict(
         skiprows=[1],  # Skip the "units" row so dtype detection works properly
         encoding="utf-8",
     )
 
+    tmp_proj.params.refetch_runs = True
     pipeline(tmp_proj)
 
-    old = pd.read_csv(get_old_file(old_commit), **common_read_csv_params)
-    new = pd.read_csv(tmp_proj.dirs.results_file, **common_read_csv_params)
+    old = pd.read_csv(get_old_file(old_commit), **common_read_csv_params).reset_index(
+        drop=True
+    )
+    new = pd.read_csv(tmp_proj.dirs.results_file, **common_read_csv_params).reset_index(
+        drop=True
+    )
     assert_frame_equal(old, new)
 
 
