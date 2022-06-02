@@ -56,4 +56,3 @@ class Columns(GetNameEnum):
     group = auto()
     monotonic = auto()
     joint = auto()
-    comment = auto()

@@ -40,10 +40,6 @@ all:
     dtype: boolean
     meta: true
 
-  - name: comment
-    dtype: string[pyarrow]
-    meta: true
-
   - name: V
     units: "V"
     source: "V"

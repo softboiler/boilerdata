@@ -305,7 +305,11 @@ class Trial(MyBaseModel):
     new: bool = Field(
         default=False, description="Whether this is newly-collected data."
     )
-    comment: str
+
+    # Loaded from config, but not propagated to dataframes. Not readable in a table
+    # anyways, and NA-handling results in additional ~40s to pipeline due to the need to
+    # use slow "fillna".
+    comment: str = Field(default="", exclude=True)
 
     # Named "trial" as in "the date this trial was run".
     @property

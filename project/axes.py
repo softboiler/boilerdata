@@ -16,7 +16,6 @@ class Axes(GetNameEnum):
     joint = auto()
     good = auto()
     new = auto()
-    comment = auto()
     V = auto()
     I = auto()
     T_0 = auto()

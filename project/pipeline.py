@@ -83,14 +83,13 @@ def get_df(proj: Project) -> pd.DataFrame:
     # Otherwise, reload the dataframe last written by `get_runs()`
     index_cols = list(range(len(proj.axes.index)))
 
-    # Special handling for the comment column where an empty string is not NA
     return pd.read_csv(
         proj.dirs.runs_file,
         index_col=index_cols,
         dtype=dtypes,
         parse_dates=index_cols,
         encoding="utf-8",
-    ).assign(**{A.comment: lambda df: df[A.comment].fillna("")})
+    )
 
 
 def get_runs(proj: Project, dtypes: dict[str, str]) -> pd.DataFrame:
