@@ -8,8 +8,6 @@ from types import ModuleType
 from numpy import typing as npt
 import numpy as np
 import pandas as pd
-from pint import UnitRegistry
-from pint_pandas import PintType
 from propshop import get_prop
 from propshop.library import Mat, Prop
 from scipy.constants import convert_temperature
@@ -21,20 +19,8 @@ from models import Project, Trial, get_names, set_dtypes
 from utils import get_project
 from validation import validate_df, validate_runs_df
 
-u = UnitRegistry()
-Q = u.Quantity
-u.load_definitions(Path("project/config/units.txt"))
-PintType.ureg = u
-
 # * -------------------------------------------------------------------------------- * #
 # * MAIN
-
-
-# TODO: Refactor into parallel pipeline
-# # Quantify the columns with units
-# df.columns = multi_index  # Set the multi-index so quantify can work
-# df = df.pint.quantify()  # Changes column dtypes to unit-aware dtypes
-# df.columns = multi_index.droplevel(-1)  # Go back to the simple index
 
 
 def pipeline(proj: Project):

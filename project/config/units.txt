@@ -1,3 +1,0 @@
-# Test
-@alias coulomb = Co
-@alias degC = C
