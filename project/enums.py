@@ -51,6 +51,8 @@ class Joint(GetNameEnum):
 
 # sourcery skip: avoid-builtin-shadow
 class PandasDtype(GetNameEnum):
+    """Valid data types for Pandas objects."""
+
     object = auto()  # noqa: A003
     float = auto()  # noqa: A003
     int = auto()  # noqa: A003
@@ -73,6 +75,20 @@ class PandasDtype(GetNameEnum):
 
 
 class OriginLabColdes(GetNameEnum):
+    """Valid column designations for plotting in OriginLab.
+
+    Designations:
+        X: x-axis
+        Y: y-axis
+        Z: z-axis
+        M: x-axis error
+        E: y-axis error
+        L: Label
+        G: Group
+        S: Subject
+        N: None (Disregard)
+    """
+
     X = auto()
     Y = auto()
     Z = auto()
@@ -81,4 +97,4 @@ class OriginLabColdes(GetNameEnum):
     L = auto()  # Label
     G = auto()  # Group
     S = auto()  # Subject
-    N = auto()  # None
+    N = auto()  # None (Disregard)

@@ -27,8 +27,8 @@ class GetValueNameEnum(NameEnum):
         return self.name
 
 
-def generate_columns_enum(columns: list[str], path: Path):
-    """Given a list of column names, generate a Python script with columns as enums."""
+def generate_axes_enum(axes: list[str], path: Path):
+    """Given a list of axis names, generate a Python script with axes as enums."""
     text = dedent(
         """\
         # flake8: noqa
@@ -38,9 +38,9 @@ def generate_columns_enum(columns: list[str], path: Path):
         from boilerdata.enums import GetNameEnum
 
 
-        class Columns(GetNameEnum):
+        class Axes(GetNameEnum):
         """
     )
-    for label in columns:
+    for label in axes:
         text += f"    {label} = auto()\n"
     path.write_text(text, encoding="utf-8")

@@ -5,26 +5,24 @@ import re
 
 from pydantic import ValidationError
 
-from boilerdata.enums import generate_columns_enum
+from boilerdata.enums import generate_axes_enum
 from boilerdata.utils import load_config, write_schema
-from models import Columns, Project, Trials
+from models import Axes, Project, Trials, get_names
 
-models = [Project, Trials, Columns]
+models = [Project, Trials, Axes]
 
 
 def update_schema():
 
     try:
-        project = get_project()
-        path = project.dirs.project_schema
-        generate_columns_enum(
-            list(project.cols.keys()), project.dirs.base / "columns.py"
-        )
+        proj = get_project()
+        path = proj.dirs.project_schema
+        generate_axes_enum(list(get_names(proj.axes.all)), Path("project/axes.py"))
     except ValidationError as exception:
         path = Path("project/schema")
         print(
             f"Schema didn't validate, using default schema path: {path}.",
-            "Columns enum not generated.",
+            "Axes enum not generated.",
             "Message from caught ValidationError:",
             exception,
             sep="\n",

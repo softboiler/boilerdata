@@ -1,10 +1,10 @@
 from pandera import Check, Column, DataFrameSchema, Index, MultiIndex
 
-from columns import Columns as C  # noqa: N817
+from axes import Axes as A  # noqa: N817
 from utils import get_project
 
 proj = get_project()
-c = proj.cols
+c = {ax.name: ax for ax in proj.axes.all}
 tc_submerged_and_boiling = Check.in_range(95, 101)  # (C)
 
 validate_runs_df = DataFrameSchema(
@@ -15,40 +15,40 @@ validate_runs_df = DataFrameSchema(
         # Check that every run was tailed properly
         Check(
             lambda df: all(
-                df.groupby(level=C.run, sort=False).apply(len)
+                df.groupby(level=A.run, sort=False).apply(len)
                 == proj.params.records_to_average
             )
         )
     ),
     index=MultiIndex(
         [
-            Index(name=C.trial, dtype=c[C.trial].dtype),
-            Index(name=C.run, dtype=c[C.run].dtype),
-            Index(name=C.time, dtype=c[C.time].dtype),
+            Index(name=A.trial, dtype=c[A.trial].dtype),
+            Index(name=A.run, dtype=c[A.run].dtype),
+            Index(name=A.time, dtype=c[A.time].dtype),
         ]
     ),
     columns={
-        "group": Column(c[C.group].dtype),
-        "rod": Column(c[C.rod].dtype),
-        "coupon": Column(c[C.coupon].dtype),
-        "sample": Column(c[C.sample].dtype, nullable=True),
-        "joint": Column(c[C.joint].dtype),
-        "good": Column(c[C.good].dtype),
-        "new": Column(c[C.new].dtype),
-        "comment": Column(c[C.comment].dtype, nullable=True),
-        "V": Column(c[C.V].dtype),
-        "I": Column(c[C.I].dtype),
-        "T_0": Column(c[C.T_0].dtype),
-        "T_1": Column(c[C.T_1].dtype),
-        "T_2": Column(c[C.T_2].dtype),
-        "T_3": Column(c[C.T_3].dtype),
-        "T_4": Column(c[C.T_4].dtype),
-        "T_5": Column(c[C.T_5].dtype),
-        "T_w1": Column(c[C.T_w1].dtype, tc_submerged_and_boiling),
-        "T_w2": Column(c[C.T_w2].dtype, tc_submerged_and_boiling),
-        "T_w3": Column(c[C.T_w3].dtype, tc_submerged_and_boiling),
-        # "P": Column(c[C.P].dtype, Check.greater_than(12)),  # Strict check on pressure
-        "P": Column(c[C.P].dtype),
+        "group": Column(c[A.group].dtype),
+        "rod": Column(c[A.rod].dtype),
+        "coupon": Column(c[A.coupon].dtype),
+        "sample": Column(c[A.sample].dtype, nullable=True),
+        "joint": Column(c[A.joint].dtype),
+        "good": Column(c[A.good].dtype),
+        "new": Column(c[A.new].dtype),
+        "comment": Column(c[A.comment].dtype, nullable=True),
+        "V": Column(c[A.V].dtype),
+        "I": Column(c[A.I].dtype),
+        "T_0": Column(c[A.T_0].dtype),
+        "T_1": Column(c[A.T_1].dtype),
+        "T_2": Column(c[A.T_2].dtype),
+        "T_3": Column(c[A.T_3].dtype),
+        "T_4": Column(c[A.T_4].dtype),
+        "T_5": Column(c[A.T_5].dtype),
+        "T_w1": Column(c[A.T_w1].dtype, tc_submerged_and_boiling),
+        "T_w2": Column(c[A.T_w2].dtype, tc_submerged_and_boiling),
+        "T_w3": Column(c[A.T_w3].dtype, tc_submerged_and_boiling),
+        # "P": Column(c[A.P].dtype, Check.greater_than(12)),  # Strict check on pressure
+        "P": Column(c[A.P].dtype),
     },
 )
 
@@ -58,45 +58,45 @@ validate_df = DataFrameSchema(
     unique_column_names=True,
     index=MultiIndex(
         [
-            Index(name=C.trial, dtype=c[C.trial].dtype),
-            Index(name=C.run, dtype=c[C.run].dtype),
-            # Index(name=C.time, dtype=c[C.time].dtype),  # Not in the reduced df
+            Index(name=A.trial, dtype=c[A.trial].dtype),
+            Index(name=A.run, dtype=c[A.run].dtype),
+            # Index(name=A.time, dtype=c[A.time].dtype),  # Not in the reduced df
         ]
     ),
     columns={
-        "group": Column(c[C.group].dtype),
-        "rod": Column(c[C.rod].dtype),
-        "coupon": Column(c[C.coupon].dtype),
-        "sample": Column(c[C.sample].dtype, nullable=True),
-        "joint": Column(c[C.joint].dtype),
-        "good": Column(c[C.good].dtype),
-        "new": Column(c[C.new].dtype),
-        "comment": Column(c[C.comment].dtype, nullable=True),
-        "V": Column(c[C.V].dtype),
-        "I": Column(c[C.I].dtype),
-        "T_0": Column(c[C.T_0].dtype),
-        "T_1": Column(c[C.T_1].dtype),
-        "T_2": Column(c[C.T_2].dtype),
-        "T_3": Column(c[C.T_3].dtype),
-        "T_4": Column(c[C.T_4].dtype),
-        "T_5": Column(c[C.T_5].dtype),
-        "T_w1": Column(c[C.T_w1].dtype, tc_submerged_and_boiling),
-        "T_w2": Column(c[C.T_w2].dtype, tc_submerged_and_boiling),
-        "T_w3": Column(c[C.T_w3].dtype, tc_submerged_and_boiling),
-        # "P": Column(c[C.P].dtype, Check.greater_than(12)),  # Strict check on pressure
-        "P": Column(c[C.P].dtype),
-        "dT_dx": Column(c[C.dT_dx].dtype),
-        "TLfit": Column(c[C.TLfit].dtype),
-        "rvalue": Column(c[C.rvalue].dtype),
-        "pvalue": Column(c[C.pvalue].dtype),
-        "stderr": Column(c[C.stderr].dtype),
-        "intercept_stderr": Column(c[C.intercept_stderr].dtype),
-        "dT_dx_err": Column(c[C.dT_dx_err].dtype),
-        "k": Column(c[C.k].dtype),
-        "q": Column(c[C.q].dtype),
-        "q_err": Column(c[C.q_err].dtype),
-        "Q": Column(c[C.Q].dtype),
-        "DT": Column(c[C.DT].dtype),
-        "DT_err": Column(c[C.DT_err].dtype),
+        "group": Column(c[A.group].dtype),
+        "rod": Column(c[A.rod].dtype),
+        "coupon": Column(c[A.coupon].dtype),
+        "sample": Column(c[A.sample].dtype, nullable=True),
+        "joint": Column(c[A.joint].dtype),
+        "good": Column(c[A.good].dtype),
+        "new": Column(c[A.new].dtype),
+        "comment": Column(c[A.comment].dtype, nullable=True),
+        "V": Column(c[A.V].dtype),
+        "I": Column(c[A.I].dtype),
+        "T_0": Column(c[A.T_0].dtype),
+        "T_1": Column(c[A.T_1].dtype),
+        "T_2": Column(c[A.T_2].dtype),
+        "T_3": Column(c[A.T_3].dtype),
+        "T_4": Column(c[A.T_4].dtype),
+        "T_5": Column(c[A.T_5].dtype),
+        "T_w1": Column(c[A.T_w1].dtype, tc_submerged_and_boiling),
+        "T_w2": Column(c[A.T_w2].dtype, tc_submerged_and_boiling),
+        "T_w3": Column(c[A.T_w3].dtype, tc_submerged_and_boiling),
+        # "P": Column(c[A.P].dtype, Check.greater_than(12)),  # Strict check on pressure
+        "P": Column(c[A.P].dtype),
+        "dT_dx": Column(c[A.dT_dx].dtype),
+        "TLfit": Column(c[A.TLfit].dtype),
+        "rvalue": Column(c[A.rvalue].dtype),
+        "pvalue": Column(c[A.pvalue].dtype),
+        "stderr": Column(c[A.stderr].dtype),
+        "intercept_stderr": Column(c[A.intercept_stderr].dtype),
+        "dT_dx_err": Column(c[A.dT_dx_err].dtype),
+        "k": Column(c[A.k].dtype),
+        "q": Column(c[A.q].dtype),
+        "q_err": Column(c[A.q_err].dtype),
+        "Q": Column(c[A.Q].dtype),
+        "DT": Column(c[A.DT].dtype),
+        "DT_err": Column(c[A.DT_err].dtype),
     },
 )

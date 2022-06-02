@@ -30,22 +30,34 @@ class MyBaseModel(
 class Dirs(MyBaseModel):
     """Directories relevant to the project."""
 
+    # ! BASE
+
     base: DirectoryPath = Field(
         default=...,
         description="The base directory for the project data.",
     )
+
+    # ! DIRECTORIES
 
     # Careful, "Config" is a special member of BaseClass
     config: DirectoryPath = Field(
         default=...,
         description="The directory in which the config files are. Must be relative to the base directory or an absolute path that exists.",
     )
-
     # Can't be "schema", which is a special member of BaseClass
     project_schema: DirectoryPath = Field(
         default=...,
         description="The directory in which the schema are. Must be relative to the base directory or an absolute path that exists.",
     )
+
+    # "pre" because dir must exist pre-validation
+    @validator("config", "project_schema", pre=True)
+    def validate_configs(cls, v: StrPath, values: dict[str, Path]):
+        v = expanduser2(v)
+        return v if v.is_absolute() else values["base"] / v
+
+    # ! TRIALS
+
     trials: DirectoryPath = Field(
         default=...,
         description="The directory in which the individual trials are. Must be relative to the base directory or an absolute path that exists.",
@@ -58,6 +70,22 @@ class Dirs(MyBaseModel):
         default=...,
         description="The directory in which the results will go. Must be relative to the base directory or an absolute path that exists. Will be created if it is relative to the base directory.",
     )
+
+    @validator("trials", pre=True)  # "pre" because dir must exist pre-validation
+    def validate_trials(cls, trials: StrPath, values: dict[str, Path]):
+        trials = expanduser2(trials)
+        return trials if trials.is_absolute() else values["base"] / trials
+
+    @validator("results", pre=True)  # "pre" because dir must exist pre-validation
+    def validate_results(cls, results: StrPath, values: dict[str, Path]):
+        if expanduser2(results).is_absolute():
+            return results
+        results = values["base"] / results
+        results.mkdir(parents=True, exist_ok=True)
+        return values["base"] / results
+
+    # ! FILES
+
     runs_file: Path = Field(
         default="runs.csv",
         description="The path to the runs. Must be relative to the results directory. Default: runs.csv",
@@ -70,26 +98,6 @@ class Dirs(MyBaseModel):
         default="coldes.txt",
         description="The path to which the OriginLab column designation string will be written. Must be relative to the results directory. Default: coldes.txt",
     )
-
-    @validator("trials", pre=True)  # "pre" because dir must exist pre-validation
-    def validate_trials(cls, trials: StrPath, values: dict[str, Path]):
-        trials = expanduser2(trials)
-        return trials if trials.is_absolute() else values["base"] / trials
-
-    @validator(
-        "config", "project_schema", pre=True
-    )  # "pre" because dir must exist pre-validation
-    def validate_configs(cls, v: StrPath, values: dict[str, Path]):
-        v = expanduser2(v)
-        return v if v.is_absolute() else values["base"] / v
-
-    @validator("results", pre=True)  # "pre" because dir must exist pre-validation
-    def validate_results(cls, results: StrPath, values: dict[str, Path]):
-        if expanduser2(results).is_absolute():
-            return results
-        results = values["base"] / results
-        results.mkdir(parents=True, exist_ok=True)
-        return values["base"] / results
 
     # "always" so it'll run even if not in YAML
     @validator("results_file", "coldes_file", "runs_file", always=True)
@@ -123,40 +131,66 @@ class Params(MyBaseModel):
 
 
 # * -------------------------------------------------------------------------------- * #
-# * COLUMNS
+# * AXES
 
 
-class Column(MyBaseModel):
+class Axis(MyBaseModel):
     """Metadata for a column in the dataframe."""
 
-    index: bool = Field(  # Validator ensures this is set even if omitted.
-        default=False,
-        description="Whether this column is to be the index.",
+    # ! COMMON FIELDS
+
+    name: str = Field(
+        default=...,
+        description="The name of the column.",
     )
+
     dtype: PandasDtype = Field(
         default=PandasDtype.float,
         description="The Pandas data type to be used to represent this column.",
     )
+
     units: str = Field(
         default="",
         description="The units for this column's values.",
     )
+
+    # ! COLUMNS IN SOURCE DATA
+
     source: Optional[str] = Field(
         default=None,
         description="The name of the input column that this column is based off of.",
     )
+
+    @validator("source")
+    def validate_source(cls, source, values):
+        return f"{source} ({values['units']})" if values["units"] else source
+
+    # ! INDEX
+
+    index: bool = Field(
+        default=False,
+        description="Whether this column is to be the index.",
+    )
+
+    @validator("index", pre=True, always=True)
+    def validate_index(cls, index):
+        return index or False
+
+    # ! META
+
     meta: bool = Field(
         default=False,
         description="Whether this column is informed by the trials config.",
     )
+
+    # ! ORIGINLAB
 
     originlab_coldes: OriginLabColdes = Field(
         default="N",
         description="The column designation for plotting in OriginLab.",
     )
 
-    # Can't be None. Set in Columns.__init__()
-    name: str = Field(default=None)
+    # ! PRETTY NAME
 
     # Can be None, but never accessed directly.
     pretty_name_: Optional[str] = Field(
@@ -165,34 +199,59 @@ class Column(MyBaseModel):
         description="The pretty version of the column name.",
     )
 
-    # "always" so it'll run even if not in YAML
-    @validator("index", pre=True, always=True)
-    def validate_index(cls, index):
-        return index or False
-
-    @validator("source")
-    def validate_source(cls, source, values):
-        return f"{source} ({values['units']})" if values["units"] else source
-
-    def __init__(self, **data):
-        super().__init__(**data)
-
     @property
     def pretty_name(self):
         return self.pretty_name_ or self.name
 
 
-class Columns(MyBaseModel):
+class Axes(MyBaseModel):
     """Columns in the dataframe."""
 
-    cols: dict[str, Column]
+    all: list[Axis]  # noqa: A003
 
-    def __init__(self, **data):
-        super().__init__(**data)
+    @property
+    def index(self) -> list[Axis]:
+        index = [ax for ax in self.all if ax.index]
+        if index and index[-1].source:
+            return index
+        elif index:
+            raise ValueError("The last (or only) index must have a source.")
+        else:
+            raise ValueError("No index.")
 
-        # Set name as convenience property
-        for name, col in self.cols.items():
-            col.name = name
+    @property
+    def cols(self) -> list[Axis]:
+        return [ax for ax in self.all if not ax.index]
+
+    @property
+    def source(self) -> list[Axis]:
+        if source := [ax for ax in self.all if ax.source]:
+            return source
+        else:
+            raise ValueError("No source columns.")
+
+    @property
+    def meta(self) -> list[Axis]:
+        return [ax for ax in self.all if ax.meta]
+
+    def get_col_index(self) -> pd.MultiIndex:
+
+        # Rename columns and extract them into a row
+        quantity = pd.DataFrame(
+            get_names(self.cols),
+            index=get_names(self.cols),
+            dtype=PandasDtype.string,
+        ).rename({0: "quantity"}, axis="columns")
+
+        units = pd.DataFrame(
+            {col.name: pd.Series(col.units, index=["units"]) for col in self.cols},
+            dtype=PandasDtype.string,
+        ).T
+
+        return pd.MultiIndex.from_frame(pd.concat([quantity, units], axis="columns"))
+
+    def get_originlab_coldes(self) -> str:
+        return "".join([ax.originlab_coldes for ax in self.all])
 
 
 # * -------------------------------------------------------------------------------- * #
@@ -229,6 +288,8 @@ class Geometry(MyBaseModel):
 class Trial(MyBaseModel):
     """A trial."""
 
+    # ! COMMON FIELDS
+
     date: datetime.date = Field(
         default=..., description="The date of the trial.", exclude=True
     )
@@ -246,6 +307,13 @@ class Trial(MyBaseModel):
     )
     comment: str
 
+    # Named "trial" as in "the date this trial was run".
+    @property
+    def trial(self):
+        return pd.Timestamp(self.date)
+
+    # ! PROJECT-DEPENDENT SETUP
+
     # Can't be None. Set in Project.__init__()
     path: DirectoryPath = Field(default=None, exclude=True)
     run_files: list[FilePath] = Field(default=None, exclude=True)
@@ -254,19 +322,18 @@ class Trial(MyBaseModel):
     )
     thermocouple_pos: NpNDArray = Field(default=None, exclude=True)
 
-    @property
-    def trial(self):
-        return pd.Timestamp(self.date)
+    def setup(self, dirs: Dirs, geometry: Geometry):
+        self.set_paths(dirs)
+        self.set_geometry(geometry)
 
     def set_paths(self, dirs: Dirs):
         """Get the path to the data for this trial. Called during project setup."""
-
         self.path = dirs.trials / str(self.trial.date()) / dirs.per_trial
         self.run_files = sorted(self.path.glob("*.csv"))
+        self.set_index()
 
     def set_index(self):
         """Get the multiindex for all runs. Called during project setup."""
-
         run_re = re.compile(r"(?P<date>.*)T(?P<time>.*)")
         run_index: list[tuple[pd.Timestamp, pd.Timestamp]] = []
         for run_file in self.run_files:
@@ -310,49 +377,29 @@ class Project(MyBaseModel):
 
     # These can't be None, as they are set in Project.__init__()
     trials: list[Trial] = Field(default=None)
-    cols: dict[str, Column] = Field(default=None)
+    axes: Axes = Field(default=None)
 
     def __init__(self, **data):
         super().__init__(**data)
 
+        # Get the Columns instance
+        self.axes = load_config(self.dirs.config / "axes.yaml", Axes)
+
+        # Get the trials field of the Trials instance. Ensure trials are populated.
         self.trials = load_config(self.dirs.config / "trials.yaml", Trials).trials
-        cols = load_config(self.dirs.config / "columns.yaml", Columns)
-        self.cols = cols.cols
-
         for trial in self.trials:
-            trial.set_paths(self.dirs)
-            trial.set_geometry(self.geometry)
-            trial.set_index()
+            trial.setup(self.dirs, self.geometry)
 
-    def get_index(self) -> list[Column]:
-        index_cols = [col for col in self.cols.values() if col.index]
-        match index_cols:
-            case []:
-                raise ValueError("One column must be designated as the index.")
-            case [index]:
-                return [index]
-            case [*indices]:
-                return indices
 
-    def get_col_index(self) -> pd.MultiIndex:
+# * -------------------------------------------------------------------------------- * #
+# * HELPER FUNCTIONS
 
-        cols = {name: col for name, col in self.cols.items() if not col.index}
 
-        # Rename columns and extract them into a row
-        quantity = pd.DataFrame(
-            cols.keys(),
-            index=cols.keys(),
-            dtype=PandasDtype.string,
-        ).rename({0: "quantity"}, axis="columns")
-        units = pd.DataFrame(
-            {
-                name: pd.Series(col.units, index=["units"])
-                for name, col in cols.items()
-                if not col.index
-            },
-            dtype=PandasDtype.string,
-        ).T
-        return pd.MultiIndex.from_frame(pd.concat([quantity, units], axis="columns"))
+def get_names(axes: list[Axis]) -> list[str]:
+    """Get names of the axes."""
+    return [ax.name for ax in axes]
 
-    def get_originlab_coldes(self) -> str:
-        return "".join([column.originlab_coldes for column in self.cols.values()])
+
+def set_dtypes(df: pd.DataFrame, dtypes: dict[str, str]) -> pd.DataFrame:
+    """Set column datatypes in a dataframe."""
+    return df.assign(**{name: df[name].astype(dtype) for name, dtype in dtypes.items()})

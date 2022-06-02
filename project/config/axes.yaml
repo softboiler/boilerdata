@@ -1,99 +1,134 @@
-cols:
-  trial:
+all:
+  - name: trial
     dtype: datetime64[ns]
     index: true
-  run:
+
+  - name: run
     dtype: datetime64[ns]
     index: true
-  time:
+
+  - name: time
     dtype: datetime64[ns]
     source: "time"
     index: true
-  group:
+
+  - name: group
     dtype: category
     meta: true
-  rod:
+
+  - name: rod
     dtype: category
     meta: true
-  coupon:
+
+  - name: coupon
     dtype: category
     meta: true
-  sample:
+
+  - name: sample
     dtype: category
     meta: true
-  joint:
+
+  - name: joint
     dtype: category
     meta: true
-  good:
+
+  - name: good
     dtype: boolean
     meta: true
-  new:
+
+  - name: new
     dtype: boolean
     meta: true
-  comment:
+
+  - name: comment
     dtype: string[pyarrow]
     meta: true
-  V:
+
+  - name: V
     units: "V"
     source: "V"
-  I:
+
+  - name: I
     units: "A"
     source: "I"
-  T_0:
+
+  - name: T_0
     units: "C"
     source: "T0cal"
-  T_1:
+
+  - name: T_1
     units: "C"
     source: "T1cal"
-  T_2:
+
+  - name: T_2
     units: "C"
     source: "T2cal"
-  T_3:
+
+  - name: T_3
     units: "C"
     source: "T3cal"
-  T_4:
+
+  - name: T_4
     units: "C"
     source: "T4cal"
-  T_5:
+
+  - name: T_5
     units: "C"
     source: "T5cal"
-  T_w1:
+
+  - name: T_w1
     units: "C"
     source: "Tw1cal"
-  T_w2:
+
+  - name: T_w2
     units: "C"
     source: "Tw2cal"
-  T_w3:
+
+  - name: T_w3
     units: "C"
     source: "Tw3cal"
-  P:
+
+  - name: P
     units: "psi"
     source: "Pcal"
-  dT_dx:
+
+  - name: dT_dx
     units: "K/m"
-  TLfit:
+
+  - name: TLfit
     units: "C"
-  rvalue: {}
-  pvalue: {}
-  stderr: {}
-  intercept_stderr: {}
-  dT_dx_err:
+
+  - name: rvalue
+
+  - name: pvalue
+
+  - name: stderr
+
+  - name: intercept_stderr
+
+  - name: dT_dx_err
     units: "K/m"
-  k:
+
+  - name: k
     units: "W/m-K"
-  q:
+
+  - name: q
     units: "W/cm^2"
     originlab_coldes: "Y"
-  q_err:
+
+  - name: q_err
     units: "W/cm^2"
     originlab_coldes: "E"
-  Q:
+
+  - name: Q
     units: "W"
-  DT:
+
+  - name: DT
     pretty_name: "∆T"
     units: "K"
     originlab_coldes: "X"
-  DT_err:
+
+  - name: DT_err
     pretty_name: "∆T_err"
     units: "K"
     originlab_coldes: "M"
