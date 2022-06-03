@@ -4,7 +4,7 @@
 
   //! Schema
   "yaml.schemas": {
-    "project/schema/columns_schema.json": "columns.yaml",
+    "project/schema/axes_schema.json": "axes.yaml",
     "project/schema/config_old_schema.json": "config_old.yaml",
     "project/schema/project_schema.json": "project*.yaml",
     "project/schema/trials_schema.json": "trials*.yaml"

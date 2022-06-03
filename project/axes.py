@@ -5,8 +5,17 @@ from enum import auto
 from boilerdata.enums import GetNameEnum
 
 
-class Columns(GetNameEnum):
+class Axes(GetNameEnum):
+    trial = auto()
     run = auto()
+    time = auto()
+    group = auto()
+    rod = auto()
+    coupon = auto()
+    sample = auto()
+    joint = auto()
+    good = auto()
+    new = auto()
     V = auto()
     I = auto()
     T_0 = auto()
@@ -32,12 +41,3 @@ class Columns(GetNameEnum):
     Q = auto()
     DT = auto()
     DT_err = auto()
-    date = auto()
-    rod = auto()
-    coupon = auto()
-    sample = auto()
-    group = auto()
-    joint = auto()
-    good = auto()
-    new = auto()
-    comment = auto()

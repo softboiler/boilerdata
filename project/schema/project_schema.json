@@ -19,12 +19,8 @@
         "$ref": "#/definitions/Trial"
       }
     },
-    "cols": {
-      "title": "Cols",
-      "type": "object",
-      "additionalProperties": {
-        "$ref": "#/definitions/Column"
-      }
+    "axes": {
+      "$ref": "#/definitions/Axes"
     }
   },
   "required": [
@@ -73,6 +69,13 @@
           "description": "The directory in which the results will go. Must be relative to the base directory or an absolute path that exists. Will be created if it is relative to the base directory.",
           "format": "directory-path",
           "type": "string"
+        },
+        "runs_file": {
+          "title": "Runs File",
+          "description": "The path to the runs. Must be relative to the results directory. Default: runs.csv",
+          "default": "runs.csv",
+          "type": "string",
+          "format": "path"
         },
         "results_file": {
           "title": "Results File",
@@ -138,6 +141,12 @@
       "description": "Parameters of the pipeline.",
       "type": "object",
       "properties": {
+        "refetch_runs": {
+          "title": "Refetch Runs",
+          "description": "Fetch the runs from their source files again even if there are no new runs.",
+          "default": false,
+          "type": "boolean"
+        },
         "records_to_average": {
           "title": "Records To Average",
           "description": "The number of records over which to average in a given trial.",
@@ -151,6 +160,15 @@
           "type": "boolean"
         }
       }
+    },
+    "Group": {
+      "title": "Group",
+      "description": "The group that this sample belongs to.",
+      "enum": [
+        "control",
+        "porous",
+        "hybrid"
+      ]
     },
     "Rod": {
       "title": "Rod",
@@ -180,17 +198,7 @@
       "title": "Sample",
       "description": "The sample attached to the coupon in this trial.",
       "enum": [
-        "NA",
         "B3"
-      ]
-    },
-    "Group": {
-      "title": "Group",
-      "description": "The group that this sample belongs to.",
-      "enum": [
-        "control",
-        "porous",
-        "hybrid"
       ]
     },
     "Joint": {
@@ -209,8 +217,12 @@
       "properties": {
         "date": {
           "title": "Date",
+          "description": "The date of the trial.",
           "type": "string",
           "format": "date"
+        },
+        "group": {
+          "$ref": "#/definitions/Group"
         },
         "rod": {
           "$ref": "#/definitions/Rod"
@@ -220,9 +232,6 @@
         },
         "sample": {
           "$ref": "#/definitions/Sample"
-        },
-        "group": {
-          "$ref": "#/definitions/Group"
         },
         "joint": {
           "$ref": "#/definitions/Joint"
@@ -248,6 +257,33 @@
           "format": "directory-path",
           "type": "string"
         },
+        "run_files": {
+          "title": "Run Files",
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "file-path"
+          }
+        },
+        "run_index": {
+          "title": "Run Index",
+          "type": "array",
+          "items": {
+            "type": "array",
+            "minItems": 2,
+            "maxItems": 2,
+            "items": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "string",
+                "format": "date-time"
+              }
+            ]
+          }
+        },
         "thermocouple_pos": {
           "title": "Thermocouple Pos",
           "allOf": [
@@ -263,17 +299,16 @@
       },
       "required": [
         "date",
+        "group",
         "rod",
         "coupon",
-        "sample",
-        "group",
         "joint",
         "comment"
       ]
     },
     "PandasDtype": {
       "title": "PandasDtype",
-      "description": "An enumeration.",
+      "description": "Valid data types for Pandas objects.",
       "enum": [
         "object",
         "float",
@@ -298,7 +333,7 @@
     },
     "OriginLabColdes": {
       "title": "OriginLabColdes",
-      "description": "An enumeration.",
+      "description": "Valid column designations for plotting in OriginLab.\n\nDesignations:\n    X: x-axis\n    Y: y-axis\n    Z: z-axis\n    M: x-axis error\n    E: y-axis error\n    L: Label\n    G: Group\n    S: Subject\n    N: None (Disregard)",
       "enum": [
         "X",
         "Y",
@@ -311,16 +346,15 @@
         "N"
       ]
     },
-    "Column": {
-      "title": "Column",
+    "Axis": {
+      "title": "Axis",
       "description": "Metadata for a column in the dataframe.",
       "type": "object",
       "properties": {
-        "index": {
-          "title": "Index",
-          "description": "Whether this column is to be the index.",
-          "default": false,
-          "type": "boolean"
+        "name": {
+          "title": "Name",
+          "description": "The name of the column.",
+          "type": "string"
         },
         "dtype": {
           "description": "The Pandas data type to be used to represent this column.",
@@ -342,6 +376,18 @@
           "description": "The name of the input column that this column is based off of.",
           "type": "string"
         },
+        "index": {
+          "title": "Index",
+          "description": "Whether this column is to be the index.",
+          "default": false,
+          "type": "boolean"
+        },
+        "meta": {
+          "title": "Meta",
+          "description": "Whether this column is informed by the trials config.",
+          "default": false,
+          "type": "boolean"
+        },
         "originlab_coldes": {
           "description": "The column designation for plotting in OriginLab.",
           "default": "N",
@@ -351,16 +397,32 @@
             }
           ]
         },
-        "name": {
-          "title": "Name",
-          "type": "string"
-        },
         "pretty_name": {
           "title": "Pretty Name",
           "description": "The pretty version of the column name.",
           "type": "string"
         }
-      }
+      },
+      "required": [
+        "name"
+      ]
+    },
+    "Axes": {
+      "title": "Axes",
+      "description": "Columns in the dataframe.",
+      "type": "object",
+      "properties": {
+        "all": {
+          "title": "All",
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Axis"
+          }
+        }
+      },
+      "required": [
+        "all"
+      ]
     }
   }
 }

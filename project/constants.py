@@ -1,5 +1,5 @@
-from columns import Columns as C  # noqa: N817
+from axes import Axes as A  # noqa: N817
 
 UNITS_INDEX = "units"
-TEMPS_TO_REGRESS = [C.T_1, C.T_2, C.T_3, C.T_4, C.T_5]
-WATER_TEMPS = [C.T_w1, C.T_w2, C.T_w3]
+TEMPS_TO_REGRESS = [A.T_1, A.T_2, A.T_3, A.T_4, A.T_5]
+WATER_TEMPS = [A.T_w1, A.T_w2, A.T_w3]

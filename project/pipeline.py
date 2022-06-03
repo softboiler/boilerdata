@@ -1,6 +1,6 @@
 """Pipeline functions."""
 
-import json
+from datetime import datetime
 from pathlib import Path
 import re
 from types import ModuleType
@@ -13,12 +13,11 @@ from propshop.library import Mat, Prop
 from scipy.constants import convert_temperature
 from scipy.stats import linregress
 
-from columns import Columns as C  # noqa: N817
-from constants import TEMPS_TO_REGRESS, UNITS_INDEX, WATER_TEMPS
-from df_schema import df_schema
-from enums import PandasDtype
-from models import Project, Trial
+from axes import Axes as A  # noqa: N817
+from constants import TEMPS_TO_REGRESS, WATER_TEMPS
+from models import Project, Trial, get_names, set_dtypes
 from utils import get_project
+from validation import validate_df, validate_runs_df
 
 # * -------------------------------------------------------------------------------- * #
 # * MAIN
@@ -26,85 +25,170 @@ from utils import get_project
 
 def pipeline(proj: Project):
 
-    # Reduce data from CSV's of runs within trials, to single df w/ trials as records
-    dfs = [
-        get_steady_state(proj, trial)  # Reduce many CSV's to one df
-        .pipe(rename_columns, proj, trial)  # Pull units out of columns for cleaner ref
-        .pipe(fit, proj, trial)
-        .pipe(plot_fit_apply, proj, trial)
-        .pipe(get_heat_transfer, proj, trial)
-        .pipe(assign_trial_metadata, proj, trial)
-        for trial in proj.trials
-    ]
+    # Get dataframe of all runs and reduce to steady-state
+    runs_df = validate_runs_df(get_df(proj))
+    df = pd.DataFrame(columns=get_names(proj.axes.cols)).assign(**get_steady_state(runs_df, proj))  # type: ignore
 
-    # Validate the dataframe
-    df = df_schema(concat_with_dtypes(dfs, proj))
+    # Perform fits and compute heat transfer for each trial
+    for trial in proj.trials:
+        df.update(
+            df.xs(trial.trial, level=A.trial, drop_level=False)
+            .pipe(fit, proj, trial)
+            .pipe(get_heat_transfer, proj, trial)
+        )
+    # Set dtypes after update. https://github.com/pandas-dev/pandas/issues/4094
+    dtypes = {col.name: col.dtype for col in proj.axes.cols}
+    df = validate_df(df.pipe(set_dtypes, dtypes))
 
     # Post-process the dataframe for writing to OriginLab-flavored CSV
-    df = (
-        df.pipe(set_units_row_for_originlab, proj)
-        .pipe(transform_units_for_originlab, proj)
-        .pipe(prettify_for_originlab, proj)
+    df.pipe(transform_for_originlab, proj).to_csv(
+        proj.dirs.results_file,
+        index=False,
+        encoding="utf-8",
     )
-    df.to_csv(proj.dirs.results_file, index_label=proj.get_index().name)
-    proj.dirs.coldes_file.write_text(proj.get_originlab_coldes())
-
-
-def units_pipeline(proj: Project):
-    ...
+    proj.dirs.coldes_file.write_text(proj.axes.get_originlab_coldes())
 
 
 # * -------------------------------------------------------------------------------- * #
-# * PRIMARY STAGES
+# * GET DATAFRAME OF ALL RUNS AND TIMES
 
 
-def get_steady_state(proj: Project, trial: Trial) -> pd.DataFrame:
-    """Get steady-state values for the trial."""
+def get_df(proj: Project) -> pd.DataFrame:
+    """Get the dataframe of all runs."""
 
-    files = sorted(trial.path.glob("*.csv"))
-    run_names = [file.stem for file in files]
-    runs: list[pd.DataFrame] = []
-    for file in files:
-        run = get_run(proj, file)
-        if len(run) < proj.params.records_to_average:
-            raise ValueError(
-                f"There are not enough records in {file.name} to compute steady-state."
-            )
-        runs.append(run)
+    dtypes = {
+        col.name: col.dtype
+        for col in (proj.axes.source + proj.axes.meta)
+        if not col.index
+    }
 
-    runs_steady_state: list[pd.Series] = [
-        df.iloc[-proj.params.records_to_average :, :].mean() for df in runs
-    ]
-    return pd.DataFrame(runs_steady_state, index=run_names).rename_axis(
-        proj.get_index().name, axis="index"
+    # Fetch all runs from their original CSVs if needed.
+    if any(trial.new for trial in proj.trials) or proj.params.refetch_runs:
+        return get_runs(proj, dtypes)
+
+    # Otherwise, reload the dataframe last written by `get_runs()`
+    index_cols = list(range(len(proj.axes.index)))
+
+    return pd.read_csv(
+        proj.dirs.runs_file,
+        index_col=index_cols,
+        dtype=dtypes,
+        parse_dates=index_cols,
+        encoding="utf-8",
     )
 
 
-def rename_columns(df: pd.DataFrame, proj: Project, trial: Trial) -> pd.DataFrame:
-    """Remove units from column labels."""
+def get_runs(proj: Project, dtypes: dict[str, str]) -> pd.DataFrame:
+    """Get runs from all the data CSVs."""
+
+    # Get runs and multiindex
+    runs: list[pd.DataFrame] = []
+    multiindex: list[tuple[datetime, datetime, datetime]] = []
+    for trial in proj.trials:
+        for file, run_index in zip(trial.run_files, trial.run_index):
+
+            run = get_run(proj, trial, file)
+            runs.append(run)
+            multiindex.extend(
+                tuple((*run_index, record_time) for record_time in run.index)
+            )
+
+    # Concatenate results from all runs and set the multiindex
+    df = pd.concat(runs).set_index(
+        pd.MultiIndex.from_tuples(
+            multiindex, names=[idx.name for idx in proj.axes.index]
+        )
+    )
+
+    # Ensure appropriate dtypes for each column. Validate number of records in each run.
+    df = set_dtypes(df, dtypes)
+
+    # Write the runs to disk for faster fetching later
+    df.to_csv(proj.dirs.runs_file, encoding="utf-8")
+
+    return df
+
+
+def get_run(proj: Project, trial: Trial, run: Path) -> pd.DataFrame:
+
+    # Get metadata
+    metadata = {
+        k: v
+        for k, v in trial.dict().items()  # Dict call avoids excluded properties
+        if k not in [idx.name for idx in proj.axes.index]
+    }
+
+    # Get source columns
+    index = proj.axes.index[-1].source  # Get the last index, associated with source
+    source_cols = [col for col in proj.axes.source if not col.index]
+    source_col_names = [col.source for col in source_cols]
+    source_dtypes = {col.source: col.dtype for col in source_cols}
+
+    # Assign columns from CSV and metadata to the structured dataframe. Get the tail.
+    df = (
+        pd.DataFrame(columns=get_names(proj.axes.meta) + source_col_names)  # type: ignore  # Guarded in source property
+        .assign(
+            **pd.read_csv(
+                run,
+                usecols=[index, *source_col_names],  # type: ignore  # Guarded in source property
+                index_col=index,
+                parse_dates=[index],  # type: ignore  # Guarded in index property
+                dtype=source_dtypes,
+                encoding="utf-8",
+            ),
+            **metadata,
+        )
+        .dropna(how="all")  # Rarely a run has an all NA record at the end
+    )
+    # Need "df" defined so we can call "df.index.dropna()"
+    return (
+        df.reindex(index=df.index.dropna())  # Rarely a run has an NA index at the end
+        .tail(proj.params.records_to_average)
+        .pipe(rename_columns, proj)
+    )
+
+
+def rename_columns(df: pd.DataFrame, proj: Project) -> pd.DataFrame:
+    """Move units into a MultiIndex."""
 
     return df.rename(
-        {col.source: name for name, col in proj.cols.items() if not col.index},
+        {col.source: col.name for col in proj.axes.cols},
         axis="columns",
     )
+
+
+# * -------------------------------------------------------------------------------- * #
+# * GET REDUCED DATA FOR EACH RUN
+
+
+def get_steady_state(df: pd.DataFrame, proj: Project) -> pd.DataFrame:
+    """Get the steady-state values for each run."""
+    cols_to_mean = [
+        col.name for col in proj.axes.all if col.source and col.dtype == "float"
+    ]
+    means = df[cols_to_mean].groupby(level=A.run, sort=False).transform("mean")
+    return df.assign(**means).droplevel(A.time)[:: proj.params.records_to_average]  # type: ignore
+
+
+# * -------------------------------------------------------------------------------- * #
+# * PERFORM FITS AND COMPUTE HEAT TRANSFER
 
 
 def fit(df: pd.DataFrame, proj: Project, trial: Trial) -> pd.DataFrame:
     """Fit the data assuming one-dimensional, steady-state conduction."""
 
-    # Main pipeline
     df = df.pipe(
         linregress_apply,
         proj=proj,
         trial=trial,
         temperature_cols=df[TEMPS_TO_REGRESS],
         result_cols=[
-            C.dT_dx,
-            C.TLfit,
-            C.rvalue,
-            C.pvalue,
-            C.stderr,
-            C.intercept_stderr,
+            A.dT_dx,
+            A.TLfit,
+            A.rvalue,
+            A.pvalue,
+            A.stderr,
+            A.intercept_stderr,
         ],
     )
 
@@ -120,23 +204,13 @@ def plot_fit_apply(df: pd.DataFrame, proj: Project, trial: Trial) -> pd.DataFram
 
         matplotlib.use("QtAgg")
 
-        df.apply(
-            axis="columns",
-            func=plot_fit_ser,
-            proj=proj,
-            trial=trial,
-            plt=plt,
-        )
+        df.apply(axis="columns", func=plot_fit_ser, proj=proj, trial=trial, plt=plt)
         plt.show()
 
     return df
 
 
-def get_heat_transfer(
-    df: pd.DataFrame,
-    proj: Project,
-    trial: Trial,
-) -> pd.DataFrame:
+def get_heat_transfer(df: pd.DataFrame, proj: Project, trial: Trial) -> pd.DataFrame:
     """Calculate heat transfer and superheat based on one-dimensional approximation."""
 
     # Constants
@@ -147,8 +221,8 @@ def get_heat_transfer(
 
     return df.assign(
         **{
-            C.dT_dx_err: lambda df: (4 * df["stderr"]).abs(),
-            C.k: get_prop(
+            A.dT_dx_err: lambda df: (4 * df["stderr"]).abs(),
+            A.k: get_prop(
                 Mat.COPPER,
                 Prop.THERMAL_CONDUCTIVITY,
                 convert_temperature(
@@ -156,111 +230,12 @@ def get_heat_transfer(
                 ),
             ),
             # no negative due to reversed x-coordinate
-            C.q: lambda df: df[C.k] * df[C.dT_dx] / cm2_p_m2,
-            C.q_err: lambda df: (df[C.k] * df[C.dT_dx_err]).abs() / cm2_p_m2,
-            C.Q: lambda df: df[C.q] * cross_sectional_area,
-            C.DT: lambda df: (df[C.TLfit] - df[WATER_TEMPS].mean().mean()),
-            C.DT_err: lambda df: (4 * df[C.intercept_stderr]).abs(),
+            A.q: lambda df: df[A.k] * df[A.dT_dx] / cm2_p_m2,
+            A.q_err: lambda df: (df[A.k] * df[A.dT_dx_err]).abs() / cm2_p_m2,
+            A.Q: lambda df: df[A.q] * cross_sectional_area,
+            A.DT: lambda df: (df[A.TLfit] - df[WATER_TEMPS].mean().mean()),
+            A.DT_err: lambda df: (4 * df[A.intercept_stderr]).abs(),
         }
-    )
-
-
-def assign_trial_metadata(
-    df: pd.DataFrame, proj: Project, trial: Trial
-) -> pd.DataFrame:
-    """Assign metadata sourced from configs to the dataframe."""
-    return df.assign(**json.loads(trial.json()))
-
-
-def concat_with_dtypes(dfs: list[pd.DataFrame], proj: Project) -> pd.DataFrame:
-    """Concatenate trials and set data types properly."""
-
-    df = pd.concat(dfs)
-    sers = (item[1] for item in df.items())
-    dtypes = {name: col.dtype for name, col in proj.cols.items() if not col.index}
-    return df.assign(
-        **{
-            name: ser.astype(dtype)
-            for name, dtype, ser in zip(dtypes, dtypes.values(), sers)
-        }
-    ).set_index(df.index.astype(proj.get_index().dtype))
-
-
-# * -------------------------------------------------------------------------------- * #
-# * POST-PROCESSING
-
-SUPERSCRIPT = re.compile(r"\^(.*)")
-SUPERSCRIPT_REPL = r"\+(\1)"
-SUBSCRIPT = re.compile(r"\_(.*)")
-SUBSCRIPT_REPL = r"\-(\1)"
-
-
-def set_units_row_for_originlab(df: pd.DataFrame, proj: Project) -> pd.DataFrame:
-    """Move units out of column labels and into a row just below the column labels.
-
-    Explicitly set all dtypes to string to avoid data rendering issues, especially with
-    dates.
-    """
-    units_row = pd.DataFrame(
-        {
-            name: pd.Series(col.units, index=[UNITS_INDEX])
-            for name, col in proj.cols.items()
-            if not col.index
-        },
-        dtype=PandasDtype.string,
-    )
-    return pd.concat([units_row, df.astype(PandasDtype.string)])
-
-
-def transform_units_for_originlab(df: pd.DataFrame, proj: Project) -> pd.DataFrame:
-    """Convert super/subscripts in units to their OriginLab representation.
-
-    See: <https://www.originlab.com/doc/en/Origin-Help/Escape-Sequences>
-    """
-    units = (
-        df.loc[UNITS_INDEX, :]
-        .replace(SUPERSCRIPT, SUPERSCRIPT_REPL)
-        .replace(SUBSCRIPT, SUBSCRIPT_REPL)
-    )
-    df.loc[UNITS_INDEX, :] = units
-    return df
-
-
-def prettify_for_originlab(df: pd.DataFrame, proj: Project) -> pd.DataFrame:
-    """Rename columns with Greek symbols, superscripts, and subscripts transformed.
-
-    See: <https://www.originlab.com/doc/en/Origin-Help/Escape-Sequences>
-    """
-    return df.rename(
-        {
-            name: replace_for_originlab(col.pretty_name)
-            for name, col in proj.cols.items()
-        },
-        axis="columns",
-    )
-
-
-def replace_for_originlab(text: str) -> str:
-    """Transform superscripts and subscripts to their OriginLab representation.
-
-    See: <https://www.originlab.com/doc/en/Origin-Help/Escape-Sequences>
-    """
-    return SUBSCRIPT.sub(SUBSCRIPT_REPL, SUPERSCRIPT.sub(SUPERSCRIPT_REPL, text))
-
-
-# * -------------------------------------------------------------------------------- * #
-# * HELPER FUNCTIONS
-
-
-def get_run(proj: Project, run: Path) -> pd.DataFrame:
-    """Get an individual run in a trial."""
-    source_cols = {name: col for name, col in proj.cols.items() if col.source}
-    dtypes = {name: col.dtype for name, col in source_cols.items()}
-    return pd.read_csv(
-        run,
-        usecols=[col.source for col in source_cols.values()],  # pyright: ignore
-        index_col=proj.get_index().source,
-        dtype=dtypes,
     )
 
 
@@ -272,19 +247,52 @@ def linregress_apply(
     result_cols: list[str],
 ) -> pd.DataFrame:
     """Apply linear regression across the temperature columns."""
-    return pd.concat(
-        axis="columns",
-        objs=[
-            df,
-            temperature_cols.apply(
-                axis="columns",
-                func=linregress_ser,
-                x=trial.thermocouple_pos,
-                repeats_per_pair=proj.params.records_to_average,
-                regression_stats=result_cols,
-            ),
-        ],
+    return df.assign(
+        **temperature_cols.apply(
+            axis="columns",
+            func=linregress_ser,
+            x=trial.thermocouple_pos,
+            repeats_per_pair=proj.params.records_to_average,
+            regression_stats=result_cols,
+        ),  # type: ignore
     )
+
+
+# * -------------------------------------------------------------------------------- * #
+# * POST-PROCESSING
+
+SUPERSCRIPT = re.compile(r"\^(.*)")
+SUPERSCRIPT_REPL = r"\+(\1)"
+SUBSCRIPT = re.compile(r"\_(.*)")
+SUBSCRIPT_REPL = r"\-(\1)"
+
+
+def transform_for_originlab(df: pd.DataFrame, proj: Project) -> pd.DataFrame:
+    """Move units out of column labels and into a row just below the column labels.
+
+    Explicitly set all dtypes to string to avoid data rendering issues, especially with
+    dates.
+
+    Convert super/subscripts in units to their OriginLab representation.
+
+    See: <https://www.originlab.com/doc/en/Origin-Help/Escape-Sequences>
+    """
+
+    cols = proj.axes.get_col_index()
+    quantity = cols.get_level_values("quantity").map(
+        {col.name: col.pretty_name for col in proj.axes.all}
+    )
+    units = cols.get_level_values("units")
+    indices = [
+        index.to_series()
+        .reset_index(drop=True)
+        .replace(SUPERSCRIPT, SUPERSCRIPT_REPL)
+        .replace(SUBSCRIPT, SUBSCRIPT_REPL)
+        for index in (quantity, units)
+    ]
+    cols = pd.MultiIndex.from_frame(pd.concat(indices, axis="columns"))
+
+    return df.set_axis(cols, axis="columns").reset_index()  # type: ignore
 
 
 # * -------------------------------------------------------------------------------- * #
@@ -337,12 +345,12 @@ def plot_fit_ser(
     x_smooth = np.linspace(0, trial.thermocouple_pos[-1])
     plt.plot(
         x_smooth,
-        ser[C.TLfit] + ser[C.dT_dx] * x_smooth,
+        ser[A.TLfit] + ser[A.dT_dx] * x_smooth,
         "--",
         label=f"Linear Regression $(r^2={round(ser.rvalue**2,4)})$",
     )
     plt.plot(
-        0, ser[C.TLfit], "x", label="Extrapolated Surface Temperature", color=[1, 0, 0]
+        0, ser[A.TLfit], "x", label="Extrapolated Surface Temperature", color=[1, 0, 0]
     )
     plt.legend()
 

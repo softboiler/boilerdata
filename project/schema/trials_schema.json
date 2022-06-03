@@ -15,6 +15,15 @@
     "trials"
   ],
   "definitions": {
+    "Group": {
+      "title": "Group",
+      "description": "The group that this sample belongs to.",
+      "enum": [
+        "control",
+        "porous",
+        "hybrid"
+      ]
+    },
     "Rod": {
       "title": "Rod",
       "description": "The rod used in this trial.",
@@ -43,17 +52,7 @@
       "title": "Sample",
       "description": "The sample attached to the coupon in this trial.",
       "enum": [
-        "NA",
         "B3"
-      ]
-    },
-    "Group": {
-      "title": "Group",
-      "description": "The group that this sample belongs to.",
-      "enum": [
-        "control",
-        "porous",
-        "hybrid"
       ]
     },
     "Joint": {
@@ -72,8 +71,12 @@
       "properties": {
         "date": {
           "title": "Date",
+          "description": "The date of the trial.",
           "type": "string",
           "format": "date"
+        },
+        "group": {
+          "$ref": "#/definitions/Group"
         },
         "rod": {
           "$ref": "#/definitions/Rod"
@@ -83,9 +86,6 @@
         },
         "sample": {
           "$ref": "#/definitions/Sample"
-        },
-        "group": {
-          "$ref": "#/definitions/Group"
         },
         "joint": {
           "$ref": "#/definitions/Joint"
@@ -111,6 +111,33 @@
           "format": "directory-path",
           "type": "string"
         },
+        "run_files": {
+          "title": "Run Files",
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "file-path"
+          }
+        },
+        "run_index": {
+          "title": "Run Index",
+          "type": "array",
+          "items": {
+            "type": "array",
+            "minItems": 2,
+            "maxItems": 2,
+            "items": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "string",
+                "format": "date-time"
+              }
+            ]
+          }
+        },
         "thermocouple_pos": {
           "title": "Thermocouple Pos",
           "allOf": [
@@ -126,10 +153,9 @@
       },
       "required": [
         "date",
+        "group",
         "rod",
         "coupon",
-        "sample",
-        "group",
         "joint",
         "comment"
       ]

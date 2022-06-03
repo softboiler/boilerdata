@@ -23,5 +23,3 @@ typer[all]~=0.4.1
 rich~=12.4.4
 # Project-specific
 uncertainties~=3.1.6
-Pint~=0.19.2
-Pint-Pandas~=0.2
