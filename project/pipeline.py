@@ -14,7 +14,6 @@ from scipy.constants import convert_temperature
 from scipy.stats import linregress, norm
 
 from axes import Axes as A  # noqa: N817
-from constants import TEMPS_TO_REGRESS, WATER_TEMPS
 from models import Project, Trial, get_names, set_dtypes
 from utils import get_project
 from validation import validate_df, validate_runs_df
@@ -130,7 +129,8 @@ def get_run(proj: Project, trial: Trial, run: Path) -> pd.DataFrame:
         .assign(
             **pd.read_csv(
                 run,
-                usecols=[index, *source_col_names],  # type: ignore  # Guarded in source property
+                # Allow source cols to be missing (such as T_6)
+                usecols=lambda col: col in [index, *source_col_names],  # type: ignore  # Guarded in source property
                 index_col=index,
                 parse_dates=[index],  # type: ignore  # Guarded in index property
                 dtype=source_dtypes,
@@ -179,7 +179,7 @@ def fit(df: pd.DataFrame, proj: Project, trial: Trial) -> pd.DataFrame:
         linregress_apply,
         proj=proj,
         trial=trial,
-        temperature_cols=df[TEMPS_TO_REGRESS],
+        temperature_cols=df[trial.thermocouple_pos.keys()],
         result_cols=[
             A.dT_dx,
             A.dT_dx_err,
@@ -213,20 +213,22 @@ def get_heat_transfer(df: pd.DataFrame, proj: Project, trial: Trial) -> pd.DataF
     diameter = proj.geometry.diameter * cm_p_m  # (cm)
     cross_sectional_area = np.pi / 4 * diameter**2  # (cm^2)
 
+    # Temperatures
+    trial_water_temp = df[proj.params.water_temps].mean().mean()
+    midpoint_temps = (trial_water_temp + df[A.T_1]) / 2
+
     return df.assign(
         **{
             A.k: get_prop(
                 Mat.COPPER,
                 Prop.THERMAL_CONDUCTIVITY,
-                convert_temperature(
-                    df[TEMPS_TO_REGRESS].mean(axis="columns"), "C", "K"
-                ),
+                convert_temperature(midpoint_temps, "C", "K"),
             ),
             # no negative due to reversed x-coordinate
             A.q: lambda df: df[A.k] * df[A.dT_dx] / cm2_p_m2,
             A.q_err: lambda df: (df[A.k] * df[A.dT_dx_err]) / cm2_p_m2,
             A.Q: lambda df: df[A.q] * cross_sectional_area,
-            A.DT: lambda df: (df[A.T_s] - df[WATER_TEMPS].mean().mean()),
+            A.DT: lambda df: (df[A.T_s] - trial_water_temp),
             A.DT_err: lambda df: df[A.T_s],
         }
     )
@@ -244,7 +246,7 @@ def linregress_apply(
         **temperature_cols.apply(
             axis="columns",
             func=linregress_ser,
-            x=trial.thermocouple_pos,
+            x=list(trial.thermocouple_pos.values()),
             repeats_per_pair=proj.params.records_to_average,
             regression_stats=result_cols,
         ),  # type: ignore
@@ -302,7 +304,7 @@ def linregress_ser(
     """
     # Assume the ordered pairs are repeated with zero standard deviation in x and y
     x = np.repeat(x, repeats_per_pair)
-    y = np.repeat(series_of_y, repeats_per_pair)
+    y = series_of_y.repeat(repeats_per_pair)
     r = linregress(x, y)
 
     # Confidence interval
@@ -329,7 +331,6 @@ def plot_fit_ser(
     ser: pd.Series,
     proj: Project,
     trial: Trial,
-    temps_to_regress: list[str],
     plt: ModuleType,
 ):
     """Plot the goodness of fit for a series of temperatures and positions."""
@@ -339,12 +340,12 @@ def plot_fit_ser(
     plt.ylabel("T (C)")
     plt.plot(
         trial.thermocouple_pos,
-        ser[temps_to_regress],  # type: ignore
+        ser[trial.thermocouple_pos.keys()],
         "*",
         label="Measured Temperatures",
         color=[0.2, 0.2, 0.2],
     )
-    x_smooth = np.linspace(0, trial.thermocouple_pos[-1])
+    x_smooth = np.linspace(0, trial.thermocouple_pos[A.T_1])
     plt.plot(
         x_smooth,
         ser[A.T_s] + ser[A.dT_dx] * x_smooth,

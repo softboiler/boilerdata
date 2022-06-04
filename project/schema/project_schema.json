@@ -20,7 +20,7 @@
       }
     },
     "axes": {
-      "$ref": "#/definitions/Axes"
+      "$ref": "#/definitions/models__Axes"
     }
   },
   "required": [
@@ -142,6 +142,48 @@
         "coupons"
       ]
     },
+    "axes__Axes": {
+      "title": "Axes",
+      "description": "An enumeration.",
+      "enum": [
+        "trial",
+        "run",
+        "time",
+        "group",
+        "rod",
+        "coupon",
+        "sample",
+        "joint",
+        "top_of_coupon_tc",
+        "good",
+        "new",
+        "V",
+        "I",
+        "T_0",
+        "T_1",
+        "T_2",
+        "T_3",
+        "T_4",
+        "T_5",
+        "T_6",
+        "T_w1",
+        "T_w2",
+        "T_w3",
+        "P",
+        "dT_dx",
+        "dT_dx_err",
+        "T_s",
+        "T_s_err",
+        "rvalue",
+        "pvalue",
+        "k",
+        "q",
+        "q_err",
+        "Q",
+        "DT",
+        "DT_err"
+      ]
+    },
     "Params": {
       "title": "Params",
       "description": "Parameters of the pipeline.",
@@ -158,6 +200,18 @@
           "description": "The number of records over which to average in a given trial.",
           "default": 60,
           "type": "integer"
+        },
+        "water_temps": {
+          "description": "The water temperature measurements.",
+          "default": [
+            "T_w1",
+            "T_w2",
+            "T_w3"
+          ],
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/axes__Axes"
+          }
         },
         "do_plot": {
           "title": "Do Plot",
@@ -242,6 +296,12 @@
         "joint": {
           "$ref": "#/definitions/Joint"
         },
+        "top_of_coupon_tc": {
+          "title": "Top Of Coupon Tc",
+          "description": "Whether this trial includes a thermocouple at the top of the coupon.",
+          "default": false,
+          "type": "boolean"
+        },
         "good": {
           "title": "Good",
           "description": "Whether the boiling curve is good.",
@@ -293,15 +353,10 @@
         },
         "thermocouple_pos": {
           "title": "Thermocouple Pos",
-          "allOf": [
-            {
-              "type": "array",
-              "items": [
-                {},
-                {}
-              ]
-            }
-          ]
+          "type": "object",
+          "additionalProperties": {
+            "type": "number"
+          }
         }
       },
       "required": [
@@ -413,7 +468,7 @@
         "name"
       ]
     },
-    "Axes": {
+    "models__Axes": {
       "title": "Axes",
       "description": "Columns in the dataframe.",
       "type": "object",

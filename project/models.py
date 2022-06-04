@@ -7,6 +7,7 @@ import numpy as np
 import pandas as pd
 from pydantic import BaseModel, DirectoryPath, Field, FilePath, validator
 
+from axes import Axes as A  # noqa: N817
 from boilerdata.typing import NpNDArray
 from boilerdata.utils import StrPath, expanduser2, load_config
 from enums import Coupon, Group, Joint, OriginLabColdes, PandasDtype, Rod, Sample
@@ -123,6 +124,10 @@ class Params(MyBaseModel):
     records_to_average: int = Field(
         default=60,
         description="The number of records over which to average in a given trial.",
+    )
+    water_temps: list[A] = Field(
+        default=[A.T_w1, A.T_w2, A.T_w3],
+        description="The water temperature measurements.",
     )
     do_plot: bool = Field(
         default=False,
@@ -305,7 +310,7 @@ class Geometry(MyBaseModel):
 class Trial(MyBaseModel):
     """A trial."""
 
-    # ! COMMON FIELDS
+    # ! META FIELDS ADDED TO DATAFRAME
 
     date: datetime.date = Field(
         default=..., description="The date of the trial.", exclude=True
@@ -315,33 +320,53 @@ class Trial(MyBaseModel):
     coupon: Coupon
     sample: Optional[Sample]
     joint: Joint
+    top_of_coupon_tc: bool = Field(
+        default=False,
+        description="Whether this trial includes a thermocouple at the top of the coupon.",
+    )
     good: bool = Field(
         default=True,
         description="Whether the boiling curve is good.",
     )
     new: bool = Field(
-        default=False, description="Whether this is newly-collected data."
+        default=False,
+        description="Whether this is newly-collected data.",
     )
 
-    # Loaded from config, but not propagated to dataframes. Not readable in a table
-    # anyways, and NA-handling results in additional ~40s to pipeline due to the need to
-    # use slow "fillna".
-    comment: str = Field(default="", exclude=True)
+    # ! FIELDS TO EXCLUDE FROM DATAFRAME
 
     # Named "trial" as in "the date this trial was run".
     @property
     def trial(self):
         return pd.Timestamp(self.date)
 
+    # Loaded from config, but not propagated to dataframes. Not readable in a table
+    # anyways, and NA-handling results in additional ~40s to pipeline due to the need to
+    # use slow "fillna".
+    comment: str = Field(
+        default="",
+        exclude=True,
+    )
+
     # ! PROJECT-DEPENDENT SETUP
 
     # Can't be None. Set in Project.__init__()
-    path: DirectoryPath = Field(default=None, exclude=True)
-    run_files: list[FilePath] = Field(default=None, exclude=True)
-    run_index: list[tuple[pd.Timestamp, pd.Timestamp]] = Field(
-        default=None, exclude=True
+    path: DirectoryPath = Field(
+        default=None,
+        exclude=True,
     )
-    thermocouple_pos: NpNDArray = Field(default=None, exclude=True)
+    run_files: list[FilePath] = Field(
+        default=None,
+        exclude=True,
+    )
+    run_index: list[tuple[pd.Timestamp, pd.Timestamp]] = Field(
+        default=None,
+        exclude=True,
+    )
+    thermocouple_pos: dict[str, float] = Field(
+        default=None,
+        exclude=True,
+    )
 
     def setup(self, dirs: Dirs, geometry: Geometry):
         self.set_paths(dirs)
@@ -376,7 +401,13 @@ class Trial(MyBaseModel):
 
     def set_geometry(self, geometry: Geometry):
         """Get relevant geometry for the trial."""
-        self.thermocouple_pos = geometry.rods[self.rod] + geometry.coupons[self.coupon]  # type: ignore
+        thermocouples = [A.T_1, A.T_2, A.T_3, A.T_4, A.T_5]
+        thermocouple_pos = geometry.rods[self.rod] + geometry.coupons[self.coupon]  # type: ignore
+        if self.top_of_coupon_tc:
+            thermocouples.append(A.T_6)
+            # Since zero is defined as the surface
+            thermocouple_pos = np.append(thermocouple_pos, 0)
+        self.thermocouple_pos = dict(zip(thermocouples, thermocouple_pos))
 
 
 class Trials(MyBaseModel):

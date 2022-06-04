@@ -32,6 +32,11 @@ all:
     dtype: "category"
     meta: true
 
+  - name: "top_of_coupon_tc"
+    pretty_name: "TC at top of coupon"
+    dtype: "boolean"
+    meta: true
+
   - name: "good"
     dtype: "boolean"
     meta: true
@@ -71,6 +76,10 @@ all:
   - name: "T_5"
     units: "C"
     source: "T5cal"
+
+  - name: "T_6"
+    units: "C"
+    source: "T6cal"
 
   - name: "T_w1"
     units: "C"
