@@ -49,7 +49,7 @@ def pipeline(proj: Project):
 
 
 # * -------------------------------------------------------------------------------- * #
-# * GET DATAFRAME OF ALL RUNS AND TIMES
+# * GET DATA
 
 
 def get_df(proj: Project) -> pd.DataFrame:
@@ -157,7 +157,7 @@ def rename_columns(df: pd.DataFrame, proj: Project) -> pd.DataFrame:
 
 
 # * -------------------------------------------------------------------------------- * #
-# * GET REDUCED DATA FOR EACH RUN
+# * REDUCE DATA
 
 
 def get_steady_state(df: pd.DataFrame, proj: Project) -> pd.DataFrame:
@@ -170,7 +170,7 @@ def get_steady_state(df: pd.DataFrame, proj: Project) -> pd.DataFrame:
 
 
 # * -------------------------------------------------------------------------------- * #
-# * PERFORM FITS AND COMPUTE HEAT TRANSFER
+# * MAIN PIPELINE
 
 
 def fit(df: pd.DataFrame, proj: Project, trial: Trial) -> pd.DataFrame:
@@ -189,18 +189,6 @@ def fit(df: pd.DataFrame, proj: Project, trial: Trial) -> pd.DataFrame:
             A.pvalue,
         ],
     )
-    return df
-
-
-def plot_fit_apply(df: pd.DataFrame, proj: Project, trial: Trial) -> pd.DataFrame:
-    """Plot the goodness of fit for each run in the trial."""
-    if proj.params.do_plot:
-        import matplotlib
-        from matplotlib import pyplot as plt
-
-        matplotlib.use("QtAgg")
-        df.apply(axis="columns", func=plot_fit_ser, proj=proj, trial=trial, plt=plt)
-        plt.show()
     return df
 
 
@@ -234,6 +222,10 @@ def get_heat_transfer(df: pd.DataFrame, proj: Project, trial: Trial) -> pd.DataF
     )
 
 
+# * -------------------------------------------------------------------------------- * #
+# * LINEAR REGRESSION
+
+
 def linregress_apply(
     df: pd.DataFrame,
     proj: Project,
@@ -251,44 +243,6 @@ def linregress_apply(
             regression_stats=result_cols,
         ),  # type: ignore
     )
-
-
-# * -------------------------------------------------------------------------------- * #
-# * POST-PROCESSING
-
-SUPERSCRIPT = re.compile(r"\^(.*)")
-SUPERSCRIPT_REPL = r"\+(\1)"
-SUBSCRIPT = re.compile(r"\_(.*)")
-SUBSCRIPT_REPL = r"\-(\1)"
-
-
-def transform_for_originlab(df: pd.DataFrame, proj: Project) -> pd.DataFrame:
-    """Move units out of column labels and into a row just below the column labels.
-
-    Explicitly set all dtypes to string to avoid data rendering issues, especially with
-    dates. Convert super/subscripts in units to their OriginLab representation. Reset
-    the index to avoid the extra row between units and data indicating index axis names.
-
-    See: <https://www.originlab.com/doc/en/Origin-Help/Escape-Sequences>
-    """
-    cols = proj.axes.get_col_index()
-    quantity = cols.get_level_values("quantity").map(
-        {col.name: col.pretty_name for col in proj.axes.all}
-    )
-    units = cols.get_level_values("units")
-    indices = [
-        index.to_series()
-        .reset_index(drop=True)
-        .replace(SUPERSCRIPT, SUPERSCRIPT_REPL)
-        .replace(SUBSCRIPT, SUBSCRIPT_REPL)
-        for index in (quantity, units)
-    ]
-    cols = pd.MultiIndex.from_frame(pd.concat(indices, axis="columns"))
-    return df.set_axis(cols, axis="columns").reset_index()  # type: ignore
-
-
-# * -------------------------------------------------------------------------------- * #
-# * FUNCTIONS OPERATING ON SERIES
 
 
 def linregress_ser(
@@ -325,6 +279,57 @@ def linregress_ser(
         ],
         index=regression_stats,
     )
+
+
+# * -------------------------------------------------------------------------------- * #
+# * POST-PROCESSING
+
+
+def transform_for_originlab(df: pd.DataFrame, proj: Project) -> pd.DataFrame:
+    """Move units out of column labels and into a row just below the column labels.
+
+    Explicitly set all dtypes to string to avoid data rendering issues, especially with
+    dates. Convert super/subscripts in units to their OriginLab representation. Reset
+    the index to avoid the extra row between units and data indicating index axis names.
+
+    See: <https://www.originlab.com/doc/en/Origin-Help/Escape-Sequences>
+    """
+
+    superscript = re.compile(r"\^(.*)")
+    superscript_repl = r"\+(\1)"
+    subscript = re.compile(r"\_(.*)")
+    subscript_repl = r"\-(\1)"
+
+    cols = proj.axes.get_col_index()
+    quantity = cols.get_level_values("quantity").map(
+        {col.name: col.pretty_name for col in proj.axes.all}
+    )
+    units = cols.get_level_values("units")
+    indices = [
+        index.to_series()
+        .reset_index(drop=True)
+        .replace(superscript, superscript_repl)
+        .replace(subscript, subscript_repl)
+        for index in (quantity, units)
+    ]
+    cols = pd.MultiIndex.from_frame(pd.concat(indices, axis="columns"))
+    return df.set_axis(cols, axis="columns").reset_index()  # type: ignore
+
+
+# * -------------------------------------------------------------------------------- * #
+# * PLOTTING
+
+
+def plot_fit_apply(df: pd.DataFrame, proj: Project, trial: Trial) -> pd.DataFrame:
+    """Plot the goodness of fit for each run in the trial."""
+    if proj.params.do_plot:
+        import matplotlib
+        from matplotlib import pyplot as plt
+
+        matplotlib.use("QtAgg")
+        df.apply(axis="columns", func=plot_fit_ser, proj=proj, trial=trial, plt=plt)
+        plt.show()
+    return df
 
 
 def plot_fit_ser(
