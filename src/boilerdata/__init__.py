@@ -2,8 +2,7 @@
 
 __version__ = "0.0.0"
 
-# # Breaks Jupyter debug
-# from rich import pretty, traceback
-#
-# pretty.install()
-# traceback.install()
+from rich import pretty, traceback
+
+pretty.install()
+traceback.install()
