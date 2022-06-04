@@ -91,19 +91,18 @@ all:
   - name: "dT_dx"
     units: "K/m"
 
-  - name: "TLfit"
+  - name: "dT_dx_err"
+    units: "K/m"
+
+  - name: "T_s"
+    units: "C"
+
+  - name: "T_s_err"
     units: "C"
 
   - name: "rvalue"
 
   - name: "pvalue"
-
-  - name: "stderr"
-
-  - name: "intercept_stderr"
-
-  - name: "dT_dx_err"
-    units: "K/m"
 
   - name: "k"
     units: "W/m-K"

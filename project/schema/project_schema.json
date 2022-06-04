@@ -106,6 +106,11 @@
       "description": "The geometry.",
       "type": "object",
       "properties": {
+        "diameter": {
+          "title": "Diameter",
+          "description": "The common diameter of all rods.",
+          "type": "number"
+        },
         "rods": {
           "title": "Rods",
           "description": "Distance of each thermocouple from the cool side of the rod, starting with TC1. Fifth thermocouple may be omitted. Input: inch. Output: meter.",
@@ -132,6 +137,7 @@
         }
       },
       "required": [
+        "diameter",
         "rods",
         "coupons"
       ]
@@ -250,6 +256,7 @@
         },
         "comment": {
           "title": "Comment",
+          "default": "",
           "type": "string"
         },
         "path": {
@@ -302,8 +309,7 @@
         "group",
         "rod",
         "coupon",
-        "joint",
-        "comment"
+        "joint"
       ]
     },
     "PandasDtype": {

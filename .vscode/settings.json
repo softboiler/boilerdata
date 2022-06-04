@@ -121,6 +121,12 @@
   //* Markdown editor moves jarringly when this is "true"
   "markdown.preview.scrollEditorWithPreview": false,
 
+  //* Show line numbers in notebooks
+  "notebook.lineNumbers": "on",
+
+  //* Unify *.ipynb working directory with typical/default *.py working directory
+  "jupyter.notebookFileRoot": "${workspaceFolder}",
+
   //! Line-width
 
   //* Formatting
