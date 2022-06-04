@@ -21,7 +21,7 @@ CI = "Skip on CI."
 def test_pipeline(tmp_proj):
     """Ensure the same result is coming out of the pipeline as before."""
 
-    old_commit = "62b66f9a4cad9457a7c9c531cbe89a6a90c34ee2"
+    old_commit = "bb0281458b2402e131161105f98906c6f069644f"
 
     common_read_csv_params = dict(
         skiprows=[1],  # Skip the "units" row so dtype detection works properly
