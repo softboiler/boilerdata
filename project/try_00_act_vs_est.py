@@ -62,7 +62,7 @@ def main():
     # ! https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.linregress.html
     # Two-sided inverse Students t-distribution
     # p - probability, df - degrees of freedom
-    tinv = lambda p, df: abs(t.ppf(p / 2, df))
+    tinv = lambda p, df: abs(t.ppf(p / 2, df))  # noqa: E731
 
     reg_trues: list[pd.Series] = []
     regs: list[pd.Series] = []

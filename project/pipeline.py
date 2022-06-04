@@ -11,7 +11,7 @@ import pandas as pd
 from propshop import get_prop
 from propshop.library import Mat, Prop
 from scipy.constants import convert_temperature
-from scipy.stats import linregress
+from scipy.stats import linregress, norm
 
 from axes import Axes as A  # noqa: N817
 from constants import TEMPS_TO_REGRESS, WATER_TEMPS
@@ -150,7 +150,6 @@ def get_run(proj: Project, trial: Trial, run: Path) -> pd.DataFrame:
 
 def rename_columns(df: pd.DataFrame, proj: Project) -> pd.DataFrame:
     """Move units into a MultiIndex."""
-
     return df.rename(
         {col.source: col.name for col in proj.axes.cols},
         axis="columns",
@@ -176,7 +175,6 @@ def get_steady_state(df: pd.DataFrame, proj: Project) -> pd.DataFrame:
 
 def fit(df: pd.DataFrame, proj: Project, trial: Trial) -> pd.DataFrame:
     """Fit the data assuming one-dimensional, steady-state conduction."""
-
     df = df.pipe(
         linregress_apply,
         proj=proj,
@@ -184,29 +182,25 @@ def fit(df: pd.DataFrame, proj: Project, trial: Trial) -> pd.DataFrame:
         temperature_cols=df[TEMPS_TO_REGRESS],
         result_cols=[
             A.dT_dx,
-            A.TLfit,
+            A.dT_dx_err,
+            A.T_s,
+            A.T_s_err,
             A.rvalue,
             A.pvalue,
-            A.stderr,
-            A.intercept_stderr,
         ],
     )
-
     return df
 
 
 def plot_fit_apply(df: pd.DataFrame, proj: Project, trial: Trial) -> pd.DataFrame:
     """Plot the goodness of fit for each run in the trial."""
-
     if proj.params.do_plot:
         import matplotlib
         from matplotlib import pyplot as plt
 
         matplotlib.use("QtAgg")
-
         df.apply(axis="columns", func=plot_fit_ser, proj=proj, trial=trial, plt=plt)
         plt.show()
-
     return df
 
 
@@ -216,12 +210,11 @@ def get_heat_transfer(df: pd.DataFrame, proj: Project, trial: Trial) -> pd.DataF
     # Constants
     cm_p_m = 100  # (cm/m) Conversion factor
     cm2_p_m2 = cm_p_m**2  # ((cm/m)^2) Conversion factor
-    diameter = 0.009525 * cm_p_m  # (cm) 3/8"
+    diameter = proj.geometry.diameter * cm_p_m  # (cm)
     cross_sectional_area = np.pi / 4 * diameter**2  # (cm^2)
 
     return df.assign(
         **{
-            A.dT_dx_err: lambda df: (4 * df["stderr"]).abs(),
             A.k: get_prop(
                 Mat.COPPER,
                 Prop.THERMAL_CONDUCTIVITY,
@@ -231,10 +224,10 @@ def get_heat_transfer(df: pd.DataFrame, proj: Project, trial: Trial) -> pd.DataF
             ),
             # no negative due to reversed x-coordinate
             A.q: lambda df: df[A.k] * df[A.dT_dx] / cm2_p_m2,
-            A.q_err: lambda df: (df[A.k] * df[A.dT_dx_err]).abs() / cm2_p_m2,
+            A.q_err: lambda df: (df[A.k] * df[A.dT_dx_err]) / cm2_p_m2,
             A.Q: lambda df: df[A.q] * cross_sectional_area,
-            A.DT: lambda df: (df[A.TLfit] - df[WATER_TEMPS].mean().mean()),
-            A.DT_err: lambda df: (4 * df[A.intercept_stderr]).abs(),
+            A.DT: lambda df: (df[A.T_s] - df[WATER_TEMPS].mean().mean()),
+            A.DT_err: lambda df: df[A.T_s],
         }
     )
 
@@ -271,13 +264,11 @@ def transform_for_originlab(df: pd.DataFrame, proj: Project) -> pd.DataFrame:
     """Move units out of column labels and into a row just below the column labels.
 
     Explicitly set all dtypes to string to avoid data rendering issues, especially with
-    dates.
-
-    Convert super/subscripts in units to their OriginLab representation.
+    dates. Convert super/subscripts in units to their OriginLab representation. Reset
+    the index to avoid the extra row between units and data indicating index axis names.
 
     See: <https://www.originlab.com/doc/en/Origin-Help/Escape-Sequences>
     """
-
     cols = proj.axes.get_col_index()
     quantity = cols.get_level_values("quantity").map(
         {col.name: col.pretty_name for col in proj.axes.all}
@@ -291,7 +282,6 @@ def transform_for_originlab(df: pd.DataFrame, proj: Project) -> pd.DataFrame:
         for index in (quantity, units)
     ]
     cols = pd.MultiIndex.from_frame(pd.concat(indices, axis="columns"))
-
     return df.set_axis(cols, axis="columns").reset_index()  # type: ignore
 
 
@@ -315,10 +305,22 @@ def linregress_ser(
     y = np.repeat(series_of_y, repeats_per_pair)
     r = linregress(x, y)
 
+    # Confidence interval
+    confidence_interval_95 = abs(norm.ppf(0.025))
+    slope_err = confidence_interval_95 * r.stderr
+    int_err = confidence_interval_95 * r.intercept_stderr
+
     # Unpacking would drop r.intercept_stderr, so we have to do it this way.
     # See "Notes" section of SciPy documentation for more info.
     return pd.Series(
-        [r.slope, r.intercept, r.rvalue, r.pvalue, r.stderr, r.intercept_stderr],
+        [
+            r.slope,
+            slope_err,
+            r.intercept,
+            int_err,
+            r.rvalue,
+            r.pvalue,
+        ],
         index=regression_stats,
     )
 
@@ -345,12 +347,12 @@ def plot_fit_ser(
     x_smooth = np.linspace(0, trial.thermocouple_pos[-1])
     plt.plot(
         x_smooth,
-        ser[A.TLfit] + ser[A.dT_dx] * x_smooth,
+        ser[A.T_s] + ser[A.dT_dx] * x_smooth,
         "--",
         label=f"Linear Regression $(r^2={round(ser.rvalue**2,4)})$",
     )
     plt.plot(
-        0, ser[A.TLfit], "x", label="Extrapolated Surface Temperature", color=[1, 0, 0]
+        0, ser[A.T_s], "x", label="Extrapolated Surface Temperature", color=[1, 0, 0]
     )
     plt.legend()
 

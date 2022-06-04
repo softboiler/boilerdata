@@ -104,6 +104,7 @@
         },
         "comment": {
           "title": "Comment",
+          "default": "",
           "type": "string"
         },
         "path": {
@@ -156,8 +157,7 @@
         "group",
         "rod",
         "coupon",
-        "joint",
-        "comment"
+        "joint"
       ]
     }
   }
