@@ -42,6 +42,8 @@ validate_runs_df = DataFrameSchema(
     strict=True,
     ordered=True,
     unique_column_names=True,
+    index=MultiIndex(initial_index),
+    columns=initial_cols,
     checks=(
         # Check that every run was tailed properly
         Check(
@@ -51,8 +53,6 @@ validate_runs_df = DataFrameSchema(
             )
         )
     ),
-    index=MultiIndex(initial_index),
-    columns=initial_cols,
 )
 
 validate_df = DataFrameSchema(
