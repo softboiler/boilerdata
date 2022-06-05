@@ -5,7 +5,7 @@ from pytest import mark as m, raises
 from typer.testing import CliRunner
 import yaml
 
-from boilerdata.utils import dump_model, load_config, write_schema
+from boilerdata.common import dump_model, load_config, write_schema
 
 runner = CliRunner()
 

@@ -1,7 +1,7 @@
 from pandera import Check, Column, DataFrameSchema, Index, MultiIndex
 
-from axes import Axes as A  # noqa: N817
-from utils import get_project
+from boilerdata.axes import Axes as A  # noqa: N817
+from boilerdata.models import get_project
 
 proj = get_project()
 c = {ax.name: ax for ax in proj.axes.all}

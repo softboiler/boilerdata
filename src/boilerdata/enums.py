@@ -1,8 +1,6 @@
 """Enums to be used in models."""
 
-from enum import Enum
-from pathlib import Path
-from textwrap import dedent
+from enum import Enum, auto
 
 
 class NameEnum(Enum):
@@ -27,20 +25,96 @@ class GetValueNameEnum(NameEnum):
         return self.name
 
 
-def generate_axes_enum(axes: list[str], path: Path):
-    """Given a list of axis names, generate a Python script with axes as enums."""
-    text = dedent(
-        """\
-        # flake8: noqa
+class Rod(GetNameEnum):
+    """The rod used in this trial."""
 
-        from enum import auto
-
-        from boilerdata.enums import GetNameEnum
+    W = auto()
+    X = auto()
+    Y = auto()
 
 
-        class Axes(GetNameEnum):
-        """
-    )
-    for label in axes:
-        text += f"    {label} = auto()\n"
-    path.write_text(text, encoding="utf-8")
+class Coupon(GetNameEnum):
+    """The coupon attached to the rod for this trial."""
+
+    A1 = auto()
+    A2 = auto()
+    A3 = auto()
+    A4 = auto()
+    A5 = auto()
+    A6 = auto()
+    A7 = auto()
+    A8 = auto()
+    A9 = auto()
+
+
+class Sample(GetNameEnum):
+    """The sample attached to the coupon in this trial."""
+
+    B3 = auto()
+
+
+class Group(GetNameEnum):
+    """The group that this sample belongs to."""
+
+    control = auto()
+    porous = auto()
+    hybrid = auto()
+
+
+class Joint(GetNameEnum):
+    """The method used to join parts of the sample in this trial."""
+
+    paste = auto()
+    epoxy = auto()
+    solder = auto()
+
+
+# sourcery skip: avoid-builtin-shadow
+class PandasDtype(GetNameEnum):
+    """Valid data types for Pandas objects."""
+
+    object = auto()  # noqa: A003
+    float = auto()  # noqa: A003
+    int = auto()  # noqa: A003
+    bool = auto()  # noqa: A003
+    timedelta64ns = "timedelta64[ns]"
+    datetime64ns = "datetime64[ns]"
+    string = "string[pyarrow]"
+    boolean = auto()
+    category = auto()
+    Sparse = auto()
+    interval = auto()
+    Int8 = auto()
+    Int16 = auto()
+    Int32 = auto()
+    Int64 = auto()
+    UInt8 = auto()
+    UInt16 = auto()
+    Uint32 = auto()
+    UInt64 = auto()
+
+
+class OriginLabColdes(GetNameEnum):
+    """Valid column designations for plotting in OriginLab.
+
+    Designations:
+        X: x-axis
+        Y: y-axis
+        Z: z-axis
+        M: x-axis error
+        E: y-axis error
+        L: Label
+        G: Group
+        S: Subject
+        N: None (Disregard)
+    """
+
+    X = auto()
+    Y = auto()
+    Z = auto()
+    M = auto()  # xEr+-
+    E = auto()  # yEr+-
+    L = auto()  # Label
+    G = auto()  # Group
+    S = auto()  # Subject
+    N = auto()  # None (Disregard)

@@ -11,14 +11,17 @@
       "label": "proj: Update schema",
       "type": "process",
       "command": "pwsh",
-      "args": ["-Command", "python project/utils.py"],
+      "args": ["-Command", "python -m boilerdata.utils"],
       "problemMatcher": []
     },
     {
       "label": "proj: Profile the pipeline",
       "type": "process",
       "command": "pwsh",
-      "args": ["-Command", "python -m cProfile -o .prof project/pipeline.py"],
+      "args": [
+        "-Command",
+        "python -m cProfile -o .prof -m boilerdata.pipeline"
+      ],
       "problemMatcher": []
     },
 

@@ -44,15 +44,14 @@ import numpy as np
 import pandas as pd
 from scipy.stats import linregress, t
 
-from axes import Axes as A  # noqa: N817
-from constants import TEMPS_TO_REGRESS
-from pipeline import get_df
-from utils import get_project
+from boilerdata.axes import Axes as A  # noqa: N817
+from boilerdata.models import get_project
+from boilerdata.pipeline import get_df
 
 
 def main():
     proj = get_project()
-    all_temps = get_df(proj)[TEMPS_TO_REGRESS]
+    all_temps = get_df(proj)[proj.trials[0].thermocouple_pos.keys()]
 
     # ! Takes awhile
     # temps.groupby(level=A.run).describe().to_csv(
@@ -67,9 +66,9 @@ def main():
     reg_trues: list[pd.Series] = []
     regs: list[pd.Series] = []
     for trial in proj.trials:
-        x = trial.thermocouple_pos
+        x = list(trial.thermocouple_pos.values())
         rep = proj.params.records_to_average
-        res_index = [A.dT_dx, A.TLfit, A.rvalue, A.pvalue, A.stderr, A.intercept_stderr]
+        res_index = [A.dT_dx, A.T_s, A.rvalue, A.pvalue, "stderr", "intercept_stderr"]
 
         runs_temps = all_temps.xs(trial.trial, level=A.trial)
 

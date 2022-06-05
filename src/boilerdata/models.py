@@ -7,10 +7,17 @@ import numpy as np
 import pandas as pd
 from pydantic import BaseModel, DirectoryPath, Field, FilePath, validator
 
-from axes import Axes as A  # noqa: N817
-from boilerdata.typing import NpNDArray
-from boilerdata.utils import StrPath, expanduser2, load_config
-from enums import Coupon, Group, Joint, OriginLabColdes, PandasDtype, Rod, Sample
+from boilerdata.axes import Axes as A  # noqa: N817
+from boilerdata.common import NpNDArray, StrPath, expanduser2, load_config
+from boilerdata.enums import (
+    Coupon,
+    Group,
+    Joint,
+    OriginLabColdes,
+    PandasDtype,
+    Rod,
+    Sample,
+)
 
 # * -------------------------------------------------------------------------------- * #
 # * BASE
@@ -445,6 +452,10 @@ class Project(MyBaseModel):
 
 # * -------------------------------------------------------------------------------- * #
 # * HELPER FUNCTIONS
+
+
+def get_project():
+    return load_config("src/boilerdata/config/project.yaml", Project)
 
 
 def get_names(axes: list[Axis]) -> list[str]:

@@ -9,15 +9,16 @@ from textwrap import dedent
 import pandas as pd
 from pydantic import BaseModel, DirectoryPath, Field
 
-from boilerdata.utils import StrPath, dump_model, load_config, write_schema
-from models import Project
-from pipeline import get_project
+from boilerdata.common import StrPath, dump_model, load_config, write_schema
+from boilerdata.models import Project, get_project
 
 
 def main():
     project = get_project()
     migrate_3(
-        project, "project/schema/columns_schema.json", "project/config/columns.yaml"
+        project,
+        "src/boilerdata/schema/columns_schema.json",
+        "src/boilerdata/config/columns.yaml",
     )
 
 
@@ -36,7 +37,7 @@ def migrate_3(project: Project, columns_schema_path: StrPath, columns_path: StrP
 
     def main():
 
-        df = pd.read_csv(project.results_file, index_col=0, encoding="utf-8")
+        df = pd.read_csv(project.dirs.results_file, index_col=0, encoding="utf-8")
         units = [get_units(column) for column in df.columns]
 
         names = dedupe_columns(df)
@@ -86,7 +87,7 @@ def migrate_2(project: Project, columns_path: Path):
 
     def main():
 
-        df = pd.read_csv(project.results_file, index_col=0, encoding="utf-8")
+        df = pd.read_csv(project.dirs.results_file, index_col=0, encoding="utf-8")
         labels = dedupe_columns(df)
 
         text = dedent(

@@ -1,6 +1,26 @@
 {
   "version": "0.2.0",
   "configurations": [
+    // * -------------------------------------------------------------------------- * //
+    // * PROJECT-SPECIFIC * //
+    {
+      "name": "proj: Update schema",
+      "type": "python",
+      "request": "launch",
+      "program": "-m",
+      "args": ["boilerdata.utils"],
+      "console": "internalConsole"
+    },
+    {
+      "name": "PowerShell: Current File",
+      "type": "PowerShell",
+      "request": "launch",
+      "script": "${file}",
+      "cwd": "${file}"
+    },
+
+    // * -------------------------------------------------------------------------- * //
+    // * GENERAL * //
     {
       "name": "Current file",
       "type": "python",
@@ -15,22 +35,6 @@
       "program": "${file}",
       "justMyCode": false,
       "console": "internalConsole"
-    },
-    // * -------------------------------------------------------------------------- * //
-    // * PROJECT-SPECIFIC * //
-    {
-      "name": "proj: Update schema",
-      "type": "python",
-      "request": "launch",
-      "program": "project/utils.py",
-      "console": "internalConsole"
-    },
-    {
-      "name": "PowerShell: Current File",
-      "type": "PowerShell",
-      "request": "launch",
-      "script": "${file}",
-      "cwd": "${file}"
     }
   ]
 }
