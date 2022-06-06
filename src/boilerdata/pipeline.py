@@ -13,10 +13,10 @@ from propshop.library import Mat, Prop
 from scipy.constants import convert_temperature
 from scipy.stats import linregress, norm
 
-from boilerdata.models.axes import get_names
+from boilerdata.models.axes import Axes
 from boilerdata.models.axes_enum import AxesEnum as A  # noqa: N814
 from boilerdata.models.common import set_dtypes
-from boilerdata.models.project import Project, Trial, get_project
+from boilerdata.models.project import Project, Trial
 from boilerdata.validation import validate_df, validate_runs_df
 
 # * -------------------------------------------------------------------------------- * #
@@ -27,7 +27,7 @@ def pipeline(proj: Project):
 
     # Get dataframe of all runs and reduce to steady-state
     runs_df = validate_runs_df(get_df(proj))
-    df = pd.DataFrame(columns=get_names(proj.axes.cols)).assign(**get_steady_state(runs_df, proj))  # type: ignore
+    df = pd.DataFrame(columns=Axes.get_names(proj.axes.cols)).assign(**get_steady_state(runs_df, proj))  # type: ignore
 
     # Perform fits and compute heat transfer for each trial
     for trial in proj.trials:
@@ -124,7 +124,7 @@ def get_run(proj: Project, trial: Trial, run: Path) -> pd.DataFrame:
 
     # Assign columns from CSV and metadata to the structured dataframe. Get the tail.
     df = (
-        pd.DataFrame(columns=get_names(proj.axes.meta) + source_col_names)  # type: ignore  # Guarded in source property
+        pd.DataFrame(columns=Axes.get_names(proj.axes.meta) + source_col_names)  # type: ignore  # Guarded in source property
         .assign(
             **pd.read_csv(
                 run,
@@ -343,4 +343,4 @@ def plot_fit_ser(ser: pd.Series, proj: Project, trial: Trial, plt: ModuleType):
 # * -------------------------------------------------------------------------------- * #
 
 if __name__ == "__main__":
-    pipeline(get_project())
+    pipeline(Project.get_project())

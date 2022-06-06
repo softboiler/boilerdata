@@ -5,13 +5,13 @@ from pathlib import Path
 from pytest import fixture
 
 from boilerdata.models.common import allow_extra
-from boilerdata.models.project import get_project
+from boilerdata.models.project import Project
 
 
 @fixture
 def tmp_proj(tmp_path):
 
-    old_proj = get_project()
+    old_proj = Project.get_project()
 
     # Redirect the column designation file
     new_coldes_file = tmp_path / old_proj.dirs.coldes_file.relative_to(

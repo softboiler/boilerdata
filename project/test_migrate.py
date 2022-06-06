@@ -3,7 +3,7 @@ from pathlib import Path
 from pytest import mark as m
 import yaml
 
-from boilerdata.models.project import get_project
+from boilerdata.models.project import Project
 from migrate import migrate_1, migrate_2, migrate_3
 
 # * -------------------------------------------------------------------------------- * #
@@ -13,7 +13,7 @@ from migrate import migrate_1, migrate_2, migrate_3
 @m.skip("outdated")
 def test_migrate_3(tmp_path):
     old_commit = "b4ddee04a3d7aee2a81eaed68f3b016873f924d1"
-    project = get_project()
+    project = Project.get_project()
     project.results_file = get_old_file(old_commit)
     migrate_3(
         project,
@@ -37,7 +37,7 @@ def test_migrate_3(tmp_path):
 @m.skip("outdated")
 def test_migrate_2(tmp_path):
     old_commit = "b4ddee04a3d7aee2a81eaed68f3b016873f924d1"
-    project = get_project()
+    project = Project.get_project()
     project.results_file = get_old_file(old_commit)
     migrate_2(project, path := tmp_path / "columns.py")
     result = path.read_text(encoding="utf-8")
@@ -53,3 +53,15 @@ def test_migrate_1(tmp_path):
     result = yaml.safe_load((tmp_path / "trials.yaml").read_text(encoding="utf-8"))
     expected = yaml.safe_load(Path(base / "trials.yaml").read_text(encoding="utf-8"))
     assert result == expected
+
+
+# * -------------------------------------------------------------------------------- * #
+# * HELPER FUNCTIONS
+
+
+def get_old_file(old_commit):
+    project = Project.get_project()
+    try:
+        return next((project.dirs.results / "Old").glob(f"results_*_{old_commit}.csv"))
+    except StopIteration as exception:
+        raise StopIteration("Old results file is missing.") from exception

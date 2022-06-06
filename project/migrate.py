@@ -10,11 +10,11 @@ import pandas as pd
 from pydantic import BaseModel, DirectoryPath, Field
 
 from boilerdata.models.common import StrPath, dump_model, load_config, write_schema
-from boilerdata.models.project import Project, get_project
+from boilerdata.models.project import Project
 
 
 def main():
-    project = get_project()
+    project = Project.get_project()
     migrate_3(
         project,
         "src/boilerdata/schema/columns_schema.json",

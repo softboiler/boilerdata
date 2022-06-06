@@ -4,7 +4,7 @@ import pandas as pd
 from pandas.testing import assert_frame_equal
 from pytest import mark as m
 
-from boilerdata.models.project import get_project
+from boilerdata.models.project import Project
 from boilerdata.pipeline import get_df, pipeline
 
 CI = "Skip on CI."
@@ -54,7 +54,7 @@ def test_get_df(tmp_proj):
 
 
 def get_old_file(old_commit):
-    project = get_project()
+    project = Project.get_project()
     try:
         return next((project.dirs.results / "Old").glob(f"results_*_{old_commit}.csv"))
     except StopIteration as exception:

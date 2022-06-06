@@ -6,9 +6,6 @@ from pydantic import Field, validator
 from boilerdata.models.common import MyBaseModel
 from boilerdata.models.enums import OriginLabColdes, PandasDtype
 
-# * -------------------------------------------------------------------------------- * #
-# * AXES
-
 
 class Axis(MyBaseModel):
     """Metadata for a column in the dataframe."""
@@ -114,8 +111,8 @@ class Axes(MyBaseModel):
 
         # Rename columns and extract them into a row
         quantity = pd.DataFrame(
-            get_names(self.cols),
-            index=get_names(self.cols),
+            self.get_names(self.cols),
+            index=self.get_names(self.cols),
             dtype=PandasDtype.string,
         ).rename({0: "quantity"}, axis="columns")
 
@@ -129,11 +126,7 @@ class Axes(MyBaseModel):
     def get_originlab_coldes(self) -> str:
         return "".join([ax.originlab_coldes for ax in self.all])
 
-
-# * -------------------------------------------------------------------------------- * #
-# * HELPER FUNCTIONS
-
-
-def get_names(axes: list[Axis]) -> list[str]:
-    """Get names of the axes."""
-    return [ax.name for ax in axes]
+    @staticmethod
+    def get_names(axes: list[Axis]) -> list[str]:
+        """Get names of the axes."""
+        return [ax.name for ax in axes]

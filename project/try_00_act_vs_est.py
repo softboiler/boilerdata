@@ -45,12 +45,11 @@ import pandas as pd
 from scipy.stats import linregress, t
 
 from boilerdata.axes_enum import Axes as A  # noqa: N817
-from boilerdata.models.project import get_project
 from boilerdata.pipeline import get_df
 
 
 def main():
-    proj = get_project()
+    proj = Project.get_project()
     all_temps = get_df(proj)[proj.trials[0].thermocouple_pos.keys()]
 
     # ! Takes awhile

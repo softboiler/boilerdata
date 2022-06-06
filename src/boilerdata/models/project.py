@@ -30,10 +30,6 @@ class Project(MyBaseModel):
         for trial in self.trials:
             trial.setup(self.dirs, self.geometry)
 
-
-# * -------------------------------------------------------------------------------- * #
-# * HELPER FUNCTIONS
-
-
-def get_project():
-    return load_config("src/boilerdata/config/project.yaml", Project)
+    @classmethod
+    def get_project(cls):
+        return load_config("src/boilerdata/config/project.yaml", cls)

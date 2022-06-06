@@ -1,9 +1,9 @@
 from pandera import Check, Column, DataFrameSchema, Index, MultiIndex
 
 from boilerdata.models.axes_enum import AxesEnum as A  # noqa: N814
-from boilerdata.models.project import get_project
+from boilerdata.models.project import Project
 
-proj = get_project()
+proj = Project.get_project()
 c = {ax.name: ax for ax in proj.axes.all}
 tc_submerged_and_boiling = Check.in_range(95, 101)  # (C)
 
