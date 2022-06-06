@@ -14,7 +14,7 @@ from scipy.constants import convert_temperature
 from scipy.stats import linregress, norm
 
 from boilerdata.axes import Axes as A  # noqa: N817
-from boilerdata.models import Project, Trial, get_names, get_project, set_dtypes
+from boilerdata.models.project import Project, Trial, get_names, get_project, set_dtypes
 from boilerdata.validation import validate_df, validate_runs_df
 
 # * -------------------------------------------------------------------------------- * #

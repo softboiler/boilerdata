@@ -6,8 +6,8 @@ from textwrap import dedent
 
 from pydantic import ValidationError
 
-from boilerdata.common import write_schema
-from boilerdata.models import Axes, Project, Trials, get_names, get_project
+from boilerdata.models.common import write_schema
+from boilerdata.models.project import Axes, Project, Trials, get_names, get_project
 
 models = [Project, Trials, Axes]
 

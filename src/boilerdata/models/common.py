@@ -7,6 +7,15 @@ import numpy as np
 from pydantic import BaseModel, Extra, MissingError, ValidationError
 import yaml
 
+
+class MyBaseModel(
+    BaseModel,
+    use_enum_values=True,  # To use enums for schemas, but not in code
+    arbitrary_types_allowed=True,  # To use Numpy types
+):
+    pass
+
+
 StrPath = str | PathLike[str]
 NpNDArray = np.ndarray[Any, Any]
 NpFloating = np.floating[Any]

@@ -4,7 +4,7 @@ import pandas as pd
 from pandas.testing import assert_frame_equal
 from pytest import mark as m
 
-from boilerdata.models import get_project
+from boilerdata.models.project import get_project
 from boilerdata.pipeline import get_df, pipeline
 
 CI = "Skip on CI."

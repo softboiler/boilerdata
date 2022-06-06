@@ -63,14 +63,21 @@
     // * PRE-COMMIT * //
 
     {
-      "label": "autoflake: All files",
+      "label": "pre-commit: All files",
+      "type": "process",
+      "command": "pwsh",
+      "args": ["-Command", "pre-commit run --all-files"],
+      "problemMatcher": []
+    },
+    {
+      "label": "pre-commit: autoflake: All files",
       "type": "process",
       "command": "pwsh",
       "args": ["-Command", "pre-commit run autoflake --all-files"],
       "problemMatcher": []
     },
     {
-      "label": "autoflake: Current file",
+      "label": "pre-commit: autoflake: Current file",
       "type": "process",
       "command": "pwsh",
       "args": ["-Command", "pre-commit run autoflake --files ${file}"],
@@ -105,14 +112,14 @@
       "problemMatcher": []
     },
     {
-      "label": "task: Ignore magic comma in this file",
+      "label": "task: black: Ignore magic comma in this file",
       "type": "process",
       "command": "pwsh",
       "args": ["-Command", "black -C ${file}"],
       "problemMatcher": []
     },
     {
-      "label": "task: Ignore magic comma in all project files",
+      "label": "task: black: Ignore magic comma in all project files",
       "type": "process",
       "command": "pwsh",
       "args": ["-Command", "black -C src tests"],

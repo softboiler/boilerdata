@@ -4,8 +4,8 @@ from pathlib import Path
 
 from pytest import fixture
 
-from boilerdata.common import allow_extra
-from boilerdata.models import get_project
+from boilerdata.models.common import allow_extra
+from boilerdata.models.project import get_project
 
 
 @fixture

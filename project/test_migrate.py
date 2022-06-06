@@ -3,7 +3,7 @@ from pathlib import Path
 from pytest import mark as m
 import yaml
 
-from boilerdata.models import get_project
+from boilerdata.models.project import get_project
 from migrate import migrate_1, migrate_2, migrate_3
 
 # * -------------------------------------------------------------------------------- * #
