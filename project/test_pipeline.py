@@ -1,19 +1,12 @@
-from os import getenv
-
 import pandas as pd
 from pandas.testing import assert_frame_equal
-from pytest import mark as m
 
 from boilerdata.models.project import Project
 from boilerdata.pipeline import get_df, pipeline
 
 CI = "Skip on CI."
 
-# * -------------------------------------------------------------------------------- * #
-# * PIPELINE
 
-
-@m.skipif(bool(getenv("CI")), reason=CI)
 def test_pipeline(tmp_proj):
     """Ensure the same result is coming out of the pipeline as before."""
 
@@ -36,7 +29,6 @@ def test_pipeline(tmp_proj):
     assert_frame_equal(old, new)
 
 
-@m.skipif(bool(getenv("CI")), reason=CI)
 def test_get_df(tmp_proj):
     """Ensure the same dataframe comes from disk and from fetching runs."""
 
