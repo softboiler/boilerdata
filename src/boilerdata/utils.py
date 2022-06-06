@@ -6,8 +6,9 @@ from textwrap import dedent
 
 from pydantic import ValidationError
 
+from boilerdata.models.axes import Axes, get_names
 from boilerdata.models.common import write_schema
-from boilerdata.models.project import Axes, Project, Trials, get_names, get_project
+from boilerdata.models.project import Project, Trials, get_project
 
 models = [Project, Trials, Axes]
 
@@ -18,7 +19,7 @@ def update_schema():
         proj = get_project()
         path = proj.dirs.project_schema
         generate_axes_enum(
-            list(get_names(proj.axes.all)), Path("src/boilerdata/axes.py")
+            list(get_names(proj.axes.all)), Path("src/boilerdata/axes_enum.py")
         )
     except ValidationError as exception:
         path = Path("src/boilerdata/schema")
@@ -46,7 +47,7 @@ def generate_axes_enum(axes: list[str], path: Path):
         from boilerdata.enums import GetNameEnum
 
 
-        class Axes(GetNameEnum):
+        class AxesEnum(GetNameEnum):
         """
     )
     for label in axes:

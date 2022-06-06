@@ -6,7 +6,7 @@ import numpy as np
 import pandas as pd
 from pydantic import DirectoryPath, Field, FilePath
 
-from boilerdata.axes import Axes as A  # noqa: N817
+from boilerdata.axes_enum import AxesEnum as A  # noqa: N814
 from boilerdata.enums import Coupon, Group, Joint, Rod, Sample
 from boilerdata.models.common import MyBaseModel
 from boilerdata.models.dirs import Dirs

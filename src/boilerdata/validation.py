@@ -1,6 +1,6 @@
 from pandera import Check, Column, DataFrameSchema, Index, MultiIndex
 
-from boilerdata.axes import Axes as A  # noqa: N817
+from boilerdata.axes_enum import AxesEnum as A  # noqa: N814
 from boilerdata.models.project import get_project
 
 proj = get_project()

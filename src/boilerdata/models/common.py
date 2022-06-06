@@ -4,6 +4,7 @@ from pathlib import Path
 from typing import Any
 
 import numpy as np
+import pandas as pd
 from pydantic import BaseModel, Extra, MissingError, ValidationError
 import yaml
 
@@ -19,6 +20,11 @@ class MyBaseModel(
 StrPath = str | PathLike[str]
 NpNDArray = np.ndarray[Any, Any]
 NpFloating = np.floating[Any]
+
+
+def set_dtypes(df: pd.DataFrame, dtypes: dict[str, str]) -> pd.DataFrame:
+    """Set column datatypes in a dataframe."""
+    return df.assign(**{name: df[name].astype(dtype) for name, dtype in dtypes.items()})
 
 
 def expanduser2(path: StrPath) -> Path:

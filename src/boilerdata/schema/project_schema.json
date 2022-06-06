@@ -20,7 +20,7 @@
       }
     },
     "axes": {
-      "$ref": "#/definitions/boilerdata__models__Axes"
+      "$ref": "#/definitions/Axes"
     }
   },
   "required": [
@@ -142,8 +142,8 @@
         "coupons"
       ]
     },
-    "boilerdata__axes__Axes": {
-      "title": "Axes",
+    "AxesEnum": {
+      "title": "AxesEnum",
       "description": "An enumeration.",
       "enum": [
         "trial",
@@ -210,7 +210,7 @@
           ],
           "type": "array",
           "items": {
-            "$ref": "#/definitions/boilerdata__axes__Axes"
+            "$ref": "#/definitions/AxesEnum"
           }
         },
         "do_plot": {
@@ -468,7 +468,7 @@
         "name"
       ]
     },
-    "boilerdata__models__Axes": {
+    "Axes": {
       "title": "Axes",
       "description": "Columns in the dataframe.",
       "type": "object",
