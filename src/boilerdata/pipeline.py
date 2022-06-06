@@ -13,8 +13,8 @@ from propshop.library import Mat, Prop
 from scipy.constants import convert_temperature
 from scipy.stats import linregress, norm
 
-from boilerdata.axes_enum import AxesEnum as A  # noqa: N814
 from boilerdata.models.axes import get_names
+from boilerdata.models.axes_enum import AxesEnum as A  # noqa: N814
 from boilerdata.models.common import set_dtypes
 from boilerdata.models.project import Project, Trial, get_project
 from boilerdata.validation import validate_df, validate_runs_df

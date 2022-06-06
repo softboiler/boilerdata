@@ -3,8 +3,8 @@ from typing import Optional
 import pandas as pd
 from pydantic import Field, validator
 
-from boilerdata.enums import OriginLabColdes, PandasDtype
 from boilerdata.models.common import MyBaseModel
+from boilerdata.models.enums import OriginLabColdes, PandasDtype
 
 # * -------------------------------------------------------------------------------- * #
 # * AXES

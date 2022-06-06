@@ -1,6 +1,6 @@
 from pydantic import Field
 
-from boilerdata.axes_enum import AxesEnum as A  # noqa: N814
+from boilerdata.models.axes_enum import AxesEnum as A  # noqa: N814
 from boilerdata.models.common import MyBaseModel
 
 

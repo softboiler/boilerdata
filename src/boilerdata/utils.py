@@ -19,7 +19,7 @@ def update_schema():
         proj = get_project()
         path = proj.dirs.project_schema
         generate_axes_enum(
-            list(get_names(proj.axes.all)), Path("src/boilerdata/axes_enum.py")
+            list(get_names(proj.axes.all)), Path("src/boilerdata/models/axes_enum.py")
         )
     except ValidationError as exception:
         path = Path("src/boilerdata/schema")
@@ -44,7 +44,7 @@ def generate_axes_enum(axes: list[str], path: Path):
 
         from enum import auto
 
-        from boilerdata.enums import GetNameEnum
+        from boilerdata.models.enums import GetNameEnum
 
 
         class AxesEnum(GetNameEnum):

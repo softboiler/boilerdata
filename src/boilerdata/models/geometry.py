@@ -1,8 +1,8 @@
 import numpy as np
 from pydantic import Field, validator
 
-from boilerdata.enums import Coupon, Rod
 from boilerdata.models.common import MyBaseModel, NpNDArray
+from boilerdata.models.enums import Coupon, Rod
 
 
 class Geometry(MyBaseModel):

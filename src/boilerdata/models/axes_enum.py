@@ -2,7 +2,7 @@
 
 from enum import auto
 
-from boilerdata.enums import GetNameEnum
+from boilerdata.models.enums import GetNameEnum
 
 
 class AxesEnum(GetNameEnum):
