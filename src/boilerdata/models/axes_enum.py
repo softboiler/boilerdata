@@ -2,10 +2,10 @@
 
 from enum import auto
 
-from boilerdata.enums import GetNameEnum
+from boilerdata.models.enums import GetNameEnum
 
 
-class Axes(GetNameEnum):
+class AxesEnum(GetNameEnum):
     trial = auto()
     run = auto()
     time = auto()

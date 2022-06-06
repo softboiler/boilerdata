@@ -13,10 +13,12 @@ from propshop.library import Mat, Prop
 from scipy.constants import convert_temperature
 from scipy.stats import linregress, norm
 
-from axes import Axes as A  # noqa: N817
-from models import Project, Trial, get_names, set_dtypes
-from utils import get_project
-from validation import validate_df, validate_runs_df
+from boilerdata.models.axes import Axes
+from boilerdata.models.axes_enum import AxesEnum as A  # noqa: N814
+from boilerdata.models.common import set_dtypes
+from boilerdata.models.project import Project
+from boilerdata.models.trials import Trial
+from boilerdata.validation import validate_df, validate_runs_df
 
 # * -------------------------------------------------------------------------------- * #
 # * MAIN
@@ -26,7 +28,7 @@ def pipeline(proj: Project):
 
     # Get dataframe of all runs and reduce to steady-state
     runs_df = validate_runs_df(get_df(proj))
-    df = pd.DataFrame(columns=get_names(proj.axes.cols)).assign(**get_steady_state(runs_df, proj))  # type: ignore
+    df = pd.DataFrame(columns=Axes.get_names(proj.axes.cols)).assign(**get_steady_state(runs_df, proj))  # type: ignore
 
     # Perform fits and compute heat transfer for each trial
     for trial in proj.trials:
@@ -41,9 +43,7 @@ def pipeline(proj: Project):
 
     # Post-process the dataframe for writing to OriginLab-flavored CSV
     df.pipe(transform_for_originlab, proj).to_csv(
-        proj.dirs.results_file,
-        index=False,
-        encoding="utf-8",
+        proj.dirs.results_file, index=False, encoding="utf-8"
     )
     proj.dirs.coldes_file.write_text(proj.axes.get_originlab_coldes())
 
@@ -125,7 +125,7 @@ def get_run(proj: Project, trial: Trial, run: Path) -> pd.DataFrame:
 
     # Assign columns from CSV and metadata to the structured dataframe. Get the tail.
     df = (
-        pd.DataFrame(columns=get_names(proj.axes.meta) + source_col_names)  # type: ignore  # Guarded in source property
+        pd.DataFrame(columns=Axes.get_names(proj.axes.meta) + source_col_names)  # type: ignore  # Guarded in source property
         .assign(
             **pd.read_csv(
                 run,
@@ -150,10 +150,7 @@ def get_run(proj: Project, trial: Trial, run: Path) -> pd.DataFrame:
 
 def rename_columns(df: pd.DataFrame, proj: Project) -> pd.DataFrame:
     """Move units into a MultiIndex."""
-    return df.rename(
-        {col.source: col.name for col in proj.axes.cols},
-        axis="columns",
-    )
+    return df.rename({col.source: col.name for col in proj.axes.cols}, axis="columns")
 
 
 # * -------------------------------------------------------------------------------- * #
@@ -180,14 +177,7 @@ def fit(df: pd.DataFrame, proj: Project, trial: Trial) -> pd.DataFrame:
         proj=proj,
         trial=trial,
         temperature_cols=df[trial.thermocouple_pos.keys()],
-        result_cols=[
-            A.dT_dx,
-            A.dT_dx_err,
-            A.T_s,
-            A.T_s_err,
-            A.rvalue,
-            A.pvalue,
-        ],
+        result_cols=[A.dT_dx, A.dT_dx_err, A.T_s, A.T_s_err, A.rvalue, A.pvalue],
     )
     return df
 
@@ -241,7 +231,7 @@ def linregress_apply(
             x=list(trial.thermocouple_pos.values()),
             repeats_per_pair=proj.params.records_to_average,
             regression_stats=result_cols,
-        ),  # type: ignore
+        )  # type: ignore
     )
 
 
@@ -269,14 +259,7 @@ def linregress_ser(
     # Unpacking would drop r.intercept_stderr, so we have to do it this way.
     # See "Notes" section of SciPy documentation for more info.
     return pd.Series(
-        [
-            r.slope,
-            slope_err,
-            r.intercept,
-            int_err,
-            r.rvalue,
-            r.pvalue,
-        ],
+        [r.slope, slope_err, r.intercept, int_err, r.rvalue, r.pvalue],
         index=regression_stats,
     )
 
@@ -332,12 +315,7 @@ def plot_fit_apply(df: pd.DataFrame, proj: Project, trial: Trial) -> pd.DataFram
     return df
 
 
-def plot_fit_ser(
-    ser: pd.Series,
-    proj: Project,
-    trial: Trial,
-    plt: ModuleType,
-):
+def plot_fit_ser(ser: pd.Series, proj: Project, trial: Trial, plt: ModuleType):
     """Plot the goodness of fit for a series of temperatures and positions."""
     plt.figure()
     plt.title("Temperature Profile in Post")
@@ -366,4 +344,4 @@ def plot_fit_ser(
 # * -------------------------------------------------------------------------------- * #
 
 if __name__ == "__main__":
-    pipeline(get_project())
+    pipeline(Project.get_project())
