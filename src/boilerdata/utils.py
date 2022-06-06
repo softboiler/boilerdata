@@ -8,7 +8,8 @@ from pydantic import ValidationError
 
 from boilerdata.models.axes import Axes
 from boilerdata.models.common import write_schema
-from boilerdata.models.project import Project, Trials
+from boilerdata.models.project import Project
+from boilerdata.models.trials import Trials
 
 models = [Project, Trials, Axes]
 
