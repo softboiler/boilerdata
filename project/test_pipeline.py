@@ -8,7 +8,7 @@ from boilerdata.pipeline import get_df, pipeline
 def test_pipeline(tmp_proj):
     """Ensure the same result is coming out of the pipeline as before."""
 
-    old_commit = "3c9fa84fe2c5c71ed58b9f9b53a23194eab85976"
+    old_commit = "05adc0125ce4edd87133dd99ec98bb550e8e815c"
 
     common_read_csv_params = dict(
         skiprows=[1],  # Skip the "units" row so dtype detection works properly
@@ -18,18 +18,11 @@ def test_pipeline(tmp_proj):
     tmp_proj.params.refetch_runs = True
     pipeline(tmp_proj)
 
-    # Drop "good" because we changed that for a few trials recently. Drop "TC at top of
-    # coupon" and "sixth-tc" since that column name changed. Drop "∆T\-(err)" because it
-    # was actually incorrect in the old dataframe.
-    old = (
-        pd.read_csv(get_old_file(old_commit), **common_read_csv_params)
-        .reset_index(drop=True)
-        .drop(columns=["good", "TC at top of coupon", r"∆T\-(err)"])
+    old = pd.read_csv(get_old_file(old_commit), **common_read_csv_params).reset_index(
+        drop=True
     )
-    new = (
-        pd.read_csv(tmp_proj.dirs.results_file, **common_read_csv_params)
-        .reset_index(drop=True)
-        .drop(columns=["good", "sixth-tc", r"∆T\-(err)"])
+    new = pd.read_csv(tmp_proj.dirs.results_file, **common_read_csv_params).reset_index(
+        drop=True
     )
     assert_frame_equal(old, new)
 

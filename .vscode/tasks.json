@@ -102,10 +102,10 @@
       "problemMatcher": []
     },
     {
-      "label": "task: pytest-cov",
+      "label": "task: pytest-cov: Generate coverage",
       "type": "process",
       "command": "pwsh",
-      "args": ["-Command", "pytest --cov --cov-report xml"],
+      "args": ["-Command", "pytest -c pytest_local.ini --cov --cov-report xml"],
       "problemMatcher": []
     },
     {
