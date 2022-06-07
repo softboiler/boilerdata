@@ -125,14 +125,16 @@ trials:
     rod: "W"
     coupon: "A4"
     joint: "epoxy"
-    comment: First run with silver epoxy cured at higher temperature. Vertical anomaly. See "21.10.15 Progress.pptx". See <https://trello.com/c/L6AmQDJR/26-bond-sample-a4-to-warped-post>. A4-13
+    comment: First run with silver epoxy cured at higher temperature. Vertical anomaly. See "21.10.15 Progress.pptx". See <https://trello.com/c/L6AmQDJR/26-bond-sample-a4-to-warped-post>. A4-13. High T_s_err and non-monotonic.
+    good: false
 
   - date: 2021-10-13
     group: "control"
     rod: "W"
     coupon: "A4"
     joint: "epoxy"
-    comment: Second run with silver epoxy cured at higher temperature. See "21.10.15 Progress.pptx". A4-14. Broke clean off after trial, see <https://trello.com/c/8w9swkNl/19-run-experiment-a4>
+    comment: Second run with silver epoxy cured at higher temperature. See "21.10.15 Progress.pptx". A4-14. Broke clean off after trial, see <https://trello.com/c/8w9swkNl/19-run-experiment-a4>. High T_s_err and non-monotonic.
+    good: false
 
   - date: 2021-12-09
     group: "control"

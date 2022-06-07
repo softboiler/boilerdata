@@ -107,6 +107,7 @@ class OriginLabColdes(GetNameEnum):
         G: Group
         S: Subject
         N: None (Disregard)
+        Q: Omit (If this column isn't in the output at all)
     """
 
     X = auto()
@@ -118,3 +119,4 @@ class OriginLabColdes(GetNameEnum):
     G = auto()  # Group
     S = auto()  # Subject
     N = auto()  # None (Disregard)
+    Q = auto()  # Omit (If this column isn't in the output at all)

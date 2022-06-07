@@ -154,7 +154,7 @@
         "coupon",
         "sample",
         "joint",
-        "top_of_coupon_tc",
+        "sixth_tc",
         "good",
         "new",
         "V",
@@ -296,8 +296,8 @@
         "joint": {
           "$ref": "#/definitions/Joint"
         },
-        "top_of_coupon_tc": {
-          "title": "Top Of Coupon Tc",
+        "sixth_tc": {
+          "title": "Sixth Tc",
           "description": "Whether this trial includes a thermocouple at the top of the coupon.",
           "default": false,
           "type": "boolean"
@@ -394,7 +394,7 @@
     },
     "OriginLabColdes": {
       "title": "OriginLabColdes",
-      "description": "Valid column designations for plotting in OriginLab.\n\nDesignations:\n    X: x-axis\n    Y: y-axis\n    Z: z-axis\n    M: x-axis error\n    E: y-axis error\n    L: Label\n    G: Group\n    S: Subject\n    N: None (Disregard)",
+      "description": "Valid column designations for plotting in OriginLab.\n\nDesignations:\n    X: x-axis\n    Y: y-axis\n    Z: z-axis\n    M: x-axis error\n    E: y-axis error\n    L: Label\n    G: Group\n    S: Subject\n    N: None (Disregard)\n    Q: Omit (If this column isn't in the output at all)",
       "enum": [
         "X",
         "Y",
@@ -404,7 +404,8 @@
         "L",
         "G",
         "S",
-        "N"
+        "N",
+        "Q"
       ]
     },
     "Axis": {

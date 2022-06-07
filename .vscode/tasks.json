@@ -8,6 +8,13 @@
     // * -------------------------------------------------------------------------- * //
     // * PROJECT-SPECIFIC * //
     {
+      "label": "proj: Run the pipeline",
+      "type": "process",
+      "command": "pwsh",
+      "args": ["-Command", "python -m boilerdata.pipeline"],
+      "problemMatcher": []
+    },
+    {
       "label": "proj: Update schema",
       "type": "process",
       "command": "pwsh",

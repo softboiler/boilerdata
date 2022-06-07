@@ -42,7 +42,7 @@
     },
     "OriginLabColdes": {
       "title": "OriginLabColdes",
-      "description": "Valid column designations for plotting in OriginLab.\n\nDesignations:\n    X: x-axis\n    Y: y-axis\n    Z: z-axis\n    M: x-axis error\n    E: y-axis error\n    L: Label\n    G: Group\n    S: Subject\n    N: None (Disregard)",
+      "description": "Valid column designations for plotting in OriginLab.\n\nDesignations:\n    X: x-axis\n    Y: y-axis\n    Z: z-axis\n    M: x-axis error\n    E: y-axis error\n    L: Label\n    G: Group\n    S: Subject\n    N: None (Disregard)\n    Q: Omit (If this column isn't in the output at all)",
       "enum": [
         "X",
         "Y",
@@ -52,7 +52,8 @@
         "L",
         "G",
         "S",
-        "N"
+        "N",
+        "Q"
       ]
     },
     "Axis": {

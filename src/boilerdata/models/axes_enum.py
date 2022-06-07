@@ -14,7 +14,7 @@ class AxesEnum(GetNameEnum):
     coupon = auto()
     sample = auto()
     joint = auto()
-    top_of_coupon_tc = auto()
+    sixth_tc = auto()
     good = auto()
     new = auto()
     V = auto()

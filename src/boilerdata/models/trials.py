@@ -28,7 +28,7 @@ class Trial(MyBaseModel):
     coupon: Coupon
     sample: Optional[Sample]
     joint: Joint
-    top_of_coupon_tc: bool = Field(
+    sixth_tc: bool = Field(
         default=False,
         description="Whether this trial includes a thermocouple at the top of the coupon.",
     )
@@ -111,7 +111,7 @@ class Trial(MyBaseModel):
         """Get relevant geometry for the trial."""
         thermocouples = [A.T_1, A.T_2, A.T_3, A.T_4, A.T_5]
         thermocouple_pos = geometry.rods[self.rod] + geometry.coupons[self.coupon]  # type: ignore
-        if self.top_of_coupon_tc:
+        if self.sixth_tc:
             thermocouples.append(A.T_6)
             # Since zero is defined as the surface
             thermocouple_pos = np.append(thermocouple_pos, 0)

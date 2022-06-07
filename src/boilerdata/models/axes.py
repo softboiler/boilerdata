@@ -124,7 +124,9 @@ class Axes(MyBaseModel):
         return pd.MultiIndex.from_frame(pd.concat([quantity, units], axis="columns"))
 
     def get_originlab_coldes(self) -> str:
-        return "".join([ax.originlab_coldes for ax in self.all])
+        return "".join(
+            [ax.originlab_coldes for ax in self.all if ax.originlab_coldes != "Q"]
+        )
 
     @staticmethod
     def get_names(axes: list[Axis]) -> list[str]:

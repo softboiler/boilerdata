@@ -11,6 +11,7 @@ all:
     dtype: "datetime64[ns]"
     source: "time"
     index: true
+    originlab_coldes: Q # Dropped after averaging
 
   - name: "group"
     dtype: "category"
@@ -32,8 +33,8 @@ all:
     dtype: "category"
     meta: true
 
-  - name: "top_of_coupon_tc"
-    pretty_name: "TC at top of coupon"
+  - name: "sixth_tc"
+    pretty_name: sixth-tc # Avoid underscore-subscript conversion
     dtype: "boolean"
     meta: true
 

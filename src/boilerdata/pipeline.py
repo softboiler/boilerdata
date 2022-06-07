@@ -207,7 +207,7 @@ def get_heat_transfer(df: pd.DataFrame, proj: Project, trial: Trial) -> pd.DataF
             A.q_err: lambda df: (df[A.k] * df[A.dT_dx_err]) / cm2_p_m2,
             A.Q: lambda df: df[A.q] * cross_sectional_area,
             A.DT: lambda df: (df[A.T_s] - trial_water_temp),
-            A.DT_err: lambda df: df[A.T_s],
+            A.DT_err: lambda df: df[A.T_s_err],
         }
     )
 

@@ -19,7 +19,7 @@ initial_cols = {
     A.coupon: Column(c[A.coupon].dtype),
     A.sample: Column(c[A.sample].dtype, nullable=True),
     A.joint: Column(c[A.joint].dtype),
-    A.top_of_coupon_tc: Column(c[A.top_of_coupon_tc].dtype),
+    A.sixth_tc: Column(c[A.sixth_tc].dtype),
     A.good: Column(c[A.good].dtype),
     A.new: Column(c[A.new].dtype),
     A.V: Column(c[A.V].dtype),

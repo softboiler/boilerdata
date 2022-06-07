@@ -90,8 +90,8 @@
         "joint": {
           "$ref": "#/definitions/Joint"
         },
-        "top_of_coupon_tc": {
-          "title": "Top Of Coupon Tc",
+        "sixth_tc": {
+          "title": "Sixth Tc",
           "description": "Whether this trial includes a thermocouple at the top of the coupon.",
           "default": false,
           "type": "boolean"
