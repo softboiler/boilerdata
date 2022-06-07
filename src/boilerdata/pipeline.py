@@ -34,6 +34,7 @@ def pipeline(proj: Project):
     for trial in proj.trials:
         df.update(
             df.xs(trial.trial, level=A.trial, drop_level=False)
+            .pipe(assign_metadata, proj, trial)
             .pipe(fit, proj, trial)
             .pipe(get_heat_transfer, proj, trial)
         )
@@ -49,17 +50,13 @@ def pipeline(proj: Project):
 
 
 # * -------------------------------------------------------------------------------- * #
-# * GET DATA
+# * GET RUNS
 
 
 def get_df(proj: Project) -> pd.DataFrame:
     """Get the dataframe of all runs."""
 
-    dtypes = {
-        col.name: col.dtype
-        for col in (proj.axes.source + proj.axes.meta)
-        if not col.index
-    }
+    dtypes = {col.name: col.dtype for col in proj.axes.source if not col.index}
 
     # Fetch all runs from their original CSVs if needed.
     if any(trial.new for trial in proj.trials) or proj.params.refetch_runs:
@@ -85,7 +82,6 @@ def get_runs(proj: Project, dtypes: dict[str, str]) -> pd.DataFrame:
     multiindex: list[tuple[datetime, datetime, datetime]] = []
     for trial in proj.trials:
         for file, run_index in zip(trial.run_files, trial.run_index):
-
             run = get_run(proj, trial, file)
             runs.append(run)
             multiindex.extend(
@@ -110,13 +106,6 @@ def get_runs(proj: Project, dtypes: dict[str, str]) -> pd.DataFrame:
 
 def get_run(proj: Project, trial: Trial, run: Path) -> pd.DataFrame:
 
-    # Get metadata
-    metadata = {
-        k: v
-        for k, v in trial.dict().items()  # Dict call avoids excluded properties
-        if k not in [idx.name for idx in proj.axes.index]
-    }
-
     # Get source columns
     index = proj.axes.index[-1].source  # Get the last index, associated with source
     source_cols = [col for col in proj.axes.source if not col.index]
@@ -125,7 +114,7 @@ def get_run(proj: Project, trial: Trial, run: Path) -> pd.DataFrame:
 
     # Assign columns from CSV and metadata to the structured dataframe. Get the tail.
     df = (
-        pd.DataFrame(columns=Axes.get_names(proj.axes.meta) + source_col_names)  # type: ignore  # Guarded in source property
+        pd.DataFrame(columns=source_col_names)
         .assign(
             **pd.read_csv(
                 run,
@@ -135,22 +124,41 @@ def get_run(proj: Project, trial: Trial, run: Path) -> pd.DataFrame:
                 parse_dates=[index],  # type: ignore  # Guarded in index property
                 dtype=source_dtypes,
                 encoding="utf-8",
-            ),
-            **metadata,
+            )
         )
         .dropna(how="all")  # Rarely a run has an all NA record at the end
     )
+
     # Need "df" defined so we can call "df.index.dropna()"
     return (
-        df.reindex(index=df.index.dropna())  # Rarely a run has an NA index at the end
+        df.reindex(index=df.index.dropna())  # A run can have an NA index at the end
+        .dropna(how="all")  # A CSV can have an all NA record at the end
         .tail(proj.params.records_to_average)
         .pipe(rename_columns, proj)
     )
 
 
 def rename_columns(df: pd.DataFrame, proj: Project) -> pd.DataFrame:
-    """Move units into a MultiIndex."""
+    """Rename source columns."""
     return df.rename({col.source: col.name for col in proj.axes.cols}, axis="columns")
+
+
+# * -------------------------------------------------------------------------------- * #
+# * ASSIGN METADATA
+
+
+def assign_metadata(df: pd.DataFrame, proj: Project, trial: Trial) -> pd.DataFrame:
+
+    # Get metadata
+    metadata = {
+        field: value
+        for field, value in trial.dict().items()  # Dict call avoids excluded properties
+        if field not in [idx.name for idx in proj.axes.index]
+    }
+
+    # Assign columns from CSV and metadata to the structured dataframe. Get the tail.
+
+    return df.assign(**metadata)
 
 
 # * -------------------------------------------------------------------------------- * #

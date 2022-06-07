@@ -7,21 +7,16 @@ proj = Project.get_project()
 c = {ax.name: ax for ax in proj.axes.all}
 tc_submerged_and_boiling = Check.in_range(95, 101)  # (C)
 
+# * -------------------------------------------------------------------------------- * #
+# * INDEX AND COLUMNS
+
 initial_index = [
     Index(name=A.trial, dtype=c[A.trial].dtype),
     Index(name=A.run, dtype=c[A.run].dtype),
     Index(name=A.time, dtype=c[A.time].dtype),
 ]
 
-initial_cols = {
-    A.group: Column(c[A.group].dtype),
-    A.rod: Column(c[A.rod].dtype),
-    A.coupon: Column(c[A.coupon].dtype),
-    A.sample: Column(c[A.sample].dtype, nullable=True),
-    A.joint: Column(c[A.joint].dtype),
-    A.sixth_tc: Column(c[A.sixth_tc].dtype),
-    A.good: Column(c[A.good].dtype),
-    A.new: Column(c[A.new].dtype),
+source_cols = {
     A.V: Column(c[A.V].dtype),
     A.I: Column(c[A.I].dtype),
     A.T_0: Column(c[A.T_0].dtype),
@@ -38,12 +33,41 @@ initial_cols = {
     # A.P: Column(c[A.P].dtype, Check.greater_than(12)),  # Strict check on pressure
 }
 
+meta_cols = {
+    A.group: Column(c[A.group].dtype),
+    A.rod: Column(c[A.rod].dtype),
+    A.coupon: Column(c[A.coupon].dtype),
+    A.sample: Column(c[A.sample].dtype, nullable=True),
+    A.joint: Column(c[A.joint].dtype),
+    A.sixth_tc: Column(c[A.sixth_tc].dtype),
+    A.good: Column(c[A.good].dtype),
+    A.new: Column(c[A.new].dtype),
+}
+
+computed_cols = {
+    A.dT_dx: Column(c[A.dT_dx].dtype),
+    A.dT_dx_err: Column(c[A.dT_dx_err].dtype),
+    A.T_s: Column(c[A.T_s].dtype),
+    A.T_s_err: Column(c[A.T_s_err].dtype),
+    A.rvalue: Column(c[A.rvalue].dtype),
+    A.pvalue: Column(c[A.pvalue].dtype),
+    A.k: Column(c[A.k].dtype),
+    A.q: Column(c[A.q].dtype),
+    A.q_err: Column(c[A.q_err].dtype),
+    A.Q: Column(c[A.Q].dtype),
+    A.DT: Column(c[A.DT].dtype),
+    A.DT_err: Column(c[A.DT_err].dtype),
+}
+
+# * -------------------------------------------------------------------------------- * #
+# * VALIDATORS
+
 validate_runs_df = DataFrameSchema(
     strict=True,
     ordered=True,
     unique_column_names=True,
     index=MultiIndex(initial_index),
-    columns=initial_cols,
+    columns=source_cols,
     checks=(
         # Check that every run was tailed properly
         Check(
@@ -55,24 +79,11 @@ validate_runs_df = DataFrameSchema(
     ),
 )
 
+
 validate_df = DataFrameSchema(
     strict=True,
     ordered=True,
     unique_column_names=True,
     index=MultiIndex(initial_index[:-1]),  # the final index is dropped by now
-    columns={
-        **initial_cols,
-        A.dT_dx: Column(c[A.dT_dx].dtype),
-        A.dT_dx_err: Column(c[A.dT_dx_err].dtype),
-        A.T_s: Column(c[A.T_s].dtype),
-        A.T_s_err: Column(c[A.T_s_err].dtype),
-        A.rvalue: Column(c[A.rvalue].dtype),
-        A.pvalue: Column(c[A.pvalue].dtype),
-        A.k: Column(c[A.k].dtype),
-        A.q: Column(c[A.q].dtype),
-        A.q_err: Column(c[A.q_err].dtype),
-        A.Q: Column(c[A.Q].dtype),
-        A.DT: Column(c[A.DT].dtype),
-        A.DT_err: Column(c[A.DT_err].dtype),
-    },
+    columns=meta_cols | source_cols | computed_cols,
 )

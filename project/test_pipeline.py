@@ -4,8 +4,6 @@ from pandas.testing import assert_frame_equal
 from boilerdata.models.project import Project
 from boilerdata.pipeline import get_df, pipeline
 
-CI = "Skip on CI."
-
 
 def test_pipeline(tmp_proj):
     """Ensure the same result is coming out of the pipeline as before."""
@@ -20,11 +18,18 @@ def test_pipeline(tmp_proj):
     tmp_proj.params.refetch_runs = True
     pipeline(tmp_proj)
 
-    old = pd.read_csv(get_old_file(old_commit), **common_read_csv_params).reset_index(
-        drop=True
+    # Drop "good" because we changed that for a few trials recently. Drop "TC at top of
+    # coupon" and "sixth-tc" since that column name changed. Drop "∆T\-(err)" because it
+    # was actually incorrect in the old dataframe.
+    old = (
+        pd.read_csv(get_old_file(old_commit), **common_read_csv_params)
+        .reset_index(drop=True)
+        .drop(columns=["good", "TC at top of coupon", r"∆T\-(err)"])
     )
-    new = pd.read_csv(tmp_proj.dirs.results_file, **common_read_csv_params).reset_index(
-        drop=True
+    new = (
+        pd.read_csv(tmp_proj.dirs.results_file, **common_read_csv_params)
+        .reset_index(drop=True)
+        .drop(columns=["good", "sixth-tc", r"∆T\-(err)"])
     )
     assert_frame_equal(old, new)
 
