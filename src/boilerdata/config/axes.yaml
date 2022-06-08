@@ -118,10 +118,12 @@ all:
     units: "W/m-K"
 
   - name: "q"
+    pretty_name: "q''"
     units: "W/cm^2"
     originlab_coldes: "Y"
 
   - name: "q_err"
+    pretty_name: "q''_err"
     units: "W/cm^2"
     originlab_coldes: "E"
 
