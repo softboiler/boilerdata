@@ -140,7 +140,7 @@ def get_run(proj: Project, trial: Trial, run: Path) -> pd.DataFrame:
 
 def rename_columns(df: pd.DataFrame, proj: Project) -> pd.DataFrame:
     """Rename source columns."""
-    return df.rename({col.source: col.name for col in proj.axes.cols}, axis="columns")
+    return df.rename(columns={col.source: col.name for col in proj.axes.cols})
 
 
 # * -------------------------------------------------------------------------------- * #
@@ -303,8 +303,8 @@ def transform_for_originlab(df: pd.DataFrame, proj: Project) -> pd.DataFrame:
         .replace(subscript, subscript_repl)
         for index in (quantity, units)
     ]
-    cols = pd.MultiIndex.from_frame(pd.concat(indices, axis="columns"))
-    return df.set_axis(cols, axis="columns").reset_index()  # type: ignore
+    cols = pd.MultiIndex.from_frame(pd.concat(axis="columns", objs=indices))
+    return df.set_axis(axis="columns", labels=cols).reset_index()  # type: ignore
 
 
 # * -------------------------------------------------------------------------------- * #

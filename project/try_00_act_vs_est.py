@@ -89,7 +89,7 @@ def main():
             reg_trues.append(reg_true)
             regs.append((reg_mean - reg_true) / reg_true)
 
-    reg_true_df = pd.concat(reg_trues, axis="columns").T[["TLfit", "int95"]]
+    reg_true_df = pd.concat(axis="columns", objs=reg_trues).T[["TLfit", "int95"]]
     reg_true_df = reg_true_df[reg_true_df.TLfit < 120]
     print((reg_true_df.int95 / reg_true_df.TLfit).mean())
 

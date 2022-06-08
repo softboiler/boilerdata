@@ -114,14 +114,16 @@ class Axes(MyBaseModel):
             self.get_names(self.cols),
             index=self.get_names(self.cols),
             dtype=PandasDtype.string,
-        ).rename({0: "quantity"}, axis="columns")
+        ).rename(axis="columns", mapper={0: "quantity"})
 
         units = pd.DataFrame(
             {col.name: pd.Series(col.units, index=["units"]) for col in self.cols},
             dtype=PandasDtype.string,
         ).T
 
-        return pd.MultiIndex.from_frame(pd.concat([quantity, units], axis="columns"))
+        return pd.MultiIndex.from_frame(
+            pd.concat(axis="columns", objs=[quantity, units])
+        )
 
     def get_originlab_coldes(self) -> str:
         return "".join(
