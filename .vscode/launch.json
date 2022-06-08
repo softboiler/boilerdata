@@ -7,8 +7,7 @@
       "name": "proj: Update schema",
       "type": "python",
       "request": "launch",
-      "program": "-m",
-      "args": ["boilerdata.utils"],
+      "module": "boilerdata.utils",
       "console": "internalConsole"
     },
     {
