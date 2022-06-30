@@ -1,0 +1,5 @@
+stages:
+  run:
+    cmd: python src/boilerdata/pipeline.py
+    params:
+      - src/boilerdata/config/project.yaml:

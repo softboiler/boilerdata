@@ -1,0 +1,46 @@
+schema: '2.0'
+stages:
+  run:
+    cmd: python src/boilerdata/pipeline.py
+    params:
+      src/boilerdata/config/project.yaml:
+        dirs:
+          base: G:/My Drive/Blake/School/Grad/Projects/18.09 Nucleate Pool Boiling/Data
+          config: ~/Code/mine/boilerdata/src/boilerdata/config
+          project_schema: ~/Code/mine/boilerdata/src/boilerdata/schema
+          trials: Boiling Curves
+          per_trial: data
+          results: Results
+        geometry:
+          diameter: 0.375
+          rods:
+            W:
+            - 3.525
+            - 3.05
+            - 2.575
+            - 2.1
+            - 0.375
+            X:
+            - 3.5253
+            - 3.05
+            - 2.5756
+            - 2.1006
+            - 0.3754
+            Y:
+            - 3.525
+            - 3.0504
+            - 2.5752
+            - 2.1008
+            - 0.3752
+          coupons:
+            A1: 0.766
+            A2: 0.77
+            A3: 0.769
+            A4: 0.746
+            A5: 0.734
+            A6: 0.75
+            A7: 0.753
+            A8: 0.753
+            A9: 0.553
+        params:
+          refetch_runs: false
