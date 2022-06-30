@@ -68,7 +68,7 @@ def get_df(proj: Project) -> pd.DataFrame:
     return pd.read_csv(
         proj.dirs.runs_file,
         index_col=index_cols,
-        dtype=dtypes,
+        dtype=dtypes,  # type: ignore
         parse_dates=index_cols,
         encoding="utf-8",
     )
@@ -119,10 +119,10 @@ def get_run(proj: Project, trial: Trial, run: Path) -> pd.DataFrame:
             **pd.read_csv(
                 run,
                 # Allow source cols to be missing (such as T_6)
-                usecols=lambda col: col in [index, *source_col_names],  # type: ignore  # Guarded in source property
+                usecols=lambda col: col in [index, *source_col_names],
                 index_col=index,
-                parse_dates=[index],  # type: ignore  # Guarded in index property
-                dtype=source_dtypes,
+                parse_dates=[index],
+                dtype=source_dtypes,  # type: ignore
                 encoding="utf-8",
             )
         )
@@ -171,7 +171,7 @@ def get_steady_state(df: pd.DataFrame, proj: Project) -> pd.DataFrame:
         col.name for col in proj.axes.all if col.source and col.dtype == "float"
     ]
     means = df[cols_to_mean].groupby(level=A.run, sort=False).transform("mean")
-    return df.assign(**means).droplevel(A.time)[:: proj.params.records_to_average]  # type: ignore
+    return df.assign(**means).droplevel(A.time)[:: proj.params.records_to_average]
 
 
 # * -------------------------------------------------------------------------------- * #
@@ -184,7 +184,7 @@ def fit(df: pd.DataFrame, proj: Project, trial: Trial) -> pd.DataFrame:
         linregress_apply,
         proj=proj,
         trial=trial,
-        temperature_cols=df[trial.thermocouple_pos.keys()],
+        temperature_cols=df[trial.thermocouple_pos.keys()],  # type: ignore  # Set-like of str should be okay
         result_cols=[A.dT_dx, A.dT_dx_err, A.T_s, A.T_s_err, A.rvalue, A.pvalue],
     )
     return df
@@ -200,7 +200,7 @@ def get_heat_transfer(df: pd.DataFrame, proj: Project, trial: Trial) -> pd.DataF
     cross_sectional_area = np.pi / 4 * diameter**2  # (cm^2)
 
     # Temperatures
-    trial_water_temp = df[proj.params.water_temps].mean().mean()
+    trial_water_temp = df[proj.params.water_temps].mean().mean()  # type: ignore  # Wrong pandas-stub: "AxesEnum" is incompatible with "_str", due to Pydantic's `use_enum_values = True`
     midpoint_temps = (trial_water_temp + df[A.T_1]) / 2
 
     return df.assign(
@@ -244,11 +244,11 @@ def linregress_apply(
 
 
 def linregress_ser(
-    series_of_y: pd.Series,
+    series_of_y: pd.Series[float],
     x: npt.ArrayLike,
     repeats_per_pair: int,
     regression_stats: list[str],
-) -> pd.Series:
+) -> pd.Series[float]:
     """Perform linear regression of a series of y's with respect to given x's.
 
     Given x-values and a series of y-values, return a series of linear regression
@@ -304,7 +304,7 @@ def transform_for_originlab(df: pd.DataFrame, proj: Project) -> pd.DataFrame:
         for index in (quantity, units)
     ]
     cols = pd.MultiIndex.from_frame(pd.concat(axis="columns", objs=indices))
-    return df.set_axis(axis="columns", labels=cols).reset_index()  # type: ignore
+    return df.set_axis(axis="columns", labels=cols).reset_index()
 
 
 # * -------------------------------------------------------------------------------- * #
@@ -318,12 +318,12 @@ def plot_fit_apply(df: pd.DataFrame, proj: Project, trial: Trial) -> pd.DataFram
         from matplotlib import pyplot as plt
 
         matplotlib.use("QtAgg")
-        df.apply(axis="columns", func=plot_fit_ser, proj=proj, trial=trial, plt=plt)
+        df.apply(axis="columns", func=plot_fit_ser, proj=proj, trial=trial, plt=plt)  # type: ignore  # pandas-stubs issue
         plt.show()
     return df
 
 
-def plot_fit_ser(ser: pd.Series, proj: Project, trial: Trial, plt: ModuleType):
+def plot_fit_ser(ser: pd.Series[float], proj: Project, trial: Trial, plt: ModuleType):
     """Plot the goodness of fit for a series of temperatures and positions."""
     plt.figure()
     plt.title("Temperature Profile in Post")
@@ -331,7 +331,7 @@ def plot_fit_ser(ser: pd.Series, proj: Project, trial: Trial, plt: ModuleType):
     plt.ylabel("T (C)")
     plt.plot(
         trial.thermocouple_pos,
-        ser[trial.thermocouple_pos.keys()],
+        ser[trial.thermocouple_pos.keys()],  # type: ignore  # pandas-stubs issue: "AxesEnum" is incompatible with "_str", due to Pydantic's `use_enum_values = True`
         "*",
         label="Measured Temperatures",
         color=[0.2, 0.2, 0.2],
