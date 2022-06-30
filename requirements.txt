@@ -2,7 +2,7 @@
 # For serialization
 pyyaml~=6.0
 # For property lookup
-propshop~=0.0.6
+propshop~=0.0.7
 # For configuration and validation
 pydantic~=1.9.1
 # For data processing
