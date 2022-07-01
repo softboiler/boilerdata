@@ -30,7 +30,10 @@ def pipeline(proj: Project):
 
     # Get dataframe of all runs and reduce to steady-state
     runs_df = validate_runs_df(get_df(proj))
-    df = pd.DataFrame(columns=Axes.get_names(proj.axes.cols)).assign(**get_steady_state(runs_df, proj))  # type: ignore
+    # Reason: All DataFrames from CSV guarantees str keys, not expressible in types.
+    df = pd.DataFrame(columns=Axes.get_names(proj.axes.cols)).assign(
+        **get_steady_state(runs_df, proj)  # type: ignore
+    )
 
     # Perform fits and compute heat transfer for each trial
     for trial in proj.trials:
@@ -186,7 +189,8 @@ def fit(df: pd.DataFrame, proj: Project, trial: Trial) -> pd.DataFrame:
         linregress_apply,
         proj=proj,
         trial=trial,
-        temperature_cols=df[trial.thermocouple_pos.keys()],  # type: ignore  # Set-like of str should be okay
+        # Reason: Set-like view of str should be okay
+        temperature_cols=df[trial.thermocouple_pos.keys()],  # type: ignore
         result_cols=[A.dT_dx, A.dT_dx_err, A.T_s, A.T_s_err, A.rvalue, A.pvalue],
     )
     return df
@@ -202,7 +206,8 @@ def get_heat_transfer(df: pd.DataFrame, proj: Project, trial: Trial) -> pd.DataF
     cross_sectional_area = np.pi / 4 * diameter**2  # (cm^2)
 
     # Temperatures
-    trial_water_temp = df[proj.params.water_temps].mean().mean()  # type: ignore  # Wrong pandas-stub: "AxesEnum" is incompatible with "_str", due to Pydantic's `use_enum_values = True`
+    # Reason: Enum incompatible with str, but we have use_enum_values from Pydantic
+    trial_water_temp = df[proj.params.water_temps].mean().mean()  # type: ignore
     midpoint_temps = (trial_water_temp + df[A.T_1]) / 2
 
     return df.assign(
@@ -320,7 +325,14 @@ def plot_fit_apply(df: pd.DataFrame, proj: Project, trial: Trial) -> pd.DataFram
         from matplotlib import pyplot as plt
 
         matplotlib.use("QtAgg")
-        df.apply(axis="columns", func=plot_fit_ser, proj=proj, trial=trial, plt=plt)  # type: ignore  # pandas-stubs issue
+        # Reason: Enum incompatible with str, but we have use_enum_values from Pydantic
+        df.apply(
+            axis="columns",
+            func=plot_fit_ser,
+            proj=proj,
+            trial=trial,
+            plt=plt,
+        )  # type: ignore
         plt.show()
     return df
 
@@ -331,9 +343,10 @@ def plot_fit_ser(ser: pd.Series[float], proj: Project, trial: Trial, plt: Module
     plt.title("Temperature Profile in Post")
     plt.xlabel("x (m)")
     plt.ylabel("T (C)")
+    # Reason: Enum incompatible with str, but we have use_enum_values from Pydantic
     plt.plot(
         trial.thermocouple_pos,
-        ser[trial.thermocouple_pos.keys()],  # type: ignore  # pandas-stubs issue: "AxesEnum" is incompatible with "_str", due to Pydantic's `use_enum_values = True`
+        ser[trial.thermocouple_pos.keys()],  # type: ignore
         "*",
         label="Measured Temperatures",
         color=[0.2, 0.2, 0.2],
