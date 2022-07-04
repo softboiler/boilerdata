@@ -7,7 +7,7 @@ propshop~=0.0.7
 pydantic~=1.9.1
 # For data processing
 pandas~=1.4.2
-pandas-stubs~=1.4.2.220626
+pandas-stubs~=1.4.3.220703
 pyarrow~=8.0.0
 # For validation
 pandera~=0.11.0
