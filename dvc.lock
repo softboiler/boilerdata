@@ -5,12 +5,11 @@ stages:
     params:
       src/boilerdata/config/project.yaml:
         dirs:
-          base: G:/My Drive/Blake/School/Grad/Projects/18.09 Nucleate Pool Boiling/Data
+          base: data
           config: ~/Code/mine/boilerdata/src/boilerdata/config
           project_schema: ~/Code/mine/boilerdata/src/boilerdata/schema
-          trials: Boiling Curves
-          per_trial: data
-          results: Results
+          trials: curves
+          results: results
         geometry:
           diameter: 0.375
           rods:
