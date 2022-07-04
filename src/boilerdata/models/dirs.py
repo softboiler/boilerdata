@@ -1,4 +1,5 @@
 from pathlib import Path
+from typing import Optional
 
 from pydantic import DirectoryPath, Field, validator
 
@@ -40,8 +41,8 @@ class Dirs(MyBaseModel):
         default=...,
         description="The directory in which the individual trials are. Must be relative to the base directory or an absolute path that exists.",
     )
-    per_trial: Path = Field(
-        default=...,
+    per_trial: Optional[Path] = Field(
+        default=None,
         description="The directory in which the data are for a given trial. Must be relative to a trial folder, and all trials must share this pattern.",
     )
     results: DirectoryPath = Field(
@@ -60,7 +61,7 @@ class Dirs(MyBaseModel):
             return results
         results = values["base"] / results
         results.mkdir(parents=True, exist_ok=True)
-        return values["base"] / results
+        return results
 
     # ! FILES
 

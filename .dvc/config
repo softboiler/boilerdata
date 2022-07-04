@@ -1,0 +1,3 @@
+['remote "origin"']
+    url = gs://boilerdata
+    projectname = boilerdata

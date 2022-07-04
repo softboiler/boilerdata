@@ -4,6 +4,7 @@ from bisect import insort
 from collections import Counter
 from operator import indexOf
 from pathlib import Path
+from shutil import copy, copytree
 from textwrap import dedent
 
 import pandas as pd
@@ -12,14 +13,72 @@ from pydantic import BaseModel, DirectoryPath, Field
 from boilerdata.models.common import StrPath, dump_model, load_config, write_schema
 from boilerdata.models.project import Project
 
+# * -------------------------------------------------------------------------------- * #
+# * CURRENT MIGRATION
+
 
 def main():
-    project = Project.get_project()
-    migrate_3(
-        project,
-        "src/boilerdata/schema/columns_schema.json",
-        "src/boilerdata/config/columns.yaml",
-    )
+    # proj = Project.get_project()
+    migrate_8()
+
+
+def migrate_8():
+    """Placeholder for future migration."""
+    ...
+
+
+# * -------------------------------------------------------------------------------- * #
+# * OLD MIGRATIONS
+
+
+def migrate_7(proj: Project):
+    """Copy over other desired folders."""
+
+    base = proj.dirs.base
+    sources = [base / "Results", base / "open_all_notes.ps1"]
+    for source in sources:
+        destination = Path("data") / source.relative_to(base)
+        copytree(source, destination)
+
+
+def migrate_6():
+    """Remove "data" subfolder from every experiment.
+
+    Must manually rename "curves2" afterward.
+    """
+
+    data = Path("data")
+    curves = data / "curves"
+    curves2 = data / "curves2"
+    curves2.mkdir()
+
+    for path in curves.iterdir():
+        (path / "data").rename(curves2 / path.relative_to(curves))
+        ...
+
+
+def migrate_5():
+    """Move folders into "curves" directory."""
+
+    data = Path("data")
+    data_dirs = data.iterdir()
+
+    curves = data / Path("curves")
+    curves.mkdir()
+
+    for path in data_dirs:
+        path.rename(curves / path.relative_to("data"))
+
+
+def migrate_4(proj: Project):
+    """Copy files from local Google Drive to data directory in this project."""
+
+    for trial in proj.trials:
+        for source in trial.run_files:
+            common = source.relative_to(proj.dirs.trials)
+            destination = Path("data") / common
+            destination.parent.mkdir(parents=True, exist_ok=True)
+            copy(source, destination)
 
 
 def migrate_3(project: Project, columns_schema_path: StrPath, columns_path: StrPath):

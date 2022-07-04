@@ -82,7 +82,8 @@ class Trial(MyBaseModel):
 
     def set_paths(self, dirs: Dirs):
         """Get the path to the data for this trial. Called during project setup."""
-        self.path = dirs.trials / str(self.trial.date()) / dirs.per_trial
+        trial_base = dirs.trials / str(self.trial.date())
+        self.path = trial_base / dirs.per_trial if dirs.per_trial else trial_base
         self.run_files = sorted(self.path.glob("*.csv"))
         self.set_index()
 
