@@ -180,3 +180,11 @@ trials:
     coupon: "A9"
     joint: "solder"
     comment: Copper X-A9-newcam
+
+  - date: 2022-08-16
+    group: "control"
+    rod: "R"
+    coupon: "A0"
+    joint: "none"
+    comment: First trial with the jointless rod.
+    new: true

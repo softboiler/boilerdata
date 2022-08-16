@@ -31,11 +31,13 @@ class Rod(GetNameEnum):
     W = auto()
     X = auto()
     Y = auto()
+    R = auto()
 
 
 class Coupon(GetNameEnum):
     """The coupon attached to the rod for this trial."""
 
+    A0 = auto()
     A1 = auto()
     A2 = auto()
     A3 = auto()
@@ -67,6 +69,7 @@ class Joint(GetNameEnum):
     paste = auto()
     epoxy = auto()
     solder = auto()
+    none = auto()
 
 
 # sourcery skip: avoid-builtin-shadow

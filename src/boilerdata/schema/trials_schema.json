@@ -30,13 +30,15 @@
       "enum": [
         "W",
         "X",
-        "Y"
+        "Y",
+        "R"
       ]
     },
     "Coupon": {
       "title": "Coupon",
       "description": "The coupon attached to the rod for this trial.",
       "enum": [
+        "A0",
         "A1",
         "A2",
         "A3",
@@ -61,7 +63,8 @@
       "enum": [
         "paste",
         "epoxy",
-        "solder"
+        "solder",
+        "none"
       ]
     },
     "Trial": {
