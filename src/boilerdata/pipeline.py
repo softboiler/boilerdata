@@ -46,6 +46,7 @@ def pipeline(proj: Project):
     # Set dtypes after update. https://github.com/pandas-dev/pandas/issues/4094
     dtypes = {col.name: col.dtype for col in proj.axes.cols}
     df = validate_df(df.pipe(set_dtypes, dtypes))
+    df.to_csv(f"{proj.dirs.results_file}_unitless", encoding="utf-8")
 
     # Post-process the dataframe for writing to OriginLab-flavored CSV
     df.pipe(transform_for_originlab, proj).to_csv(
