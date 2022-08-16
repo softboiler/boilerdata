@@ -1,5 +1,5 @@
 # Changes here will be overwritten by Copier; NEVER EDIT MANUALLY
-_commit: 38bebe4
+_commit: 5e1f576
 _src_path: gh:blakeNaccarato/copier-python
 github_repo_name: boilerdata
 include_funding: true
@@ -9,11 +9,13 @@ override_coveragerc: false
 override_env: false
 override_flake8: true
 override_gitattributes: false
+override_gitignore: false
 override_isort: true
 override_precommit: true
 override_pyrightconfig: true
 override_pytest: true
 override_sourcery: false
+override_update: false
 override_vscode_extensions: false
 override_vscode_launch: true
 override_vscode_settings: true
@@ -23,4 +25,5 @@ project_name: boilerdata
 project_owner_github_username: blakeNaccarato
 project_owner_name: Blake Naccarato
 python_version: '3.10'
+use_dvc: true
 year_of_project_creation: 2022
