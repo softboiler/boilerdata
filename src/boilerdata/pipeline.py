@@ -74,7 +74,7 @@ def get_df(proj: Project) -> pd.DataFrame:
     return pd.read_csv(
         proj.dirs.runs_file,
         index_col=index_cols,
-        dtype=dtypes,  # type: ignore
+        dtype=dtypes,
         parse_dates=index_cols,
         encoding="utf-8",
     )
@@ -191,7 +191,7 @@ def fit(df: pd.DataFrame, proj: Project, trial: Trial) -> pd.DataFrame:
         proj=proj,
         trial=trial,
         # Reason: Set-like view of str should be okay
-        temperature_cols=df[trial.thermocouple_pos.keys()],  # type: ignore
+        temperature_cols=df[trial.thermocouple_pos.keys()],
         result_cols=[A.dT_dx, A.dT_dx_err, A.T_s, A.T_s_err, A.rvalue, A.pvalue],
     )
     return df
@@ -347,7 +347,7 @@ def plot_fit_ser(ser: pd.Series[float], proj: Project, trial: Trial, plt: Module
     # Reason: Enum incompatible with str, but we have use_enum_values from Pydantic
     plt.plot(
         trial.thermocouple_pos,
-        ser[trial.thermocouple_pos.keys()],  # type: ignore
+        ser[trial.thermocouple_pos.keys()],
         "*",
         label="Measured Temperatures",
         color=[0.2, 0.2, 0.2],
