@@ -43,10 +43,14 @@ def pipeline(proj: Project):
             .pipe(fit, proj, trial)
             .pipe(get_heat_transfer, proj, trial)
         )
+
     # Set dtypes after update. https://github.com/pandas-dev/pandas/issues/4094
     dtypes = {col.name: col.dtype for col in proj.axes.cols}
     df = validate_df(df.pipe(set_dtypes, dtypes))
-    df.to_csv(f"{proj.dirs.results_file}_unitless", encoding="utf-8")
+
+    # Write a unitless version to CSV for quick reference
+    path = Path(proj.dirs.results_file)
+    df[df.new].to_csv(path.parent / f"{path.stem}_new{path.suffix}", encoding="utf-8")
 
     # Post-process the dataframe for writing to OriginLab-flavored CSV
     df.pipe(transform_for_originlab, proj).to_csv(
