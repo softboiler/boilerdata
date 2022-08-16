@@ -1,0 +1,5 @@
+outs:
+- md5: 46fbfbd26ea3af00276dc92046b18499.dir
+  size: 6350382
+  nfiles: 5
+  path: results

@@ -1,0 +1,5 @@
+outs:
+- md5: c19aef5cf93a253f2e4bc7e5749d89a6.dir
+  size: 92632569
+  nfiles: 362
+  path: curves
