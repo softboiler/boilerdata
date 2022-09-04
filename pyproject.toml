@@ -5,7 +5,7 @@ build-backend = "flit_core.buildapi"
 [project]
 name = "boilerdata"
 requires-python = ">=3.10"
-dependencies = [ "dvc[gs]~=2.17.0", "matplotlib~=3.5.3", "pandas-stubs~=1.4.3.220807", "pandas~=1.4.3", "pandera~=0.11.0", "pyarrow~=9.0.0", "pydantic~=1.9.2", "pyyaml~=6.0", "rich~=12.5.1", "scipy~=1.9.0", "typer[all]~=0.6.1",]
+dependencies = [ "dvc[gs]~=2.17.0", "matplotlib~=3.5.3", "pandas-stubs~=1.4.3.220829", "pandas~=1.4.3", "pandera~=0.12.0", "pyarrow~=9.0.0", "pydantic~=1.10.1", "pyyaml~=6.0", "rich~=12.5.1", "scipy~=1.9.1", "typer[all]~=0.6.1",]
 readme = "README.md"
 dynamic = [ "version", "description",]
 [[project.authors]]
