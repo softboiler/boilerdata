@@ -7,7 +7,7 @@ rich~=12.5.1
 
 # Format
 autoflake~=1.4
-black~=22.6.0  # doesn't follow semver
+black~=22.8.0  # doesn't follow semver
 
 # Lint
 flake8-codes~=0.2.2  # flake8 error code introspection
@@ -19,6 +19,6 @@ snakeviz~=2.1.1
 pre-commit~=2.20.0
 
 # For local publishing to PyPi with flit
-keyring~=23.8.2
+keyring~=23.9.0
 
 -r requirements_both.txt
