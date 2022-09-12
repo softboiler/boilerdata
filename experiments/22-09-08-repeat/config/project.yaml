@@ -1,0 +1,34 @@
+dirs:
+  base: "data"
+  config: "~/Code/mine/boilerdata/experiments/22-09-08-repeat/config"
+  project_schema: "~/Code/mine/boilerdata/src/boilerdata/schema"
+  trials: "curves"
+  results: "experiments/22-09-08-repeat"
+
+geometry:
+  diameter: 0.375
+
+  rods:
+    W: [3.5250, 3.0500, 2.5750, 2.1000, 0.3750]
+    X: [3.5253, 3.0500, 2.5756, 2.1006, 0.3754]
+    Y: [3.5250, 3.0504, 2.5752, 2.1008, 0.3752]
+    R: [4.1000, 3.6250, 3.1500, 2.6750, 0.9500]
+
+  coupons:
+    A0: 0.000
+    A1: 0.766
+    A2: 0.770
+    A3: 0.769
+    A4: 0.746
+    A5: 0.734
+    A6: 0.750
+    A7: 0.753
+    A8: 0.753
+    A9: 0.553
+
+params:
+  refetch_runs: false
+  skip_validation: true
+  do_plot: true
+  water_temps: ["T_w1", "T_w2"]
+  records_to_average: 15

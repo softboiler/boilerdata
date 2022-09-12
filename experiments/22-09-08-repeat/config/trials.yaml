@@ -1,0 +1,8 @@
+trials:
+  - date: 2022-09-08
+    group: "control"
+    rod: "R"
+    coupon: "A0"
+    joint: "none"
+    comment: Second trial with jointless rod. Ended up testing the same point multiple times, trying different things outlined in the Trello note.
+    new: true

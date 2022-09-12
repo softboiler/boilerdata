@@ -29,7 +29,8 @@ from boilerdata.validation import validate_df, validate_runs_df
 def pipeline(proj: Project):
 
     # Get dataframe of all runs and reduce to steady-state
-    runs_df = validate_runs_df(get_df(proj))
+    df = get_df(proj)
+    runs_df = df if proj.params.skip_validation else validate_runs_df(df)
     # Reason: All DataFrames from CSV guarantees str keys, not expressible in types.
     df = pd.DataFrame(columns=Axes.get_names(proj.axes.cols)).assign(
         **get_steady_state(runs_df, proj)  # type: ignore
@@ -46,7 +47,8 @@ def pipeline(proj: Project):
 
     # Set dtypes after update. https://github.com/pandas-dev/pandas/issues/4094
     dtypes = {col.name: col.dtype for col in proj.axes.cols}
-    df = validate_df(df.pipe(set_dtypes, dtypes))
+    df = df.pipe(set_dtypes, dtypes)
+    df = df if proj.params.skip_validation else validate_df(df)
 
     # Write a unitless version to CSV for quick reference
     path = Path(proj.dirs.results_file)

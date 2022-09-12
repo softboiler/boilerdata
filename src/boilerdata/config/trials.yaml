@@ -188,3 +188,11 @@ trials:
     joint: "none"
     comment: First trial with the jointless rod. There was an issue with T1 and T2 not being installed deeply enough for runs prior to 12-16-38.
     new: true
+
+  - date: 2022-09-08
+    group: "control"
+    rod: "R"
+    coupon: "A0"
+    joint: "none"
+    comment: Second trial with jointless rod. Ended up testing the same point multiple times, trying different things outlined in the Trello note.
+    new: true

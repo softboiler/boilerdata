@@ -1,7 +1,7 @@
 from pydantic import Field
 
 from boilerdata.models.axes import Axes
-from boilerdata.models.common import MyBaseModel, load_config
+from boilerdata.models.common import MyBaseModel, StrPath, load_config
 from boilerdata.models.dirs import Dirs
 from boilerdata.models.geometry import Geometry
 from boilerdata.models.params import Params
@@ -31,5 +31,5 @@ class Project(MyBaseModel):
             trial.setup(self.dirs, self.geometry)
 
     @classmethod
-    def get_project(cls):
-        return load_config("src/boilerdata/config/project.yaml", cls)
+    def get_project(cls, proj: StrPath = "src/boilerdata/config/project.yaml"):
+        return load_config(proj, cls)
