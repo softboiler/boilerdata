@@ -85,6 +85,8 @@ class Trial(MyBaseModel):
         trial_base = dirs.trials / str(self.trial.date())
         self.path = trial_base / dirs.per_trial if dirs.per_trial else trial_base
         self.run_files = sorted(self.path.glob("*.csv"))
+        if not self.run_files:
+            raise FileNotFoundError(f"No runs found in {self.path}.")
         self.set_index()
 
     def set_index(self):

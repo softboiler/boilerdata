@@ -29,8 +29,8 @@ from boilerdata.validation import validate_df, validate_runs_df
 def pipeline(proj: Project):
 
     # Get dataframe of all runs and reduce to steady-state
-    df = get_df(proj)
-    runs_df = df if proj.params.skip_validation else validate_runs_df(df)
+    runs_df = get_df(proj)
+    runs_df = runs_df if proj.params.skip_validation else validate_runs_df(runs_df)
     # Reason: All DataFrames from CSV guarantees str keys, not expressible in types.
     df = pd.DataFrame(columns=Axes.get_names(proj.axes.cols)).assign(
         **get_steady_state(runs_df, proj)  # type: ignore
@@ -38,12 +38,14 @@ def pipeline(proj: Project):
 
     # Perform fits and compute heat transfer for each trial
     for trial in proj.trials:
+        trial_df = df.xs(trial.trial, level=A.trial, drop_level=False)
         df.update(
-            df.xs(trial.trial, level=A.trial, drop_level=False)
-            .pipe(assign_metadata, proj, trial)
+            trial_df.pipe(assign_metadata, proj, trial)
             .pipe(fit, proj, trial)
             .pipe(get_heat_transfer, proj, trial)
         )
+        if proj.params.do_plot:
+            plot_fit_apply(trial_df, proj, trial)
 
     # Set dtypes after update. https://github.com/pandas-dev/pandas/issues/4094
     dtypes = {col.name: col.dtype for col in proj.axes.cols}
@@ -327,20 +329,17 @@ def transform_for_originlab(df: pd.DataFrame, proj: Project) -> pd.DataFrame:
 
 def plot_fit_apply(df: pd.DataFrame, proj: Project, trial: Trial) -> pd.DataFrame:
     """Plot the goodness of fit for each run in the trial."""
-    if proj.params.do_plot:
-        import matplotlib
-        from matplotlib import pyplot as plt
+    from matplotlib import pyplot as plt
 
-        matplotlib.use("QtAgg")
-        # Reason: Enum incompatible with str, but we have use_enum_values from Pydantic
-        df.apply(
-            axis="columns",
-            func=plot_fit_ser,
-            proj=proj,
-            trial=trial,
-            plt=plt,
-        )  # type: ignore
-        plt.show()
+    # Reason: Enum incompatible with str, but we have use_enum_values from Pydantic
+    df.apply(
+        axis="columns",
+        func=plot_fit_ser,
+        proj=proj,
+        trial=trial,
+        plt=plt,
+    )  # type: ignore
+    plt.show()
     return df
 
 
@@ -352,7 +351,7 @@ def plot_fit_ser(ser: pd.Series[float], proj: Project, trial: Trial, plt: Module
     plt.ylabel("T (C)")
     # Reason: Enum incompatible with str, but we have use_enum_values from Pydantic
     plt.plot(
-        trial.thermocouple_pos,
+        trial.thermocouple_pos.values(),
         ser[trial.thermocouple_pos.keys()],
         "*",
         label="Measured Temperatures",
