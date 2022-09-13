@@ -1,5 +1,5 @@
 # List project dependencies here. A workflow ports them to `pyproject.toml`. This is needed because Dependabot does not currently support `flit`-flavored `pyproject.toml`.
-dvc[gs]~=2.24.0
+dvc[gs]~=2.25.0
 matplotlib~=3.5.3
 pandas-stubs~=1.4.4.220905
 pandas~=1.4.3
