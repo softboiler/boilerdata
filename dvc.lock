@@ -7,14 +7,6 @@ stages:
       md5: 438ac642116158005c9a4ae9ecb5f819.dir
       size: 103226338
       nfiles: 401
-    - path: schema
-      md5: 32eeffb2bdfd4b9fb42589ab3c4d8164.dir
-      size: 22303
-      nfiles: 4
-    - path: src/boilerdata
-      md5: a8a2d84bf5a9dbfb89cf3be60aec98af.dir
-      size: 118287
-      nfiles: 42
     params:
       config/axes.yaml:
         all:
