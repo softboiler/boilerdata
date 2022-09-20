@@ -3,5 +3,9 @@ stages:
     cmd: "python -m boilerdata.pipeline"
     deps:
       - "data/curves"
+    params:
+      - "src/boilerdata/config/axes.yaml":
+      - "src/boilerdata/config/project.yaml":
+      - "src/boilerdata/config/trials.yaml":
     outs:
       - "data/results"

@@ -4,7 +4,7 @@ from typing import Optional
 
 import numpy as np
 import pandas as pd
-from pydantic import DirectoryPath, Field, FilePath
+from pydantic import DirectoryPath, Field, FilePath, validator
 
 from boilerdata.models.axes_enum import AxesEnum as A  # noqa: N814
 from boilerdata.models.common import MyBaseModel
@@ -18,11 +18,18 @@ class Trial(MyBaseModel):
 
     # ! META FIELDS ADDED TO DATAFRAME
 
+    # !! DATE
+
     date: datetime.date = Field(
         default=...,
         description="The date of the trial.",
         exclude=True,
     )
+
+    @validator("date", pre=True)
+    def validate_date(cls, date):
+        return datetime.date.fromisoformat(date)
+
     group: Group
     rod: Rod
     coupon: Coupon
