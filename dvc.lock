@@ -369,8 +369,8 @@ stages:
     cmd: python -m boilerdata.plot
     deps:
     - path: data/plotter
-      md5: 0408eaaa920bad767c9ecf303a91d0f8.dir
-      size: 570748
+      md5: 201d7c2e1cdf5b9aabe676d8a707d39a.dir
+      size: 570517
       nfiles: 1
     - path: data/results
       md5: 5c91e43111a80708c507499c06a69221.dir
@@ -378,6 +378,6 @@ stages:
       nfiles: 4
     outs:
     - path: data/plots
-      md5: 7da81dbd9c56ca9b122bc048c06334ee.dir
+      md5: 21c8fc59c6a28e93df94cb28cb5a10c8.dir
       size: 41829
       nfiles: 1

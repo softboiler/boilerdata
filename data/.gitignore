@@ -1,5 +1,4 @@
-/curves
-/experiments
-/results
-/plots
-/plotter
+*
+*/
+!.gitignore
+!*.dvc
