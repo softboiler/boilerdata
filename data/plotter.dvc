@@ -1,0 +1,5 @@
+outs:
+- md5: 1a38df4e0e90fd07aefb23e7670fd2cc.dir
+  size: 1167896
+  nfiles: 2
+  path: plotter

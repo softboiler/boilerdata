@@ -1,4 +1,4 @@
-*
-*/
-!.gitignore
-!*.dvc
+/curves
+/plotter
+/results
+/plots
