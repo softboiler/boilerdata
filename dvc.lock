@@ -1,7 +1,7 @@
 schema: '2.0'
 stages:
   pipeline:
-    cmd: pwsh -Command python -m boilerdata.pipeline
+    cmd: python -m boilerdata.pipeline
     deps:
     - path: data/curves
       md5: 438ac642116158005c9a4ae9ecb5f819.dir
@@ -9,6 +9,6 @@ stages:
       nfiles: 401
     outs:
     - path: data/results
-      md5: 3e448fa11026cdb7510fc227f1f59719.dir
-      size: 1685056
+      md5: 5c91e43111a80708c507499c06a69221.dir
+      size: 6257731
       nfiles: 4

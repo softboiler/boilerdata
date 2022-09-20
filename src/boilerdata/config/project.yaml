@@ -27,4 +27,6 @@ geometry:
     A9: 0.553
 
 params:
-  refetch_runs: false
+  refetch_runs: true
+  water_temps: ["T_w1", "T_w2"]
+  skip_validation: true

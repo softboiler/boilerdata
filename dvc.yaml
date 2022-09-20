@@ -1,6 +1,6 @@
 stages:
   pipeline:
-    cmd: "pwsh -Command python -m boilerdata.pipeline"
+    cmd: "python -m boilerdata.pipeline"
     deps:
       - "data/curves"
     outs:
