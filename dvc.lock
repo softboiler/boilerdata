@@ -377,7 +377,6 @@ stages:
       size: 6257731
       nfiles: 4
     outs:
-    - path: data/plots
-      md5: dd3b916a1448a85a41aae7571e2d0116.dir
+    - path: data/plots/lit_.png
+      md5: 4e0d461b8459c1433358cfd585834147
       size: 41829
-      nfiles: 1

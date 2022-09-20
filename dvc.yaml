@@ -13,4 +13,4 @@ stages:
     deps:
       - "data/plotter"
       - "data/results"
-    outs: ["data/plots"]
+    plots: ["data/plots/lit_.png"]
