@@ -365,3 +365,19 @@ stages:
       md5: 5c91e43111a80708c507499c06a69221.dir
       size: 6257731
       nfiles: 4
+  plot:
+    cmd: python -m boilerdata.plot
+    deps:
+    - path: data/plotter
+      md5: 0408eaaa920bad767c9ecf303a91d0f8.dir
+      size: 570748
+      nfiles: 1
+    - path: data/results
+      md5: 5c91e43111a80708c507499c06a69221.dir
+      size: 6257731
+      nfiles: 4
+    outs:
+    - path: data/plots
+      md5: 3820c66a920f2db90a2373800292f0c4.dir
+      size: 405841
+      nfiles: 1
