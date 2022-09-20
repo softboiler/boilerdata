@@ -24,7 +24,7 @@ def update_schema():
             Path("src/boilerdata/models/axes_enum.py"),
         )
     except ValidationError as exception:
-        path = Path("src/boilerdata/schema")
+        path = Path("schema")
         print(
             f"Schema didn't validate, using default schema path: {path}.",
             "Axes enum not generated.",

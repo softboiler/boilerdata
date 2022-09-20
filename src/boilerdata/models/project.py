@@ -31,5 +31,5 @@ class Project(MyBaseModel):
             trial.setup(self.dirs, self.geometry)
 
     @classmethod
-    def get_project(cls, proj: StrPath = "src/boilerdata/config/project.yaml"):
+    def get_project(cls, proj: StrPath = "config/project.yaml"):
         return load_config(proj, cls)

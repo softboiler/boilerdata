@@ -7,8 +7,16 @@ stages:
       md5: 438ac642116158005c9a4ae9ecb5f819.dir
       size: 103226338
       nfiles: 401
+    - path: schema
+      md5: ab7f698b56ac917f96b420cf58194996.dir
+      size: 22005
+      nfiles: 4
+    - path: src/boilerdata
+      md5: 9b988ee22fa3c00c8f0187a0bea169a0.dir
+      size: 118302
+      nfiles: 42
     params:
-      src/boilerdata/config/axes.yaml:
+      config/axes.yaml:
         all:
         - name: trial
           dtype: datetime64[ns]
@@ -115,13 +123,13 @@ stages:
           pretty_name: ∆T_err
           units: K
           originlab_coldes: M
-      src/boilerdata/config/project.yaml:
+      config/project.yaml:
         dirs:
-          base: data
-          config: ~/Code/mine/boilerdata/src/boilerdata/config
-          project_schema: ~/Code/mine/boilerdata/src/boilerdata/schema
-          trials: curves
-          results: results
+          base: .
+          config: config
+          project_schema: schema
+          trials: data/curves
+          results: data/results
         geometry:
           diameter: 0.375
           rods:
@@ -166,7 +174,7 @@ stages:
           - T_w1
           - T_w2
           skip_validation: true
-      src/boilerdata/config/trials.yaml:
+      config/trials.yaml:
         trials:
         - date: '2020-03-12'
           group: control
@@ -378,5 +386,5 @@ stages:
       nfiles: 4
     outs:
     - path: data/plots/lit_.png
-      md5: 4e0d461b8459c1433358cfd585834147
+      md5: e37e133abd3b510365b0b0cce2473bfc
       size: 41829

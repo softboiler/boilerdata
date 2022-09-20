@@ -194,6 +194,12 @@
           "default": false,
           "type": "boolean"
         },
+        "skip_validation": {
+          "title": "Skip Validation",
+          "description": "Skip validating the raw data.",
+          "default": false,
+          "type": "boolean"
+        },
         "records_to_average": {
           "title": "Records To Average",
           "description": "The number of records over which to average in a given trial.",
@@ -396,7 +402,7 @@
     },
     "OriginLabColdes": {
       "title": "OriginLabColdes",
-      "description": "Valid column designations for plotting in OriginLab.\n\nDesignations:\n    X: x-axis\n    Y: y-axis\n    Z: z-axis\n    M: x-axis error\n    E: y-axis error\n    L: Label\n    G: Group\n    S: Subject\n    N: None (Disregard)\n    Q: Omit (If this column isn't in the output at all)",
+      "description": "Valid column designations for plotting in OriginLab.\n\n    Designations:\n        X: x-axis\n        Y: y-axis\n        Z: z-axis\n        M: x-axis error\n        E: y-axis error\n        L: Label\n        G: Group\n        S: Subject\n        N: None (Disregard)\n        Q: Omit (If this column isn't in the output at all)\n    ",
       "enum": [
         "X",
         "Y",

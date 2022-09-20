@@ -1,9 +1,9 @@
 dirs:
-  base: "data"
-  config: "~/Code/mine/boilerdata/src/boilerdata/config"
-  project_schema: "~/Code/mine/boilerdata/src/boilerdata/schema"
-  trials: "curves"
-  results: "results"
+  base: "."
+  config: "config"
+  project_schema: "schema"
+  trials: "data/curves"
+  results: "data/results"
 
 geometry:
   diameter: 0.375
