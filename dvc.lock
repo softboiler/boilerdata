@@ -378,6 +378,6 @@ stages:
       nfiles: 4
     outs:
     - path: data/plots
-      md5: 21c8fc59c6a28e93df94cb28cb5a10c8.dir
+      md5: 959224fbd83eb2c8655e892951bd75ea.dir
       size: 41829
       nfiles: 1
