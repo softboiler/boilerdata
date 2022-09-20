@@ -2,6 +2,10 @@
   // * -------------------------------------------------------------------------- * //
   // * PROJECT-SPECIFIC * //
 
+  // Environment variables don't load properly otherwise
+  // See: https://github.com/microsoft/vscode-python/issues/944#issuecomment-808516207
+  "terminal.integrated.defaultProfile.linux": "pwsh",
+
   //! Schema
   "yaml.schemas": {
     "src/boilerdata/schema/axes_schema.json": "axes.yaml",
@@ -70,7 +74,7 @@
     "*.tsx": "${capture}.ts",
     "tsconfig.json": "tsconfig.*.json",
     "package.json": "package-lock.json, yarn.lock",
-    ".nest_tools_config": "coverage.xml, setup.ps1, update.ps1, *.code-workspace, *.prof, .copier-answers.yml, .coverage, .coveragerc, .dvcignore, .env, .flake8, .gitattributes, .isort.cfg, .pre-commit-config.yaml, .pytest_cache, .sourcery.yaml, codecov.yml, data.dvc, dvc.lock, dvc.yaml, package.json, pyrightconfig.json, pytest.ini, pytest_local.ini, pythonrc.py",
+    ".nest_tools_config": "coverage.xml, setup.ps1, update.ps1, *.code-workspace, *.prof, .copier-answers.yml, .coverage, .coveragerc, .env, .flake8, .gitattributes, .isort.cfg, .pre-commit-config.yaml, .pytest_cache, .sourcery.yaml, codecov.yml, package.json, pyrightconfig.json, pytest.ini, pytest_local.ini, pythonrc.py, renovate.json",
     ".nest_md": "*.md, LICENSE"
   },
 
@@ -156,6 +160,7 @@
 
   //* JSON
   "[json]": {
+    "editor.wordWrap": "wordWrapColumn",
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
   "[jsonc]": {
