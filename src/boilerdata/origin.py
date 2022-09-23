@@ -7,11 +7,10 @@ import originpro as op
 @contextmanager
 def open_originlab(file, readonly=True):
     """Open an OriginLab file."""
-    if Path(file).exists():
-        op.set_show(True)  # required
-        yield op.open(file=get_path(file), readonly=readonly)
-    else:
+    if not Path(file).exists():
         raise FileNotFoundError(f"File not found: {file}")
+    op.set_show(True)  # required
+    yield op.open(file=get_path(file), readonly=readonly)
     op.exit()
 
 
