@@ -120,7 +120,7 @@ class Trial(MyBaseModel):
     def set_geometry(self, geometry: Geometry):
         """Get relevant geometry for the trial."""
         thermocouples = [A.T_1, A.T_2, A.T_3, A.T_4, A.T_5]
-        thermocouple_pos = geometry.rods[self.rod] + geometry.coupons[self.coupon]
+        thermocouple_pos = geometry.rods[self.rod] + geometry.coupons[self.coupon]  # type: ignore  # due to use_enum_values
         if self.sixth_tc:
             thermocouples.append(A.T_6)
             # Since zero is defined as the surface

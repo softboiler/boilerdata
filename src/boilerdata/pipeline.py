@@ -31,9 +31,9 @@ def pipeline(proj: Project):
     # Get dataframe of all runs and reduce to steady-state
     runs_df = get_df(proj)
     runs_df = runs_df if proj.params.skip_validation else validate_runs_df(runs_df)
-    # Reason: All DataFrames from CSV guarantees str keys, not expressible in types.
+
     df = pd.DataFrame(columns=Axes.get_names(proj.axes.cols)).assign(
-        **get_steady_state(runs_df, proj)  # type: ignore
+        **get_steady_state(runs_df, proj)  # type: ignore  # All DataFrames from CSV guarantees str keys, not expressible in types.
     )
 
     # Perform fits and compute heat transfer for each trial
@@ -82,7 +82,7 @@ def get_df(proj: Project) -> pd.DataFrame:
     return pd.read_csv(
         proj.dirs.runs_file,
         index_col=index_cols,
-        dtype=dtypes,
+        dtype=dtypes,  # type: ignore  # Upstream issue w/ pandas-stubs
         parse_dates=index_cols,
         encoding="utf-8",
     )
@@ -135,8 +135,8 @@ def get_run(proj: Project, trial: Trial, run: Path) -> pd.DataFrame:
                 # Allow source cols to be missing (such as T_6)
                 usecols=lambda col: col in [index, *source_col_names],
                 index_col=index,
-                parse_dates=[index],
-                dtype=source_dtypes,  # type: ignore
+                parse_dates=[index],  # type: ignore  # Upstream issue w/ pandas-stubs
+                dtype=source_dtypes,  # type: ignore  # Upstream issue w/ pandas-stubs
                 encoding="utf-8",
             )
         )
@@ -198,8 +198,7 @@ def fit(df: pd.DataFrame, proj: Project, trial: Trial) -> pd.DataFrame:
         linregress_apply,
         proj=proj,
         trial=trial,
-        # Reason: Set-like view of str should be okay
-        temperature_cols=df[trial.thermocouple_pos.keys()],
+        temperature_cols=df[list(trial.thermocouple_pos.keys())],
         result_cols=[A.dT_dx, A.dT_dx_err, A.T_s, A.T_s_err, A.rvalue, A.pvalue],
     )
     return df
@@ -215,8 +214,7 @@ def get_heat_transfer(df: pd.DataFrame, proj: Project, trial: Trial) -> pd.DataF
     cross_sectional_area = np.pi / 4 * diameter**2  # (cm^2)
 
     # Temperatures
-    # Reason: Enum incompatible with str, but we have use_enum_values from Pydantic
-    trial_water_temp = df[proj.params.water_temps].mean().mean()  # type: ignore
+    trial_water_temp = df[proj.params.water_temps].mean().mean()  # type: ignore  # Due to use_enum_values
     midpoint_temps = (trial_water_temp + df[A.T_1]) / 2
 
     return df.assign(
@@ -255,7 +253,7 @@ def linregress_apply(
             x=list(trial.thermocouple_pos.values()),
             repeats_per_pair=proj.params.records_to_average,
             regression_stats=result_cols,
-        )  # type: ignore
+        )  # type: ignore  # Upstream issue w/ pandas-stubs
     )
 
 
@@ -277,13 +275,13 @@ def linregress_ser(
 
     # Confidence interval
     confidence_interval_95 = abs(norm.ppf(0.025))
-    slope_err = confidence_interval_95 * r.stderr
-    int_err = confidence_interval_95 * r.intercept_stderr
+    slope_err = confidence_interval_95 * r.stderr  # type: ignore  # Issue w/ upstream scipy
+    int_err = confidence_interval_95 * r.intercept_stderr  # type: ignore  # Issue w/ upstream scipy
 
     # Unpacking would drop r.intercept_stderr, so we have to do it this way.
     # See "Notes" section of SciPy documentation for more info.
     return pd.Series(
-        [r.slope, slope_err, r.intercept, int_err, r.rvalue, r.pvalue],
+        [r.slope, slope_err, r.intercept, int_err, r.rvalue, r.pvalue],  # type: ignore  # Issue w/ upstream scipy
         index=regression_stats,
     )
 
@@ -315,7 +313,7 @@ def transform_for_originlab(df: pd.DataFrame, proj: Project) -> pd.DataFrame:
     indices = [
         index.to_series()
         .reset_index(drop=True)
-        .replace(superscript, superscript_repl)
+        .replace(superscript, superscript_repl)  # type: ignore  # Upstream issue w/ pandas-stubs
         .replace(subscript, subscript_repl)
         for index in (quantity, units)
     ]
@@ -338,7 +336,7 @@ def plot_fit_apply(df: pd.DataFrame, proj: Project, trial: Trial) -> pd.DataFram
         proj=proj,
         trial=trial,
         plt=plt,
-    )  # type: ignore
+    )  # type: ignore  # Upstream issue w/ pandas-stubs
     plt.show()
     return df
 
@@ -352,7 +350,7 @@ def plot_fit_ser(ser: pd.Series[float], proj: Project, trial: Trial, plt: Module
     # Reason: Enum incompatible with str, but we have use_enum_values from Pydantic
     plt.plot(
         trial.thermocouple_pos.values(),
-        ser[trial.thermocouple_pos.keys()],
+        ser[list(trial.thermocouple_pos.keys())],
         "*",
         label="Measured Temperatures",
         color=[0.2, 0.2, 0.2],
