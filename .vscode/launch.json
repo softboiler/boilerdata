@@ -4,17 +4,24 @@
     // * -------------------------------------------------------------------------- * //
     // * PROJECT-SPECIFIC * //
     {
-      "name": "proj: Run pipeline",
+      "name": "proj: schema",
       "type": "python",
       "request": "launch",
-      "module": "boilerdata.pipeline",
+      "module": "boilerdata.stages.schema",
       "console": "internalConsole"
     },
     {
-      "name": "proj: Update schema",
+      "name": "proj: pipeline",
       "type": "python",
       "request": "launch",
-      "module": "boilerdata.utils",
+      "module": "boilerdata.stages.pipeline",
+      "console": "internalConsole"
+    },
+    {
+      "name": "proj: originlab",
+      "type": "python",
+      "request": "launch",
+      "module": "boilerdata.stages.originlab",
       "console": "internalConsole"
     },
     {

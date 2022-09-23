@@ -1,22 +1,21 @@
 stages:
-  update_schema:
+  schema:
     cmd: "python -m boilerdata.stages.schema"
-    outs:
-      - "data/schema"
+    outs: ["data/schema"]
 
   pipeline:
     cmd: "python -m boilerdata.stages.pipeline"
-    deps:
-      - "data/schema"
-      - "data/curves"
     params:
       - "config/axes.yaml":
       - "config/project.yaml":
       - "config/trials.yaml":
+    deps:
+      - "data/curves"
+      - "data/schema"
     outs: ["data/results"]
 
-  plot:
-    cmd: "python -m boilerdata.plot"
+  originlab:
+    cmd: "python -m boilerdata.stages.originlab"
     deps:
       - "data/plotter"
       - "data/results"

@@ -8,18 +8,21 @@ import pandas as pd
 from pydantic import BaseModel, Extra, MissingError, ValidationError
 import yaml
 
-
-class MyBaseModel(
-    BaseModel,
-    use_enum_values=True,  # To use enums for schemas, but not in code
-    arbitrary_types_allowed=True,  # To use Numpy types
-):
-    pass
-
-
 StrPath = str | PathLike[str]
 NpNDArray = np.ndarray[Any, Any]
 NpFloating = np.floating[Any]
+
+
+class MyBaseModel(
+    BaseModel,
+    use_enum_values=True,  # To use enums in schema, but not in code
+    arbitrary_types_allowed=True,  # To use Numpy types
+):
+    """Base model for all Pydantic models used in this project.
+
+    Accessing enums yields their values, and allowing arbitrary types enables using
+    Numpy types in fields.
+    """
 
 
 def set_dtypes(df: pd.DataFrame, dtypes: dict[str, str]) -> pd.DataFrame:

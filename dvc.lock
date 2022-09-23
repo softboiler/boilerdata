@@ -8,7 +8,7 @@ stages:
       size: 103226338
       nfiles: 401
     - path: data/schema
-      md5: f23a7c217a237f69552b92cb10bd3be9.dir
+      md5: 8caaa07f64aedabf9b0b00ea14795f5f.dir
       size: 20465
       nfiles: 3
     params:
@@ -389,5 +389,12 @@ stages:
     outs:
     - path: data/schema
       md5: f23a7c217a237f69552b92cb10bd3be9.dir
+      size: 20465
+      nfiles: 3
+  schema:
+    cmd: python -m boilerdata.stages.schema
+    outs:
+    - path: data/schema
+      md5: 8caaa07f64aedabf9b0b00ea14795f5f.dir
       size: 20465
       nfiles: 3

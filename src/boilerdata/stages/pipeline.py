@@ -26,7 +26,7 @@ from boilerdata.validation import validate_df, validate_runs_df
 # * MAIN
 
 
-def pipeline(proj: Project):
+def main(proj: Project):
 
     # Get dataframe of all runs and reduce to steady-state
     runs_df = get_df(proj)
@@ -371,4 +371,4 @@ def plot_fit_ser(ser: pd.Series[float], proj: Project, trial: Trial, plt: Module
 # * -------------------------------------------------------------------------------- * #
 
 if __name__ == "__main__":
-    pipeline(Project.get_project())
+    main(Project.get_project())

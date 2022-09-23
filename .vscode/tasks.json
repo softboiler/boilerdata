@@ -8,17 +8,24 @@
     // * -------------------------------------------------------------------------- * //
     // * PROJECT-SPECIFIC * //
     {
-      "label": "proj: Run the pipeline",
+      "label": "dvc repro schema",
       "type": "process",
       "command": "pwsh",
-      "args": ["-Command", "python -m boilerdata.pipeline"],
+      "args": ["-Command", "dvc repro schema"],
       "problemMatcher": []
     },
     {
-      "label": "proj: Update schema",
+      "label": "dvc repro pipeline",
       "type": "process",
       "command": "pwsh",
-      "args": ["-Command", "python -m boilerdata.utils"],
+      "args": ["-Command", "dvc repro pipeline"],
+      "problemMatcher": []
+    },
+    {
+      "label": "dvc repro originlab",
+      "type": "process",
+      "command": "pwsh",
+      "args": ["-Command", "dvc repro originlab"],
       "problemMatcher": []
     },
     {
@@ -27,7 +34,7 @@
       "command": "pwsh",
       "args": [
         "-Command",
-        "python -m cProfile -o .prof -m boilerdata.pipeline"
+        "python -m cProfile -o .prof -m boilerdata.stages.pipeline"
       ],
       "problemMatcher": []
     },

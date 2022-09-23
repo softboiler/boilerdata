@@ -16,8 +16,8 @@ class Project(MyBaseModel):
     params: Params
 
     # These can't be None, as they are set in Project.__init__()
-    trials: list[Trial] = Field(default=None)
     axes: Axes = Field(default=None)
+    trials: list[Trial] = Field(default=None)
 
     def __init__(self, **data):
         super().__init__(**data)
