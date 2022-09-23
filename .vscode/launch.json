@@ -4,6 +4,13 @@
     // * -------------------------------------------------------------------------- * //
     // * PROJECT-SPECIFIC * //
     {
+      "name": "proj: Run pipeline",
+      "type": "python",
+      "request": "launch",
+      "module": "boilerdata.pipeline",
+      "console": "internalConsole"
+    },
+    {
       "name": "proj: Update schema",
       "type": "python",
       "request": "launch",
