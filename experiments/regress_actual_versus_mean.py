@@ -44,8 +44,9 @@ import numpy as np
 import pandas as pd
 from scipy.stats import linregress, t
 
-from boilerdata.axes_enum import Axes as A  # noqa: N817
-from boilerdata.pipeline import get_df
+from boilerdata.models.axes_enum import AxesEnum as A  # noqa: N817
+from boilerdata.stages.pipeline import get_df
+from boilerdata.models.project import Project
 
 
 def main():
