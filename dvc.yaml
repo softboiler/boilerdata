@@ -1,7 +1,13 @@
 stages:
+  update_schema:
+    cmd: "python -m boilerdata.stages.schema"
+    outs:
+      - "data/schema"
+
   pipeline:
-    cmd: "python -m boilerdata.pipeline"
+    cmd: "python -m boilerdata.stages.pipeline"
     deps:
+      - "data/schema"
       - "data/curves"
     params:
       - "config/axes.yaml":

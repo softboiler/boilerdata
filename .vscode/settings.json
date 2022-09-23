@@ -8,9 +8,9 @@
 
   //! Schema
   "yaml.schemas": {
-    "schema/axes_schema.json": "axes.yaml",
-    "schema/project_schema.json": "project*.yaml",
-    "schema/trials_schema.json": "trials*.yaml"
+    "data/schema/axes_schema.json": "axes.yaml",
+    "data/schema/project_schema.json": "project*.yaml",
+    "data/schema/trials_schema.json": "trials*.yaml"
   },
 
   //! Pylance

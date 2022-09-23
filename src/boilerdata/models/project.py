@@ -21,11 +21,7 @@ class Project(MyBaseModel):
 
     def __init__(self, **data):
         super().__init__(**data)
-
-        # Get the Columns instance
         self.axes = load_config(self.dirs.config / "axes.yaml", Axes)
-
-        # Get the trials field of the Trials instance. Ensure trials are populated.
         self.trials = load_config(self.dirs.config / "trials.yaml", Trials).trials
         for trial in self.trials:
             trial.setup(self.dirs, self.geometry)

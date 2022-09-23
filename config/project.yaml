@@ -1,7 +1,7 @@
 dirs:
   base: "."
   config: "config"
-  project_schema: "schema"
+  project_schema: "data/schema"
   trials: "data/curves"
   results: "data/results"
 

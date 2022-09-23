@@ -1,12 +1,16 @@
 schema: '2.0'
 stages:
   pipeline:
-    cmd: python -m boilerdata.pipeline
+    cmd: python -m boilerdata.stages.pipeline
     deps:
     - path: data/curves
       md5: 438ac642116158005c9a4ae9ecb5f819.dir
       size: 103226338
       nfiles: 401
+    - path: data/schema
+      md5: f23a7c217a237f69552b92cb10bd3be9.dir
+      size: 20465
+      nfiles: 3
     params:
       config/axes.yaml:
         all:
@@ -119,7 +123,7 @@ stages:
         dirs:
           base: .
           config: config
-          project_schema: schema
+          project_schema: data/schema
           trials: data/curves
           results: data/results
         geometry:
@@ -362,8 +366,8 @@ stages:
           good: false
     outs:
     - path: data/results
-      md5: 5c91e43111a80708c507499c06a69221.dir
-      size: 6257731
+      md5: b1b6de65ccd51849224d078712e9c080.dir
+      size: 6257646
       nfiles: 4
   plot:
     cmd: python -m boilerdata.plot
@@ -380,3 +384,10 @@ stages:
     - path: data/plots/lit_.png
       md5: e37e133abd3b510365b0b0cce2473bfc
       size: 41829
+  update_schema:
+    cmd: python -m boilerdata.stages.schema
+    outs:
+    - path: data/schema
+      md5: f23a7c217a237f69552b92cb10bd3be9.dir
+      size: 20465
+      nfiles: 3

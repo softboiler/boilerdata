@@ -4,38 +4,26 @@ from pathlib import Path
 import re
 from textwrap import dedent
 
-from pydantic import ValidationError
-
 from boilerdata.models.axes import Axes
 from boilerdata.models.common import write_schema
 from boilerdata.models.project import Project
 from boilerdata.models.trials import Trials
 
-models = [Project, Trials, Axes]
 
+def main():
 
-def update_schema():
+    models = [Project, Trials, Axes]
 
-    try:
-        proj = Project.get_project()
-        path = proj.dirs.project_schema
-        generate_axes_enum(
-            list(Axes.get_names(proj.axes.all)),
-            Path("src/boilerdata/models/axes_enum.py"),
-        )
-    except ValidationError as exception:
-        path = Path("schema")
-        print(
-            f"Schema didn't validate, using default schema path: {path}.",
-            "Axes enum not generated.",
-            "Message from caught ValidationError:",
-            exception,
-            sep="\n",
-        )
-
+    proj = Project.get_project()
+    path = proj.dirs.project_schema
+    path.mkdir(parents=False, exist_ok=True)
     for model in models:
-
         write_schema(path / f"{to_snake_case(model.__name__)}_schema.json", model)
+
+    generate_axes_enum(
+        list(Axes.get_names(proj.axes.all)),
+        Path("src/boilerdata/models/axes_enum.py"),
+    )
 
 
 def generate_axes_enum(axes: list[str], path: Path):
@@ -66,4 +54,4 @@ def to_snake_case(v: str) -> str:
 
 
 if __name__ == "__main__":
-    update_schema()
+    main()
