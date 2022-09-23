@@ -8,6 +8,13 @@
     // * -------------------------------------------------------------------------- * //
     // * PROJECT-SPECIFIC * //
     {
+      "label": "dvc repro",
+      "type": "process",
+      "command": "pwsh",
+      "args": ["-Command", "dvc repro"],
+      "problemMatcher": []
+    },
+    {
       "label": "dvc repro schema",
       "type": "process",
       "command": "pwsh",

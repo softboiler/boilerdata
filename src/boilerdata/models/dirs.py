@@ -63,17 +63,27 @@ class Dirs(MyBaseModel):
         default="runs.csv",
         description="The path to the runs. Must be relative to the results directory. Default: runs.csv",
     )
-    results_file: Path = Field(
+    simple_results_file: Path = Field(
         default="results.csv",
-        description="The path to the results file. Must be relative to the results directory. Default: results.csv",
+        description="The path to the simple results file. Must be relative to the results directory. Default: results.csv",
     )
-    coldes_file: Path = Field(
-        default="coldes.txt",
+    originlab_results_file: Path = Field(
+        default="originlab_results.csv",
+        description="The path to the results file to be parsed by OriginLab. Must be relative to the results directory. Default: originlab_results.csv",
+    )
+    originlab_coldes_file: Path = Field(
+        default="originlab_coldes.txt",
         description="The path to which the OriginLab column designation string will be written. Must be relative to the results directory. Default: coldes.txt",
     )
 
     # "always" so it'll run even if not in YAML
-    @validator("results_file", "coldes_file", "runs_file", always=True)
+    @validator(
+        "runs_file",
+        "simple_results_file",
+        "originlab_results_file",
+        "originlab_coldes_file",
+        always=True,
+    )
     def validate_files(cls, file: Path, values: dict[str, Path]):
         if file.is_absolute():
             raise ValueError("Must be relative to the results directory.")

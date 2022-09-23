@@ -8,8 +8,8 @@ stages:
       size: 103226338
       nfiles: 401
     - path: data/schema
-      md5: 8caaa07f64aedabf9b0b00ea14795f5f.dir
-      size: 20465
+      md5: b592455e5da5d463ce272314e0921278.dir
+      size: 20636
       nfiles: 3
     params:
       config/axes.yaml:
@@ -165,7 +165,6 @@ stages:
             A8: 0.753
             A9: 0.553
         params:
-          refetch_runs: true
           water_temps:
           - T_w1
           - T_w2
@@ -366,8 +365,8 @@ stages:
           good: false
     outs:
     - path: data/results
-      md5: b1b6de65ccd51849224d078712e9c080.dir
-      size: 6257646
+      md5: 260b1d8f764a4a462ac0e47673c6d6f2.dir
+      size: 6458019
       nfiles: 4
   plot:
     cmd: python -m boilerdata.plot
@@ -393,8 +392,13 @@ stages:
       nfiles: 3
   schema:
     cmd: python -m boilerdata.stages.schema
+    deps:
+    - path: src/boilerdata/models
+      md5: 1e4711897d57e1d33c4bbaad69d83a7f.dir
+      size: 59345
+      nfiles: 19
     outs:
     - path: data/schema
-      md5: 8caaa07f64aedabf9b0b00ea14795f5f.dir
-      size: 20465
+      md5: b592455e5da5d463ce272314e0921278.dir
+      size: 20636
       nfiles: 3

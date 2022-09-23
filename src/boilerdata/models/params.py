@@ -7,10 +7,6 @@ from boilerdata.models.common import MyBaseModel
 class Params(MyBaseModel):
     """Parameters of the pipeline."""
 
-    refetch_runs: bool = Field(
-        default=False,
-        description="Fetch the runs from their source files again even if there are no new runs.",
-    )
     skip_validation: bool = Field(
         default=False,
         description="Skip validating the raw data.",

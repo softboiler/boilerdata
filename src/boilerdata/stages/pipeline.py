@@ -29,7 +29,7 @@ from boilerdata.validation import validate_df, validate_runs_df
 def main(proj: Project):
 
     # Get dataframe of all runs and reduce to steady-state
-    runs_df = get_df(proj)
+    runs_df = get_runs(proj)
     runs_df = runs_df if proj.params.skip_validation else validate_runs_df(runs_df)
 
     df = pd.DataFrame(columns=Axes.get_names(proj.axes.cols)).assign(
@@ -52,46 +52,25 @@ def main(proj: Project):
     df = df.pipe(set_dtypes, dtypes)
     df = df if proj.params.skip_validation else validate_df(df)
 
-    # Write a unitless version to CSV for quick reference
-    path = Path(proj.dirs.results_file)
-    df[df.new].to_csv(path.parent / f"{path.stem}_new{path.suffix}", encoding="utf-8")
+    # Write a simple version of results to CSV for quick-reference
+    df.to_csv(proj.dirs.simple_results_file, encoding="utf-8")
 
     # Post-process the dataframe for writing to OriginLab-flavored CSV
     df.pipe(transform_for_originlab, proj).to_csv(
-        proj.dirs.results_file, index=False, encoding="utf-8"
+        proj.dirs.originlab_results_file, index=False, encoding="utf-8"
     )
-    proj.dirs.coldes_file.write_text(proj.axes.get_originlab_coldes())
+    proj.dirs.originlab_coldes_file.write_text(proj.axes.get_originlab_coldes())
 
 
 # * -------------------------------------------------------------------------------- * #
 # * GET RUNS
 
 
-def get_df(proj: Project) -> pd.DataFrame:
-    """Get the dataframe of all runs."""
-
-    dtypes = {col.name: col.dtype for col in proj.axes.source if not col.index}
-
-    # Fetch all runs from their original CSVs if needed.
-    if any(trial.new for trial in proj.trials) or proj.params.refetch_runs:
-        return get_runs(proj, dtypes)
-
-    # Otherwise, reload the dataframe last written by `get_runs()`
-    index_cols = list(range(len(proj.axes.index)))
-
-    return pd.read_csv(
-        proj.dirs.runs_file,
-        index_col=index_cols,
-        dtype=dtypes,  # type: ignore  # Upstream issue w/ pandas-stubs
-        parse_dates=index_cols,
-        encoding="utf-8",
-    )
-
-
-def get_runs(proj: Project, dtypes: dict[str, str]) -> pd.DataFrame:
+def get_runs(proj: Project) -> pd.DataFrame:
     """Get runs from all the data CSVs."""
 
     # Get runs and multiindex
+    dtypes = {col.name: col.dtype for col in proj.axes.source if not col.index}
     runs: list[pd.DataFrame] = []
     multiindex: list[tuple[datetime, datetime, datetime]] = []
     for trial in proj.trials:

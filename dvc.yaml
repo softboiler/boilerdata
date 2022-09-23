@@ -1,6 +1,7 @@
 stages:
   schema:
     cmd: "python -m boilerdata.stages.schema"
+    deps: ["src/boilerdata/models"]
     outs: ["data/schema"]
 
   pipeline:
