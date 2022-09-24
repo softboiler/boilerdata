@@ -394,9 +394,9 @@ stages:
     cmd: python -m boilerdata.stages.schema
     deps:
     - path: src/boilerdata/models
-      md5: c102dd6f47dd03909a77c31c1c0b0f30.dir
-      size: 59345
-      nfiles: 19
+      md5: b2d5ed2b6d26e11350a24fe708d9fdde.dir
+      size: 51091
+      nfiles: 18
     outs:
     - path: data/schema
       md5: b592455e5da5d463ce272314e0921278.dir
@@ -415,5 +415,5 @@ stages:
       nfiles: 4
     outs:
     - path: data/plots/lit_.png
-      md5: dfa5636491e91725499762d3bc39a4dc
+      md5: 74b18b5144e711e2f96948547bf4821f
       size: 41829
