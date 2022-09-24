@@ -1,8 +1,0 @@
-trials:
-  - date: 2022-09-12
-    group: "control"
-    rod: "R"
-    coupon: "A0"
-    joint: "none"
-    comment: Baking RTV at ~80C for a few hours
-    new: true

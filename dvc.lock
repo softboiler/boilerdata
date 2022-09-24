@@ -406,8 +406,8 @@ stages:
     cmd: python -m boilerdata.stages.originlab
     deps:
     - path: data/plotter
-      md5: 9620af1a9d37454e45f9206fa8507d4b.dir
-      size: 597642
+      md5: f8fad7234bc61bae476f433954c72e75.dir
+      size: 661028
       nfiles: 1
     - path: data/results
       md5: 282baee59a69ce6f17584d6891bf24d4.dir
@@ -415,5 +415,5 @@ stages:
       nfiles: 4
     outs:
     - path: data/plots/lit_.png
-      md5: 74b18b5144e711e2f96948547bf4821f
-      size: 41829
+      md5: 4bdd52ee7188d929ccd9248d221aa95b
+      size: 41736
