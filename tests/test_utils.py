@@ -2,12 +2,9 @@ import re
 
 from pydantic import BaseModel
 from pytest import mark as m, raises
-from typer.testing import CliRunner
 import yaml
 
 from boilerdata.models.common import dump_model, load_config, write_schema
-
-runner = CliRunner()
 
 
 class UserModel(BaseModel):
