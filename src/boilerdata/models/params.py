@@ -7,10 +7,6 @@ from boilerdata.models.common import MyBaseModel
 class Params(MyBaseModel):
     """Parameters of the pipeline."""
 
-    skip_validation: bool = Field(
-        default=False,
-        description="Skip validating the raw data.",
-    )
     records_to_average: int = Field(
         default=60,
         description="The number of records over which to average in a given trial.",

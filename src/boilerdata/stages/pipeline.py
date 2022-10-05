@@ -20,7 +20,11 @@ from boilerdata.models.axes_enum import AxesEnum as A  # noqa: N814
 from boilerdata.models.common import set_dtypes
 from boilerdata.models.project import Project
 from boilerdata.models.trials import Trial
-from boilerdata.validation import validate_df, validate_runs_df
+from boilerdata.validation import (
+    handle_invalid_data,
+    validate_final_df,
+    validate_runs_df,
+)
 
 # * -------------------------------------------------------------------------------- * #
 # * MAIN
@@ -30,7 +34,7 @@ def main(proj: Project):
 
     # Get dataframe of all runs and reduce to steady-state
     runs_df = get_runs(proj)
-    runs_df = runs_df if proj.params.skip_validation else validate_runs_df(runs_df)
+    runs_df = handle_invalid_data(proj, runs_df, validate_runs_df)
 
     df = pd.DataFrame(columns=Axes.get_names(proj.axes.cols)).assign(
         **get_steady_state(runs_df, proj)  # type: ignore  # All DataFrames from CSV guarantees str keys, not expressible in types.
@@ -50,7 +54,7 @@ def main(proj: Project):
     # Set dtypes after update. https://github.com/pandas-dev/pandas/issues/4094
     dtypes = {col.name: col.dtype for col in proj.axes.cols}
     df = df.pipe(set_dtypes, dtypes)
-    df = df if proj.params.skip_validation else validate_df(df)
+    df = handle_invalid_data(proj, df, validate_final_df)
 
     # Write a simple version of results to CSV for quick-reference
     df.to_csv(proj.dirs.simple_results_file, encoding="utf-8")

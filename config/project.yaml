@@ -25,7 +25,3 @@ geometry:
     A7: 0.753
     A8: 0.753
     A9: 0.553
-
-params:
-  water_temps: ["T_w1", "T_w2"]
-  skip_validation: true

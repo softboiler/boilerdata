@@ -8,8 +8,8 @@ stages:
       size: 103226338
       nfiles: 401
     - path: data/schema
-      md5: b592455e5da5d463ce272314e0921278.dir
-      size: 20636
+      md5: 582efaa6a6be2b0c94196568fe17db38.dir
+      size: 20687
       nfiles: 3
     params:
       config/axes.yaml:
@@ -164,11 +164,6 @@ stages:
             A7: 0.753
             A8: 0.753
             A9: 0.553
-        params:
-          water_temps:
-          - T_w1
-          - T_w2
-          skip_validation: true
       config/trials.yaml:
         trials:
         - date: '2020-03-12'
@@ -365,8 +360,8 @@ stages:
           good: false
     outs:
     - path: data/results
-      md5: 282baee59a69ce6f17584d6891bf24d4.dir
-      size: 6458189
+      md5: 51edbd584e87a8f851eeaa52a64b4667.dir
+      size: 6458287
       nfiles: 4
   plot:
     cmd: python -m boilerdata.plot
@@ -394,13 +389,13 @@ stages:
     cmd: python -m boilerdata.stages.schema
     deps:
     - path: src/boilerdata/models
-      md5: 2bc18cb613aec64eb535351099188056.dir
-      size: 51091
+      md5: 1883f694e0b4ff24cad3589ce87fd335.dir
+      size: 50932
       nfiles: 18
     outs:
     - path: data/schema
-      md5: b592455e5da5d463ce272314e0921278.dir
-      size: 20636
+      md5: 582efaa6a6be2b0c94196568fe17db38.dir
+      size: 20687
       nfiles: 3
   originlab:
     cmd: python -m boilerdata.stages.originlab
@@ -410,10 +405,10 @@ stages:
       size: 661028
       nfiles: 1
     - path: data/results
-      md5: 282baee59a69ce6f17584d6891bf24d4.dir
-      size: 6458189
+      md5: 51edbd584e87a8f851eeaa52a64b4667.dir
+      size: 6458287
       nfiles: 4
     outs:
     - path: data/plots/lit_.png
-      md5: 439b0e90c35470af8de8da8ba95008ab
+      md5: 61fc6ca6524888d838aa176c5293d017
       size: 41736

@@ -1,4 +1,5 @@
 from pandera import Check, Column, DataFrameSchema, Index, MultiIndex
+from pandera.errors import SchemaError
 
 from boilerdata.models.axes_enum import AxesEnum as A  # noqa: N814
 from boilerdata.models.project import Project
@@ -17,8 +18,8 @@ initial_index = [
 ]
 
 source_cols = {
-    A.V: Column(c[A.V].dtype),
-    A.I: Column(c[A.I].dtype),
+    A.V: Column(c[A.V].dtype, nullable=True),  # Not used
+    A.I: Column(c[A.I].dtype, nullable=True),  # Not used
     A.T_0: Column(c[A.T_0].dtype),
     A.T_1: Column(c[A.T_1].dtype),
     A.T_2: Column(c[A.T_2].dtype),
@@ -29,8 +30,7 @@ source_cols = {
     A.T_w1: Column(c[A.T_w1].dtype, tc_submerged_and_boiling),
     A.T_w2: Column(c[A.T_w2].dtype, tc_submerged_and_boiling),
     A.T_w3: Column(c[A.T_w3].dtype, tc_submerged_and_boiling),
-    A.P: Column(c[A.P].dtype),
-    # A.P: Column(c[A.P].dtype, Check.greater_than(12)),  # Strict check on pressure
+    A.P: Column(c[A.P].dtype, Check.greater_than(12)),
 }
 
 meta_cols = {
@@ -60,7 +60,19 @@ computed_cols = {
 }
 
 # * -------------------------------------------------------------------------------- * #
-# * VALIDATORS
+# * VALIDATION
+
+
+def all_tailed_properly(df):
+    return all(tailed_properly(df))
+
+
+def tailed_properly(df):
+    return (
+        df.iloc[:, 0].groupby(level=A.run).transform(len)
+        == proj.params.records_to_average
+    )
+
 
 validate_runs_df = DataFrameSchema(
     strict=True,
@@ -68,22 +80,39 @@ validate_runs_df = DataFrameSchema(
     unique_column_names=True,
     index=MultiIndex(initial_index),
     columns=source_cols,
-    checks=(
-        # Check that every run was tailed properly
-        Check(
-            lambda df: all(
-                df.groupby(level=A.run, sort=False).apply(len)
-                == proj.params.records_to_average
-            )
-        )
-    ),
+    # checks=Check(all_tailed_properly),  # TODO: Don't check once strategy changes
 )
 
 
-validate_df = DataFrameSchema(
+validate_final_df = DataFrameSchema(
     strict=True,
     ordered=True,
     unique_column_names=True,
     index=MultiIndex(initial_index[:-1]),  # the final index is dropped by now
     columns=meta_cols | source_cols | computed_cols,
 )
+
+
+# * -------------------------------------------------------------------------------- * #
+# * HANDLING
+
+
+def handle_invalid_data(proj, df, validator):
+    catch_and_ffill = [*proj.params.water_temps, A.P]
+    validation_error = True
+    while validation_error:
+        try:
+            df = validator(df)
+        except SchemaError as exc:
+            # It can be a dataframe with ambiguous existence and truthiness
+            if exc.check_output is False or exc.check_output is None:
+                raise
+            failed = exc.check_output
+            if failed.name in catch_and_ffill:
+                df = df.assign(
+                    **{failed.name: (lambda df: df[failed.name].where(failed).ffill())}
+                )
+            continue
+        else:
+            validation_error = False
+    return df

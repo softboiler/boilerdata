@@ -13,7 +13,7 @@ class Project(MyBaseModel):
 
     dirs: Dirs
     geometry: Geometry
-    params: Params
+    params: Params = Field(default=Params())
 
     # These can't be None, as they are set in Project.__init__()
     axes: Axes = Field(default=None)

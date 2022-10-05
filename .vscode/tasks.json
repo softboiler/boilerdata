@@ -8,28 +8,28 @@
     // * -------------------------------------------------------------------------- * //
     // * PROJECT-SPECIFIC * //
     {
-      "label": "dvc repro",
+      "label": "dvc: repro",
       "type": "process",
       "command": "pwsh",
       "args": ["-Command", "dvc repro"],
       "problemMatcher": []
     },
     {
-      "label": "dvc repro schema",
+      "label": "dvc: repro schema",
       "type": "process",
       "command": "pwsh",
       "args": ["-Command", "dvc repro schema"],
       "problemMatcher": []
     },
     {
-      "label": "dvc repro pipeline",
+      "label": "dvc: repro pipeline",
       "type": "process",
       "command": "pwsh",
       "args": ["-Command", "dvc repro pipeline"],
       "problemMatcher": []
     },
     {
-      "label": "dvc repro originlab",
+      "label": "dvc: repro originlab",
       "type": "process",
       "command": "pwsh",
       "args": ["-Command", "dvc repro originlab"],
