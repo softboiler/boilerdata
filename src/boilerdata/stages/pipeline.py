@@ -336,12 +336,6 @@ def linregress_ser(
 
     # Unpacking would drop r.intercept_stderr, so we have to do it this way.
     # See "Notes" section of SciPy documentation for more info.
-
-    # return pd.Series(
-    #     [r.slope, slope_err, r.intercept, int_err, r.rvalue, r.pvalue],  # type: ignore  # Issue w/ upstream scipy
-    #     index=regression_stats,
-    # )
-
     return pd.Series([r.slope, r.intercept], index=regression_stats)  # type: ignore  # Issue w/ upstream scipy
 
 

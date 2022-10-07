@@ -389,7 +389,7 @@ stages:
     cmd: python -m boilerdata.stages.schema
     deps:
     - path: src/boilerdata/models
-      md5: b27ffdeab7ba6ab515395d88e84aa91d.dir
+      md5: 70138feb22b9efb6885a800775e4f27f.dir
       size: 52869
       nfiles: 18
     outs:
