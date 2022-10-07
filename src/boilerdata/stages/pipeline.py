@@ -17,7 +17,8 @@ from propshop import get_prop
 from propshop.library import Mat, Prop
 from pyXSteam.XSteam import XSteam
 from scipy.constants import convert_temperature
-from scipy.stats import linregress, norm
+from scipy.optimize import curve_fit
+from scipy.stats import norm
 
 from boilerdata.models.axes_enum import AxesEnum as A  # noqa: N814
 from boilerdata.models.common import set_dtypes
@@ -131,7 +132,7 @@ def fit(df: pd.DataFrame, trial: Trial, _) -> pd.DataFrame:
     return df.assign(
         **df[list(trial.thermocouple_pos.keys())].apply(
             axis="columns",
-            func=linregress_ser,
+            func=fit_ser,
             x=list(trial.thermocouple_pos.values()),
             regression_stats=[A.dT_dx, A.T_s],
         )  # type: ignore  # Upstream issue w/ pandas-stubs
@@ -206,16 +207,14 @@ def assign_metadata(df: pd.DataFrame, trial: Trial, proj: Project) -> pd.DataFra
 # * PER-RECORD FUNCTIONS
 
 
-def linregress_ser(
+def fit_ser(
     y: pd.Series[float],
     x: npt.ArrayLike,
     regression_stats: list[str],
 ) -> pd.Series[float]:
     """Perform linear regression of a series of y's with respect to given x's."""
-    r = linregress(x, y)
-    # Unpacking is weird with linregress.
-    # See "Notes" section: https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.linregress.html
-    return pd.Series([r.slope, r.intercept], index=regression_stats)  # type: ignore  # Issue w/ upstream scipy
+    (slope, intercept), _ = curve_fit(lambda x, m, b: m * x + b, x, y)
+    return pd.Series([slope, intercept], index=regression_stats)
 
 
 def plot_fit_ser(ser: pd.Series[float], trial: Trial, proj: Project, plt: ModuleType):
