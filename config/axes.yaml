@@ -98,6 +98,12 @@ all:
     units: "psi"
     source: "Pcal"
 
+  - name: "T_w"
+    units: "C"
+
+  - name: "T_w_diff"
+    units: "C"
+
   - name: "dT_dx"
     units: "K/m"
 

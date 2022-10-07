@@ -15,6 +15,7 @@ import numpy as np
 import pandas as pd
 from propshop import get_prop
 from propshop.library import Mat, Prop
+from pyXSteam.XSteam import XSteam
 from scipy.constants import convert_temperature
 from scipy.stats import linregress, norm
 
@@ -37,11 +38,11 @@ def main(proj: Project):
         pd.DataFrame(columns=[ax.name for ax in proj.axes.cols], data=get_runs(proj))
         .pipe(set_proj_dtypes, proj)
         .pipe(handle_invalid_data, validate_initial_df)
-        .pipe(per_trial, proj, fit)
+        .pipe(per_trial, fit, proj)  # Need thermocouple spacing trial-by-trial
         .pipe(agg_and_get_95_ci, proj)
         .also(plot_fits, proj)
-        .pipe(get_heat_transfer, proj)
-        .pipe(per_trial, proj, assign_metadata)
+        .pipe(per_trial, get_heat_transfer, proj)  # Water temp varies across trials
+        .pipe(per_trial, assign_metadata, proj)  # Distinct per trial
         .pipe(validate_final_df)
         .also(lambda df: df.to_csv(proj.dirs.simple_results_file, encoding="utf-8"))
         .pipe(transform_for_originlab, proj)
@@ -97,6 +98,7 @@ def agg_and_get_95_ci(df: pd.DataFrame, proj: Project) -> pd.DataFrame:
         A.dT_dx_err: pd.NamedAgg(column=A.dT_dx, aggfunc="sem"),
     }
     aggs = proj.axes.aggs | complex_agg_overrides
+
     df = (
         df.groupby(level=[A.trial, A.run])  # type: ignore  # Upstream issue w/ pandas-stubs
         .agg(**aggs)
@@ -113,41 +115,11 @@ def agg_and_get_95_ci(df: pd.DataFrame, proj: Project) -> pd.DataFrame:
 
 def plot_fits(df: pd.DataFrame, proj: Project) -> pd.DataFrame:
     """Plot the fits."""
-    df = per_trial(df, proj, plot_fit)
+    df = per_trial(df, plot_fit, proj)
     if new_fits := sorted(proj.dirs.new_fits.iterdir()):
         latest_new_fit = new_fits[-1]
         copy(latest_new_fit, Path("data/plots/latest_new_fit.png"))
     return df
-
-
-def get_heat_transfer(df: pd.DataFrame, proj: Project) -> pd.DataFrame:
-    """Calculate heat transfer and superheat based on one-dimensional approximation."""
-
-    # Constants
-    cm_p_m = 100  # (cm/m) Conversion factor
-    cm2_p_m2 = cm_p_m**2  # ((cm/m)^2) Conversion factor
-    diameter = proj.geometry.diameter * cm_p_m  # (cm)
-    cross_sectional_area = np.pi / 4 * diameter**2  # (cm^2)
-
-    # Temperatures
-    water_temp = df[proj.params.water_temps].mean().mean()  # type: ignore  # Due to use_enum_values
-    midpoint_temps = (df[A.T_s] + df[A.T_1]) / 2
-
-    return df.assign(
-        **{
-            A.k: get_prop(
-                Mat.COPPER,
-                Prop.THERMAL_CONDUCTIVITY,
-                convert_temperature(midpoint_temps, "C", "K"),
-            ),
-            # no negative due to reversed x-coordinate
-            A.q: lambda df: df[A.k] * df[A.dT_dx] / cm2_p_m2,
-            A.q_err: lambda df: (df[A.k] * df[A.dT_dx_err]) / cm2_p_m2,
-            A.Q: lambda df: df[A.q] * cross_sectional_area,
-            A.DT: lambda df: (df[A.T_s] - water_temp),
-            A.DT_err: lambda df: df[A.T_s_err],
-        }
-    )
 
 
 # * -------------------------------------------------------------------------------- * #
@@ -183,6 +155,40 @@ def plot_fit(df: pd.DataFrame, trial: Trial, proj: Project) -> pd.DataFrame:
         plt=plt,
     )  # type: ignore  # Upstream issue w/ pandas-stubs
     return df
+
+
+def get_heat_transfer(df: pd.DataFrame, trial: Trial, proj: Project) -> pd.DataFrame:
+    """Calculate heat transfer and superheat based on one-dimensional approximation."""
+
+    cm_p_m = 100  # (cm/m) Conversion factor
+    cm2_p_m2 = cm_p_m**2  # ((cm/m)^2) Conversion factor
+    diameter = proj.geometry.diameter * cm_p_m  # (cm)
+    cross_sectional_area = np.pi / 4 * diameter**2  # (cm^2)
+    get_saturation_temp = XSteam(XSteam.UNIT_SYSTEM_FLS).tsat_p  # A lookup function
+
+    T_w_avg = df[[A.T_w1, A.T_w2, A.T_w3]].mean(axis="columns")  # noqa: N806
+    T_w_p = convert_temperature(  # noqa: N806
+        df[A.P].apply(get_saturation_temp), "F", "C"
+    )
+
+    return df.assign(
+        **{
+            A.k: lambda df: get_prop(
+                Mat.COPPER,
+                Prop.THERMAL_CONDUCTIVITY,
+                convert_temperature((df[A.T_s] + df[A.T_1]) / 2, "C", "K"),
+            ),
+            A.T_w: lambda df: (T_w_avg + T_w_p) / 2,
+            A.T_w_diff: lambda df: abs(T_w_avg - T_w_p),
+            # Not negative due to reversed x-coordinate
+            A.q: lambda df: df[A.k] * df[A.dT_dx] / cm2_p_m2,
+            A.q_err: lambda df: (df[A.k] * df[A.dT_dx_err]) / cm2_p_m2,
+            A.Q: lambda df: df[A.q] * cross_sectional_area,
+            # Explicitly index the trial to catch improper application of the mean
+            A.DT: lambda df: (df[A.T_s] - df.loc[trial.date.isoformat(), A.T_w].mean()),
+            A.DT_err: lambda df: df[A.T_s_err],
+        }
+    )
 
 
 def assign_metadata(df: pd.DataFrame, trial: Trial, proj: Project) -> pd.DataFrame:
@@ -291,8 +297,8 @@ def set_proj_dtypes(df: pd.DataFrame, proj: Project) -> pd.DataFrame:
 
 def per_trial(
     df: pd.DataFrame,
-    proj: Project,
     per_trial_func: Callable[[pd.DataFrame, Trial, Project], pd.DataFrame],
+    proj: Project,
 ):
     """Apply a function to cross-sections of the dataframe corresponding to trials."""
     for trial in proj.trials:

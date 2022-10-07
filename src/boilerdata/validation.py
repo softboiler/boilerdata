@@ -7,8 +7,14 @@ from boilerdata.models.project import Project
 
 proj = Project.get_project()
 c = {ax.name: ax for ax in proj.axes.all}
-tc_submerged_and_boiling = Check.in_range(95, 101)  # (C)
+
+# * -------------------------------------------------------------------------------- * #
+# * HANDLING AND CHECKS
+
 columns_to_automatically_handle = [*proj.params.water_temps, A.P]
+water_tc_in_range = Check.in_range(95, 101)  # (C)
+pressure_in_range = Check.in_range(12, 15)  # (psi)
+water_temps_agree = Check.less_than(1.5)  # (C)
 
 # * -------------------------------------------------------------------------------- * #
 # * INDEX AND COLUMNS
@@ -40,13 +46,15 @@ source_cols = {
     A.T_4: Column(c[A.T_4].dtype),
     A.T_5: Column(c[A.T_5].dtype),
     A.T_6: Column(c[A.T_6].dtype, nullable=True),  # Some trials don't have it
-    A.T_w1: Column(c[A.T_w1].dtype, tc_submerged_and_boiling),
-    A.T_w2: Column(c[A.T_w2].dtype, tc_submerged_and_boiling),
-    A.T_w3: Column(c[A.T_w3].dtype, tc_submerged_and_boiling),
-    A.P: Column(c[A.P].dtype, Check.greater_than(12)),
+    A.T_w1: Column(c[A.T_w1].dtype, water_tc_in_range),
+    A.T_w2: Column(c[A.T_w2].dtype, water_tc_in_range),
+    A.T_w3: Column(c[A.T_w3].dtype, water_tc_in_range),
+    A.P: Column(c[A.P].dtype, pressure_in_range),
 }
 
 computed_cols = {
+    A.T_w: Column(c[A.T_w].dtype),
+    A.T_w_diff: Column(c[A.T_w_diff].dtype, checks=water_temps_agree),
     A.dT_dx: Column(c[A.dT_dx].dtype),
     A.dT_dx_err: Column(c[A.dT_dx_err].dtype),
     A.T_s: Column(c[A.T_s].dtype),

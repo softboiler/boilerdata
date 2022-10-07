@@ -30,6 +30,8 @@ class AxesEnum(GetNameEnum):
     T_w2 = auto()
     T_w3 = auto()
     P = auto()
+    T_w = auto()
+    T_w_diff = auto()
     dT_dx = auto()
     dT_dx_err = auto()
     T_s = auto()
