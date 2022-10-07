@@ -9,48 +9,59 @@ from boilerdata.models.common import MyBaseModel, StrPath
 class Dirs(MyBaseModel):
     """Directories relevant to the project."""
 
-    # ! BASE
+    # ! DIRECTORIES
 
     base: DirectoryPath = Field(
-        default=...,
-        description="The base directory for the project data.",
+        default=Path("."),
+        description="The base directory.",
     )
-
-    # ! DIRECTORIES
 
     # Careful, "Config" is a special member of BaseClass
     config: DirectoryPath = Field(
-        default=...,
-        description="Relative path from the base directory to the config directory.",
+        default=base.default / "config",  # type: ignore  # Validator makes it a Path
+        description="The config directory.",
+    )
+
+    data: DirectoryPath = Field(
+        default=base.default / "data",  # type: ignore  # Validator makes it a Path
+        description="The data directory.",
     )
 
     # Can't be "schema", which is a special member of BaseClass
     project_schema: DirectoryPath = Field(
-        default=...,
-        description="Relative path from the base directory to the schema directory.  Will be created if missing.",
+        default=data.default / "schema",  # type: ignore  # Validator makes it a Path
+        description="The schema directory.",
     )
 
     trials: DirectoryPath = Field(
-        default=...,
-        description="The directory in which the individual trials are. Must be relative to the base directory.",
+        default=data.default / "curves",  # type: ignore  # Validator makes it a Path
+        description="The trials directory.",
     )
 
     results: DirectoryPath = Field(
-        default=...,
-        description="The directory in which the results will go. Must be relative to the base directory. Will be created if missing.",
+        default=data.default / "results",  # type: ignore  # Validator makes it a Path
+        description="The results directory.",
     )
 
     new_fits: DirectoryPath = Field(
-        default=...,
-        description="The directory in which fit plots will go for new runs. Must be relative to the base directory. Will be created if missing.",
+        default=results.default / "new_fits",  # type: ignore  # Validator makes it a Path
+        description="The directory in which fit plots will go for new runs.",
     )
 
+    # "always" so it'll run even if not in YAML
     # "pre" because dir must exist pre-validation
-    @validator("config", "project_schema", "trials", "results", "new_fits", pre=True)
-    def validate_directory(cls, v: StrPath, values: dict[str, Path]):
-        if Path(v).is_absolute():
-            raise ValueError("Must be relative to the base directory.")
-        directory = values["base"] / v
+    @validator(
+        "config",
+        "data",
+        "project_schema",
+        "trials",
+        "results",
+        "new_fits",
+        always=True,
+        pre=True,
+    )
+    def validate_directory(cls, v: StrPath):
+        directory = Path(v)
         directory.mkdir(parents=True, exist_ok=True)
         return directory
 
@@ -65,19 +76,19 @@ class Dirs(MyBaseModel):
     # ! FILES
 
     runs_file: Path = Field(
-        default="runs.csv",
+        default=results.default / "runs.csv",  # type: ignore  # Validator makes it a Path
         description="The path to the runs. Must be relative to the results directory. Default: runs.csv",
     )
     simple_results_file: Path = Field(
-        default="results.csv",
+        default=results.default / "results.csv",  # type: ignore  # Validator makes it a Path
         description="The path to the simple results file. Must be relative to the results directory. Default: results.csv",
     )
     originlab_results_file: Path = Field(
-        default="originlab_results.csv",
+        default=results.default / "originlab_results.csv",  # type: ignore  # Validator makes it a Path
         description="The path to the results file to be parsed by OriginLab. Must be relative to the results directory. Default: originlab_results.csv",
     )
     originlab_coldes_file: Path = Field(
-        default="originlab_coldes.txt",
+        default=results.default / "originlab_coldes.txt",  # type: ignore  # Validator makes it a Path
         description="The path to which the OriginLab column designation string will be written. Must be relative to the results directory. Default: coldes.txt",
     )
 
@@ -89,9 +100,7 @@ class Dirs(MyBaseModel):
         "originlab_coldes_file",
         always=True,
     )
-    def validate_files(cls, file: Path, values: dict[str, Path]):
-        if file.is_absolute():
-            raise ValueError("Must be relative to the results directory.")
-        file = values["results"] / file
+    def validate_files(cls, v: Path):
+        file = Path(v)
         file.parent.mkdir(parents=True, exist_ok=True)
         return file

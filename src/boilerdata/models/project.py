@@ -11,7 +11,7 @@ from boilerdata.models.trials import Trial, Trials
 class Project(MyBaseModel):
     """Configuration for the package."""
 
-    dirs: Dirs
+    dirs: Dirs = Field(default=Dirs())
     geometry: Geometry
     params: Params = Field(default=Params())
 

@@ -8,8 +8,8 @@ stages:
       size: 103226338
       nfiles: 401
     - path: data/schema
-      md5: 61ba63473678a6f0538ef6072e4cc5b2.dir
-      size: 22600
+      md5: 1c377889e01442d473bebd048771e6c9.dir
+      size: 23197
       nfiles: 3
     params:
       config/axes.yaml:
@@ -118,13 +118,6 @@ stages:
           units: K
           originlab_coldes: M
       config/project.yaml:
-        dirs:
-          base: .
-          config: config
-          project_schema: data/schema
-          trials: data/curves
-          results: data/results
-          new_fits: data/results/new_fits
         geometry:
           diameter: 0.375
           rods:
@@ -363,8 +356,8 @@ stages:
           new: true
     outs:
     - path: data/results
-      md5: f8195e8bf72db16e15f9a871841e687f.dir
-      size: 1162942
+      md5: 9435184111a2dd6ded714e779d506884.dir
+      size: 1176979
       nfiles: 15
   plot:
     cmd: python -m boilerdata.plot
@@ -392,13 +385,13 @@ stages:
     cmd: python -m boilerdata.stages.schema
     deps:
     - path: src/boilerdata/models
-      md5: f9ebee281f6cfed1f83ce48127b55083.dir
-      size: 53628
+      md5: 6015cb0af0dcaa620ba70da032ef9f3b.dir
+      size: 53493
       nfiles: 18
     outs:
     - path: data/schema
-      md5: 61ba63473678a6f0538ef6072e4cc5b2.dir
-      size: 22600
+      md5: 1c377889e01442d473bebd048771e6c9.dir
+      size: 23197
       nfiles: 3
   originlab:
     cmd: python -m boilerdata.stages.originlab
@@ -408,10 +401,10 @@ stages:
       size: 684844
       nfiles: 1
     - path: data/results
-      md5: f8195e8bf72db16e15f9a871841e687f.dir
-      size: 1162942
+      md5: 9435184111a2dd6ded714e779d506884.dir
+      size: 1176979
       nfiles: 15
     outs:
     - path: data/plots/lit_.png
-      md5: 58188239df8966076830b9fa3706b959
+      md5: b4e62e39c490d46ecc8b495551f0bec4
       size: 26945
