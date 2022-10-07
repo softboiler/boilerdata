@@ -1,5 +1,6 @@
 from contextlib import contextmanager
 from pathlib import Path
+from time import sleep
 
 import originpro as op
 
@@ -18,7 +19,9 @@ def open_originlab(file, readonly=True):
     if not Path(file).exists():
         raise FileNotFoundError(f"File not found: {file}")
     op.set_show(True)  # required
-    yield op.open(file=get_path(file), readonly=readonly)
+    file = op.open(file=get_path(file), readonly=readonly)
+    sleep(5)  # wait for data sources to update upon book opening
+    yield file
     op.exit()
 
 

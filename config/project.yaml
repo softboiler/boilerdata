@@ -25,3 +25,6 @@ geometry:
     A7: 0.753
     A8: 0.753
     A9: 0.553
+
+params:
+  records_to_average: 10

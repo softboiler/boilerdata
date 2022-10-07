@@ -162,6 +162,8 @@ stages:
             A7: 0.753
             A8: 0.753
             A9: 0.553
+        params:
+          records_to_average: 10
       config/trials.yaml:
         trials:
         - date: '2020-03-12'
@@ -358,8 +360,8 @@ stages:
           good: false
     outs:
     - path: data/results
-      md5: 6b81274e51f8814ef54c062b6fa98d02.dir
-      size: 6438831
+      md5: 7610c97a6a523d640eb692c826daa386.dir
+      size: 1387318
       nfiles: 4
   plot:
     cmd: python -m boilerdata.plot
@@ -387,7 +389,7 @@ stages:
     cmd: python -m boilerdata.stages.schema
     deps:
     - path: src/boilerdata/models
-      md5: c03512698bd2c209f93c86198213a7aa.dir
+      md5: b27ffdeab7ba6ab515395d88e84aa91d.dir
       size: 52869
       nfiles: 18
     outs:
@@ -403,10 +405,10 @@ stages:
       size: 684844
       nfiles: 1
     - path: data/results
-      md5: 6b81274e51f8814ef54c062b6fa98d02.dir
-      size: 6438831
+      md5: 7610c97a6a523d640eb692c826daa386.dir
+      size: 1387318
       nfiles: 4
     outs:
     - path: data/plots/lit_.png
-      md5: 6d750e8a72b6d2e7db27c9a33dc6d68d
-      size: 26768
+      md5: 5ae41c2ea865a40e42d9d552a0b5d2ef
+      size: 26922

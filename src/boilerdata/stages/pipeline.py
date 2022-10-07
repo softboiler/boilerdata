@@ -173,17 +173,18 @@ def agg_and_get_95_ci(df: pd.DataFrame, proj: Project) -> pd.DataFrame:
         A.dT_dx_err: pd.NamedAgg(column=A.dT_dx, aggfunc="sem"),
     }
     aggs = proj.axes.aggs | complex_agg_overrides
-    return (
+    df = (
         df.groupby(level=[A.trial, A.run])  # type: ignore  # Upstream issue w/ pandas-stubs
         .agg(**aggs)
         .pipe(set_proj_dtypes, proj)
         .assign(
             **{
                 A.T_s_err: lambda df: df[A.T_s_err] * confidence_interval_95,
-                A.dT_dx_err: lambda df: df[A.T_s_err] * confidence_interval_95,
+                A.dT_dx_err: lambda df: df[A.dT_dx_err] * confidence_interval_95,
             }
         )
     )
+    return df
 
 
 def get_heat_transfer(df: pd.DataFrame, proj: Project) -> pd.DataFrame:
@@ -332,6 +333,15 @@ def linregress_ser(
     r = linregress(x, y)
     # Unpacking is weird with linregress.
     # See "Notes" section: https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.linregress.html
+
+    # Unpacking would drop r.intercept_stderr, so we have to do it this way.
+    # See "Notes" section of SciPy documentation for more info.
+
+    # return pd.Series(
+    #     [r.slope, slope_err, r.intercept, int_err, r.rvalue, r.pvalue],  # type: ignore  # Issue w/ upstream scipy
+    #     index=regression_stats,
+    # )
+
     return pd.Series([r.slope, r.intercept], index=regression_stats)  # type: ignore  # Issue w/ upstream scipy
 
 
