@@ -115,6 +115,10 @@ class Axes(MyBaseModel):
             raise ValueError("No source columns.")
 
     @property
+    def source_cols(self) -> list[Axis]:
+        return [col for col in self.source if not col.index]
+
+    @property
     def meta(self) -> list[Axis]:
         return [ax for ax in self.all if ax.meta]
 

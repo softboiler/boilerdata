@@ -204,3 +204,4 @@ trials:
     joint: "none"
     comment: "RTV has been applied on the cylindrical sidewall of the copper post."
     good: false
+    new: true

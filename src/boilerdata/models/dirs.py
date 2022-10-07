@@ -40,8 +40,13 @@ class Dirs(MyBaseModel):
         description="The directory in which the results will go. Must be relative to the base directory. Will be created if missing.",
     )
 
+    new_fits: DirectoryPath = Field(
+        default=...,
+        description="The directory in which fit plots will go for new runs. Must be relative to the base directory. Will be created if missing.",
+    )
+
     # "pre" because dir must exist pre-validation
-    @validator("config", "project_schema", "trials", "results", pre=True)
+    @validator("config", "project_schema", "trials", "results", "new_fits", pre=True)
     def validate_directory(cls, v: StrPath, values: dict[str, Path]):
         if Path(v).is_absolute():
             raise ValueError("Must be relative to the base directory.")

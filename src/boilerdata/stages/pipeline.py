@@ -36,15 +36,11 @@ def main(proj: Project):
         pd.DataFrame(columns=[ax.name for ax in proj.axes.cols], data=get_runs(proj))
         .pipe(set_proj_dtypes, proj)
         .pipe(handle_invalid_data, validate_initial_df)
-        .pipe(
-            per_trial,
-            proj,
-            lambda df, trial, proj: (
-                df.pipe(assign_metadata, trial, proj).pipe(fit, trial)
-            ),
-        )
+        .pipe(per_trial, proj, fit)
         .pipe(agg_and_get_95_ci, proj)
+        .also(per_trial, proj, plot_fit)
         .pipe(get_heat_transfer, proj)
+        .pipe(per_trial, proj, assign_metadata)
         .pipe(validate_final_df)
         .also(lambda df: df.to_csv(proj.dirs.simple_results_file, encoding="utf-8"))
         .pipe(transform_for_originlab, proj)
@@ -92,9 +88,8 @@ def get_run(proj: Project, run: Path) -> pd.DataFrame:
 
     # Get source columns
     index = proj.axes.index[-1].source  # Get the last index, associated with source
-    source_cols = [col for col in proj.axes.source if not col.index]
-    source_col_names = [col.source for col in source_cols]
-    source_dtypes = {col.source: col.dtype for col in source_cols}
+    source_col_names = [col.source for col in proj.axes.source_cols]
+    source_dtypes = {col.source: col.dtype for col in proj.axes.source_cols}
 
     # Assign columns from CSV and metadata to the structured dataframe. Get the tail.
     df = (
@@ -145,7 +140,7 @@ def per_trial(
     return set_proj_dtypes(df, proj)
 
 
-def assign_metadata(df, trial: Trial, proj: Project) -> pd.DataFrame:
+def assign_metadata(df: pd.DataFrame, trial: Trial, proj: Project) -> pd.DataFrame:
     """Assign metadata columns to the dataframe."""
     return df.assign(
         **{
@@ -156,9 +151,35 @@ def assign_metadata(df, trial: Trial, proj: Project) -> pd.DataFrame:
     )
 
 
-def fit(df: pd.DataFrame, trial: Trial, _=None) -> pd.DataFrame:
+def fit(df: pd.DataFrame, trial: Trial, _) -> pd.DataFrame:
     """Fit the data assuming one-dimensional, steady-state conduction."""
-    return linregress_apply(df, trial=trial, result_cols=[A.dT_dx, A.T_s])
+    return df.assign(
+        **df[list(trial.thermocouple_pos.keys())].apply(
+            axis="columns",
+            func=linregress_ser,
+            x=list(trial.thermocouple_pos.values()),
+            regression_stats=[A.dT_dx, A.T_s],
+        )  # type: ignore  # Upstream issue w/ pandas-stubs
+    )
+
+
+def plot_fit(df: pd.DataFrame, trial: Trial, proj: Project) -> pd.DataFrame:
+    """Plot the goodness of fit for each run in the trial."""
+
+    if not trial.new:
+        return df
+
+    from matplotlib import pyplot as plt
+
+    # Reason: Enum incompatible with str, but we have use_enum_values from Pydantic
+    df.apply(
+        axis="columns",
+        func=plot_fit_ser,
+        trial=trial,
+        proj=proj,
+        plt=plt,
+    )  # type: ignore  # Upstream issue w/ pandas-stubs
+    return df
 
 
 # * -------------------------------------------------------------------------------- * #
@@ -253,75 +274,12 @@ def transform_for_originlab(df: pd.DataFrame, proj: Project) -> pd.DataFrame:
 
 
 # * -------------------------------------------------------------------------------- * #
-# * PLOTTING
-
-
-def plot_fit_apply(df: pd.DataFrame, proj: Project, trial: Trial) -> pd.DataFrame:
-    """Plot the goodness of fit for each run in the trial."""
-    from matplotlib import pyplot as plt
-
-    # Reason: Enum incompatible with str, but we have use_enum_values from Pydantic
-    df.apply(
-        axis="columns",
-        func=plot_fit_ser,
-        proj=proj,
-        trial=trial,
-        plt=plt,
-    )  # type: ignore  # Upstream issue w/ pandas-stubs
-    plt.show()
-    return df
-
-
-def plot_fit_ser(ser: pd.Series[float], proj: Project, trial: Trial, plt: ModuleType):
-    """Plot the goodness of fit for a series of temperatures and positions."""
-    plt.figure()
-    plt.title("Temperature Profile in Post")
-    plt.xlabel("x (m)")
-    plt.ylabel("T (C)")
-    # Reason: Enum incompatible with str, but we have use_enum_values from Pydantic
-    plt.plot(
-        trial.thermocouple_pos.values(),
-        ser[list(trial.thermocouple_pos.keys())],
-        "*",
-        label="Measured Temperatures",
-        color=[0.2, 0.2, 0.2],
-    )
-    x_smooth = np.linspace(0, trial.thermocouple_pos[A.T_1])
-    plt.plot(
-        x_smooth,
-        ser[A.T_s] + ser[A.dT_dx] * x_smooth,
-        "--",
-        label=f"Linear Regression $(r^2={round(ser.rvalue**2,4)})$",
-    )
-    plt.plot(
-        0, ser[A.T_s], "x", label="Extrapolated Surface Temperature", color=[1, 0, 0]
-    )
-    plt.legend()
-
-
-# * -------------------------------------------------------------------------------- * #
 # * HELPER FUNCTIONS
 
 
 def set_proj_dtypes(df: pd.DataFrame, proj: Project) -> pd.DataFrame:
     """Set project-specific dtypes for the dataframe."""
     return set_dtypes(df, {col.name: col.dtype for col in proj.axes.cols})
-
-
-def linregress_apply(
-    df: pd.DataFrame,
-    trial: Trial,
-    result_cols: list[str],
-) -> pd.DataFrame:
-    """Apply linear regression across the temperature columns."""
-    return df.assign(
-        **df[list(trial.thermocouple_pos.keys())].apply(
-            axis="columns",
-            func=linregress_ser,
-            x=list(trial.thermocouple_pos.values()),
-            regression_stats=result_cols,
-        )  # type: ignore  # Upstream issue w/ pandas-stubs
-    )
 
 
 def linregress_ser(
@@ -333,10 +291,34 @@ def linregress_ser(
     r = linregress(x, y)
     # Unpacking is weird with linregress.
     # See "Notes" section: https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.linregress.html
-
-    # Unpacking would drop r.intercept_stderr, so we have to do it this way.
-    # See "Notes" section of SciPy documentation for more info.
     return pd.Series([r.slope, r.intercept], index=regression_stats)  # type: ignore  # Issue w/ upstream scipy
+
+
+def plot_fit_ser(ser: pd.Series[float], trial: Trial, proj: Project, plt: ModuleType):
+    """Plot the goodness of fit for a series of temperatures and positions."""
+    run = ser.name[-1].isoformat().replace(":", "-")  # type: ignore
+    plt.figure()
+    plt.title(f"{trial.date}")
+    plt.xlabel("x (m)")
+    plt.ylabel("T (C)")
+    # Reason: Enum incompatible with str, but we have use_enum_values from Pydantic
+    plt.plot(
+        trial.thermocouple_pos.values(),
+        ser[list(trial.thermocouple_pos.keys())],
+        "*",
+        label="Measurements",
+        color=[0.2, 0.2, 0.2],
+    )
+    x_smooth = np.linspace(0, trial.thermocouple_pos[A.T_1])
+    plt.plot(
+        x_smooth,
+        ser[A.T_s] + ser[A.dT_dx] * x_smooth,
+        "--",
+        label="Fit",
+    )
+    plt.plot(0, ser[A.T_s], "x", label="Extrapolation", color=[1, 0, 0])
+    plt.legend()
+    plt.savefig(proj.dirs.new_fits / f"{run}.png")
 
 
 # * -------------------------------------------------------------------------------- * #

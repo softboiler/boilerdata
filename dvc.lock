@@ -8,8 +8,8 @@ stages:
       size: 103226338
       nfiles: 401
     - path: data/schema
-      md5: b23abfe6450c9f58fef17215b15b063d.dir
-      size: 22293
+      md5: 61ba63473678a6f0538ef6072e4cc5b2.dir
+      size: 22600
       nfiles: 3
     params:
       config/axes.yaml:
@@ -124,6 +124,7 @@ stages:
           project_schema: data/schema
           trials: data/curves
           results: data/results
+          new_fits: data/results/new_fits
         geometry:
           diameter: 0.375
           rods:
@@ -163,7 +164,8 @@ stages:
             A8: 0.753
             A9: 0.553
         params:
-          records_to_average: 10
+          records_to_average: 5
+          do_plot: true
       config/trials.yaml:
         trials:
         - date: '2020-03-12'
@@ -358,11 +360,12 @@ stages:
           comment: RTV has been applied on the cylindrical sidewall of the copper
             post.
           good: false
+          new: true
     outs:
     - path: data/results
-      md5: 7610c97a6a523d640eb692c826daa386.dir
-      size: 1387318
-      nfiles: 4
+      md5: f8195e8bf72db16e15f9a871841e687f.dir
+      size: 1162942
+      nfiles: 15
   plot:
     cmd: python -m boilerdata.plot
     deps:
@@ -389,13 +392,13 @@ stages:
     cmd: python -m boilerdata.stages.schema
     deps:
     - path: src/boilerdata/models
-      md5: 70138feb22b9efb6885a800775e4f27f.dir
-      size: 52869
+      md5: f9ebee281f6cfed1f83ce48127b55083.dir
+      size: 53628
       nfiles: 18
     outs:
     - path: data/schema
-      md5: b23abfe6450c9f58fef17215b15b063d.dir
-      size: 22293
+      md5: 61ba63473678a6f0538ef6072e4cc5b2.dir
+      size: 22600
       nfiles: 3
   originlab:
     cmd: python -m boilerdata.stages.originlab
@@ -405,10 +408,10 @@ stages:
       size: 684844
       nfiles: 1
     - path: data/results
-      md5: 7610c97a6a523d640eb692c826daa386.dir
-      size: 1387318
-      nfiles: 4
+      md5: f8195e8bf72db16e15f9a871841e687f.dir
+      size: 1162942
+      nfiles: 15
     outs:
     - path: data/plots/lit_.png
-      md5: 5ae41c2ea865a40e42d9d552a0b5d2ef
-      size: 26922
+      md5: 58188239df8966076830b9fa3706b959
+      size: 26945
