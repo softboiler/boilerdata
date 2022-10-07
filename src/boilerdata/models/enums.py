@@ -72,9 +72,11 @@ class Joint(GetNameEnum):
     none = auto()
 
 
-# sourcery skip: avoid-builtin-shadow
 class PandasDtype(GetNameEnum):
-    """Valid data types for Pandas objects."""
+    """Valid data types for Pandas objects.
+
+    See also: https://pandas.pydata.org/docs/user_guide/basics.html#dtypes
+    """
 
     object = auto()  # noqa: A003
     float = auto()  # noqa: A003
@@ -95,6 +97,27 @@ class PandasDtype(GetNameEnum):
     UInt16 = auto()
     Uint32 = auto()
     UInt64 = auto()
+
+
+class PandasAggfun(GetNameEnum):
+    """Valid built-in aggregation functions in Pandas.
+
+    See also: https://pandas.pydata.org/pandas-docs/stable/user_guide/groupby.html#aggregation
+    """
+
+    mean = auto()
+    sum = auto()  # noqa: A003
+    size = auto()
+    count = auto()
+    std = auto()
+    var = auto()
+    sem = auto()
+    describe = auto()
+    first = auto()
+    last = auto()
+    nth = auto()
+    min = auto()  # noqa: A003
+    max = auto()  # noqa: A003
 
 
 class OriginLabColdes(GetNameEnum):

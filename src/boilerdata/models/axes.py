@@ -4,7 +4,7 @@ import pandas as pd
 from pydantic import Field, validator
 
 from boilerdata.models.common import MyBaseModel
-from boilerdata.models.enums import OriginLabColdes, PandasDtype
+from boilerdata.models.enums import OriginLabColdes, PandasAggfun, PandasDtype
 
 
 class Axis(MyBaseModel):
@@ -26,6 +26,17 @@ class Axis(MyBaseModel):
         default="",
         description="The units for this column's values.",
     )
+
+    # ! AGGREGATION
+
+    agg: PandasAggfun = Field(
+        default=PandasAggfun.mean,
+        description="The aggregation method to use for this column.",
+    )
+
+    @validator("agg", always=True)
+    def validate_meta(cls, agg, values):
+        return "first" if values["dtype"] == PandasDtype.category else agg
 
     # ! COLUMNS IN SOURCE DATA
 
@@ -107,12 +118,18 @@ class Axes(MyBaseModel):
     def meta(self) -> list[Axis]:
         return [ax for ax in self.all if ax.meta]
 
+    @property
+    def aggs(self) -> dict[str, pd.NamedAgg]:
+        return {
+            ax.name: pd.NamedAgg(column=ax.name, aggfunc=ax.agg) for ax in self.cols
+        }
+
     def get_col_index(self) -> pd.MultiIndex:
 
         # Rename columns and extract them into a row
         quantity = pd.DataFrame(
-            self.get_names(self.cols),
-            index=self.get_names(self.cols),
+            [ax.name for ax in self.cols],
+            index=[ax.name for ax in self.cols],
             dtype=PandasDtype.string,
         ).rename(axis="columns", mapper={0: "quantity"})
 
@@ -129,8 +146,3 @@ class Axes(MyBaseModel):
         return "".join(
             [ax.originlab_coldes for ax in self.all if ax.originlab_coldes != "Q"]
         )
-
-    @staticmethod
-    def get_names(axes: list[Axis]) -> list[str]:
-        """Get names of the axes."""
-        return [ax.name for ax in axes]

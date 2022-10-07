@@ -6,7 +6,9 @@ from datetime import datetime
 from pathlib import Path
 import re
 from types import ModuleType
+from typing import Callable
 
+import janitor  # type: ignore  # Magically registers methods on Pandas objects
 from numpy import typing as npt
 import numpy as np
 import pandas as pd
@@ -15,7 +17,6 @@ from propshop.library import Mat, Prop
 from scipy.constants import convert_temperature
 from scipy.stats import linregress, norm
 
-from boilerdata.models.axes import Axes
 from boilerdata.models.axes_enum import AxesEnum as A  # noqa: N814
 from boilerdata.models.common import set_dtypes
 from boilerdata.models.project import Project
@@ -23,7 +24,7 @@ from boilerdata.models.trials import Trial
 from boilerdata.validation import (
     handle_invalid_data,
     validate_final_df,
-    validate_runs_df,
+    validate_initial_df,
 )
 
 # * -------------------------------------------------------------------------------- * #
@@ -31,37 +32,23 @@ from boilerdata.validation import (
 
 
 def main(proj: Project):
-
-    # Get dataframe of all runs and reduce to steady-state
-    runs_df = get_runs(proj)
-    runs_df = handle_invalid_data(proj, runs_df, validate_runs_df)
-
-    df = pd.DataFrame(columns=Axes.get_names(proj.axes.cols)).assign(
-        **get_steady_state(runs_df, proj)  # type: ignore  # All DataFrames from CSV guarantees str keys, not expressible in types.
-    )
-
-    # Perform fits and compute heat transfer for each trial
-    for trial in proj.trials:
-        trial_df = df.xs(trial.trial, level=A.trial, drop_level=False)
-        df.update(
-            trial_df.pipe(assign_metadata, proj, trial)
-            .pipe(fit, proj, trial)
-            .pipe(get_heat_transfer, proj, trial)
+    (
+        pd.DataFrame(columns=[ax.name for ax in proj.axes.cols], data=get_runs(proj))
+        .pipe(set_proj_dtypes, proj)
+        .pipe(handle_invalid_data, validate_initial_df)
+        .pipe(
+            per_trial,
+            proj,
+            lambda df, trial, proj: (
+                df.pipe(assign_metadata, trial, proj).pipe(fit, trial)
+            ),
         )
-        if proj.params.do_plot:
-            plot_fit_apply(trial_df, proj, trial)
-
-    # Set dtypes after update. https://github.com/pandas-dev/pandas/issues/4094
-    dtypes = {col.name: col.dtype for col in proj.axes.cols}
-    df = df.pipe(set_dtypes, dtypes)
-    df = handle_invalid_data(proj, df, validate_final_df)
-
-    # Write a simple version of results to CSV for quick-reference
-    df.to_csv(proj.dirs.simple_results_file, encoding="utf-8")
-
-    # Post-process the dataframe for writing to OriginLab-flavored CSV
-    df.pipe(transform_for_originlab, proj).to_csv(
-        proj.dirs.originlab_results_file, index=False, encoding="utf-8"
+        .pipe(agg_and_get_95_ci, proj)
+        .pipe(get_heat_transfer, proj)
+        .pipe(validate_final_df)
+        .also(lambda df: df.to_csv(proj.dirs.simple_results_file, encoding="utf-8"))
+        .pipe(transform_for_originlab, proj)
+        .to_csv(proj.dirs.originlab_results_file, index=False, encoding="utf-8")
     )
     proj.dirs.originlab_coldes_file.write_text(proj.axes.get_originlab_coldes())
 
@@ -79,7 +66,7 @@ def get_runs(proj: Project) -> pd.DataFrame:
     multiindex: list[tuple[datetime, datetime, datetime]] = []
     for trial in proj.trials:
         for file, run_index in zip(trial.run_files, trial.run_index):
-            run = get_run(proj, trial, file)
+            run = get_run(proj, file)
             runs.append(run)
             multiindex.extend(
                 tuple((*run_index, record_time) for record_time in run.index)
@@ -92,7 +79,7 @@ def get_runs(proj: Project) -> pd.DataFrame:
         )
     )
 
-    # Ensure appropriate dtypes for each column. Validate number of records in each run.
+    # Ensure appropriate dtypes for each column.
     df = set_dtypes(df, dtypes)
 
     # Write the runs to disk for faster fetching later
@@ -101,7 +88,7 @@ def get_runs(proj: Project) -> pd.DataFrame:
     return df
 
 
-def get_run(proj: Project, trial: Trial, run: Path) -> pd.DataFrame:
+def get_run(proj: Project, run: Path) -> pd.DataFrame:
 
     # Get source columns
     index = proj.axes.index[-1].source  # Get the last index, associated with source
@@ -141,53 +128,65 @@ def rename_columns(df: pd.DataFrame, proj: Project) -> pd.DataFrame:
 
 
 # * -------------------------------------------------------------------------------- * #
-# * ASSIGN METADATA
+# * PER-TRIAL STAGES
 
 
-def assign_metadata(df: pd.DataFrame, proj: Project, trial: Trial) -> pd.DataFrame:
+def per_trial(
+    df: pd.DataFrame,
+    proj: Project,
+    per_trial_func: Callable[[pd.DataFrame, Trial, Project], pd.DataFrame],
+):
+    """Apply a function to cross-sections of the dataframe corresponding to trials."""
+    for trial in proj.trials:
+        trial_df = df.xs(trial.trial, level=A.trial, drop_level=False)
+        df.update(per_trial_func(trial_df, trial, proj))  # type: ignore
 
-    # Get metadata
-    metadata = {
-        field: value
-        for field, value in trial.dict().items()  # Dict call avoids excluded properties
-        if field not in [idx.name for idx in proj.axes.index]
-    }
-
-    # Assign columns from CSV and metadata to the structured dataframe. Get the tail.
-
-    return df.assign(**metadata)
-
-
-# * -------------------------------------------------------------------------------- * #
-# * REDUCE DATA
+    # Set dtypes after update. https://github.com/pandas-dev/pandas/issues/4094
+    return set_proj_dtypes(df, proj)
 
 
-def get_steady_state(df: pd.DataFrame, proj: Project) -> pd.DataFrame:
-    """Get the steady-state values for each run."""
-    cols_to_mean = [
-        col.name for col in proj.axes.all if col.source and col.dtype == "float"
-    ]
-    means = df[cols_to_mean].groupby(level=A.run, sort=False).transform("mean")
-    return df.assign(**means).droplevel(A.time)[:: proj.params.records_to_average]
-
-
-# * -------------------------------------------------------------------------------- * #
-# * MAIN PIPELINE
-
-
-def fit(df: pd.DataFrame, proj: Project, trial: Trial) -> pd.DataFrame:
-    """Fit the data assuming one-dimensional, steady-state conduction."""
-    df = df.pipe(
-        linregress_apply,
-        proj=proj,
-        trial=trial,
-        temperature_cols=df[list(trial.thermocouple_pos.keys())],
-        result_cols=[A.dT_dx, A.dT_dx_err, A.T_s, A.T_s_err, A.rvalue, A.pvalue],
+def assign_metadata(df, trial: Trial, proj: Project) -> pd.DataFrame:
+    """Assign metadata columns to the dataframe."""
+    return df.assign(
+        **{
+            field: value
+            for field, value in trial.dict().items()  # Dict call avoids excluded properties
+            if field not in [idx.name for idx in proj.axes.index]
+        }
     )
-    return df
 
 
-def get_heat_transfer(df: pd.DataFrame, proj: Project, trial: Trial) -> pd.DataFrame:
+def fit(df: pd.DataFrame, trial: Trial, _=None) -> pd.DataFrame:
+    """Fit the data assuming one-dimensional, steady-state conduction."""
+    return linregress_apply(df, trial=trial, result_cols=[A.dT_dx, A.T_s])
+
+
+# * -------------------------------------------------------------------------------- * #
+# * STAGES
+
+
+def agg_and_get_95_ci(df: pd.DataFrame, proj: Project) -> pd.DataFrame:
+    """Take means of numeric columns and get 95% confidence interval of fits."""
+    confidence_interval_95 = abs(norm.ppf(0.025))
+    complex_agg_overrides = {
+        A.T_s_err: pd.NamedAgg(column=A.T_s, aggfunc="sem"),
+        A.dT_dx_err: pd.NamedAgg(column=A.dT_dx, aggfunc="sem"),
+    }
+    aggs = proj.axes.aggs | complex_agg_overrides
+    return (
+        df.groupby(level=[A.trial, A.run])  # type: ignore  # Upstream issue w/ pandas-stubs
+        .agg(**aggs)
+        .pipe(set_proj_dtypes, proj)
+        .assign(
+            **{
+                A.T_s_err: lambda df: df[A.T_s_err] * confidence_interval_95,
+                A.dT_dx_err: lambda df: df[A.T_s_err] * confidence_interval_95,
+            }
+        )
+    )
+
+
+def get_heat_transfer(df: pd.DataFrame, proj: Project) -> pd.DataFrame:
     """Calculate heat transfer and superheat based on one-dimensional approximation."""
 
     # Constants
@@ -197,8 +196,8 @@ def get_heat_transfer(df: pd.DataFrame, proj: Project, trial: Trial) -> pd.DataF
     cross_sectional_area = np.pi / 4 * diameter**2  # (cm^2)
 
     # Temperatures
-    trial_water_temp = df[proj.params.water_temps].mean().mean()  # type: ignore  # Due to use_enum_values
-    midpoint_temps = (trial_water_temp + df[A.T_1]) / 2
+    water_temp = df[proj.params.water_temps].mean().mean()  # type: ignore  # Due to use_enum_values
+    midpoint_temps = (df[A.T_s] + df[A.T_1]) / 2
 
     return df.assign(
         **{
@@ -211,61 +210,9 @@ def get_heat_transfer(df: pd.DataFrame, proj: Project, trial: Trial) -> pd.DataF
             A.q: lambda df: df[A.k] * df[A.dT_dx] / cm2_p_m2,
             A.q_err: lambda df: (df[A.k] * df[A.dT_dx_err]) / cm2_p_m2,
             A.Q: lambda df: df[A.q] * cross_sectional_area,
-            A.DT: lambda df: (df[A.T_s] - trial_water_temp),
+            A.DT: lambda df: (df[A.T_s] - water_temp),
             A.DT_err: lambda df: df[A.T_s_err],
         }
-    )
-
-
-# * -------------------------------------------------------------------------------- * #
-# * LINEAR REGRESSION
-
-
-def linregress_apply(
-    df: pd.DataFrame,
-    proj: Project,
-    trial: Trial,
-    temperature_cols: pd.DataFrame,
-    result_cols: list[str],
-) -> pd.DataFrame:
-    """Apply linear regression across the temperature columns."""
-    return df.assign(
-        **temperature_cols.apply(
-            axis="columns",
-            func=linregress_ser,
-            x=list(trial.thermocouple_pos.values()),
-            repeats_per_pair=proj.params.records_to_average,
-            regression_stats=result_cols,
-        )  # type: ignore  # Upstream issue w/ pandas-stubs
-    )
-
-
-def linregress_ser(
-    series_of_y: pd.Series[float],
-    x: npt.ArrayLike,
-    repeats_per_pair: int,
-    regression_stats: list[str],
-) -> pd.Series[float]:
-    """Perform linear regression of a series of y's with respect to given x's.
-
-    Given x-values and a series of y-values, return a series of linear regression
-    statistics.
-    """
-    # Assume the ordered pairs are repeated with zero standard deviation in x and y
-    x = np.repeat(x, repeats_per_pair)
-    y = series_of_y.repeat(repeats_per_pair)
-    r = linregress(x, y)
-
-    # Confidence interval
-    confidence_interval_95 = abs(norm.ppf(0.025))
-    slope_err = confidence_interval_95 * r.stderr  # type: ignore  # Issue w/ upstream scipy
-    int_err = confidence_interval_95 * r.intercept_stderr  # type: ignore  # Issue w/ upstream scipy
-
-    # Unpacking would drop r.intercept_stderr, so we have to do it this way.
-    # See "Notes" section of SciPy documentation for more info.
-    return pd.Series(
-        [r.slope, slope_err, r.intercept, int_err, r.rvalue, r.pvalue],  # type: ignore  # Issue w/ upstream scipy
-        index=regression_stats,
     )
 
 
@@ -349,6 +296,43 @@ def plot_fit_ser(ser: pd.Series[float], proj: Project, trial: Trial, plt: Module
         0, ser[A.T_s], "x", label="Extrapolated Surface Temperature", color=[1, 0, 0]
     )
     plt.legend()
+
+
+# * -------------------------------------------------------------------------------- * #
+# * HELPER FUNCTIONS
+
+
+def set_proj_dtypes(df: pd.DataFrame, proj: Project) -> pd.DataFrame:
+    """Set project-specific dtypes for the dataframe."""
+    return set_dtypes(df, {col.name: col.dtype for col in proj.axes.cols})
+
+
+def linregress_apply(
+    df: pd.DataFrame,
+    trial: Trial,
+    result_cols: list[str],
+) -> pd.DataFrame:
+    """Apply linear regression across the temperature columns."""
+    return df.assign(
+        **df[list(trial.thermocouple_pos.keys())].apply(
+            axis="columns",
+            func=linregress_ser,
+            x=list(trial.thermocouple_pos.values()),
+            regression_stats=result_cols,
+        )  # type: ignore  # Upstream issue w/ pandas-stubs
+    )
+
+
+def linregress_ser(
+    y: pd.Series[float],
+    x: npt.ArrayLike,
+    regression_stats: list[str],
+) -> pd.Series[float]:
+    """Perform linear regression of a series of y's with respect to given x's."""
+    r = linregress(x, y)
+    # Unpacking is weird with linregress.
+    # See "Notes" section: https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.linregress.html
+    return pd.Series([r.slope, r.intercept], index=regression_stats)  # type: ignore  # Issue w/ upstream scipy
 
 
 # * -------------------------------------------------------------------------------- * #

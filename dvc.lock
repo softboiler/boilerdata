@@ -8,8 +8,8 @@ stages:
       size: 103226338
       nfiles: 401
     - path: data/schema
-      md5: 582efaa6a6be2b0c94196568fe17db38.dir
-      size: 20687
+      md5: b23abfe6450c9f58fef17215b15b063d.dir
+      size: 22293
       nfiles: 3
     params:
       config/axes.yaml:
@@ -97,8 +97,6 @@ stages:
           units: C
         - name: T_s_err
           units: C
-        - name: rvalue
-        - name: pvalue
         - name: k
           units: W/m-K
         - name: q
@@ -360,8 +358,8 @@ stages:
           good: false
     outs:
     - path: data/results
-      md5: 51edbd584e87a8f851eeaa52a64b4667.dir
-      size: 6458287
+      md5: 6b81274e51f8814ef54c062b6fa98d02.dir
+      size: 6438831
       nfiles: 4
   plot:
     cmd: python -m boilerdata.plot
@@ -389,26 +387,26 @@ stages:
     cmd: python -m boilerdata.stages.schema
     deps:
     - path: src/boilerdata/models
-      md5: 1883f694e0b4ff24cad3589ce87fd335.dir
-      size: 50932
+      md5: c03512698bd2c209f93c86198213a7aa.dir
+      size: 52869
       nfiles: 18
     outs:
     - path: data/schema
-      md5: 582efaa6a6be2b0c94196568fe17db38.dir
-      size: 20687
+      md5: b23abfe6450c9f58fef17215b15b063d.dir
+      size: 22293
       nfiles: 3
   originlab:
     cmd: python -m boilerdata.stages.originlab
     deps:
     - path: data/plotter
-      md5: f8fad7234bc61bae476f433954c72e75.dir
-      size: 661028
+      md5: f5ae10fe4bb8bb4a5ab3b0e2b0be1568.dir
+      size: 684844
       nfiles: 1
     - path: data/results
-      md5: 51edbd584e87a8f851eeaa52a64b4667.dir
-      size: 6458287
+      md5: 6b81274e51f8814ef54c062b6fa98d02.dir
+      size: 6438831
       nfiles: 4
     outs:
     - path: data/plots/lit_.png
-      md5: 61fc6ca6524888d838aa176c5293d017
-      size: 41736
+      md5: 6d750e8a72b6d2e7db27c9a33dc6d68d
+      size: 26768

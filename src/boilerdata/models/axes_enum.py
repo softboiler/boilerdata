@@ -34,8 +34,6 @@ class AxesEnum(GetNameEnum):
     dT_dx_err = auto()
     T_s = auto()
     T_s_err = auto()
-    rvalue = auto()
-    pvalue = auto()
     k = auto()
     q = auto()
     q_err = auto()

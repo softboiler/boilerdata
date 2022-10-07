@@ -21,8 +21,7 @@ def main():
         write_schema(path / f"{to_snake_case(model.__name__)}_schema.json", model)
 
     generate_axes_enum(
-        list(Axes.get_names(proj.axes.all)),
-        Path("src/boilerdata/models/axes_enum.py"),
+        [ax.name for ax in proj.axes.all], Path("src/boilerdata/models/axes_enum.py")
     )
 
 

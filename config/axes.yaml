@@ -110,10 +110,6 @@ all:
   - name: "T_s_err"
     units: "C"
 
-  - name: "rvalue"
-
-  - name: "pvalue"
-
   - name: "k"
     units: "W/m-K"
 

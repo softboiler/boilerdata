@@ -1,3 +1,4 @@
+import pandas as pd
 from pandera import Check, Column, DataFrameSchema, Index, MultiIndex
 from pandera.errors import SchemaError
 
@@ -7,6 +8,7 @@ from boilerdata.models.project import Project
 proj = Project.get_project()
 c = {ax.name: ax for ax in proj.axes.all}
 tc_submerged_and_boiling = Check.in_range(95, 101)  # (C)
+columns_to_automatically_handle = [*proj.params.water_temps, A.P]
 
 # * -------------------------------------------------------------------------------- * #
 # * INDEX AND COLUMNS
@@ -16,6 +18,17 @@ initial_index = [
     Index(name=A.run, dtype=c[A.run].dtype),
     Index(name=A.time, dtype=c[A.time].dtype),
 ]
+
+meta_cols = {
+    A.group: Column(c[A.group].dtype),
+    A.rod: Column(c[A.rod].dtype),
+    A.coupon: Column(c[A.coupon].dtype),
+    A.sample: Column(c[A.sample].dtype, nullable=True),
+    A.joint: Column(c[A.joint].dtype),
+    A.sixth_tc: Column(c[A.sixth_tc].dtype),
+    A.good: Column(c[A.good].dtype),
+    A.new: Column(c[A.new].dtype),
+}
 
 source_cols = {
     A.V: Column(c[A.V].dtype, nullable=True),  # Not used
@@ -33,24 +46,11 @@ source_cols = {
     A.P: Column(c[A.P].dtype, Check.greater_than(12)),
 }
 
-meta_cols = {
-    A.group: Column(c[A.group].dtype),
-    A.rod: Column(c[A.rod].dtype),
-    A.coupon: Column(c[A.coupon].dtype),
-    A.sample: Column(c[A.sample].dtype, nullable=True),
-    A.joint: Column(c[A.joint].dtype),
-    A.sixth_tc: Column(c[A.sixth_tc].dtype),
-    A.good: Column(c[A.good].dtype),
-    A.new: Column(c[A.new].dtype),
-}
-
 computed_cols = {
     A.dT_dx: Column(c[A.dT_dx].dtype),
     A.dT_dx_err: Column(c[A.dT_dx_err].dtype),
     A.T_s: Column(c[A.T_s].dtype),
     A.T_s_err: Column(c[A.T_s_err].dtype),
-    A.rvalue: Column(c[A.rvalue].dtype),
-    A.pvalue: Column(c[A.pvalue].dtype),
     A.k: Column(c[A.k].dtype),
     A.q: Column(c[A.q].dtype),
     A.q_err: Column(c[A.q_err].dtype),
@@ -62,27 +62,12 @@ computed_cols = {
 # * -------------------------------------------------------------------------------- * #
 # * VALIDATION
 
-
-def all_tailed_properly(df):
-    return all(tailed_properly(df))
-
-
-def tailed_properly(df):
-    return (
-        df.iloc[:, 0].groupby(level=A.run).transform(len)
-        == proj.params.records_to_average
-    )
-
-
-validate_runs_df = DataFrameSchema(
-    strict=True,
+validate_initial_df = DataFrameSchema(
     ordered=True,
     unique_column_names=True,
     index=MultiIndex(initial_index),
     columns=source_cols,
-    # checks=Check(all_tailed_properly),  # TODO: Don't check once strategy changes
 )
-
 
 validate_final_df = DataFrameSchema(
     strict=True,
@@ -97,21 +82,24 @@ validate_final_df = DataFrameSchema(
 # * HANDLING
 
 
-def handle_invalid_data(proj, df, validator):
-    catch_and_ffill = [*proj.params.water_temps, A.P]
+def handle_invalid_data(df: pd.DataFrame, validator: DataFrameSchema) -> pd.DataFrame:
     validation_error = True
     while validation_error:
         try:
             df = validator(df)
         except SchemaError as exc:
-            # It can be a dataframe with ambiguous existence and truthiness
-            if exc.check_output is False or exc.check_output is None:
+            if (
+                # It can be a dataframe with ambiguous existence and truthiness
+                exc.check_output is False
+                or exc.check_output is None
+                # Only handle certain columns
+                or exc.check_output.name not in columns_to_automatically_handle
+            ):
                 raise
             failed = exc.check_output
-            if failed.name in catch_and_ffill:
-                df = df.assign(
-                    **{failed.name: (lambda df: df[failed.name].where(failed).ffill())}
-                )
+            df = df.assign(
+                **{failed.name: (lambda df: df[failed.name].where(failed).ffill())}
+            )
             continue
         else:
             validation_error = False
