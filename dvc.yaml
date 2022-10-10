@@ -1,7 +1,8 @@
 stages:
   schema:
     cmd: "python -m boilerdata.stages.schema"
-    deps: ["src/boilerdata/models"]
+    deps:
+      - "src/boilerdata"
     outs: ["data/schema"]
 
   pipeline:
@@ -11,6 +12,7 @@ stages:
       - "config/project.yaml":
       - "config/trials.yaml":
     deps:
+      - "src/boilerdata"
       - "data/curves"
       - "data/schema"
     outs: ["data/results"]
@@ -18,6 +20,7 @@ stages:
   originlab:
     cmd: "python -m boilerdata.stages.originlab"
     deps:
+      - "src/boilerdata"
       - "data/plotter"
       - "data/results"
     plots: ["data/plots/lit_.png"]
