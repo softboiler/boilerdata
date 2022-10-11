@@ -2,8 +2,15 @@ stages:
   schema:
     cmd: "python -m boilerdata.stages.schema"
     deps:
-      - "src/boilerdata"
-    outs: ["data/schema"]
+      - "src/boilerdata/stages/schema.py"
+      - "src/boilerdata/models/axes.py"
+      - "src/boilerdata/models/common.py"
+      - "src/boilerdata/models/project.py"
+      - "src/boilerdata/models/trials.py"
+    outs:
+      - "data/schema"
+      # # DVC deletes outs before generating. Deleting this file breaks the stage.
+      # - "src/boilerdata/models/axes_enum.py"
 
   runs:
     cmd: "python -m boilerdata.stages.runs"
@@ -21,8 +28,8 @@ stages:
       - "config/trials.yaml":
     deps:
       - "src/boilerdata"
-      - "data/runs"
       - "data/schema"
+      - "data/runs"
     outs: ["data/results"]
 
   originlab:
