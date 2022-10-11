@@ -1,6 +1,7 @@
 stages:
   schema:
     cmd: "python -m boilerdata.stages.schema"
+    # Track each file directly to avoid a dependency cycle
     deps:
       - "src/boilerdata/stages/schema.py"
       - "src/boilerdata/models/axes.py"
@@ -9,15 +10,20 @@ stages:
       - "src/boilerdata/models/trials.py"
     outs:
       - "data/schema"
-      # # DVC deletes outs before generating. Deleting this file breaks the stage.
+      # # DVC deletes outs before generating. Uncommenting the below breaks it.
       # - "src/boilerdata/models/axes_enum.py"
 
   runs:
     cmd: "python -m boilerdata.stages.runs"
+    params:
+      - "config/axes.yaml":
+      - "config/project.yaml":
+      - "config/trials.yaml":
     deps:
-      - "src/boilerdata"
-      - "data/curves"
+      # Allow other parts of boilerdata to change w/o re-running this stage
+      - "src/boilerdata/stages/runs.py"
       - "data/schema"
+      - "data/curves"
     outs: ["data/runs"]
 
   pipeline:
@@ -27,7 +33,7 @@ stages:
       - "config/project.yaml":
       - "config/trials.yaml":
     deps:
-      - "src/boilerdata"
+      - "src/boilerdata" # Do re-run pipeline if anything in boilerdata changes
       - "data/schema"
       - "data/runs"
     outs: ["data/results"]

@@ -83,7 +83,7 @@ def agg_and_get_95_ci(df: pd.DataFrame, proj: Project) -> pd.DataFrame:
 def plot_fits(df: pd.DataFrame, proj: Project) -> pd.DataFrame:
     """Plot the fits."""
     df = per_trial(df, plot_fit, proj)
-    if new_fits := sorted(proj.dirs.new_fits.iterdir()):
+    if proj.params.do_plot and (new_fits := sorted(proj.dirs.new_fits.iterdir())):
         latest_new_fit = new_fits[-1]
         copy(latest_new_fit, Path("data/plots/latest_new_fit.png"))
     return df

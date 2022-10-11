@@ -21,4 +21,4 @@ geometry:
 
 params:
   records_to_average: 5
-  do_plot: true
+  do_plot: false
