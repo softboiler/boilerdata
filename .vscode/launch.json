@@ -11,6 +11,13 @@
       "console": "internalConsole"
     },
     {
+      "name": "proj: runs",
+      "type": "python",
+      "request": "launch",
+      "module": "boilerdata.stages.runs",
+      "console": "internalConsole"
+    },
+    {
       "name": "proj: pipeline",
       "type": "python",
       "request": "launch",

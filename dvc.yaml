@@ -5,6 +5,14 @@ stages:
       - "src/boilerdata"
     outs: ["data/schema"]
 
+  runs:
+    cmd: "python -m boilerdata.stages.runs"
+    deps:
+      - "src/boilerdata"
+      - "data/curves"
+      - "data/schema"
+    outs: ["data/runs"]
+
   pipeline:
     cmd: "python -m boilerdata.stages.pipeline"
     params:
@@ -13,7 +21,7 @@ stages:
       - "config/trials.yaml":
     deps:
       - "src/boilerdata"
-      - "data/curves"
+      - "data/runs"
       - "data/schema"
     outs: ["data/results"]
 

@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-from datetime import datetime
 from pathlib import Path
 import re
 from shutil import copy
@@ -36,8 +35,12 @@ from boilerdata.validation import (
 
 def main(proj: Project):
     (
-        pd.DataFrame(columns=[ax.name for ax in proj.axes.cols], data=get_runs(proj))
-        .pipe(set_proj_dtypes, proj)
+        pd.read_csv(
+            proj.dirs.runs_file,
+            index_col=(index_col := [A.trial, A.run, A.time]),
+            parse_dates=index_col,
+            dtype={col.name: col.dtype for col in proj.axes.cols},
+        )
         .pipe(handle_invalid_data, validate_initial_df)
         .pipe(per_trial, fit, proj)  # Need thermocouple spacing trial-by-trial
         .pipe(agg_and_get_95_ci, proj)
@@ -50,42 +53,6 @@ def main(proj: Project):
         .to_csv(proj.dirs.originlab_results_file, index=False, encoding="utf-8")
     )
     proj.dirs.originlab_coldes_file.write_text(proj.axes.get_originlab_coldes())
-
-
-# * -------------------------------------------------------------------------------- * #
-# * GET RUNS
-
-
-def get_runs(proj: Project) -> pd.DataFrame:
-    """Get runs from all trials."""
-
-    # Get runs and multiindex
-    dtypes = {col.name: col.dtype for col in proj.axes.source if not col.index}
-    runs: list[pd.DataFrame] = []
-    multiindex: list[tuple[datetime, datetime, datetime]] = []
-    for trial in proj.trials:
-        for file, run_index in zip(trial.run_files, trial.run_index):
-            run = get_run(proj, file)
-            runs.append(run)
-            multiindex.extend(
-                tuple((*run_index, record_time) for record_time in run.index)
-            )
-
-    # Concatenate results from all runs and set the multiindex
-    df = (
-        pd.concat(runs)
-        .set_index(
-            pd.MultiIndex.from_tuples(
-                multiindex, names=[idx.name for idx in proj.axes.index]
-            )
-        )
-        .pipe(set_dtypes, dtypes)
-    )
-
-    # Write the runs to disk for faster fetching later
-    df.to_csv(proj.dirs.runs_file, encoding="utf-8")
-
-    return df
 
 
 # * -------------------------------------------------------------------------------- * #
@@ -289,16 +256,6 @@ def transform_for_originlab(df: pd.DataFrame, proj: Project) -> pd.DataFrame:
 # * HELPER FUNCTIONS
 
 
-def rename_columns(df: pd.DataFrame, proj: Project) -> pd.DataFrame:
-    """Rename source columns."""
-    return df.rename(columns={col.source: col.name for col in proj.axes.cols})
-
-
-def set_proj_dtypes(df: pd.DataFrame, proj: Project) -> pd.DataFrame:
-    """Set project-specific dtypes for the dataframe."""
-    return set_dtypes(df, {col.name: col.dtype for col in proj.axes.cols})
-
-
 def per_trial(
     df: pd.DataFrame,
     per_trial_func: Callable[[pd.DataFrame, Project], pd.DataFrame],
@@ -312,38 +269,9 @@ def per_trial(
     )
 
 
-def get_run(proj: Project, run: Path) -> pd.DataFrame:
-    """Get data for a single run."""
-
-    # Get source columns
-    index = proj.axes.index[-1].source  # Get the last index, associated with source
-    source_col_names = [col.source for col in proj.axes.source_cols]
-    source_dtypes = {col.source: col.dtype for col in proj.axes.source_cols}
-
-    # Assign columns from CSV and metadata to the structured dataframe. Get the tail.
-    df = (
-        pd.DataFrame(columns=source_col_names)
-        .assign(
-            **pd.read_csv(
-                run,
-                # Allow source cols to be missing (such as T_6)
-                usecols=lambda col: col in [index, *source_col_names],
-                index_col=index,
-                parse_dates=[index],  # type: ignore  # Upstream issue w/ pandas-stubs
-                dtype=source_dtypes,  # type: ignore  # Upstream issue w/ pandas-stubs
-                encoding="utf-8",
-            )
-        )
-        .dropna(how="all")  # Rarely a run has an all NA record at the end
-    )
-
-    # Need "df" defined so we can call "df.index.dropna()"
-    return (
-        df.reindex(index=df.index.dropna())  # A run can have an NA index at the end
-        .dropna(how="all")  # A CSV can have an all NA record at the end
-        .tail(proj.params.records_to_average)
-        .pipe(rename_columns, proj)
-    )
+def set_proj_dtypes(df: pd.DataFrame, proj: Project) -> pd.DataFrame:
+    """Set project-specific dtypes for the dataframe."""
+    return set_dtypes(df, {col.name: col.dtype for col in proj.axes.cols})
 
 
 # * -------------------------------------------------------------------------------- * #

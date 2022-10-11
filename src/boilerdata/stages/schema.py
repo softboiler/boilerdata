@@ -24,6 +24,8 @@ def main():
         [ax.name for ax in proj.axes.all], Path("src/boilerdata/models/axes_enum.py")
     )
 
+    proj.dirs.originlab_coldes_file.write_text(proj.axes.get_originlab_coldes())
+
 
 def generate_axes_enum(axes: list[str], path: Path):
     """Given a list of axis names, generate a Python script with axes as enums."""

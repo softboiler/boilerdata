@@ -38,6 +38,11 @@ class Dirs(MyBaseModel):
         description="The trials directory.",
     )
 
+    runs: DirectoryPath = Field(
+        default=data.default / "runs",  # type: ignore  # Validator makes it a Path
+        description="The runs directory.",
+    )
+
     results: DirectoryPath = Field(
         default=data.default / "results",  # type: ignore  # Validator makes it a Path
         description="The results directory.",
@@ -55,6 +60,7 @@ class Dirs(MyBaseModel):
         "data",
         "project_schema",
         "trials",
+        "runs",
         "results",
         "new_fits",
         always=True,
@@ -76,7 +82,7 @@ class Dirs(MyBaseModel):
     # ! FILES
 
     runs_file: Path = Field(
-        default=results.default / "runs.csv",  # type: ignore  # Validator makes it a Path
+        default=runs.default / "runs.csv",  # type: ignore  # Validator makes it a Path
         description="The path to the runs. Must be relative to the results directory. Default: runs.csv",
     )
     simple_results_file: Path = Field(
@@ -88,7 +94,7 @@ class Dirs(MyBaseModel):
         description="The path to the results file to be parsed by OriginLab. Must be relative to the results directory. Default: originlab_results.csv",
     )
     originlab_coldes_file: Path = Field(
-        default=results.default / "originlab_coldes.txt",  # type: ignore  # Validator makes it a Path
+        default=project_schema.default / "originlab_coldes.txt",  # type: ignore  # Validator makes it a Path
         description="The path to which the OriginLab column designation string will be written. Must be relative to the results directory. Default: coldes.txt",
     )
 
