@@ -72,14 +72,15 @@ def get_runs(proj: Project) -> pd.DataFrame:
             )
 
     # Concatenate results from all runs and set the multiindex
-    df = pd.concat(runs).set_index(
-        pd.MultiIndex.from_tuples(
-            multiindex, names=[idx.name for idx in proj.axes.index]
+    df = (
+        pd.concat(runs)
+        .set_index(
+            pd.MultiIndex.from_tuples(
+                multiindex, names=[idx.name for idx in proj.axes.index]
+            )
         )
+        .pipe(set_dtypes, dtypes)
     )
-
-    # Ensure appropriate dtypes for each column.
-    df = set_dtypes(df, dtypes)
 
     # Write the runs to disk for faster fetching later
     df.to_csv(proj.dirs.runs_file, encoding="utf-8")
@@ -99,11 +100,9 @@ def agg_and_get_95_ci(df: pd.DataFrame, proj: Project) -> pd.DataFrame:
         A.dT_dx_err: pd.NamedAgg(column=A.dT_dx, aggfunc="sem"),
     }
     aggs = proj.axes.aggs | complex_agg_overrides
-
     df = (
         df.groupby(level=[A.trial, A.run])  # type: ignore  # Upstream issue w/ pandas-stubs
         .agg(**aggs)
-        .pipe(set_proj_dtypes, proj)
         .assign(
             **{
                 A.T_s_err: lambda df: df[A.T_s_err] * confidence_interval_95,
@@ -127,8 +126,9 @@ def plot_fits(df: pd.DataFrame, proj: Project) -> pd.DataFrame:
 # * PER-TRIAL STAGES
 
 
-def fit(df: pd.DataFrame, trial: Trial, _) -> pd.DataFrame:
+def fit(df: pd.DataFrame, proj: Project) -> pd.DataFrame:
     """Fit the data assuming one-dimensional, steady-state conduction."""
+    trial = proj.get_trial(df.name)  # type: ignore  # Group name is the trial
     return df.assign(
         **df[list(trial.thermocouple_pos.keys())].apply(
             axis="columns",
@@ -139,8 +139,10 @@ def fit(df: pd.DataFrame, trial: Trial, _) -> pd.DataFrame:
     )
 
 
-def plot_fit(df: pd.DataFrame, trial: Trial, proj: Project) -> pd.DataFrame:
+def plot_fit(df: pd.DataFrame, proj: Project) -> pd.DataFrame:
     """Plot the goodness of fit for each run in the trial."""
+
+    trial = proj.get_trial(df.name)  # type: ignore  # Group name is the trial
 
     if not trial.new:
         return df
@@ -158,9 +160,9 @@ def plot_fit(df: pd.DataFrame, trial: Trial, proj: Project) -> pd.DataFrame:
     return df
 
 
-def get_heat_transfer(df: pd.DataFrame, trial: Trial, proj: Project) -> pd.DataFrame:
+def get_heat_transfer(df: pd.DataFrame, proj: Project) -> pd.DataFrame:
     """Calculate heat transfer and superheat based on one-dimensional approximation."""
-
+    trial = proj.get_trial(df.name)  # type: ignore  # Group name is the trial
     cm_p_m = 100  # (cm/m) Conversion factor
     cm2_p_m2 = cm_p_m**2  # ((cm/m)^2) Conversion factor
     diameter = proj.geometry.diameter * cm_p_m  # (cm)
@@ -192,15 +194,18 @@ def get_heat_transfer(df: pd.DataFrame, trial: Trial, proj: Project) -> pd.DataF
     )
 
 
-def assign_metadata(df: pd.DataFrame, trial: Trial, proj: Project) -> pd.DataFrame:
+def assign_metadata(df: pd.DataFrame, proj: Project) -> pd.DataFrame:
     """Assign metadata columns to the dataframe."""
-    return df.assign(
+    trial = proj.get_trial(df.name)  # type: ignore  # Group name is the trial
+    # Need to re-apply categorical dtypes
+    df = df.assign(
         **{
             field: value
             for field, value in trial.dict().items()  # Dict call avoids excluded properties
             if field not in [idx.name for idx in proj.axes.index]
         }
     )
+    return df
 
 
 # * -------------------------------------------------------------------------------- * #
@@ -296,16 +301,15 @@ def set_proj_dtypes(df: pd.DataFrame, proj: Project) -> pd.DataFrame:
 
 def per_trial(
     df: pd.DataFrame,
-    per_trial_func: Callable[[pd.DataFrame, Trial, Project], pd.DataFrame],
+    per_trial_func: Callable[[pd.DataFrame, Project], pd.DataFrame],
     proj: Project,
 ):
-    """Apply a function to cross-sections of the dataframe corresponding to trials."""
-    for trial in proj.trials:
-        trial_df = df.xs(trial.trial, level=A.trial, drop_level=False)
-        df.update(per_trial_func(trial_df, trial, proj))  # type: ignore
-
-    # Set dtypes after update. https://github.com/pandas-dev/pandas/issues/4094
-    return set_proj_dtypes(df, proj)
+    """Apply a function to individual trials."""
+    return (
+        df.groupby(level=A.trial, sort=False, group_keys=False)
+        .apply(per_trial_func, proj)  # type: ignore  # Issue with upstream pandas-stubs
+        .pipe(set_proj_dtypes, proj)
+    )
 
 
 def get_run(proj: Project, run: Path) -> pd.DataFrame:

@@ -1,3 +1,4 @@
+import pandas as pd
 from pydantic import Field
 
 from boilerdata.models.axes import Axes
@@ -25,6 +26,13 @@ class Project(MyBaseModel):
         self.trials = load_config(self.dirs.config / "trials.yaml", Trials).trials
         for trial in self.trials:
             trial.setup(self.dirs, self.geometry)
+
+    def get_trial(self, timestamp: pd.Timestamp) -> Trial:
+        """Get a trial by its timestamp."""
+        for trial in self.trials:
+            if trial.timestamp == timestamp:
+                return trial
+        raise ValueError(f"Trial '{timestamp.date()}' not found.")
 
     @classmethod
     def get_project(cls, proj: StrPath = "config/project.yaml"):

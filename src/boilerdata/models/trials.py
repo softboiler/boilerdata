@@ -50,9 +50,8 @@ class Trial(MyBaseModel):
 
     # ! FIELDS TO EXCLUDE FROM DATAFRAME
 
-    # Named "trial" as in "the date this trial was run".
     @property
-    def trial(self):
+    def timestamp(self):
         return pd.Timestamp(self.date)
 
     # Loaded from config, but not propagated to dataframes. Not readable in a table
@@ -89,7 +88,7 @@ class Trial(MyBaseModel):
 
     def set_paths(self, dirs: Dirs):
         """Get the path to the data for this trial. Called during project setup."""
-        trial_base = dirs.trials / str(self.trial.date())
+        trial_base = dirs.trials / self.date.isoformat()
         self.path = trial_base / dirs.per_trial if dirs.per_trial else trial_base
         self.run_files = sorted(self.path.glob("*.csv"))
         if not self.run_files:
@@ -109,7 +108,7 @@ class Trial(MyBaseModel):
             else:
                 raise AttributeError(f"Could not parse run time: {run_time}")
 
-            trial_date = self.trial.isoformat()  # for consistency across datetimes
+            trial_date = self.date.isoformat()  # for input to fromisoformat() below
             run_index.append(
                 tuple(
                     pd.Timestamp.fromisoformat(item) for item in [trial_date, run_time]
