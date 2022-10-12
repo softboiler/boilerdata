@@ -2,6 +2,7 @@
 
 from pathlib import Path
 import re
+from shutil import copytree, rmtree
 from textwrap import dedent
 
 from boilerdata.models.axes import Axes
@@ -13,18 +14,20 @@ from boilerdata.models.trials import Trials
 def main():
 
     models = [Project, Trials, Axes]
-
     proj = Project.get_project()
-    path = proj.dirs.project_schema
-    path.mkdir(parents=False, exist_ok=True)
+
     for model in models:
-        write_schema(path / f"{to_snake_case(model.__name__)}_schema.json", model)
-
+        write_schema(
+            proj.dirs.project_schema / f"{to_snake_case(model.__name__)}_schema.json",
+            model,
+        )
     generate_axes_enum(
-        [ax.name for ax in proj.axes.all], Path("src/boilerdata/models/axes_enum.py")
+        [ax.name for ax in proj.axes.all], Path("src/boilerdata/axes_enum.py")
     )
-
     proj.dirs.originlab_coldes_file.write_text(proj.axes.get_originlab_coldes())
+
+    rmtree(proj.dirs.project_schema_old)
+    copytree(proj.dirs.project_schema, proj.dirs.project_schema_old)
 
 
 def generate_axes_enum(axes: list[str], path: Path):

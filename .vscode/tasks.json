@@ -8,6 +8,13 @@
     // * -------------------------------------------------------------------------- * //
     // * PROJECT-SPECIFIC * //
     {
+      "label": "dvc: exp run",
+      "type": "process",
+      "command": "pwsh",
+      "args": ["-Command", "dvc exp run"],
+      "problemMatcher": []
+    },
+    {
       "label": "dvc: repro",
       "type": "process",
       "command": "pwsh",

@@ -19,7 +19,7 @@ from scipy.constants import convert_temperature
 from scipy.optimize import curve_fit
 from scipy.stats import norm
 
-from boilerdata.models.axes_enum import AxesEnum as A  # noqa: N814
+from boilerdata.axes_enum import AxesEnum as A  # noqa: N814
 from boilerdata.models.common import set_dtypes
 from boilerdata.models.project import Project
 from boilerdata.models.trials import Trial
@@ -56,6 +56,18 @@ def main(proj: Project):
 
 
 # * -------------------------------------------------------------------------------- * #
+# * MODEL
+
+
+def model(x, a, b, c):
+    return a * x**2 + b * x + c
+
+
+def slope(x, a, b, c):
+    return 2 * a * x + b
+
+
+# * -------------------------------------------------------------------------------- * #
 # * STAGES
 
 
@@ -64,7 +76,7 @@ def agg_and_get_95_ci(df: pd.DataFrame, proj: Project) -> pd.DataFrame:
     confidence_interval_95 = abs(norm.ppf(0.025))
     complex_agg_overrides = {
         A.T_s_err: pd.NamedAgg(column=A.T_s, aggfunc="sem"),
-        A.dT_dx_err: pd.NamedAgg(column=A.dT_dx, aggfunc="sem"),
+        A.b_err: pd.NamedAgg(column=A.b, aggfunc="sem"),
     }
     aggs = proj.axes.aggs | complex_agg_overrides
     df = (
@@ -73,7 +85,7 @@ def agg_and_get_95_ci(df: pd.DataFrame, proj: Project) -> pd.DataFrame:
         .assign(
             **{
                 A.T_s_err: lambda df: df[A.T_s_err] * confidence_interval_95,
-                A.dT_dx_err: lambda df: df[A.dT_dx_err] * confidence_interval_95,
+                A.b_err: lambda df: df[A.b_err] * confidence_interval_95,
             }
         )
     )
@@ -101,7 +113,7 @@ def fit(df: pd.DataFrame, proj: Project) -> pd.DataFrame:
             axis="columns",
             func=fit_ser,
             x=list(trial.thermocouple_pos.values()),
-            regression_stats=[A.dT_dx, A.T_s],
+            regression_stats=[A.a, A.b, A.c, A.T_s],
         )  # type: ignore  # Upstream issue w/ pandas-stubs
     )
 
@@ -151,8 +163,8 @@ def get_heat_transfer(df: pd.DataFrame, proj: Project) -> pd.DataFrame:
             A.T_w: lambda df: (T_w_avg + T_w_p) / 2,
             A.T_w_diff: lambda df: abs(T_w_avg - T_w_p),
             # Not negative due to reversed x-coordinate
-            A.q: lambda df: df[A.k] * df[A.dT_dx] / cm2_p_m2,
-            A.q_err: lambda df: (df[A.k] * df[A.dT_dx_err]) / cm2_p_m2,
+            A.q: lambda df: df[A.k] * df[A.b] / cm2_p_m2,
+            A.q_err: lambda df: (df[A.k] * df[A.b_err]) / cm2_p_m2,
             A.Q: lambda df: df[A.q] * cross_sectional_area,
             # Explicitly index the trial to catch improper application of the mean
             A.DT: lambda df: (df[A.T_s] - df.loc[trial.date.isoformat(), A.T_w].mean()),
@@ -185,8 +197,12 @@ def fit_ser(
     regression_stats: list[str],
 ) -> pd.Series[float]:
     """Perform linear regression of a series of y's with respect to given x's."""
-    (slope, intercept), _ = curve_fit(lambda x, m, b: m * x + b, x, y)
-    return pd.Series([slope, intercept], index=regression_stats)
+    params, _ = curve_fit(
+        model,
+        x,
+        y,
+    )
+    return pd.Series([*params, model(0, *params)], index=regression_stats)
 
 
 def plot_fit_ser(ser: pd.Series[float], trial: Trial, proj: Project, plt: ModuleType):
@@ -208,7 +224,7 @@ def plot_fit_ser(ser: pd.Series[float], trial: Trial, proj: Project, plt: Module
     x_smooth = np.linspace(0, trial.thermocouple_pos[A.T_1])
     plt.plot(
         x_smooth,
-        ser[A.T_s] + ser[A.dT_dx] * x_smooth,
+        model(x_smooth, *ser[proj.params.model_params]),  # type: ignore # Upstream issue w/ pandas-stubs
         "--",
         label="Fit",
     )

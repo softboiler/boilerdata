@@ -1,6 +1,6 @@
 from pydantic import Field
 
-from boilerdata.models.axes_enum import AxesEnum as A  # noqa: N814
+from boilerdata.axes_enum import AxesEnum as A  # noqa: N814
 from boilerdata.models.common import MyBaseModel
 
 
@@ -8,8 +8,12 @@ class Params(MyBaseModel):
     """Parameters of the pipeline."""
 
     records_to_average: int = Field(
-        default=60,
+        default=5,
         description="The number of records over which to average in a given trial.",
+    )
+    model_params: list[A] = Field(
+        default=[A.a, A.b, A.c],
+        description="The parameters of the model to be fitted.",
     )
     water_temps: list[A] = Field(
         default=[A.T_w1, A.T_w2, A.T_w3],

@@ -104,11 +104,17 @@ all:
   - name: "T_w_diff"
     units: "C"
 
-  - name: "dT_dx"
+  - name: "a"
+    units: "K/m^2"
+
+  - name: "b"
     units: "K/m"
 
-  - name: "dT_dx_err"
+  - name: "b_err"
     units: "K/m"
+
+  - name: "c"
+    units: "K"
 
   - name: "T_s"
     units: "C"

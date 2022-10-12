@@ -1,0 +1,5 @@
+outs:
+- md5: 4fc2a0401f9e2393f6b9f84889037452.dir
+  size: 24252
+  nfiles: 4
+  path: schema_old

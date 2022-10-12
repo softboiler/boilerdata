@@ -33,6 +33,12 @@ class Dirs(MyBaseModel):
         description="The schema directory.",
     )
 
+    # Can't be "schema", which is a special member of BaseClass
+    project_schema_old: DirectoryPath = Field(
+        default=data.default / "schema_old",  # type: ignore  # Validator makes it a Path
+        description="The old schema. Done to eliminate a data pipeline cycle.",
+    )
+
     trials: DirectoryPath = Field(
         default=data.default / "curves",  # type: ignore  # Validator makes it a Path
         description="The trials directory.",

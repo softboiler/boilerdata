@@ -2,7 +2,7 @@ import pandas as pd
 from pandera import Check, Column, DataFrameSchema, Index, MultiIndex
 from pandera.errors import SchemaError
 
-from boilerdata.models.axes_enum import AxesEnum as A  # noqa: N814
+from boilerdata.axes_enum import AxesEnum as A  # noqa: N814
 from boilerdata.models.project import Project
 
 proj = Project.get_project()
@@ -55,8 +55,10 @@ source_cols = {
 computed_cols = {
     A.T_w: Column(c[A.T_w].dtype),
     A.T_w_diff: Column(c[A.T_w_diff].dtype, checks=water_temps_agree),
-    A.dT_dx: Column(c[A.dT_dx].dtype),
-    A.dT_dx_err: Column(c[A.dT_dx_err].dtype),
+    A.a: Column(c[A.a].dtype),
+    A.b: Column(c[A.b].dtype),
+    A.b_err: Column(c[A.b_err].dtype),
+    A.c: Column(c[A.c].dtype),
     A.T_s: Column(c[A.T_s].dtype),
     A.T_s_err: Column(c[A.T_s_err].dtype),
     A.k: Column(c[A.k].dtype),
