@@ -12,7 +12,7 @@ stages:
       size: 23503
       nfiles: 4
     - path: src/boilerdata
-      md5: 9a37f6d1859386d29af511a0eff2b104.dir
+      md5: 9cf9575f7893fefe6c4441e208cc56c4.dir
       size: 134299
       nfiles: 44
     params:
@@ -166,7 +166,7 @@ stages:
             A9: 0.553
         params:
           records_to_average: 5
-          do_plot: false
+          do_plot: true
       config/trials.yaml:
         trials:
         - date: '2020-03-12'
@@ -363,6 +363,9 @@ stages:
           good: false
           new: true
     outs:
+    - path: data/plots/latest_new_fit.png
+      md5: 55b71b41fb809db8d4736ecd8de9b072
+      size: 27033
     - path: data/results
       md5: b963fb3e8816a595701bb77147eae848.dir
       size: 698695
@@ -596,7 +599,7 @@ stages:
             A9: 0.553
         params:
           records_to_average: 5
-          do_plot: false
+          do_plot: true
       config/trials.yaml:
         trials:
         - date: '2020-03-12'
