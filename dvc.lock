@@ -12,9 +12,9 @@ stages:
       size: 23503
       nfiles: 4
     - path: src/boilerdata
-      md5: 9cf9575f7893fefe6c4441e208cc56c4.dir
-      size: 134299
-      nfiles: 44
+      md5: ab2f6efe13948ded6c1dfb849390c04a.dir
+      size: 135284
+      nfiles: 45
     params:
       config/axes.yaml:
         all:
@@ -427,12 +427,12 @@ stages:
       size: 698695
       nfiles: 13
     - path: src/boilerdata
-      md5: ab15dd8ad344f0c798a74f116a037282.dir
-      size: 134248
-      nfiles: 44
+      md5: ab2f6efe13948ded6c1dfb849390c04a.dir
+      size: 135284
+      nfiles: 45
     outs:
     - path: data/plots/lit_.png
-      md5: ee61d42de6f49f1b7aeced85816265d6
+      md5: 5665470089f533f590eb81bc2f7ccef2
       size: 35762
   runs:
     cmd: python -m boilerdata.stages.runs
