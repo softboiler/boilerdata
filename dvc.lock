@@ -4,16 +4,16 @@ stages:
     cmd: python -m boilerdata.stages.pipeline
     deps:
     - path: data/runs
-      md5: 473e1791ebdb0e78229996e697d7a634.dir
-      size: 551139
+      md5: 7b155f694832c411c5b844a6344fd34a.dir
+      size: 553134
       nfiles: 1
     - path: data/schema
-      md5: 4fc2a0401f9e2393f6b9f84889037452.dir
-      size: 24252
+      md5: 60f3dba9bd0be224a68484fb9d1de8f0.dir
+      size: 24275
       nfiles: 4
     - path: src/boilerdata
-      md5: 8d48d0277006db47527386fa5b0e32d9.dir
-      size: 137380
+      md5: 1859a18e13ca772529d979e008eeab55.dir
+      size: 137874
       nfiles: 46
     params:
       config/axes.yaml:
@@ -98,12 +98,14 @@ stages:
         - name: T_w_diff
           units: C
         - name: a
-          units: K/m^2
+          units: K
         - name: b
-          units: K/m
-        - name: b_err
-          units: K/m
+          units: K
         - name: c
+          units: K
+        - name: dT_dx
+          units: K
+        - name: dT_dx_err
           units: K
         - name: T_s
           units: C
@@ -368,11 +370,11 @@ stages:
           new: true
     outs:
     - path: data/plots/latest_new_fit.png
-      md5: ec0bbe71393a74dbd6e7868c79743ef8
-      size: 26247
+      md5: 676deb8f4ae2a3bf794f1f891da341a3
+      size: 26299
     - path: data/results
-      md5: 6ed4ec4dbc305e0814064686bcca7130.dir
-      size: 732563
+      md5: a515c54cf0ffa2de2939bf41488ca146.dir
+      size: 670597
       nfiles: 13
   plot:
     cmd: python -m boilerdata.plot
@@ -400,11 +402,11 @@ stages:
     cmd: python -m boilerdata.stages.schema
     deps:
     - path: data/schema_old
-      md5: 4fc2a0401f9e2393f6b9f84889037452.dir
-      size: 24252
+      md5: 60f3dba9bd0be224a68484fb9d1de8f0.dir
+      size: 24275
       nfiles: 4
     - path: src/boilerdata/models
-      md5: 417923a8cf1a5d38468cda3ef6c5a956.dir
+      md5: b7d070bd6851e4dcaa5955fd052d33d4.dir
       size: 55063
       nfiles: 18
     - path: src/boilerdata/stages/schema.py
@@ -493,12 +495,14 @@ stages:
         - name: T_w_diff
           units: C
         - name: a
-          units: K/m^2
+          units: K
         - name: b
-          units: K/m
-        - name: b_err
-          units: K/m
+          units: K
         - name: c
+          units: K
+        - name: dT_dx
+          units: K
+        - name: dT_dx_err
           units: K
         - name: T_s
           units: C
@@ -763,28 +767,28 @@ stages:
           new: true
     outs:
     - path: data/schema
-      md5: 4fc2a0401f9e2393f6b9f84889037452.dir
-      size: 24252
+      md5: 60f3dba9bd0be224a68484fb9d1de8f0.dir
+      size: 24275
       nfiles: 4
   originlab:
     cmd: python -m boilerdata.stages.originlab
     deps:
     - path: data/plotter
-      md5: 5b2007fc52867efba2c2e4d57bcd88ed.dir
-      size: 318438
+      md5: a1bb0df5e3bc8b16c97a6f20bb1e2427.dir
+      size: 310592
       nfiles: 1
     - path: data/results
-      md5: 6ed4ec4dbc305e0814064686bcca7130.dir
-      size: 732563
+      md5: a515c54cf0ffa2de2939bf41488ca146.dir
+      size: 670597
       nfiles: 13
     - path: src/boilerdata
-      md5: 9a62b87f49784b3dc974182dc9c0223a.dir
-      size: 137380
+      md5: ce8c0df32e7e4ac9cd2ee2ef6fa6294d.dir
+      size: 137874
       nfiles: 46
     outs:
     - path: data/plots/lit_.png
-      md5: 9a29e679d3492fea1aba653bbf59e293
-      size: 34088
+      md5: cfe646c17ddb816284a334f22a491227
+      size: 32206
   runs:
     cmd: python -m boilerdata.stages.runs
     deps:
@@ -793,8 +797,8 @@ stages:
       size: 103226338
       nfiles: 401
     - path: data/schema
-      md5: 4fc2a0401f9e2393f6b9f84889037452.dir
-      size: 24252
+      md5: 60f3dba9bd0be224a68484fb9d1de8f0.dir
+      size: 24275
       nfiles: 4
     - path: src/boilerdata/stages/runs.py
       md5: 62b6e16a01d4378796bae0d137ec32a6
@@ -882,12 +886,14 @@ stages:
         - name: T_w_diff
           units: C
         - name: a
-          units: K/m^2
+          units: K
         - name: b
-          units: K/m
-        - name: b_err
-          units: K/m
+          units: K
         - name: c
+          units: K
+        - name: dT_dx
+          units: K
+        - name: dT_dx_err
           units: K
         - name: T_s
           units: C
@@ -1152,6 +1158,6 @@ stages:
           new: true
     outs:
     - path: data/runs
-      md5: 473e1791ebdb0e78229996e697d7a634.dir
-      size: 551139
+      md5: 7b155f694832c411c5b844a6344fd34a.dir
+      size: 553134
       nfiles: 1

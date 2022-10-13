@@ -105,15 +105,18 @@ all:
     units: "C"
 
   - name: "a"
-    units: "K/m^2"
+    units: "K"
 
   - name: "b"
-    units: "K/m"
-
-  - name: "b_err"
-    units: "K/m"
+    units: "K"
 
   - name: "c"
+    units: "K"
+
+  - name: "dT_dx"
+    units: "K"
+
+  - name: "dT_dx_err"
     units: "K"
 
   - name: "T_s"

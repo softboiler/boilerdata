@@ -1,5 +1,5 @@
 outs:
-- md5: 5b2007fc52867efba2c2e4d57bcd88ed.dir
-  size: 318438
+- md5: a1bb0df5e3bc8b16c97a6f20bb1e2427.dir
+  size: 310592
   nfiles: 1
   path: plotter

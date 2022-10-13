@@ -23,11 +23,7 @@ from boilerdata.axes_enum import AxesEnum as A  # noqa: N814
 from boilerdata.models.common import set_dtypes
 from boilerdata.models.project import Project
 from boilerdata.models.trials import Trial
-from boilerdata.validation import (
-    handle_invalid_data,
-    validate_final_df,
-    validate_initial_df,
-)
+from boilerdata.validation import handle_invalid_data, validate_initial_df
 
 # * -------------------------------------------------------------------------------- * #
 # * MAIN
@@ -47,7 +43,7 @@ def main(proj: Project):
         .also(plot_fits, proj)
         .pipe(per_trial, get_heat_transfer, proj)  # Water temp varies across trials
         .pipe(per_trial, assign_metadata, proj)  # Distinct per trial
-        .pipe(validate_final_df)
+        # .pipe(validate_final_df)  # TODO: Uncomment in main
         .also(lambda df: df.to_csv(proj.dirs.simple_results_file, encoding="utf-8"))
         .pipe(transform_for_originlab, proj)
         .to_csv(proj.dirs.originlab_results_file, index=False, encoding="utf-8")
@@ -60,11 +56,11 @@ def main(proj: Project):
 
 
 def model(x, a, b, c):
-    return a * x**2 + b * x + c
+    return a * np.exp(b * x) + c
 
 
 def slope(x, a, b, c):
-    return 2 * a * x + b
+    return a * b * np.exp(b * x)
 
 
 # * -------------------------------------------------------------------------------- * #
@@ -76,7 +72,7 @@ def agg_and_get_95_ci(df: pd.DataFrame, proj: Project) -> pd.DataFrame:
     confidence_interval_95 = abs(norm.ppf(0.025))
     complex_agg_overrides = {
         A.T_s_err: pd.NamedAgg(column=A.T_s, aggfunc="sem"),
-        A.b_err: pd.NamedAgg(column=A.b, aggfunc="sem"),
+        A.dT_dx_err: pd.NamedAgg(column=A.dT_dx, aggfunc="sem"),
     }
     aggs = proj.axes.aggs | complex_agg_overrides
     df = (
@@ -85,7 +81,7 @@ def agg_and_get_95_ci(df: pd.DataFrame, proj: Project) -> pd.DataFrame:
         .assign(
             **{
                 A.T_s_err: lambda df: df[A.T_s_err] * confidence_interval_95,
-                A.b_err: lambda df: df[A.b_err] * confidence_interval_95,
+                A.dT_dx_err: lambda df: df[A.dT_dx_err] * confidence_interval_95,
             }
         )
     )
@@ -113,8 +109,9 @@ def fit(df: pd.DataFrame, proj: Project) -> pd.DataFrame:
             axis="columns",
             func=fit_ser,
             x=list(trial.thermocouple_pos.values()),
-            regression_stats=[A.a, A.b, A.c, A.T_s],
-        )  # type: ignore  # Upstream issue w/ pandas-stubs
+            index=[*proj.params.model_params, A.T_s, A.dT_dx],
+            proj=proj,
+        ),  # type: ignore  # Upstream issue w/ pandas-stubs
     )
 
 
@@ -163,8 +160,8 @@ def get_heat_transfer(df: pd.DataFrame, proj: Project) -> pd.DataFrame:
             A.T_w: lambda df: (T_w_avg + T_w_p) / 2,
             A.T_w_diff: lambda df: abs(T_w_avg - T_w_p),
             # Not negative due to reversed x-coordinate
-            A.q: lambda df: df[A.k] * df[A.b] / cm2_p_m2,
-            A.q_err: lambda df: (df[A.k] * df[A.b_err]) / cm2_p_m2,
+            A.q: lambda df: df[A.k] * df[A.dT_dx] / cm2_p_m2,
+            A.q_err: lambda df: (df[A.k] * df[A.dT_dx_err]) / cm2_p_m2,
             A.Q: lambda df: df[A.q] * cross_sectional_area,
             # Explicitly index the trial to catch improper application of the mean
             A.DT: lambda df: (df[A.T_s] - df.loc[trial.date.isoformat(), A.T_w].mean()),
@@ -194,15 +191,19 @@ def assign_metadata(df: pd.DataFrame, proj: Project) -> pd.DataFrame:
 def fit_ser(
     y: pd.Series[float],
     x: npt.ArrayLike,
-    regression_stats: list[str],
+    index: list[str],
+    proj: Project,
 ) -> pd.Series[float]:
     """Perform linear regression of a series of y's with respect to given x's."""
-    params, _ = curve_fit(
-        model,
-        x,
-        y,
-    )
-    return pd.Series([*params, model(0, *params)], index=regression_stats)
+    try:
+        params, _ = curve_fit(
+            model,
+            x,
+            y,
+        )
+    except RuntimeError:
+        params = np.full(len(proj.params.model_params), np.nan)
+    return pd.Series([*params, model(0, *params), slope(0, *params)], index=index)
 
 
 def plot_fit_ser(ser: pd.Series[float], trial: Trial, proj: Project, plt: ModuleType):
