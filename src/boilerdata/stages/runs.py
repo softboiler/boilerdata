@@ -61,21 +61,19 @@ def get_run(proj: Project, run: Path) -> pd.DataFrame:
     source_dtypes = {col.source: col.dtype for col in proj.axes.source_cols}
 
     # Assign columns from CSV and metadata to the structured dataframe. Get the tail.
-    df = (
-        pd.DataFrame(columns=source_col_names)
-        .assign(
-            **pd.read_csv(
-                run,
-                # Allow source cols to be missing (such as T_6)
-                usecols=lambda col: col in [index, *source_col_names],
-                index_col=index,
-                parse_dates=[index],  # type: ignore  # Upstream issue w/ pandas-stubs
-                dtype=source_dtypes,  # type: ignore  # Upstream issue w/ pandas-stubs
-                encoding="utf-8",
-            )
+    df = pd.DataFrame(
+        columns=source_col_names,
+        data=pd.read_csv(
+            run,
+            # Allow source cols to be missing (such as T_6)
+            usecols=lambda col: col in [index, *source_col_names],
+            index_col=index,
+            parse_dates=[index],  # type: ignore  # Upstream issue w/ pandas-stubs
+            dtype=source_dtypes,  # type: ignore  # Upstream issue w/ pandas-stubs
+            encoding="utf-8",
         )
-        .dropna(how="all")  # Rarely a run has an all NA record at the end
-    )
+        # Rarely a run has an all NA record at the end
+    ).dropna(how="all")
 
     # Need "df" defined so we can call "df.index.dropna()"
     return (
