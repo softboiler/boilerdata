@@ -38,7 +38,7 @@ def main(proj: Project):
             dtype={col.name: col.dtype for col in proj.axes.cols},
         )
         .pipe(handle_invalid_data, validate_initial_df)
-        .pipe(per_trial, fit, proj)  # Need thermocouple spacing trial-by-trial
+        .pipe(per_run, fit, proj)  # Need thermocouple spacing run-to-run
         .pipe(agg_and_get_95_ci, proj)
         .also(plot_fits, proj)
         .pipe(per_trial, get_heat_transfer, proj)  # Water temp varies across trials
@@ -99,20 +99,6 @@ def plot_fits(df: pd.DataFrame, proj: Project) -> pd.DataFrame:
 
 # * -------------------------------------------------------------------------------- * #
 # * PER-TRIAL STAGES
-
-
-def fit(df: pd.DataFrame, proj: Project) -> pd.DataFrame:
-    """Fit the data assuming one-dimensional, steady-state conduction."""
-    trial = proj.get_trial(df.name)  # type: ignore  # Group name is the trial
-    return df.assign(
-        **df[list(trial.thermocouple_pos.keys())].apply(
-            axis="columns",
-            func=fit_ser,
-            x=list(trial.thermocouple_pos.values()),
-            index=[*proj.params.model_params, A.T_s, A.dT_dx],
-            proj=proj,
-        )  # type: ignore  # Upstream issue w/ pandas-stubs
-    )
 
 
 def plot_fit(df: pd.DataFrame, proj: Project) -> pd.DataFrame:
@@ -178,6 +164,25 @@ def assign_metadata(df: pd.DataFrame, proj: Project) -> pd.DataFrame:
         }
     )
     return df
+
+
+# * -------------------------------------------------------------------------------- * #
+# * PER-RUN STAGES
+
+
+def fit(df: pd.DataFrame, proj: Project) -> pd.DataFrame:
+    """Fit the data assuming one-dimensional, steady-state conduction."""
+    # Make timestamp explicit due to deprecation warning
+    run = proj.get_trial(pd.Timestamp(df.name.date()))
+    return df.assign(
+        **df[list(run.thermocouple_pos.keys())].apply(
+            axis="columns",
+            func=fit_ser,
+            x=list(run.thermocouple_pos.values()),
+            index=[*proj.params.model_params, A.T_s, A.dT_dx],
+            proj=proj,
+        )  # type: ignore  # Upstream issue w/ pandas-stubs
+    )
 
 
 # * -------------------------------------------------------------------------------- * #
@@ -266,11 +271,29 @@ def per_trial(
     df: pd.DataFrame,
     per_trial_func: Callable[[pd.DataFrame, Project], pd.DataFrame],
     proj: Project,
-):
+) -> pd.DataFrame:
     """Apply a function to individual trials."""
+    return per_index(df, A.trial, per_trial_func, proj)
+
+
+def per_run(
+    df: pd.DataFrame,
+    per_run_func: Callable[[pd.DataFrame, Project], pd.DataFrame],
+    proj: Project,
+) -> pd.DataFrame:
+    """Apply a function to individual runs."""
+    return per_index(df, A.run, per_run_func, proj)
+
+
+def per_index(
+    df: pd.DataFrame,
+    level: str,
+    per_index_func: Callable[[pd.DataFrame, Project], pd.DataFrame],
+    proj: Project,
+) -> pd.DataFrame:
     return (
-        df.groupby(level=A.trial, sort=False, group_keys=False)
-        .apply(per_trial_func, proj)  # type: ignore  # Issue with upstream pandas-stubs
+        df.groupby(level=level, sort=False, group_keys=False)
+        .apply(per_index_func, proj)  # type: ignore  # Issue with upstream pandas-stubs
         .pipe(set_proj_dtypes, proj)
     )
 
