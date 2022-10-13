@@ -111,7 +111,7 @@ def fit(df: pd.DataFrame, proj: Project) -> pd.DataFrame:
             x=list(trial.thermocouple_pos.values()),
             index=[*proj.params.model_params, A.T_s, A.dT_dx],
             proj=proj,
-        ),  # type: ignore  # Upstream issue w/ pandas-stubs
+        )  # type: ignore  # Upstream issue w/ pandas-stubs
     )
 
 
@@ -127,11 +127,7 @@ def plot_fit(df: pd.DataFrame, proj: Project) -> pd.DataFrame:
 
     # Reason: Enum incompatible with str, but we have use_enum_values from Pydantic
     df.apply(
-        axis="columns",
-        func=plot_fit_ser,
-        trial=trial,
-        proj=proj,
-        plt=plt,
+        axis="columns", func=plot_fit_ser, trial=trial, proj=proj, plt=plt
     )  # type: ignore  # Upstream issue w/ pandas-stubs
     return df
 
@@ -189,18 +185,11 @@ def assign_metadata(df: pd.DataFrame, proj: Project) -> pd.DataFrame:
 
 
 def fit_ser(
-    y: pd.Series[float],
-    x: npt.ArrayLike,
-    index: list[str],
-    proj: Project,
+    y: pd.Series[float], x: npt.ArrayLike, index: list[str], proj: Project
 ) -> pd.Series[float]:
     """Perform linear regression of a series of y's with respect to given x's."""
     try:
-        params, _ = curve_fit(
-            model,
-            x,
-            y,
-        )
+        params, _ = curve_fit(model, x, y)
     except RuntimeError:
         params = np.full(len(proj.params.model_params), np.nan)
     return pd.Series([*params, model(0, *params), slope(0, *params)], index=index)
