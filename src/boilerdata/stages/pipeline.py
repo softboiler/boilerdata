@@ -56,11 +56,11 @@ def main(proj: Project):
 
 
 def model(x, a, b, c):
-    return a * np.exp(b * x) + c
+    return a * x**2 + b * x + c
 
 
 def slope(x, a, b, c):
-    return a * b * np.exp(b * x)
+    return 2 * a * x + b
 
 
 # * -------------------------------------------------------------------------------- * #
