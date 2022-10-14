@@ -8,13 +8,13 @@ stages:
       size: 1024195
       nfiles: 1
     - path: data/schema
-      md5: 23620e1a771edeacb85959d5f582043b.dir
-      size: 24929
+      md5: 44c7d7a9f1902ab48be37e283a6c63a2.dir
+      size: 25029
       nfiles: 4
     - path: src/boilerdata
-      md5: daec6e40e1a0fc076b7012543da0a374.dir
-      size: 182231
-      nfiles: 47
+      md5: 30eba02e7d324da72f50a0b41b1f7a87.dir
+      size: 180788
+      nfiles: 48
     params:
       config/axes.yaml:
         all:
@@ -428,12 +428,12 @@ stages:
     cmd: python -m boilerdata.stages.schema
     deps:
     - path: data/schema_old
-      md5: 23620e1a771edeacb85959d5f582043b.dir
-      size: 24929
+      md5: 44c7d7a9f1902ab48be37e283a6c63a2.dir
+      size: 25029
       nfiles: 4
     - path: src/boilerdata/models
-      md5: 8f2f6e46ea34b56e140a64316985c1b1.dir
-      size: 55557
+      md5: 3ec68adb9bb55b58abf476515fae188f.dir
+      size: 54884
       nfiles: 18
     - path: src/boilerdata/stages/schema.py
       md5: 004694d9ff0ecacfd910f2cc85401b35
@@ -819,8 +819,8 @@ stages:
           new: true
     outs:
     - path: data/schema
-      md5: 23620e1a771edeacb85959d5f582043b.dir
-      size: 24929
+      md5: 44c7d7a9f1902ab48be37e283a6c63a2.dir
+      size: 25029
       nfiles: 4
   originlab:
     cmd: python -m boilerdata.stages.originlab
@@ -834,12 +834,12 @@ stages:
       size: 2022796
       nfiles: 13
     - path: src/boilerdata
-      md5: daec6e40e1a0fc076b7012543da0a374.dir
-      size: 182231
-      nfiles: 47
+      md5: 30eba02e7d324da72f50a0b41b1f7a87.dir
+      size: 180788
+      nfiles: 48
     outs:
     - path: data/plots/lit_.png
-      md5: ad46028f4c4ac9d215f7c0db58f78614
+      md5: 3b7a12982303bc18ac8348933809c098
       size: 40210
   runs:
     cmd: python -m boilerdata.stages.runs
@@ -849,12 +849,12 @@ stages:
       size: 103226338
       nfiles: 401
     - path: data/schema
-      md5: 23620e1a771edeacb85959d5f582043b.dir
-      size: 24929
+      md5: 44c7d7a9f1902ab48be37e283a6c63a2.dir
+      size: 25029
       nfiles: 4
     - path: src/boilerdata/stages/runs.py
-      md5: e3af1828eaca8b5d847586a396a3c4a3
-      size: 3210
+      md5: f1e95ed1d3936f2734e910cee8da5ac9
+      size: 3202
     params:
       config/axes.yaml:
         all:

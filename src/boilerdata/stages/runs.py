@@ -7,8 +7,8 @@ from pathlib import Path
 
 import pandas as pd
 
-from boilerdata.models.common import set_dtypes
 from boilerdata.models.project import Project
+from boilerdata.utils import set_dtypes
 
 # * -------------------------------------------------------------------------------- * #
 # * MAIN
