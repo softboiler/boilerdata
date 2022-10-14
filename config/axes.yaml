@@ -105,13 +105,22 @@ all:
     units: "C"
 
   - name: "a"
-    units: "K"
+    units: "-"
+
+  - name: "a_err"
+    units: "-"
 
   - name: "b"
-    units: "K"
+    units: "-"
+
+  - name: "b_err"
+    units: "-"
 
   - name: "c"
-    units: "K"
+    units: "-"
+
+  - name: "c_err"
+    units: "-"
 
   - name: "dT_dx"
     units: "K"

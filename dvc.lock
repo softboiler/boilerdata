@@ -4,17 +4,17 @@ stages:
     cmd: python -m boilerdata.stages.pipeline
     deps:
     - path: data/runs
-      md5: 7b155f694832c411c5b844a6344fd34a.dir
-      size: 553134
+      md5: 4fcbbc5b9908ee6824ad1a3d66afb0d3.dir
+      size: 1006290
       nfiles: 1
     - path: data/schema
-      md5: 60f3dba9bd0be224a68484fb9d1de8f0.dir
-      size: 24275
+      md5: 02f7f00109fd9c377d234138019a0ec2.dir
+      size: 24924
       nfiles: 4
     - path: src/boilerdata
-      md5: a99d7799907e24a0127c09b4cf124726.dir
-      size: 138689
-      nfiles: 46
+      md5: 64dbff847b29a4d1ca095d50b26336ba.dir
+      size: 177298
+      nfiles: 47
     params:
       config/axes.yaml:
         all:
@@ -98,11 +98,17 @@ stages:
         - name: T_w_diff
           units: C
         - name: a
-          units: K
+          units: '-'
+        - name: a_err
+          units: '-'
         - name: b
-          units: K
+          units: '-'
+        - name: b_err
+          units: '-'
         - name: c
-          units: K
+          units: '-'
+        - name: c_err
+          units: '-'
         - name: dT_dx
           units: K
         - name: dT_dx_err
@@ -171,7 +177,7 @@ stages:
             A8: 0.753
             A9: 0.553
         params:
-          records_to_average: 5
+          records_to_average: 9
           do_plot: true
       config/trials.yaml:
         trials:
@@ -370,11 +376,11 @@ stages:
           new: true
     outs:
     - path: data/plots/latest_new_fit.png
-      md5: ec0bbe71393a74dbd6e7868c79743ef8
-      size: 26247
+      md5: 5c027bf207e1269388a5a5c768db22ca
+      size: 133562
     - path: data/results
-      md5: b0dd052c9257f31c0deabe11bb3f80b1.dir
-      size: 747313
+      md5: a12b6bd7bc060e9ce91e9b1f4fb039b5.dir
+      size: 1940171
       nfiles: 13
   plot:
     cmd: python -m boilerdata.plot
@@ -402,12 +408,12 @@ stages:
     cmd: python -m boilerdata.stages.schema
     deps:
     - path: data/schema_old
-      md5: 60f3dba9bd0be224a68484fb9d1de8f0.dir
-      size: 24275
+      md5: 02f7f00109fd9c377d234138019a0ec2.dir
+      size: 24924
       nfiles: 4
     - path: src/boilerdata/models
-      md5: 09250d2f17b1c0c0b9973fac4a91e200.dir
-      size: 55063
+      md5: d74223ea016efaef1fc865abea33e1e6.dir
+      size: 55560
       nfiles: 18
     - path: src/boilerdata/stages/schema.py
       md5: 004694d9ff0ecacfd910f2cc85401b35
@@ -495,11 +501,17 @@ stages:
         - name: T_w_diff
           units: C
         - name: a
-          units: K
+          units: '-'
+        - name: a_err
+          units: '-'
         - name: b
-          units: K
+          units: '-'
+        - name: b_err
+          units: '-'
         - name: c
-          units: K
+          units: '-'
+        - name: c_err
+          units: '-'
         - name: dT_dx
           units: K
         - name: dT_dx_err
@@ -568,7 +580,7 @@ stages:
             A8: 0.753
             A9: 0.553
         params:
-          records_to_average: 5
+          records_to_average: 9
           do_plot: true
       config/trials.yaml:
         trials:
@@ -767,28 +779,28 @@ stages:
           new: true
     outs:
     - path: data/schema
-      md5: 60f3dba9bd0be224a68484fb9d1de8f0.dir
-      size: 24275
+      md5: 02f7f00109fd9c377d234138019a0ec2.dir
+      size: 24924
       nfiles: 4
   originlab:
     cmd: python -m boilerdata.stages.originlab
     deps:
     - path: data/plotter
-      md5: a1bb0df5e3bc8b16c97a6f20bb1e2427.dir
-      size: 310592
+      md5: 209c38bdac604c435b6f3069335c5f06.dir
+      size: 335661
       nfiles: 1
     - path: data/results
-      md5: b0dd052c9257f31c0deabe11bb3f80b1.dir
-      size: 747313
+      md5: a12b6bd7bc060e9ce91e9b1f4fb039b5.dir
+      size: 1940171
       nfiles: 13
     - path: src/boilerdata
-      md5: a99d7799907e24a0127c09b4cf124726.dir
-      size: 138689
-      nfiles: 46
+      md5: 64dbff847b29a4d1ca095d50b26336ba.dir
+      size: 177298
+      nfiles: 47
     outs:
     - path: data/plots/lit_.png
-      md5: 50d4f35e3a28c7ae116baae548e6a5c7
-      size: 35559
+      md5: 71e2421c1eca1a1a0cbee5d8d78bc4e3
+      size: 40210
   runs:
     cmd: python -m boilerdata.stages.runs
     deps:
@@ -797,8 +809,8 @@ stages:
       size: 103226338
       nfiles: 401
     - path: data/schema
-      md5: 60f3dba9bd0be224a68484fb9d1de8f0.dir
-      size: 24275
+      md5: 02f7f00109fd9c377d234138019a0ec2.dir
+      size: 24924
       nfiles: 4
     - path: src/boilerdata/stages/runs.py
       md5: e3af1828eaca8b5d847586a396a3c4a3
@@ -886,11 +898,17 @@ stages:
         - name: T_w_diff
           units: C
         - name: a
-          units: K
+          units: '-'
+        - name: a_err
+          units: '-'
         - name: b
-          units: K
+          units: '-'
+        - name: b_err
+          units: '-'
         - name: c
-          units: K
+          units: '-'
+        - name: c_err
+          units: '-'
         - name: dT_dx
           units: K
         - name: dT_dx_err
@@ -959,7 +977,7 @@ stages:
             A8: 0.753
             A9: 0.553
         params:
-          records_to_average: 5
+          records_to_average: 9
           do_plot: true
       config/trials.yaml:
         trials:
@@ -1158,6 +1176,6 @@ stages:
           new: true
     outs:
     - path: data/runs
-      md5: 7b155f694832c411c5b844a6344fd34a.dir
-      size: 553134
+      md5: 4fcbbc5b9908ee6824ad1a3d66afb0d3.dir
+      size: 1006290
       nfiles: 1

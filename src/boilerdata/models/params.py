@@ -12,7 +12,23 @@ class Params(MyBaseModel):
         description="The number of records over which to average in a given trial.",
     )
     model_params: list[A] = Field(
-        default=[A.a, A.b, A.c],
+        default=[
+            A.a,
+            A.a_err,
+            A.b,
+            A.b_err,
+            A.c,
+            A.c_err,
+        ],
+        description="The parameters of the model to be fitted.",
+    )
+    model_outs: list[A] = Field(
+        default=[
+            A.T_s,
+            A.T_s_err,
+            A.dT_dx,
+            A.dT_dx_err,
+        ],
         description="The parameters of the model to be fitted.",
     )
     water_temps: list[A] = Field(

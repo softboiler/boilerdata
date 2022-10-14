@@ -5,11 +5,11 @@ from __future__ import annotations
 from pathlib import Path
 import re
 from shutil import copy
-from types import ModuleType
 from typing import Callable
 
 import janitor  # type: ignore  # Magically registers methods on Pandas objects
-from numpy import typing as npt
+from matplotlib import pyplot as plt
+from more_itertools import roundrobin
 import numpy as np
 import pandas as pd
 from propshop import get_prop
@@ -17,10 +17,11 @@ from propshop.library import Mat, Prop
 from pyXSteam.XSteam import XSteam
 from scipy.constants import convert_temperature
 from scipy.optimize import curve_fit
-from scipy.stats import norm
+from scipy.stats import t
+from uncertainties import ufloat
 
 from boilerdata.axes_enum import AxesEnum as A  # noqa: N814
-from boilerdata.models.common import set_dtypes
+from boilerdata.models.common import NpNDArray, set_dtypes
 from boilerdata.models.project import Project
 from boilerdata.models.trials import Trial
 from boilerdata.validation import handle_invalid_data, validate_initial_df
@@ -39,8 +40,7 @@ def main(proj: Project):
         )
         .pipe(handle_invalid_data, validate_initial_df)
         .pipe(per_run, fit, proj)  # Need thermocouple spacing run-to-run
-        .pipe(agg_and_get_95_ci, proj)
-        .also(plot_fits, proj)
+        .also(get_latest_new_fit_plot, proj)
         .pipe(per_trial, get_heat_transfer, proj)  # Water temp varies across trials
         .pipe(per_trial, assign_metadata, proj)  # Distinct per trial
         # .pipe(validate_final_df)  # TODO: Uncomment in main
@@ -52,7 +52,7 @@ def main(proj: Project):
 
 
 # * -------------------------------------------------------------------------------- * #
-# * MODEL
+# * MODEL FIT AND RUN AGGREGATION
 
 
 def model(x, a, b, c):
@@ -63,34 +63,158 @@ def slope(x, a, b, c):
     return 2 * a * x + b
 
 
-# * -------------------------------------------------------------------------------- * #
-# * STAGES
+def fit(df: pd.DataFrame, proj: Project) -> pd.DataFrame:
+    """Fit the data assuming one-dimensional, steady-state conduction."""
 
+    # Make timestamp explicit due to deprecation warning
+    trial = proj.get_trial(pd.Timestamp(df.name[0].date()))
 
-def agg_and_get_95_ci(df: pd.DataFrame, proj: Project) -> pd.DataFrame:
-    """Take means of numeric columns and get 95% confidence interval of fits."""
-    confidence_interval_95 = abs(norm.ppf(0.025))
-    complex_agg_overrides = {
-        A.T_s_err: pd.NamedAgg(column=A.T_s, aggfunc="sem"),
-        A.dT_dx_err: pd.NamedAgg(column=A.dT_dx, aggfunc="sem"),
-    }
-    aggs = proj.axes.aggs | complex_agg_overrides
-    df = (
-        df.groupby(level=[A.trial, A.run])  # type: ignore  # Upstream issue w/ pandas-stubs
-        .agg(**aggs)
-        .assign(
-            **{
-                A.T_s_err: lambda df: df[A.T_s_err] * confidence_interval_95,
-                A.dT_dx_err: lambda df: df[A.dT_dx_err] * confidence_interval_95,
-            }
-        )
+    # Setup
+    x_unique = list(trial.thermocouple_pos.values())
+    y_unique = df[list(trial.thermocouple_pos.keys())]
+    x = np.tile(x_unique, proj.params.records_to_average)
+    y = y_unique.stack()
+    model_params = proj.params.model_params
+    index = [*model_params, *proj.params.model_outs]
+
+    # Fit
+    try:
+        params, pcov = curve_fit(model, x, y)
+    except RuntimeError:
+        params = np.full(len(model_params), np.nan)
+        pcov = np.full(len(model_params), np.nan)
+
+    # Confidence interval
+    param_standard_errors = np.sqrt(np.diagonal(pcov))
+    confidence_interval_95 = t.interval(0.95, 9)[1]
+    param_errors = param_standard_errors * confidence_interval_95
+
+    # Uncertainties
+    u_params = np.array(
+        [
+            ufloat(param, err, tag)
+            for param, err, tag in zip(params, param_errors, model_params)
+        ]
     )
-    return df
+    u_x_0 = ufloat(0, 0, "x")
+    u_y_0 = model(u_x_0, *u_params)
+    u_dy_dx_0 = slope(u_x_0, *u_params)
+    outs = (
+        u_y_0.nominal_value,
+        u_y_0.std_dev,
+        u_dy_dx_0.nominal_value,
+        u_dy_dx_0.std_dev,
+    )
+
+    # Agg
+    ser = (
+        df.groupby(level=[A.trial, A.run])  # type: ignore  # Issue w/ pandas-stubs
+        .agg(**proj.axes.aggs)
+        .assign(**pd.Series([*roundrobin(params, param_errors), *outs], index=index))  # type: ignore
+    ).iloc[0]
+
+    # Plot
+    if proj.params.do_plot and trial.new:
+        plot_fit(ser, trial, proj, u_params, x_unique, y_unique, confidence_interval_95)
+
+    return ser
 
 
-def plot_fits(df: pd.DataFrame, proj: Project) -> pd.DataFrame:
-    """Plot the fits."""
-    df = per_trial(df, plot_fit, proj)
+def plot_fit(
+    ser: pd.Series[float],
+    trial: Trial,
+    proj: Project,
+    u_params: NpNDArray,
+    x_unique: list[float],
+    y_unique: pd.DataFrame,
+    confidence_interval_95: float,
+) -> None:
+    """Plot the goodness of fit for each run in the trial."""
+
+    # Plot setup
+    fig, ax = plt.subplots(layout="constrained")
+
+    run = ser.name[-1].isoformat()  # type: ignore  # Issue pandas-stubs
+    run_file = proj.dirs.new_fits / f"{run.replace(':', '-')}.png"
+
+    ax.margins(0, 0)
+    ax.set_title(f"{run = }")
+    ax.set_xlabel("x (m)")
+    ax.set_ylabel("T (C)")
+
+    # Initial plot boundaries
+    x_bounds = np.array([0, trial.thermocouple_pos[A.T_1]])
+    y_bounds = model(x_bounds, *[param.nominal_value for param in u_params])
+    ax.plot(
+        x_bounds,
+        y_bounds,
+        "none",
+    )
+
+    # Measurements
+    measurements_color = [0.2, 0.2, 0.2]
+    ax.plot(
+        x_unique,
+        ser[list(trial.thermocouple_pos.keys())],
+        ".",
+        label="Measurements",
+        color=measurements_color,
+        markersize=10,
+    )
+    ax.errorbar(
+        x=x_unique,
+        y=ser[list(trial.thermocouple_pos.keys())],
+        yerr=y_unique.sem() * confidence_interval_95,
+        fmt="none",
+        color=measurements_color,
+    )
+
+    # Confidence interval
+    (xlim_min, xlim_max) = ax.get_xlim()
+    pad = 0.025 * (xlim_max - xlim_min)
+    x_padded = np.linspace(xlim_min - pad, xlim_max + pad)
+    y_padded, y_padded_min, y_padded_max = model_with_error(x_padded, u_params)
+    ax.plot(
+        x_padded,
+        y_padded,
+        "--",
+        label="Model Fit",
+    )
+    ax.fill_between(
+        x=x_padded,
+        y1=y_padded_min,
+        y2=y_padded_max,  # type: ignore
+        color=[0.8, 0.8, 0.8],
+        edgecolor=[1, 1, 1],
+        label="95% CI",
+    )
+
+    # Extrapolation
+    ax.plot(
+        0,
+        ser[A.T_s],
+        "x",
+        label="Extrapolation",
+        color=[1, 0, 0],
+    )
+
+    # Finishing
+    ax.legend()
+    fig.savefig(run_file, dpi=300)  # type: ignore  # Issue w/ matplotlib stubs
+
+
+def model_with_error(x, u_params):
+    """Evaluate the model for x and return y with errors."""
+    u_x = np.array([ufloat(v, 0, "x") for v in x])
+    u_y = model(u_x, *u_params)
+    y = np.array([y.nominal_value for y in u_y])
+    y_min = y - [y.std_dev for y in u_y]  # type: ignore
+    y_max = y + [y.std_dev for y in u_y]
+    return y, y_min, y_max
+
+
+def get_latest_new_fit_plot(df: pd.DataFrame, proj: Project) -> pd.DataFrame:
+    """Get the latest new model fit plot."""
     if proj.params.do_plot and (new_fits := sorted(proj.dirs.new_fits.iterdir())):
         latest_new_fit = new_fits[-1]
         copy(latest_new_fit, Path("data/plots/latest_new_fit.png"))
@@ -98,24 +222,7 @@ def plot_fits(df: pd.DataFrame, proj: Project) -> pd.DataFrame:
 
 
 # * -------------------------------------------------------------------------------- * #
-# * PER-TRIAL STAGES
-
-
-def plot_fit(df: pd.DataFrame, proj: Project) -> pd.DataFrame:
-    """Plot the goodness of fit for each run in the trial."""
-
-    trial = proj.get_trial(df.name)  # type: ignore  # Group name is the trial
-
-    if not trial.new:
-        return df
-
-    from matplotlib import pyplot as plt
-
-    # Reason: Enum incompatible with str, but we have use_enum_values from Pydantic
-    df.apply(
-        axis="columns", func=plot_fit_ser, trial=trial, proj=proj, plt=plt
-    )  # type: ignore  # Upstream issue w/ pandas-stubs
-    return df
+# * TRIAL OPERATIONS
 
 
 def get_heat_transfer(df: pd.DataFrame, proj: Project) -> pd.DataFrame:
@@ -167,68 +274,6 @@ def assign_metadata(df: pd.DataFrame, proj: Project) -> pd.DataFrame:
 
 
 # * -------------------------------------------------------------------------------- * #
-# * PER-RUN STAGES
-
-
-def fit(df: pd.DataFrame, proj: Project) -> pd.DataFrame:
-    """Fit the data assuming one-dimensional, steady-state conduction."""
-    # Make timestamp explicit due to deprecation warning
-    run = proj.get_trial(pd.Timestamp(df.name.date()))
-    return df.assign(
-        **df[list(run.thermocouple_pos.keys())].apply(
-            axis="columns",
-            func=fit_ser,
-            x=list(run.thermocouple_pos.values()),
-            index=[*proj.params.model_params, A.T_s, A.dT_dx],
-            proj=proj,
-        )  # type: ignore  # Upstream issue w/ pandas-stubs
-    )
-
-
-# * -------------------------------------------------------------------------------- * #
-# * PER-RECORD FUNCTIONS
-
-
-def fit_ser(
-    y: pd.Series[float], x: npt.ArrayLike, index: list[str], proj: Project
-) -> pd.Series[float]:
-    """Perform linear regression of a series of y's with respect to given x's."""
-    try:
-        params, _ = curve_fit(model, x, y)
-    except RuntimeError:
-        params = np.full(len(proj.params.model_params), np.nan)
-    return pd.Series([*params, model(0, *params), slope(0, *params)], index=index)
-
-
-def plot_fit_ser(ser: pd.Series[float], trial: Trial, proj: Project, plt: ModuleType):
-    """Plot the goodness of fit for a series of temperatures and positions."""
-    run = ser.name[-1].isoformat()  # type: ignore  # Issue w/ upstream pandas-stubs
-    run_file = proj.dirs.new_fits / f"{run.replace(':', '-')}.png"
-    plt.figure()
-    plt.title(f"{run}")
-    plt.xlabel("x (m)")
-    plt.ylabel("T (C)")
-    # Reason: Enum incompatible with str, but we have use_enum_values from Pydantic
-    plt.plot(
-        trial.thermocouple_pos.values(),
-        ser[list(trial.thermocouple_pos.keys())],
-        "*",
-        label="Measurements",
-        color=[0.2, 0.2, 0.2],
-    )
-    x_smooth = np.linspace(0, trial.thermocouple_pos[A.T_1])
-    plt.plot(
-        x_smooth,
-        model(x_smooth, *ser[proj.params.model_params]),  # type: ignore # Upstream issue w/ pandas-stubs
-        "--",
-        label="Fit",
-    )
-    plt.plot(0, ser[A.T_s], "x", label="Extrapolation", color=[1, 0, 0])
-    plt.legend()
-    plt.savefig(run_file)
-
-
-# * -------------------------------------------------------------------------------- * #
 # * POST-PROCESSING
 
 
@@ -255,7 +300,7 @@ def transform_for_originlab(df: pd.DataFrame, proj: Project) -> pd.DataFrame:
     indices = [
         index.to_series()
         .reset_index(drop=True)
-        .replace(superscript, superscript_repl)  # type: ignore  # Upstream issue w/ pandas-stubs
+        .replace(superscript, superscript_repl)  # type: ignore  # Issue w/ pandas-stubs
         .replace(subscript, subscript_repl)
         for index in (quantity, units)
     ]
@@ -273,7 +318,8 @@ def per_trial(
     proj: Project,
 ) -> pd.DataFrame:
     """Apply a function to individual trials."""
-    return per_index(df, A.trial, per_trial_func, proj)
+    df = per_index(df, A.trial, per_trial_func, proj)
+    return df
 
 
 def per_run(
@@ -282,20 +328,22 @@ def per_run(
     proj: Project,
 ) -> pd.DataFrame:
     """Apply a function to individual runs."""
-    return per_index(df, A.run, per_run_func, proj)
+    df = per_index(df, [A.trial, A.run], per_run_func, proj)
+    return df
 
 
 def per_index(
     df: pd.DataFrame,
-    level: str,
+    level: str | list[str],
     per_index_func: Callable[[pd.DataFrame, Project], pd.DataFrame],
     proj: Project,
 ) -> pd.DataFrame:
-    return (
-        df.groupby(level=level, sort=False, group_keys=False)
-        .apply(per_index_func, proj)  # type: ignore  # Issue with upstream pandas-stubs
+    df = (
+        df.groupby(level=level, sort=False, group_keys=False)  # type: ignore  # Issue w/ pandas-stubs
+        .apply(per_index_func, proj)  # type: ignore  # Issue w/ pandas-stubs
         .pipe(set_proj_dtypes, proj)
     )
+    return df
 
 
 def set_proj_dtypes(df: pd.DataFrame, proj: Project) -> pd.DataFrame:

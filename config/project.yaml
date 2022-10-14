@@ -20,5 +20,5 @@ geometry:
     A9: 0.553
 
 params:
-  records_to_average: 5
+  records_to_average: 9
   do_plot: true
