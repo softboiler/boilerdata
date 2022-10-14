@@ -143,7 +143,9 @@ def plot_fits(df: pd.DataFrame, proj: Project, model) -> pd.DataFrame:
     if proj.params.do_plot:
         per_run(df, plot_new_fits, proj, model)
         if new_fits := sorted(proj.dirs.new_fits.iterdir()):
+            oldest_new_fit = new_fits[0]
             latest_new_fit = new_fits[-1]
+            copy(oldest_new_fit, Path("data/plots/oldest_new_fit.svg"))
             copy(latest_new_fit, Path("data/plots/latest_new_fit.svg"))
     return df
 
