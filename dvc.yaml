@@ -40,7 +40,7 @@ stages:
       - "data/schema"
       - "data/runs"
     outs: ["data/results"]
-    plots: ["data/plots/latest_new_fit.png"]
+    plots: ["data/plots/latest_new_fit.svg"]
 
   originlab:
     cmd: "python -m boilerdata.stages.originlab"

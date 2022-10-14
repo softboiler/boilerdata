@@ -1,7 +1,5 @@
 """Pipeline functions."""
 
-from __future__ import annotations
-
 from pathlib import Path
 import re
 from shutil import copy
@@ -48,7 +46,7 @@ def main(proj: Project):
         # Need thermocouple spacing run-to-run
         .pipe(per_run, fit, proj, model, slope, confidence_interval_95)
         .pipe(per_trial, agg_over_runs, proj, confidence_interval_95)
-        .also(plot_fits, proj, model)
+        .pipe(plot_fits, proj, model)
         .pipe(per_trial, get_heat_transfer, proj)  # Water temp varies across trials
         .pipe(per_trial, assign_metadata, proj)  # Distinct per trial
         # .pipe(validate_final_df)  # TODO: Uncomment in main
@@ -56,7 +54,6 @@ def main(proj: Project):
         .pipe(transform_for_originlab, proj)
         .to_csv(proj.dirs.originlab_results_file, index=False, encoding="utf-8")
     )
-    proj.dirs.originlab_coldes_file.write_text(proj.axes.get_originlab_coldes())
 
 
 # * -------------------------------------------------------------------------------- * #
@@ -147,7 +144,7 @@ def plot_fits(df: pd.DataFrame, proj: Project, model) -> pd.DataFrame:
         per_run(df, plot_new_fits, proj, model)
         if new_fits := sorted(proj.dirs.new_fits.iterdir()):
             latest_new_fit = new_fits[-1]
-            copy(latest_new_fit, Path("data/plots/latest_new_fit.png"))
+            copy(latest_new_fit, Path("data/plots/latest_new_fit.svg"))
     return df
 
 
@@ -169,7 +166,7 @@ def plot_new_fits(grp: pd.DataFrame, proj: Project, model):
     fig, ax = plt.subplots(layout="constrained")
 
     run = ser.name[-1].isoformat()
-    run_file = proj.dirs.new_fits / f"{run.replace(':', '-')}.png"
+    run_file = proj.dirs.new_fits / f"{run.replace(':', '-')}.svg"
 
     ax.margins(0, 0)
     ax.set_title(f"{run = }")
@@ -234,7 +231,7 @@ def plot_new_fits(grp: pd.DataFrame, proj: Project, model):
 
     # Finishing
     ax.legend()
-    fig.savefig(run_file, dpi=300)  # type: ignore  # Issue w/ matplotlib stubs
+    fig.savefig(run_file)  # type: ignore  # Issue w/ matplotlib stubs
 
 
 def get_heat_transfer(df: pd.DataFrame, proj: Project) -> pd.DataFrame:
