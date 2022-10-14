@@ -121,43 +121,33 @@ all:
 
   - name: "a"
     units: "-"
-    agg: "first"
 
   - name: "a_err"
     units: "-"
-    agg: "first"
 
   - name: "b"
     units: "-"
-    agg: "first"
 
   - name: "b_err"
     units: "-"
-    agg: "first"
 
   - name: "c"
     units: "-"
-    agg: "first"
 
   - name: "c_err"
     units: "-"
-    agg: "first"
 
   - name: "dT_dx"
     units: "K"
-    agg: "first"
 
   - name: "dT_dx_err"
     units: "K"
-    agg: "first"
 
   - name: "T_s"
     units: "C"
-    agg: "first"
 
   - name: "T_s_err"
     units: "C"
-    agg: "first"
 
   - name: "k"
     units: "W/m-K"

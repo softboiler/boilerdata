@@ -6,7 +6,6 @@ from shutil import copy
 
 import janitor  # type: ignore  # Magically registers methods on Pandas objects
 from matplotlib import pyplot as plt
-from more_itertools import roundrobin
 import numpy as np
 import pandas as pd
 from propshop import get_prop
@@ -19,6 +18,7 @@ from uncertainties import ufloat
 
 from boilerdata.axes_enum import AxesEnum as A  # noqa: N814
 from boilerdata.models.project import Project
+from boilerdata.models.trials import Trial
 from boilerdata.utils import get_tcs, model_with_error, per_run, per_trial, zip_params
 from boilerdata.validation import handle_invalid_data, validate_initial_df
 
@@ -72,45 +72,79 @@ def fit(
     # Make timestamp explicit due to deprecation warning
     trial = proj.get_trial(pd.Timestamp(grp.name[0].date()))
 
-    # Setup
-    x_unique = list(trial.thermocouple_pos.values())
-    y_unique = grp[get_tcs(trial)[0]]
-    x = np.tile(x_unique, proj.params.records_to_average)
-    y = y_unique.stack()
+    # Get coordinates and model parameters
     model_params = proj.params.model_params
-    index = [*model_params, *proj.params.model_outs]
+    _, tc_errors = get_tcs(trial)
 
-    # Fit
+    # Assign thermocouple errors
+    k_type_error = 2.2
+    t_type_error = 1.0
+    grp = grp.assign(
+        **(
+            {tc_error: k_type_error for tc_error in tc_errors}
+            | {A.T_5_err: t_type_error}
+        )
+    )
+    x, y, y_errors = fit_setup(grp, proj, trial)
+
+    # Perform fit
     try:
-        params, pcov = curve_fit(model, x, y)
+        model_params_fitted, pcov = curve_fit(
+            model, x, y, sigma=y_errors, absolute_sigma=True
+        )
     except RuntimeError:
-        params = np.full(len(model_params), np.nan)
+        model_params_fitted = np.full(len(model_params), np.nan)
         pcov = np.full(len(model_params), np.nan)
 
-    # Confidence interval
+    # Compute confidence interval
+    (param_errors, outs) = fit_get_ci(
+        pcov, model_params, model_params_fitted, model, slope, confidence_interval_95
+    )
+
+    # Aggregate results
+    grp = grp.assign(
+        **pd.Series(
+            np.concatenate([model_params_fitted, param_errors, outs]),
+            index=model_params + proj.params.model_outs,
+        )  # type: ignore  # Issue w/ pandas-stubs
+    )
+    return grp
+
+
+def fit_setup(grp: pd.DataFrame, proj: Project, trial: Trial):
+    tcs, tc_errors = get_tcs(trial)
+    x_unique = list(trial.thermocouple_pos.values())
+    x = np.tile(x_unique, proj.params.records_to_average)
+    y = grp[tcs].stack()
+    y_errors = grp[tc_errors].stack()
+    return x, y, y_errors
+
+
+def fit_get_ci(
+    pcov, model_params, model_params_fitted, model, slope, confidence_interval_95
+):
     param_standard_errors = np.sqrt(np.diagonal(pcov))
     param_errors = param_standard_errors * confidence_interval_95
-
-    # Uncertainties
     u_params = np.array(
         [
             ufloat(param, err, tag)
-            for param, err, tag in zip(params, param_errors, model_params)
+            for param, err, tag in zip(model_params_fitted, param_errors, model_params)
         ]
     )
     u_x_0 = ufloat(0, 0, "x")
     u_y_0 = model(u_x_0, *u_params)
     u_dy_dx_0 = slope(u_x_0, *u_params)
-    outs = (
-        u_y_0.nominal_value,
-        u_y_0.std_dev,
-        u_dy_dx_0.nominal_value,
-        u_dy_dx_0.std_dev,
+    return (
+        param_errors,
+        np.array(
+            [
+                u_y_0.nominal_value,
+                u_dy_dx_0.nominal_value,
+                u_y_0.std_dev,
+                u_dy_dx_0.std_dev,
+            ]
+        ),
     )
-
-    # Agg
-    grp = grp.assign(**pd.Series([*roundrobin(params, param_errors), *outs], index=index))  # type: ignore  # Issue w/ pandas-stubs
-    return grp
 
 
 def agg_over_runs(
@@ -118,20 +152,32 @@ def agg_over_runs(
     proj: Project,
     confidence_interval_95: float,
 ) -> pd.DataFrame:
+
+    np.sqrt(proj.params.records_to_average)
+
     trial = proj.get_trial(pd.Timestamp(grp.name.date()))
-    tcs, tc_errors = get_tcs(trial)
-    complex_agg_overrides = {
-        tc_err: pd.NamedAgg(column=tc, aggfunc="sem")
-        for tc, tc_err in zip(tcs, tc_errors)
-    }
-    aggs = proj.axes.aggs | complex_agg_overrides
+    _, tc_errors = get_tcs(trial)
     grp = (
-        grp.groupby(level=[A.trial, A.run])  # type: ignore  # Upstream issue w/ pandas-stubs
-        .agg(**aggs)
+        grp.groupby(level=[A.trial, A.run])  # type: ignore
+        .agg(
+            **(
+                # Take the default agg for all cols
+                proj.axes.aggs
+                # Override the agg for cols with duplicates in a run to take the first
+                | {
+                    col: pd.NamedAgg(column=col, aggfunc="first")  # type: ignore
+                    for col in (
+                        tc_errors + proj.params.model_params + proj.params.model_outs
+                    )
+                }
+            )
+        )
         .assign(
             **{
-                tc_err: lambda df: df[tc_err] * confidence_interval_95
-                for tc_err in tc_errors
+                tc_error: lambda df: df[tc_error]
+                * confidence_interval_95
+                / np.sqrt(proj.params.records_to_average)
+                for tc_error in tc_errors
             }
         )
     )

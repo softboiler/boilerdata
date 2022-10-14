@@ -1,4 +1,3 @@
-from more_itertools import divide
 import numpy as np
 import pandas as pd
 from uncertainties import ufloat
@@ -67,10 +66,9 @@ def get_tcs(trial: Trial) -> tuple[list[str], list[str]]:
 
 def zip_params(grp: pd.DataFrame, proj: Project):
     model_params = proj.params.model_params
-    param_pairs = [list(i) for i in divide(len(model_params) // 2, model_params)]
-    params = [grp[pair[0]].squeeze() for pair in param_pairs]  # type: ignore
-    param_errors = [grp[pair[1]].squeeze() for pair in param_pairs]  # type: ignore
-    return zip(params, param_errors, model_params)
+    params = [param for param in model_params if "err" not in param]  # type: ignore
+    param_errors = [param for param in model_params if "err" in param]  # type: ignore
+    return zip(grp[params], grp[param_errors], model_params)  # type: ignore
 
 
 def model_with_error(model, x, u_params):

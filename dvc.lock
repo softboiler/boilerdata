@@ -8,12 +8,12 @@ stages:
       size: 1024195
       nfiles: 1
     - path: data/schema
-      md5: 44c7d7a9f1902ab48be37e283a6c63a2.dir
+      md5: dd56bee98c5798426fb6f90e062904c1.dir
       size: 25029
       nfiles: 4
     - path: src/boilerdata
-      md5: 5b2743ad343dd1221ccb67b481773d97.dir
-      size: 143877
+      md5: 0868dcf202ac71bfd0466fcebadb277f.dir
+      size: 145790
       nfiles: 47
     params:
       config/axes.yaml:
@@ -109,34 +109,24 @@ stages:
           units: C
         - name: a
           units: '-'
-          agg: first
         - name: a_err
           units: '-'
-          agg: first
         - name: b
           units: '-'
-          agg: first
         - name: b_err
           units: '-'
-          agg: first
         - name: c
           units: '-'
-          agg: first
         - name: c_err
           units: '-'
-          agg: first
         - name: dT_dx
           units: K
-          agg: first
         - name: dT_dx_err
           units: K
-          agg: first
         - name: T_s
           units: C
-          agg: first
         - name: T_s_err
           units: C
-          agg: first
         - name: k
           units: W/m-K
         - name: q
@@ -396,14 +386,14 @@ stages:
           new: true
     outs:
     - path: data/plots/first_new_fit.png
-      md5: 0538a751249ca8080413cb68ca09c533
-      size: 132848
+      md5: f1344affd903cbc5636a9dd6124cf52c
+      size: 110232
     - path: data/plots/last_new_fit.png
-      md5: 5c027bf207e1269388a5a5c768db22ca
-      size: 133562
+      md5: d3dec46427ca1a9282f844982903164a
+      size: 133704
     - path: data/results
-      md5: 3b297ee44f8515e6afa2187622193032.dir
-      size: 2022796
+      md5: ed123c706c8f2c66738ea9527014c31c.dir
+      size: 1847294
       nfiles: 13
   plot:
     cmd: python -m boilerdata.plot
@@ -431,11 +421,11 @@ stages:
     cmd: python -m boilerdata.stages.schema
     deps:
     - path: data/schema_old
-      md5: 44c7d7a9f1902ab48be37e283a6c63a2.dir
+      md5: dd56bee98c5798426fb6f90e062904c1.dir
       size: 25029
       nfiles: 4
     - path: src/boilerdata/models
-      md5: f50b0033dd55190fe07edb251d6ca121.dir
+      md5: 3ef4907d95f00a70e2c3c3bfb61102c6.dir
       size: 54884
       nfiles: 18
     - path: src/boilerdata/stages/schema.py
@@ -535,34 +525,24 @@ stages:
           units: C
         - name: a
           units: '-'
-          agg: first
         - name: a_err
           units: '-'
-          agg: first
         - name: b
           units: '-'
-          agg: first
         - name: b_err
           units: '-'
-          agg: first
         - name: c
           units: '-'
-          agg: first
         - name: c_err
           units: '-'
-          agg: first
         - name: dT_dx
           units: K
-          agg: first
         - name: dT_dx_err
           units: K
-          agg: first
         - name: T_s
           units: C
-          agg: first
         - name: T_s_err
           units: C
-          agg: first
         - name: k
           units: W/m-K
         - name: q
@@ -822,7 +802,7 @@ stages:
           new: true
     outs:
     - path: data/schema
-      md5: 44c7d7a9f1902ab48be37e283a6c63a2.dir
+      md5: dd56bee98c5798426fb6f90e062904c1.dir
       size: 25029
       nfiles: 4
   originlab:
@@ -833,17 +813,17 @@ stages:
       size: 357889
       nfiles: 1
     - path: data/results
-      md5: 3b297ee44f8515e6afa2187622193032.dir
-      size: 2022796
+      md5: ed123c706c8f2c66738ea9527014c31c.dir
+      size: 1847294
       nfiles: 13
     - path: src/boilerdata
-      md5: 7e6c934fad630cc6c016aaa153817464.dir
-      size: 143877
+      md5: 87c4dee56bf6678087cd9ac7a29d5749.dir
+      size: 145790
       nfiles: 47
     outs:
     - path: data/plots/lit_.png
-      md5: c9bcd9d525f2454d5cbc65ea2df0b543
-      size: 40210
+      md5: 471f22b518aee4e28715ebac766edc8e
+      size: 50272
   runs:
     cmd: python -m boilerdata.stages.runs
     deps:
@@ -852,7 +832,7 @@ stages:
       size: 103226338
       nfiles: 401
     - path: data/schema
-      md5: 44c7d7a9f1902ab48be37e283a6c63a2.dir
+      md5: dd56bee98c5798426fb6f90e062904c1.dir
       size: 25029
       nfiles: 4
     - path: src/boilerdata/stages/runs.py
@@ -952,34 +932,24 @@ stages:
           units: C
         - name: a
           units: '-'
-          agg: first
         - name: a_err
           units: '-'
-          agg: first
         - name: b
           units: '-'
-          agg: first
         - name: b_err
           units: '-'
-          agg: first
         - name: c
           units: '-'
-          agg: first
         - name: c_err
           units: '-'
-          agg: first
         - name: dT_dx
           units: K
-          agg: first
         - name: dT_dx_err
           units: K
-          agg: first
         - name: T_s
           units: C
-          agg: first
         - name: T_s_err
           units: C
-          agg: first
         - name: k
           units: W/m-K
         - name: q
