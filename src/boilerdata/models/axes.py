@@ -35,7 +35,7 @@ class Axis(MyBaseModel):
     )
 
     @validator("agg", always=True)
-    def validate_meta(cls, agg, values):
+    def validate_agg(cls, agg, values):
         return "first" if values["dtype"] == PandasDtype.category else agg
 
     # ! COLUMNS IN SOURCE DATA

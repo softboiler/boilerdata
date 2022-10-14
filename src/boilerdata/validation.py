@@ -41,10 +41,15 @@ source_cols = {
     A.I: Column(c[A.I].dtype, nullable=True),  # Not used
     A.T_0: Column(c[A.T_0].dtype),
     A.T_1: Column(c[A.T_1].dtype),
+    A.T_1_err: Column(c[A.T_1_err].dtype, nullable=True),
     A.T_2: Column(c[A.T_2].dtype),
+    A.T_2_err: Column(c[A.T_2_err].dtype, nullable=True),
     A.T_3: Column(c[A.T_3].dtype),
+    A.T_3_err: Column(c[A.T_3_err].dtype, nullable=True),
     A.T_4: Column(c[A.T_4].dtype),
+    A.T_4_err: Column(c[A.T_4_err].dtype, nullable=True),
     A.T_5: Column(c[A.T_5].dtype),
+    A.T_5_err: Column(c[A.T_5_err].dtype, nullable=True),
     A.T_6: Column(c[A.T_6].dtype, nullable=True),  # Some trials don't have it
     A.T_w1: Column(c[A.T_w1].dtype, water_tc_in_range),
     A.T_w2: Column(c[A.T_w2].dtype, water_tc_in_range),
