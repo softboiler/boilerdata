@@ -142,11 +142,13 @@ def plot_fits(df: pd.DataFrame, proj: Project, model) -> pd.DataFrame:
     """Get the latest new model fit plot."""
     if proj.params.do_plot:
         per_run(df, plot_new_fits, proj, model)
-        if new_fits := sorted(proj.dirs.new_fits.iterdir()):
-            oldest_new_fit = new_fits[0]
-            latest_new_fit = new_fits[-1]
-            copy(oldest_new_fit, Path("data/plots/oldest_new_fit.svg"))
-            copy(latest_new_fit, Path("data/plots/latest_new_fit.svg"))
+        if figs_src := sorted(proj.dirs.new_fits.iterdir()):
+            figs_src = (figs_src[0], figs_src[-1])
+            figs_dst = (
+                Path(f"data/plots/{num}_new_fit.png") for num in ("first", "last")
+            )
+            for fig_src, fig_dst in zip(figs_src, figs_dst):
+                copy(fig_src, fig_dst)
     return df
 
 
@@ -168,7 +170,7 @@ def plot_new_fits(grp: pd.DataFrame, proj: Project, model):
     fig, ax = plt.subplots(layout="constrained")
 
     run = ser.name[-1].isoformat()
-    run_file = proj.dirs.new_fits / f"{run.replace(':', '-')}.svg"
+    run_file = proj.dirs.new_fits / f"{run.replace(':', '-')}.png"
 
     ax.margins(0, 0)
     ax.set_title(f"{run = }")
@@ -233,7 +235,7 @@ def plot_new_fits(grp: pd.DataFrame, proj: Project, model):
 
     # Finishing
     ax.legend()
-    fig.savefig(run_file)  # type: ignore  # Issue w/ matplotlib stubs
+    fig.savefig(run_file, dpi=300)  # type: ignore  # Issue w/ matplotlib stubs
 
 
 def get_heat_transfer(df: pd.DataFrame, proj: Project) -> pd.DataFrame:
