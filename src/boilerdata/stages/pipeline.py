@@ -20,7 +20,11 @@ from boilerdata.axes_enum import AxesEnum as A  # noqa: N814
 from boilerdata.models.project import Project
 from boilerdata.models.trials import Trial
 from boilerdata.utils import get_tcs, model_with_error, per_run, per_trial, zip_params
-from boilerdata.validation import handle_invalid_data, validate_initial_df
+from boilerdata.validation import (
+    handle_invalid_data,
+    validate_final_df,
+    validate_initial_df,
+)
 
 # * -------------------------------------------------------------------------------- * #
 # * MAIN
@@ -49,7 +53,7 @@ def main(proj: Project):
         .pipe(plot_fits, proj, model)
         .pipe(per_trial, get_heat_transfer, proj)  # Water temp varies across trials
         .pipe(per_trial, assign_metadata, proj)  # Distinct per trial
-        # .pipe(validate_final_df)  # TODO: Uncomment in main
+        .pipe(validate_final_df)
         .also(lambda df: df.to_csv(proj.dirs.simple_results_file, encoding="utf-8"))
         .pipe(transform_for_originlab, proj)
         .to_csv(proj.dirs.originlab_results_file, index=False, encoding="utf-8")
@@ -96,7 +100,7 @@ def fit(
         model_params_fitted = np.full(len(model_params), np.nan)
         pcov = np.full(len(model_params), np.nan)
 
-    # Compute confidence interval
+    # Compute confidence interval  #! Depends on order of `param_errors` and `outs`
     (param_errors, outs) = fit_get_ci(
         pcov, model_params, model_params_fitted, model, slope, confidence_interval_95
     )
@@ -158,14 +162,14 @@ def agg_over_runs(
     trial = proj.get_trial(pd.Timestamp(grp.name.date()))
     _, tc_errors = get_tcs(trial)
     grp = (
-        grp.groupby(level=[A.trial, A.run])  # type: ignore
+        grp.groupby(level=[A.trial, A.run])  # type: ignore  # Issue w/ pandas-stubs
         .agg(
             **(
                 # Take the default agg for all cols
                 proj.axes.aggs
                 # Override the agg for cols with duplicates in a run to take the first
                 | {
-                    col: pd.NamedAgg(column=col, aggfunc="first")  # type: ignore
+                    col: pd.NamedAgg(column=col, aggfunc="first")  # type: ignore  # Due to use_enum_values
                     for col in (
                         tc_errors + proj.params.model_params + proj.params.model_outs
                     )
@@ -264,7 +268,7 @@ def plot_new_fits(grp: pd.DataFrame, proj: Project, model):
     ax.fill_between(
         x=x_padded,
         y1=y_padded_min,
-        y2=y_padded_max,  # type: ignore
+        y2=y_padded_max,  # type: ignore  # Issue with matplotlib stubs
         color=[0.8, 0.8, 0.8],
         edgecolor=[1, 1, 1],
         label="95% CI",

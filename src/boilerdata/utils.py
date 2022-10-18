@@ -66,9 +66,9 @@ def get_tcs(trial: Trial) -> tuple[list[str], list[str]]:
 
 def zip_params(grp: pd.DataFrame, proj: Project):
     model_params = proj.params.model_params
-    params = [param for param in model_params if "err" not in param]  # type: ignore
-    param_errors = [param for param in model_params if "err" in param]  # type: ignore
-    return zip(grp[params], grp[param_errors], model_params)  # type: ignore
+    params = [param for param in model_params if "err" not in param]  # type: ignore  # Due to use_enum_values
+    param_errors = [param for param in model_params if "err" in param]  # type: ignore  # Due to use_enum_values
+    return zip(grp[params], grp[param_errors], model_params)  # type: ignore  # Due to use_enum_values
 
 
 def model_with_error(model, x, u_params):
@@ -76,6 +76,6 @@ def model_with_error(model, x, u_params):
     u_x = np.array([ufloat(v, 0, "x") for v in x])
     u_y = model(u_x, *u_params)
     y = np.array([y.nominal_value for y in u_y])
-    y_min = y - [y.std_dev for y in u_y]  # type: ignore
+    y_min = y - [y.std_dev for y in u_y]  # type: ignore  # Due to unknown array type
     y_max = y + [y.std_dev for y in u_y]
     return y, y_min, y_max
