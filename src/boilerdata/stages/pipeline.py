@@ -17,6 +17,7 @@ from scipy.stats import t
 from uncertainties import ufloat
 
 from boilerdata.axes_enum import AxesEnum as A  # noqa: N814
+from boilerdata.modelfun import model, slope
 from boilerdata.models.project import Project
 from boilerdata.models.trials import Trial
 from boilerdata.utils import get_tcs, model_with_error, per_run, per_trial, zip_params
@@ -31,11 +32,6 @@ from boilerdata.validation import (
 
 
 def main(proj: Project):
-    def model(x, a, b, c):
-        return a * x**2 + b * x + c
-
-    def slope(x, a, b, c):
-        return 2 * a * x + b
 
     confidence_interval_95 = t.interval(0.95, proj.params.records_to_average)[1]
 
