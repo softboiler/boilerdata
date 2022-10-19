@@ -62,8 +62,7 @@ runs_cols = {
 # columns downstream.
 model_cols = {
     col: Column(c[col].dtype, nullable=True)  # type: ignore  # Due to use_enum_values
-    for cols in [proj.params.model_params, proj.params.model_outs]
-    for col in cols
+    for col in proj.params.model_params
 }
 
 computed_cols = {
@@ -71,9 +70,6 @@ computed_cols = {
     A.T_w_diff: Column(c[A.T_w_diff].dtype, checks=water_temps_agree),
     **model_cols,
     A.k: Column(c[A.k].dtype),
-    A.q: Column(c[A.q].dtype, nullable=True),
-    A.q_err: Column(c[A.q_err].dtype, nullable=True),
-    A.Q: Column(c[A.Q].dtype, nullable=True),
     A.DT: Column(c[A.DT].dtype, nullable=True),
     A.DT_err: Column(c[A.DT_err].dtype, nullable=True),
 }

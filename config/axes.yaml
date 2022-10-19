@@ -119,38 +119,11 @@ all:
   - name: "T_w_diff"
     units: "C"
 
-  - name: "a"
-    units: "-"
-
-  - name: "a_err"
-    units: "-"
-
-  - name: "b"
-    units: "-"
-
-  - name: "b_err"
-    units: "-"
-
-  - name: "c"
-    units: "-"
-
-  - name: "c_err"
-    units: "-"
-
-  - name: "dT_dx"
-    units: "K"
-
-  - name: "dT_dx_err"
-    units: "K"
-
   - name: "T_s"
     units: "C"
 
   - name: "T_s_err"
     units: "C"
-
-  - name: "k"
-    units: "W/m-K"
 
   - name: "q"
     pretty_name: "q''"
@@ -162,8 +135,8 @@ all:
     units: "W/cm^2"
     originlab_coldes: "E"
 
-  - name: "Q"
-    units: "W"
+  - name: "k"
+    units: "W/m-K"
 
   - name: "DT"
     pretty_name: "∆T"

@@ -74,7 +74,10 @@ def zip_params(grp: pd.DataFrame, proj: Project):
 def model_with_error(model, x, u_params):
     """Evaluate the model for x and return y with errors."""
     u_x = np.array([ufloat(v, 0, "x") for v in x])
-    u_y = model(u_x, *u_params)
+    # Can't vectorize the below operation due to the error:
+    #     TypeError: loop of ufunc does not support argument 0 of type AffineScalarFunc
+    #     which has no callable exp method
+    u_y = np.array([model(x, *u_params) for x in u_x])
     y = np.array([y.nominal_value for y in u_y])
     y_min = y - [y.std_dev for y in u_y]  # type: ignore  # Due to unknown array type
     y_max = y + [y.std_dev for y in u_y]

@@ -14,10 +14,11 @@ from pyXSteam.XSteam import XSteam
 from scipy.constants import convert_temperature
 from scipy.optimize import curve_fit
 from scipy.stats import t
+import uncertainties
 from uncertainties import ufloat
 
 from boilerdata.axes_enum import AxesEnum as A  # noqa: N814
-from boilerdata.modelfun import model, slope
+from boilerdata.modelfun import get_model_fun
 from boilerdata.models.project import Project
 from boilerdata.models.trials import Trial
 from boilerdata.utils import get_tcs, model_with_error, per_run, per_trial, zip_params
@@ -33,6 +34,7 @@ from boilerdata.validation import (
 
 def main(proj: Project):
 
+    model = get_model_fun()
     confidence_interval_95 = t.interval(0.95, proj.params.records_to_average)[1]
 
     (
@@ -44,7 +46,7 @@ def main(proj: Project):
         )
         .pipe(handle_invalid_data, validate_initial_df)
         # Need thermocouple spacing run-to-run
-        .pipe(per_run, fit, proj, model, slope, confidence_interval_95)
+        .pipe(per_run, fit, proj, model, confidence_interval_95)
         .pipe(per_trial, agg_over_runs, proj, confidence_interval_95)
         .pipe(plot_fits, proj, model)
         .pipe(per_trial, get_heat_transfer, proj)  # Water temp varies across trials
@@ -64,7 +66,6 @@ def fit(
     grp: pd.DataFrame,
     proj: Project,
     model,
-    slope,
     confidence_interval_95: float,
 ) -> pd.DataFrame:
     """Fit the data assuming one-dimensional, steady-state conduction."""
@@ -96,16 +97,14 @@ def fit(
         model_params_fitted = np.full(len(model_params), np.nan)
         pcov = np.full(len(model_params), np.nan)
 
-    # Compute confidence interval  #! Depends on order of `param_errors` and `outs`
-    (param_errors, outs) = fit_get_ci(
-        pcov, model_params, model_params_fitted, model, slope, confidence_interval_95
-    )
+    # Compute confidence interval  #! Depends on the order of `param_errors`
+    param_standard_errors = np.sqrt(np.diagonal(pcov))
+    param_errors = param_standard_errors * confidence_interval_95
 
     # Aggregate results
     grp = grp.assign(
         **pd.Series(
-            np.concatenate([model_params_fitted, param_errors, outs]),
-            index=model_params + proj.params.model_outs,
+            np.concatenate([model_params_fitted, param_errors]), index=model_params
         )  # type: ignore  # Issue w/ pandas-stubs
     )
     return grp
@@ -118,33 +117,6 @@ def fit_setup(grp: pd.DataFrame, proj: Project, trial: Trial):
     y = grp[tcs].stack()
     y_errors = grp[tc_errors].stack()
     return x, y, y_errors
-
-
-def fit_get_ci(
-    pcov, model_params, model_params_fitted, model, slope, confidence_interval_95
-):
-    param_standard_errors = np.sqrt(np.diagonal(pcov))
-    param_errors = param_standard_errors * confidence_interval_95
-    u_params = np.array(
-        [
-            ufloat(param, err, tag)
-            for param, err, tag in zip(model_params_fitted, param_errors, model_params)
-        ]
-    )
-    u_x_0 = ufloat(0, 0, "x")
-    u_y_0 = model(u_x_0, *u_params)
-    u_dy_dx_0 = slope(u_x_0, *u_params)
-    return (
-        param_errors,
-        np.array(
-            [
-                u_y_0.nominal_value,
-                u_dy_dx_0.nominal_value,
-                u_y_0.std_dev,
-                u_dy_dx_0.std_dev,
-            ]
-        ),
-    )
 
 
 def agg_over_runs(
@@ -166,9 +138,7 @@ def agg_over_runs(
                 # Override the agg for cols with duplicates in a run to take the first
                 | {
                     col: pd.NamedAgg(column=col, aggfunc="first")  # type: ignore  # Due to use_enum_values
-                    for col in (
-                        tc_errors + proj.params.model_params + proj.params.model_outs
-                    )
+                    for col in (tc_errors + proj.params.model_params)
                 }
             )
         )
@@ -200,10 +170,12 @@ def plot_fits(df: pd.DataFrame, proj: Project, model) -> pd.DataFrame:
 
 def plot_new_fits(grp: pd.DataFrame, proj: Project, model):
     """Plot model fits for trials marked as new."""
+
     trial = proj.get_trial(pd.Timestamp(grp.name[0].date()))
     if not trial.new:
         return grp
 
+    model = uncertainties.wrap(model)
     ser = grp.squeeze()
     tcs, tc_errors = get_tcs(trial)
     x_unique = list(trial.thermocouple_pos.values())
@@ -287,10 +259,6 @@ def plot_new_fits(grp: pd.DataFrame, proj: Project, model):
 def get_heat_transfer(df: pd.DataFrame, proj: Project) -> pd.DataFrame:
     """Calculate heat transfer and superheat based on one-dimensional approximation."""
     trial = proj.get_trial(df.name)  # type: ignore  # Group name is the trial
-    cm_p_m = 100  # (cm/m) Conversion factor
-    cm2_p_m2 = cm_p_m**2  # ((cm/m)^2) Conversion factor
-    diameter = proj.geometry.diameter * cm_p_m  # (cm)
-    cross_sectional_area = np.pi / 4 * diameter**2  # (cm^2)
     get_saturation_temp = XSteam(XSteam.UNIT_SYSTEM_FLS).tsat_p  # A lookup function
 
     T_w_avg = df[[A.T_w1, A.T_w2, A.T_w3]].mean(axis="columns")  # noqa: N806
@@ -307,10 +275,6 @@ def get_heat_transfer(df: pd.DataFrame, proj: Project) -> pd.DataFrame:
             ),
             A.T_w: lambda df: (T_w_avg + T_w_p) / 2,
             A.T_w_diff: lambda df: abs(T_w_avg - T_w_p),
-            # Not negative due to reversed x-coordinate
-            A.q: lambda df: df[A.k] * df[A.dT_dx] / cm2_p_m2,
-            A.q_err: lambda df: (df[A.k] * df[A.dT_dx_err]) / cm2_p_m2,
-            A.Q: lambda df: df[A.q] * cross_sectional_area,
             # Explicitly index the trial to catch improper application of the mean
             A.DT: lambda df: (df[A.T_s] - df.loc[trial.date.isoformat(), A.T_w].mean()),
             A.DT_err: lambda df: df[A.T_s_err],

@@ -13,21 +13,10 @@ class Params(MyBaseModel):
     )
     model_params: list[A] = Field(
         default=[
-            A.a,
-            A.b,
-            A.c,
-            A.a_err,
-            A.b_err,
-            A.c_err,
-        ],
-        description="The parameters of the model to be fitted.",
-    )
-    model_outs: list[A] = Field(
-        default=[
             A.T_s,
-            A.dT_dx,
+            A.q,
             A.T_s_err,
-            A.dT_dx_err,
+            A.q_err,
         ],
         description="The parameters of the model to be fitted.",
     )

@@ -4,17 +4,17 @@ stages:
     cmd: python -m boilerdata.stages.pipeline
     deps:
     - path: data/runs
-      md5: af636a748630948b6d1d324ed4ff4c91.dir
-      size: 1024195
+      md5: a2571f27892087012f19ae1921f42cab.dir
+      size: 991996
       nfiles: 1
     - path: data/schema
-      md5: dd56bee98c5798426fb6f90e062904c1.dir
-      size: 25029
+      md5: 170dafb0ee0fb878b4ac73dd73b29628.dir
+      size: 24336
       nfiles: 4
     - path: src/boilerdata
-      md5: 15fcbbf71ae237b9a3caf096585cb3b1.dir
-      size: 178778
-      nfiles: 50
+      md5: ecf477f27fd5c860b6163f6894d36a8b.dir
+      size: 163835
+      nfiles: 51
     params:
       config/axes.yaml:
         all:
@@ -107,28 +107,10 @@ stages:
           units: C
         - name: T_w_diff
           units: C
-        - name: a
-          units: '-'
-        - name: a_err
-          units: '-'
-        - name: b
-          units: '-'
-        - name: b_err
-          units: '-'
-        - name: c
-          units: '-'
-        - name: c_err
-          units: '-'
-        - name: dT_dx
-          units: K
-        - name: dT_dx_err
-          units: K
         - name: T_s
           units: C
         - name: T_s_err
           units: C
-        - name: k
-          units: W/m-K
         - name: q
           pretty_name: q''
           units: W/cm^2
@@ -137,8 +119,8 @@ stages:
           pretty_name: q''_err
           units: W/cm^2
           originlab_coldes: E
-        - name: Q
-          units: W
+        - name: k
+          units: W/m-K
         - name: DT
           pretty_name: ∆T
           units: K
@@ -386,14 +368,14 @@ stages:
           new: true
     outs:
     - path: data/plots/first_new_fit.png
-      md5: 012c52de89e68bd5fedcddcde9964885
-      size: 110231
+      md5: b960abe869640376f5e830e56226814d
+      size: 138239
     - path: data/plots/last_new_fit.png
-      md5: 234621535b805b980915840b89175f48
-      size: 133708
+      md5: d469d809e97864eecc8a760ef66cd2f2
+      size: 136894
     - path: data/results
-      md5: db021786665fe700c91959cb4b78185b.dir
-      size: 1847880
+      md5: 8475a1349daddc2901cbd6c586437795.dir
+      size: 1914097
       nfiles: 13
   plot:
     cmd: python -m boilerdata.plot
@@ -421,12 +403,12 @@ stages:
     cmd: python -m boilerdata.stages.schema
     deps:
     - path: data/schema_old
-      md5: dd56bee98c5798426fb6f90e062904c1.dir
-      size: 25029
+      md5: 170dafb0ee0fb878b4ac73dd73b29628.dir
+      size: 24336
       nfiles: 4
     - path: src/boilerdata/models
-      md5: 34acf464b930d4a2111f82c9497c978e.dir
-      size: 54884
+      md5: 93e4c6cef9ab492cd0e73a73ae8577bc.dir
+      size: 54495
       nfiles: 18
     - path: src/boilerdata/stages/schema.py
       md5: 004694d9ff0ecacfd910f2cc85401b35
@@ -523,28 +505,10 @@ stages:
           units: C
         - name: T_w_diff
           units: C
-        - name: a
-          units: '-'
-        - name: a_err
-          units: '-'
-        - name: b
-          units: '-'
-        - name: b_err
-          units: '-'
-        - name: c
-          units: '-'
-        - name: c_err
-          units: '-'
-        - name: dT_dx
-          units: K
-        - name: dT_dx_err
-          units: K
         - name: T_s
           units: C
         - name: T_s_err
           units: C
-        - name: k
-          units: W/m-K
         - name: q
           pretty_name: q''
           units: W/cm^2
@@ -553,8 +517,8 @@ stages:
           pretty_name: q''_err
           units: W/cm^2
           originlab_coldes: E
-        - name: Q
-          units: W
+        - name: k
+          units: W/m-K
         - name: DT
           pretty_name: ∆T
           units: K
@@ -802,28 +766,28 @@ stages:
           new: true
     outs:
     - path: data/schema
-      md5: dd56bee98c5798426fb6f90e062904c1.dir
-      size: 25029
+      md5: 170dafb0ee0fb878b4ac73dd73b29628.dir
+      size: 24336
       nfiles: 4
   originlab:
     cmd: python -m boilerdata.stages.originlab
     deps:
     - path: data/plotter
-      md5: 06ed7a9325603b7390ea3d8e6f566963.dir
-      size: 357889
+      md5: f55b8c8025f427cdcef176099c4f781f.dir
+      size: 303544
       nfiles: 1
     - path: data/results
-      md5: db021786665fe700c91959cb4b78185b.dir
-      size: 1847880
+      md5: 8475a1349daddc2901cbd6c586437795.dir
+      size: 1914097
       nfiles: 13
     - path: src/boilerdata
-      md5: 78eedf0b3ae97e5fd4711c1c2cd466f9.dir
-      size: 178778
-      nfiles: 50
+      md5: 25793427f0e609276bae0cdfd5a060a5.dir
+      size: 163835
+      nfiles: 51
     outs:
     - path: data/plots/lit_.png
-      md5: c592f89292763700acf195a99a2fb6a9
-      size: 50269
+      md5: d750a80b2a7242ed9210ec9339b9066a
+      size: 40351
   runs:
     cmd: python -m boilerdata.stages.runs
     deps:
@@ -832,8 +796,8 @@ stages:
       size: 103226338
       nfiles: 401
     - path: data/schema
-      md5: dd56bee98c5798426fb6f90e062904c1.dir
-      size: 25029
+      md5: 170dafb0ee0fb878b4ac73dd73b29628.dir
+      size: 24336
       nfiles: 4
     - path: src/boilerdata/stages/runs.py
       md5: 577bb9cd8e716be54c80533ca905b1db
@@ -930,28 +894,10 @@ stages:
           units: C
         - name: T_w_diff
           units: C
-        - name: a
-          units: '-'
-        - name: a_err
-          units: '-'
-        - name: b
-          units: '-'
-        - name: b_err
-          units: '-'
-        - name: c
-          units: '-'
-        - name: c_err
-          units: '-'
-        - name: dT_dx
-          units: K
-        - name: dT_dx_err
-          units: K
         - name: T_s
           units: C
         - name: T_s_err
           units: C
-        - name: k
-          units: W/m-K
         - name: q
           pretty_name: q''
           units: W/cm^2
@@ -960,8 +906,8 @@ stages:
           pretty_name: q''_err
           units: W/cm^2
           originlab_coldes: E
-        - name: Q
-          units: W
+        - name: k
+          units: W/m-K
         - name: DT
           pretty_name: ∆T
           units: K
@@ -1209,6 +1155,6 @@ stages:
           new: true
     outs:
     - path: data/runs
-      md5: af636a748630948b6d1d324ed4ff4c91.dir
-      size: 1024195
+      md5: a2571f27892087012f19ae1921f42cab.dir
+      size: 991996
       nfiles: 1
