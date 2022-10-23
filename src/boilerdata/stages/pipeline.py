@@ -14,7 +14,6 @@ from pyXSteam.XSteam import XSteam
 from scipy.constants import convert_temperature
 from scipy.optimize import curve_fit
 from scipy.stats import t
-import uncertainties
 from uncertainties import ufloat
 
 from boilerdata.axes_enum import AxesEnum as A  # noqa: N814
@@ -33,8 +32,12 @@ from boilerdata.validation import (
 
 
 def main(proj: Project):
+    def model(x, T_s, q_s):  # noqa: N803  # Mathematical symbol
+        cm_p_m = 100  # (cm/m) Conversion factor
+        cm2_p_m2 = cm_p_m**2  # ((cm/m)^2) Conversion factor
+        _model = get_model_fun()
+        return _model(x, T_s, q_s * cm2_p_m2)
 
-    model = get_model_fun()
     confidence_interval_95 = t.interval(0.95, proj.params.records_to_average)[1]
 
     (
@@ -130,7 +133,7 @@ def agg_over_runs(
     trial = proj.get_trial(pd.Timestamp(grp.name.date()))
     _, tc_errors = get_tcs(trial)
     grp = (
-        grp.groupby(level=[A.trial, A.run])  # type: ignore  # Issue w/ pandas-stubs
+        grp.groupby(level=[A.trial, A.run], dropna=False)  # type: ignore  # Issue w/ pandas-stubs
         .agg(
             **(
                 # Take the default agg for all cols
@@ -175,7 +178,6 @@ def plot_new_fits(grp: pd.DataFrame, proj: Project, model):
     if not trial.new:
         return grp
 
-    model = uncertainties.wrap(model)
     ser = grp.squeeze()
     tcs, tc_errors = get_tcs(trial)
     x_unique = list(trial.thermocouple_pos.values())
@@ -223,6 +225,7 @@ def plot_new_fits(grp: pd.DataFrame, proj: Project, model):
     )
 
     # Confidence interval
+    # model = uncertainties.wrap(model)
     (xlim_min, xlim_max) = ax.get_xlim()
     pad = 0.025 * (xlim_max - xlim_min)
     x_padded = np.linspace(xlim_min - pad, xlim_max + pad)

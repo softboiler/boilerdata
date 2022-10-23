@@ -29,6 +29,13 @@
       "problemMatcher": []
     },
     {
+      "label": "dvc: repro modelfun",
+      "type": "process",
+      "command": "pwsh",
+      "args": ["-Command", "dvc repro modelfun"],
+      "problemMatcher": []
+    },
+    {
       "label": "dvc: repro runs",
       "type": "process",
       "command": "pwsh",

@@ -1,2 +1,5 @@
 # For property lookup
 git+https://github.com/blakeNaccarato/propshop.git@main
+
+# Until dill 0.3.6.0 is released
+git+https://github.com/uqfoundation/dill.git@f8ea2a4b72ce7cc2b008f89f25444457e21327ff

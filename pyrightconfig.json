@@ -1,8 +1,15 @@
 {
   "ignore": [".tools"],
   "include": ["src"],
-  "extraPaths": ["tests", "project"],
+  "extraPaths": ["tests"],
+  "useLibraryCodeForTypes": true,
   "typeCheckingMode": "strict",
+  "reportCallInDefaultInitializer": "error",
+  "reportImplicitStringConcatenation": "error",
+  "reportMissingSuperCall": "error",
+  "reportPropertyTypeMismatch": "error",
+  "reportUninitializedInstanceVariable": "error",
+  "reportUnnecessaryTypeIgnoreComment": "error",
   "reportMissingParameterType": "none",
   "reportMissingTypeStubs": "none",
   "reportUnknownArgumentType": "none",
@@ -11,6 +18,5 @@
   "reportUnknownParameterType": "none",
   "reportUnknownVariableType": "none",
   "reportUntypedBaseClass": "none",
-  "useLibraryCodeForTypes": true,
-  "reportUnnecessaryTypeIgnoreComment": true
+  "reportUnusedCallResult": "none"
 }

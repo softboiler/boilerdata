@@ -39,6 +39,11 @@ class Dirs(MyBaseModel):
         description="The old schema. Done to eliminate a data pipeline cycle.",
     )
 
+    model: DirectoryPath = Field(
+        default=data.default / "model",  # type: ignore  # Validator makes it a Path
+        description="The directory containing a pickled model function.",
+    )
+
     trials: DirectoryPath = Field(
         default=data.default / "curves",  # type: ignore  # Validator makes it a Path
         description="The trials directory.",
@@ -65,6 +70,7 @@ class Dirs(MyBaseModel):
         "config",
         "data",
         "project_schema",
+        "model",
         "trials",
         "runs",
         "results",
@@ -87,25 +93,30 @@ class Dirs(MyBaseModel):
 
     # ! FILES
 
+    model_file: Path = Field(
+        default=model.default / "model.dillpickle",  # type: ignore  # Validator makes it a Path
+        description="The path to the pickled model function. Default: model.dillpickle",
+    )
     runs_file: Path = Field(
         default=runs.default / "runs.csv",  # type: ignore  # Validator makes it a Path
-        description="The path to the runs. Must be relative to the results directory. Default: runs.csv",
+        description="The path to the runs. Default: runs.csv",
     )
     simple_results_file: Path = Field(
         default=results.default / "results.csv",  # type: ignore  # Validator makes it a Path
-        description="The path to the simple results file. Must be relative to the results directory. Default: results.csv",
+        description="The path to the simple results file. Default: results.csv",
     )
     originlab_results_file: Path = Field(
         default=results.default / "originlab_results.csv",  # type: ignore  # Validator makes it a Path
-        description="The path to the results file to be parsed by OriginLab. Must be relative to the results directory. Default: originlab_results.csv",
+        description="The path to the results file to be parsed by OriginLab. Default: originlab_results.csv",
     )
     originlab_coldes_file: Path = Field(
         default=project_schema.default / "originlab_coldes.txt",  # type: ignore  # Validator makes it a Path
-        description="The path to which the OriginLab column designation string will be written. Must be relative to the results directory. Default: coldes.txt",
+        description="The path to which the OriginLab column designation string will be written. Default: coldes.txt",
     )
 
     # "always" so it'll run even if not in YAML
     @validator(
+        "model_file",
         "runs_file",
         "simple_results_file",
         "originlab_results_file",

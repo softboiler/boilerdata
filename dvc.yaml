@@ -16,6 +16,16 @@ stages:
       # # DVC deletes outs before generating. Uncommenting the below breaks it.
       # - "src/boilerdata/axes_enum.py"
 
+  modelfun:
+    cmd: "jupyter execute modelfun.ipynb"
+    params:
+      - "config/project.yaml":
+    deps:
+      - "modelfun.ipynb"
+      - "data/schema"
+    outs:
+      - "data/model"
+
   runs:
     cmd: "python -m boilerdata.stages.runs"
     params:
@@ -38,6 +48,7 @@ stages:
     deps:
       - "src/boilerdata" # Do re-run pipeline if anything in boilerdata changes
       - "data/schema"
+      - "data/model" # Indirect dep through src/boilerdata/stages/modelfun.py
       - "data/runs"
     outs: ["data/results"]
     plots:
