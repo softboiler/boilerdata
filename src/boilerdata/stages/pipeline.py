@@ -32,10 +32,12 @@ from boilerdata.validation import (
 
 
 def main(proj: Project):
+
+    cm_p_m = 100  # (cm/m) Conversion factor
+    cm2_p_m2 = cm_p_m**2  # ((cm/m)^2) Conversion factor
+    _model = get_model_fun()
+
     def model(x, T_s, q_s):  # noqa: N803  # Mathematical symbol
-        cm_p_m = 100  # (cm/m) Conversion factor
-        cm2_p_m2 = cm_p_m**2  # ((cm/m)^2) Conversion factor
-        _model = get_model_fun()
         return _model(x, T_s, q_s * cm2_p_m2)
 
     confidence_interval_95 = t.interval(0.95, proj.params.records_to_average)[1]
@@ -274,7 +276,7 @@ def get_heat_transfer(df: pd.DataFrame, proj: Project) -> pd.DataFrame:
             A.k: lambda df: get_prop(
                 Mat.COPPER,
                 Prop.THERMAL_CONDUCTIVITY,
-                convert_temperature((df[A.T_s] + df[A.T_1]) / 2, "C", "K"),
+                convert_temperature((df[A.T_1] + df[A.T_5]) / 2, "C", "K"),
             ),
             A.T_w: lambda df: (T_w_avg + T_w_p) / 2,
             A.T_w_diff: lambda df: abs(T_w_avg - T_w_p),
