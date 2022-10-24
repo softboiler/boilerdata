@@ -85,8 +85,7 @@ def load_config(path: StrPath, model):
     """Load a YAML file into a Pydantic model.
 
     Given a path to a YAML file, automatically unpack its fields into the provided
-    Pydantic model. Also return the schema directive at the top of the YAML file, if it
-    happens to have one.
+    Pydantic model.
 
     Parameters
     ----------

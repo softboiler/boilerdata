@@ -17,11 +17,11 @@ stages:
       # - "src/boilerdata/axes_enum.py"
 
   modelfun:
-    cmd: "jupyter execute modelfun.ipynb"
+    cmd: "jupyter execute src/boilerdata/modelfun.ipynb"
     params:
       - "config/project.yaml":
     deps:
-      - "modelfun.ipynb"
+      - "src/boilerdata/modelfun.ipynb"
       - "data/schema"
     outs:
       - "data/model"
@@ -48,7 +48,7 @@ stages:
     deps:
       - "src/boilerdata" # Do re-run pipeline if anything in boilerdata changes
       - "data/schema"
-      - "data/model" # Indirect dep through src/boilerdata/stages/modelfun.py
+      - "data/model"
       - "data/runs"
     outs: ["data/results"]
     plots:

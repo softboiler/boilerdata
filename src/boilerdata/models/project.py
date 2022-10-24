@@ -1,5 +1,5 @@
 import pandas as pd
-from pydantic import Field
+from pydantic import Field, validator
 
 from boilerdata.models.axes import Axes
 from boilerdata.models.common import MyBaseModel, StrPath, load_config
@@ -12,7 +12,16 @@ from boilerdata.models.trials import Trial, Trials
 class Project(MyBaseModel):
     """Configuration for the package."""
 
-    dirs: Dirs = Field(default=Dirs())
+    # Use validator instead of `Field(default=Dirs())` to delay directory-creating
+    # side-effects of calling default `Dirs()`.
+    dirs: Dirs = Field(default=None)
+
+    # "always" so it'll run even if not in YAML
+    # "pre" because this must exist pre-validation
+    @validator("dirs", always=True, pre=True)
+    def validate_dirs(cls, v):
+        return v or Dirs()
+
     geometry: Geometry
     params: Params = Field(default=Params())
 

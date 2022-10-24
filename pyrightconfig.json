@@ -5,7 +5,7 @@
   "useLibraryCodeForTypes": true,
   "typeCheckingMode": "strict",
   "reportCallInDefaultInitializer": "error",
-  "reportImplicitStringConcatenation": "error",
+  "reportImplicitStringConcatenation": "none",
   "reportMissingSuperCall": "error",
   "reportPropertyTypeMismatch": "error",
   "reportUninitializedInstanceVariable": "error",
