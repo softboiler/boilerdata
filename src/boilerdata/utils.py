@@ -79,9 +79,9 @@ def model_with_error(model, x, u_params):
     #     TypeError: loop of ufunc does not support argument 0 of type AffineScalarFunc
     #     which has no callable exp method
     u_y = model(x, *u_params)
-    y = np.array([y.nominal_value for y in u_y])
-    y_min = y - [y.std_dev for y in u_y]  # type: ignore  # Due to unknown array type
-    y_max = y + [y.std_dev for y in u_y]
+    y = np.array([v.nominal_value for v in u_y])
+    y_min = y - [v.std_dev for v in u_y]  # type: ignore  # Due to unknown array type
+    y_max = y + [v.std_dev for v in u_y]
     return y, y_min, y_max
 
 

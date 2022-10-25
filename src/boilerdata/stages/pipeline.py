@@ -106,7 +106,7 @@ def fit(
     param_standard_errors = np.sqrt(np.diagonal(pcov))
     param_errors = param_standard_errors * confidence_interval_95
 
-    # Aggregate results
+    # Assign the same fit to all time slots in the run. Will be agged later.
     grp = grp.assign(
         **pd.Series(
             np.concatenate([model_params_fitted, param_errors]), index=model_params
@@ -129,8 +129,6 @@ def agg_over_runs(
     proj: Project,
     confidence_interval_95: float,
 ) -> pd.DataFrame:
-
-    np.sqrt(proj.params.records_to_average)
 
     trial = proj.get_trial(pd.Timestamp(grp.name.date()))
     _, tc_errors = get_tcs(trial)
