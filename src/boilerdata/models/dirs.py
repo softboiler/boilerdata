@@ -3,18 +3,20 @@ from typing import Optional
 
 from pydantic import DirectoryPath, Field, validator
 
-from boilerdata.models.common import MyBaseModel, StrPath
+from boilerdata.models.common import MyBaseModel, StrPath, default_axes_enum_file
 
 
 class Dirs(MyBaseModel):
     """Directories relevant to the project."""
 
-    # ! DIRECTORIES
+    # ! FIXED DIRECTORY
 
     base: DirectoryPath = Field(
         default=Path("."),
         description="The base directory.",
     )
+
+    # ! DIRECTORIES
 
     # Careful, "Config" is a special member of BaseClass
     config: DirectoryPath = Field(
@@ -31,12 +33,6 @@ class Dirs(MyBaseModel):
     project_schema: DirectoryPath = Field(
         default=data.default / "schema",  # type: ignore  # Validator makes it a Path
         description="The schema directory.",
-    )
-
-    # Can't be "schema", which is a special member of BaseClass
-    project_schema_old: DirectoryPath = Field(
-        default=data.default / "schema_old",  # type: ignore  # Validator makes it a Path
-        description="The old schema. Done to eliminate a data pipeline cycle.",
     )
 
     model: DirectoryPath = Field(
@@ -91,8 +87,13 @@ class Dirs(MyBaseModel):
         description="The directory in which the data are for a given trial. Must be relative to a trial folder, and all trials must share this pattern.",
     )
 
-    # ! FILES
+    # ! FIXED FILE
+    axes_enum_file: Path = Field(
+        default=default_axes_enum_file,
+        description="The path to the axes enum file.",
+    )
 
+    # ! FILES
     model_file: Path = Field(
         default=model.default / "model.dillpickle",  # type: ignore  # Validator makes it a Path
         description="The path to the pickled model function. Default: model.dillpickle",

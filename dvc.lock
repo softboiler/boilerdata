@@ -12,12 +12,12 @@ stages:
       size: 991996
       nfiles: 1
     - path: data/schema
-      md5: e1251a34f89b3fa3847cddbdb9f973f1.dir
-      size: 23977
+      md5: 45c705890096005f31cbc089e6b5fa98.dir
+      size: 23989
       nfiles: 4
     - path: src/boilerdata
-      md5: de7afcdb87ae61c91d333d7eae84fdde.dir
-      size: 159270
+      md5: 8c90f0bbe013b5b311c6feaffe5990ce.dir
+      size: 159232
       nfiles: 50
     params:
       config/axes.yaml:
@@ -406,17 +406,13 @@ stages:
   schema:
     cmd: python -m boilerdata.stages.schema
     deps:
-    - path: data/schema_old
-      md5: e1251a34f89b3fa3847cddbdb9f973f1.dir
-      size: 23977
-      nfiles: 4
     - path: src/boilerdata/models
-      md5: 393a23200e791e04738ced3365ffabf5.dir
-      size: 55224
+      md5: 658de65962a21fa40913b63d2f5aec8e.dir
+      size: 55498
       nfiles: 18
     - path: src/boilerdata/stages/schema.py
-      md5: 004694d9ff0ecacfd910f2cc85401b35
-      size: 1742
+      md5: cd58ef7f695505656c976916389d686c
+      size: 1568
     params:
       config/axes.yaml:
         all:
@@ -573,205 +569,10 @@ stages:
         params:
           records_to_average: 9
           do_plot: true
-      config/trials.yaml:
-        trials:
-        - date: '2020-03-12'
-          group: control
-          rod: W
-          coupon: A1
-          joint: paste
-          comment: ''
-        - date: '2021-01-14'
-          group: control
-          rod: W
-          coupon: A2
-          joint: paste
-          comment: ''
-        - date: '2021-02-23'
-          group: control
-          rod: W
-          coupon: A2
-          joint: paste
-          comment: ''
-        - date: '2021-03-09'
-          group: control
-          rod: W
-          coupon: A2
-          joint: paste
-          comment: ''
-        - date: '2021-03-25'
-          group: control
-          rod: W
-          coupon: A3
-          joint: paste
-          comment: ''
-        - date: '2021-03-29'
-          group: control
-          rod: W
-          coupon: A3
-          joint: paste
-          comment: ''
-        - date: '2021-04-15'
-          group: control
-          rod: W
-          coupon: A3
-          joint: paste
-          comment: ''
-        - date: '2021-04-28'
-          group: control
-          rod: W
-          coupon: A4
-          joint: paste
-          comment: A4-1
-        - date: '2021-04-29'
-          group: control
-          rod: W
-          coupon: A4
-          joint: paste
-          comment: A4-2
-        - date: '2021-04-30'
-          group: control
-          rod: W
-          coupon: A4
-          joint: paste
-          comment: A4-3
-        - date: '2021-06-16'
-          group: control
-          rod: W
-          coupon: A4
-          joint: paste
-          comment: A4-4. See "21.09.03 Progress.pptx".
-        - date: '2021-06-17'
-          group: control
-          rod: W
-          coupon: A4
-          joint: paste
-          comment: A4-5. See "21.09.03 Progress.pptx".
-        - date: '2021-06-21'
-          group: control
-          rod: W
-          coupon: A4
-          joint: paste
-          comment: A4-6
-        - date: '2021-06-22'
-          group: control
-          rod: W
-          coupon: A4
-          joint: paste
-          good: false
-          comment: Second day water intrusion
-        - date: '2021-08-30'
-          group: control
-          rod: W
-          coupon: A4
-          joint: paste
-          good: false
-          comment: Poorly-wrapped sample
-        - date: '2021-08-31'
-          group: control
-          rod: W
-          coupon: A4
-          joint: paste
-          comment: A4-7
-        - date: '2021-09-29'
-          group: control
-          rod: W
-          coupon: A4
-          joint: epoxy
-          comment: Silver epoxy. Separated during this trial.  Need to cure at higher
-            temp. See <https://trello.com/c/mlVNKOQm/28-bond-sample-a4-to-post-0>.
-            A4-12.
-        - date: '2021-10-12'
-          group: control
-          rod: W
-          coupon: A4
-          joint: epoxy
-          comment: First run with silver epoxy cured at higher temperature. Vertical
-            anomaly. See "21.10.15 Progress.pptx". See <https://trello.com/c/L6AmQDJR/26-bond-sample-a4-to-warped-post>.
-            A4-13. High T_s_err and non-monotonic.
-          good: false
-        - date: '2021-10-13'
-          group: control
-          rod: W
-          coupon: A4
-          joint: epoxy
-          comment: Second run with silver epoxy cured at higher temperature. See "21.10.15
-            Progress.pptx". A4-14. Broke clean off after trial, see <https://trello.com/c/8w9swkNl/19-run-experiment-a4>.
-            High T_s_err and non-monotonic.
-          good: false
-        - date: '2021-12-09'
-          group: control
-          rod: Y
-          coupon: A7
-          joint: epoxy
-          comment: See "22.01.07 Progress.pptx". Epoxy stays intact?
-        - date: '2022-01-06'
-          group: control
-          rod: Y
-          coupon: A7
-          joint: epoxy
-          comment: Duralco 132-1. See "22.01.07 Progress.pptx". Still, there's a minor
-            vertical jump.
-        - date: '2022-01-19'
-          group: porous
-          rod: X
-          coupon: A6
-          sample: B3
-          joint: epoxy
-          comment: Copper X-A6-B3-1. Duralco 132-1. Epoxy failed during this trial?
-        - date: '2022-01-20'
-          group: porous
-          rod: X
-          coupon: A6
-          sample: B3
-          joint: epoxy
-          good: false
-          comment: Copper X-A6-B3-2. Duralco 132-1. See "22.01 Report.docx". Epoxy
-            intact based on observation in <https://trello.com/c/qH01qs50/43-run-experiment-x-a6-b3>.
-            Detached B3 after this trial.
-        - date: '2022-03-29'
-          group: control
-          rod: X
-          coupon: A6
-          joint: solder
-          comment: Copper X-A6-fail2. fail1 has no data, see "Other". First trial
-            with data since detaching B3 and making X-A6 a solder joint. For some
-            reason, can't get all results from "2022-03-29T14-01-41".
-        - date: '2022-04-08'
-          group: control
-          rod: X
-          coupon: A9
-          joint: solder
-          comment: Copper X-A9-newcam
-        - date: '2022-08-16'
-          group: control
-          rod: R
-          coupon: A0
-          joint: none
-          comment: First trial with the jointless rod. There was an issue with T1
-            and T2 not being installed deeply enough for runs prior to 12-16-38.
-          good: false
-        - date: '2022-09-08'
-          group: control
-          rod: R
-          coupon: A0
-          joint: none
-          comment: Second trial with jointless rod. Ended up testing the same point
-            multiple times, trying different things outlined in the Trello note.
-          good: false
-        - date: '2022-09-14'
-          group: control
-          rod: R
-          coupon: A0
-          joint: none
-          comment: RTV has been applied on the cylindrical sidewall of the copper
-            post.
-          good: false
-          new: true
     outs:
     - path: data/schema
-      md5: e1251a34f89b3fa3847cddbdb9f973f1.dir
-      size: 23977
+      md5: 45c705890096005f31cbc089e6b5fa98.dir
+      size: 23989
       nfiles: 4
   originlab:
     cmd: python -m boilerdata.stages.originlab
@@ -785,8 +586,8 @@ stages:
       size: 1927236
       nfiles: 13
     - path: src/boilerdata
-      md5: de7afcdb87ae61c91d333d7eae84fdde.dir
-      size: 159270
+      md5: 8c90f0bbe013b5b311c6feaffe5990ce.dir
+      size: 159232
       nfiles: 50
     outs:
     - path: data/plots/lit_.png
@@ -800,8 +601,8 @@ stages:
       size: 103226338
       nfiles: 401
     - path: data/schema
-      md5: e1251a34f89b3fa3847cddbdb9f973f1.dir
-      size: 23977
+      md5: 45c705890096005f31cbc089e6b5fa98.dir
+      size: 23989
       nfiles: 4
     - path: src/boilerdata/stages/runs.py
       md5: 577bb9cd8e716be54c80533ca905b1db
@@ -1166,8 +967,8 @@ stages:
     cmd: jupyter execute src/boilerdata/modelfun.ipynb
     deps:
     - path: data/schema
-      md5: e1251a34f89b3fa3847cddbdb9f973f1.dir
-      size: 23977
+      md5: 45c705890096005f31cbc089e6b5fa98.dir
+      size: 23989
       nfiles: 4
     - path: src/boilerdata/modelfun.ipynb
       md5: 83d4b3dfc0e275bf7bbc03425b0dc48a

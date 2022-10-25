@@ -4,16 +4,12 @@ stages:
     params:
       - "config/axes.yaml":
       - "config/project.yaml":
-      - "config/trials.yaml":
     deps:
-      # Will run at least twice due to schema_old changing after a successful run.
-      # Avoids a dependency cycle but allows the schema to evolve.
-      - "data/schema_old"
       - "src/boilerdata/stages/schema.py"
       - "src/boilerdata/models"
     outs:
       - "data/schema"
-      # # DVC deletes outs before generating. Uncommenting the below breaks it.
+      # # Can't uncomment this. Deletion breaks schema stage due to cyclic import.
       # - "src/boilerdata/axes_enum.py"
 
   modelfun:

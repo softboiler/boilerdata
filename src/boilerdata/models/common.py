@@ -7,6 +7,11 @@ import numpy as np
 from pydantic import BaseModel, Extra, MissingError, ValidationError
 import yaml
 
+import boilerdata
+
+default_axes_enum_file = Path(boilerdata.__file__).parent / "axes_enum.py"
+
+
 StrPath = str | PathLike[str]
 NpNDArray = np.ndarray[Any, Any]
 NpFloating = np.floating[Any]
