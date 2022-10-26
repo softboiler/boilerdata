@@ -99,8 +99,9 @@ def fit(
             model, x, y, sigma=y_errors, absolute_sigma=True
         )
     except RuntimeError:
-        model_params_fitted = np.full(len(model_params), np.nan)
-        pcov = np.full(len(model_params), np.nan)
+        dim = len(model_params) // 2
+        model_params_fitted = np.full(dim, np.nan)
+        pcov = np.full((dim, dim), np.nan)
 
     # Compute confidence interval  #! Depends on the order of `param_errors`
     param_standard_errors = np.sqrt(np.diagonal(pcov))
