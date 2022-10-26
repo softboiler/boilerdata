@@ -74,8 +74,8 @@ class Dirs(MyBaseModel):
         always=True,
         pre=True,
     )
-    def validate_directory(cls, v: StrPath):
-        directory = Path(v)
+    def validate_directory(cls, directory: StrPath):
+        directory = Path(directory)
         directory.mkdir(parents=True, exist_ok=True)
         return directory
 
@@ -124,7 +124,7 @@ class Dirs(MyBaseModel):
         "originlab_coldes_file",
         always=True,
     )
-    def validate_files(cls, v: Path):
-        file = Path(v)
+    def validate_files(cls, file: Path):
+        file = Path(file)
         file.parent.mkdir(parents=True, exist_ok=True)
         return file

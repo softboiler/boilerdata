@@ -21,21 +21,21 @@ class Project(MyBaseModel):
     dirs: Dirs = Field(default=None)
 
     @validator("dirs", always=True, pre=True)
-    def validate_dirs(cls, v):
-        return v or Dirs()
+    def validate_dirs(cls, dirs):
+        return dirs or Dirs()
 
     # ! AXES
     axes: Axes = Field(default=None)
 
     @validator("axes", always=True, pre=True)
-    def validate_axes(cls, v, values):
+    def validate_axes(cls, _, values):
         return load_config(values["dirs"].config / "axes.yaml", Axes)
 
     # ! TRIALS
     trials: list[Trial] = Field(default=None)
 
     @validator("trials", always=True, pre=True)
-    def validate_trials(cls, v, values):
+    def validate_trials(cls, _, values):
         trials = load_config(values["dirs"].config / "trials.yaml", Trials).trials
         for trial in trials:
             trial.setup(values["dirs"], values["geometry"])

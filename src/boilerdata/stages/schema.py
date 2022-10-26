@@ -10,8 +10,7 @@ from boilerdata.models.project import Project
 from boilerdata.models.trials import Trials
 
 
-def main():
-    proj = Project.get_project()
+def main(proj: Project):
     models = [Project, Trials, Axes]
     for model in models:
         write_schema(
@@ -50,4 +49,4 @@ def to_snake_case(v: str) -> str:
 
 
 if __name__ == "__main__":
-    main()
+    main(Project.get_project())

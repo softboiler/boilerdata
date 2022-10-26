@@ -4,6 +4,7 @@ stages:
     params:
       - "config/axes.yaml":
       - "config/project.yaml":
+      - "config/trials.yaml":
     deps:
       - "src/boilerdata/stages/schema.py"
       - "src/boilerdata/models"
@@ -15,7 +16,9 @@ stages:
   modelfun:
     cmd: "jupyter execute src/boilerdata/modelfun.ipynb"
     params:
+      - "config/axes.yaml":
       - "config/project.yaml":
+      - "config/trials.yaml":
     deps:
       - "src/boilerdata/modelfun.ipynb"
       - "data/schema"
@@ -29,7 +32,6 @@ stages:
       - "config/project.yaml":
       - "config/trials.yaml":
     deps:
-      # Allow other parts of boilerdata to change w/o re-running this stage
       - "src/boilerdata/stages/runs.py"
       - "data/schema"
       - "data/curves"
