@@ -28,8 +28,6 @@ from boilerdata.validation import (
     validate_initial_df,
 )
 
-# from ipynb.fs.full.boilerdata.modelfun import model  # type: ignore  # Dynamic
-
 # * -------------------------------------------------------------------------------- * #
 # * MAIN
 
