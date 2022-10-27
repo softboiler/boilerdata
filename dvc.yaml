@@ -1,4 +1,14 @@
 stages:
+  literature:
+    cmd: "python -m boilerdata.stages.literature"
+    deps:
+      - "config"
+      - "src/boilerdata/stages/literature.py"
+    # outs:
+    #   - "data/literature_results"
+    # # Can't uncomment this. Deletion breaks schema stage due to cyclic import.
+    # - "src/boilerdata/axes_enum.py"
+
   schema:
     cmd: "python -m boilerdata.stages.schema"
     params:
