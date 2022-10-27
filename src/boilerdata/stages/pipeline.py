@@ -1,12 +1,13 @@
 """Pipeline functions."""
 
+from functools import wraps  # type: ignore  # Needed for unpickled model
 from pathlib import Path
 import re
 from shutil import copy
 
 import janitor  # type: ignore  # Magically registers methods on Pandas objects
 from matplotlib import pyplot as plt
-import numpy as np
+import numpy as np  # Also needed for unpickled "model"
 import pandas as pd
 from propshop import get_prop
 from propshop.library import Mat, Prop
@@ -17,7 +18,7 @@ from scipy.stats import t
 from uncertainties import ufloat
 
 from boilerdata.axes_enum import AxesEnum as A  # noqa: N814
-from boilerdata.modelfun import get_model_fun
+from boilerdata.modelfun import model
 from boilerdata.models.project import Project
 from boilerdata.models.trials import Trial
 from boilerdata.utils import get_tcs, model_with_error, per_run, per_trial, zip_params
@@ -27,18 +28,13 @@ from boilerdata.validation import (
     validate_initial_df,
 )
 
+# from ipynb.fs.full.boilerdata.modelfun import model  # type: ignore  # Dynamic
+
 # * -------------------------------------------------------------------------------- * #
 # * MAIN
 
 
 def main(proj: Project):
-
-    cm_p_m = 100  # (cm/m) Conversion factor
-    cm2_p_m2 = cm_p_m**2  # ((cm/m)^2) Conversion factor
-    _model = get_model_fun()
-
-    def model(x, T_s, q_s):  # noqa: N803  # Mathematical symbol
-        return _model(x, T_s, q_s * cm2_p_m2)
 
     confidence_interval_95 = t.interval(0.95, proj.params.records_to_average)[1]
 

@@ -4,8 +4,8 @@ stages:
     cmd: python -m boilerdata.stages.pipeline
     deps:
     - path: data/model
-      md5: ec9f4fbdc16f7a1bb4f4fe64b1d81e94.dir
-      size: 26728
+      md5: d4d49eae175309f85201a722d4910096.dir
+      size: 36410
       nfiles: 1
     - path: data/runs
       md5: a2571f27892087012f19ae1921f42cab.dir
@@ -16,9 +16,9 @@ stages:
       size: 24749
       nfiles: 4
     - path: src/boilerdata
-      md5: ab4b4afd4b32b4dfab756f2a11034af8.dir
-      size: 161569
-      nfiles: 50
+      md5: a1d549edf555bab7264047612a71de9c.dir
+      size: 177032
+      nfiles: 54
     params:
       config/axes.yaml:
         all:
@@ -372,14 +372,14 @@ stages:
           new: true
     outs:
     - path: data/plots/first_new_fit.png
-      md5: 81210a961adb2d3a39790890bcdbfde1
-      size: 132261
+      md5: cd3c437a8da0d795759cdeca82fa3821
+      size: 132106
     - path: data/plots/last_new_fit.png
-      md5: da31dc5510eca83ba6428678ff825038
-      size: 133312
+      md5: 1ecabfecc7b7178e637bab8ed1425fb5
+      size: 133314
     - path: data/results
-      md5: dd1ac437e20f2ded82e6a20619e8aac6.dir
-      size: 1916999
+      md5: 348483b4793faec62fdc6e6f2fdbb4b7.dir
+      size: 1888360
       nfiles: 13
   plot:
     cmd: python -m boilerdata.plot
@@ -777,17 +777,17 @@ stages:
       size: 303544
       nfiles: 1
     - path: data/results
-      md5: dd1ac437e20f2ded82e6a20619e8aac6.dir
-      size: 1916999
+      md5: 348483b4793faec62fdc6e6f2fdbb4b7.dir
+      size: 1888360
       nfiles: 13
     - path: src/boilerdata
-      md5: ab4b4afd4b32b4dfab756f2a11034af8.dir
-      size: 161569
-      nfiles: 50
+      md5: a1d549edf555bab7264047612a71de9c.dir
+      size: 177032
+      nfiles: 54
     outs:
     - path: data/plots/lit_.png
-      md5: a87ad1bc2e802750bfa531ffcbb33e34
-      size: 41157
+      md5: adc3ff02e27b4f391c900ec6d43decf3
+      size: 40738
   runs:
     cmd: python -m boilerdata.stages.runs
     deps:
@@ -1166,8 +1166,8 @@ stages:
       size: 24749
       nfiles: 4
     - path: src/boilerdata/modelfun.ipynb
-      md5: fd6bb93385967b0caf0de84992c77701
-      size: 14077
+      md5: b64930793eb8e797aeaf0160a8e9dbe1
+      size: 15327
     params:
       config/axes.yaml:
         all:
@@ -1521,6 +1521,6 @@ stages:
           new: true
     outs:
     - path: data/model
-      md5: ec9f4fbdc16f7a1bb4f4fe64b1d81e94.dir
-      size: 26728
+      md5: d4d49eae175309f85201a722d4910096.dir
+      size: 36410
       nfiles: 1

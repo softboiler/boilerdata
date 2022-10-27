@@ -3,6 +3,7 @@ from pathlib import Path
 
 import numpy as np
 import pandas as pd
+from uncertainties import ufloat
 
 from boilerdata.axes_enum import AxesEnum as A  # noqa: N814
 from boilerdata.models.project import Project
@@ -75,10 +76,8 @@ def zip_params(grp: pd.DataFrame, proj: Project):
 
 def model_with_error(model, x, u_params):
     """Evaluate the model for x and return y with errors."""
-    # Can't vectorize the below operation due to the error:
-    #     TypeError: loop of ufunc does not support argument 0 of type AffineScalarFunc
-    #     which has no callable exp method
-    u_y = model(x, *u_params)
+    u_x = [ufloat(v, 0, "x") for v in x]
+    u_y = model(u_x, *u_params)
     y = np.array([v.nominal_value for v in u_y])
     y_min = y - [v.std_dev for v in u_y]  # type: ignore  # Due to unknown array type
     y_max = y + [v.std_dev for v in u_y]
