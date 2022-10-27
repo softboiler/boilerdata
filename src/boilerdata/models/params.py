@@ -14,7 +14,6 @@ class Params(MyBaseModel):
     )
     model_inputs: dict[str, float] = Field(
         default=dict(
-            h_a=100,  # (W/m^2-K)
             h_w=0,  # (W/m^2-K)
             k=400.0,  # (W/m-K)
             r=0.0047625,  # (m)
@@ -38,8 +37,10 @@ class Params(MyBaseModel):
         default=[
             A.T_s,
             A.q,
+            A.h_a,
             A.T_s_err,
             A.q_err,
+            A.h_a_err,
         ],
         description="The parameters of the model to be fitted.",
     )

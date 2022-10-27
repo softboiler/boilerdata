@@ -90,7 +90,12 @@ def fit(
     # Perform fit
     try:
         model_params_fitted, pcov = curve_fit(
-            model, x, y, sigma=y_errors, absolute_sigma=True
+            model,
+            x,
+            y,
+            sigma=y_errors,
+            absolute_sigma=True,
+            bounds=(0, np.inf),
         )
     except RuntimeError:
         dim = len(model_params) // 2

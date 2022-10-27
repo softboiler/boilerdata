@@ -2,10 +2,9 @@ stages:
   schema:
     cmd: "python -m boilerdata.stages.schema"
     params:
-      - "config/axes.yaml":
       - "config/project.yaml":
-      - "config/trials.yaml":
     deps:
+      - "config"
       - "src/boilerdata/stages/schema.py"
       - "src/boilerdata/models"
     outs:
@@ -16,11 +15,11 @@ stages:
   modelfun:
     cmd: "jupyter execute src/boilerdata/modelfun.ipynb"
     params:
-      - "config/axes.yaml":
       - "config/project.yaml":
-      - "config/trials.yaml":
     deps:
+      - "config"
       - "src/boilerdata/modelfun.ipynb"
+      - "src/boilerdata/models"
       - "data/schema"
     outs:
       - "data/model"
@@ -28,11 +27,11 @@ stages:
   runs:
     cmd: "python -m boilerdata.stages.runs"
     params:
-      - "config/axes.yaml":
       - "config/project.yaml":
-      - "config/trials.yaml":
     deps:
+      - "config"
       - "src/boilerdata/stages/runs.py"
+      - "src/boilerdata/models"
       - "data/schema"
       - "data/curves"
     outs: ["data/runs"]
@@ -40,11 +39,11 @@ stages:
   pipeline:
     cmd: "python -m boilerdata.stages.pipeline"
     params:
-      - "config/axes.yaml":
       - "config/project.yaml":
-      - "config/trials.yaml":
     deps:
+      - "config"
       - "src/boilerdata" # Do re-run pipeline if anything in boilerdata changes
+      - "src/boilerdata/models"
       - "data/schema"
       - "data/model"
       - "data/runs"
@@ -55,7 +54,10 @@ stages:
 
   originlab:
     cmd: "python -m boilerdata.stages.originlab"
+    params:
+      - "config/project.yaml":
     deps:
+      - "config"
       - "src/boilerdata"
       - "data/plotter"
       - "data/results"

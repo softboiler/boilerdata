@@ -135,6 +135,12 @@ all:
     units: "W/cm^2"
     originlab_coldes: "E"
 
+  - name: "h_a"
+    units: "W/m^2-K"
+
+  - name: "h_a_err"
+    units: "W/m^2-K"
+
   - name: "k"
     units: "W/m-K"
 
