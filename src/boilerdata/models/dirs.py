@@ -35,9 +35,24 @@ class Dirs(MyBaseModel):
         description="The schema directory.",
     )
 
+    literature: DirectoryPath = Field(
+        default=data.default / "literature",  # type: ignore  # Validator makes it a Path
+        description="The directory containing literature pictures.",
+    )
+
+    literature_results: DirectoryPath = Field(
+        default=data.default / "literature_results",  # type: ignore  # Validator makes it a Path
+        description="The directory containing processed literature data.",
+    )
+
     model: DirectoryPath = Field(
         default=data.default / "model",  # type: ignore  # Validator makes it a Path
         description="The directory containing a pickled model function.",
+    )
+
+    plots: DirectoryPath = Field(
+        default=data.default / "plots",  # type: ignore  # Validator makes it a Path
+        description="The directory containing plots.",
     )
 
     trials: DirectoryPath = Field(
@@ -48,6 +63,11 @@ class Dirs(MyBaseModel):
     runs: DirectoryPath = Field(
         default=data.default / "runs",  # type: ignore  # Validator makes it a Path
         description="The runs directory.",
+    )
+
+    plotter: DirectoryPath = Field(
+        default=data.default / "plotter",  # type: ignore  # Validator makes it a Path
+        description="The directory in which the OriginLab project is.",
     )
 
     results: DirectoryPath = Field(
@@ -66,9 +86,13 @@ class Dirs(MyBaseModel):
         "config",
         "data",
         "project_schema",
+        "literature",
+        "literature_results",
         "model",
+        "plots",
         "trials",
         "runs",
+        "plotter",
         "results",
         "new_fits",
         always=True,
@@ -94,34 +118,50 @@ class Dirs(MyBaseModel):
     )
 
     # ! FILES
-    model_file: Path = Field(
-        default=model.default / "model.dillpickle",  # type: ignore  # Validator makes it a Path
-        description="The path to the pickled model function. Default: model.dillpickle",
+    literature_results_file: Path = Field(
+        default=literature_results.default / "lit.csv",  # type: ignore  # Validator makes it a Path
+        description="The path to the literature results file. Default: lit.csv",
     )
-    runs_file: Path = Field(
-        default=runs.default / "runs.csv",  # type: ignore  # Validator makes it a Path
-        description="The path to the runs. Default: runs.csv",
-    )
-    simple_results_file: Path = Field(
-        default=results.default / "results.csv",  # type: ignore  # Validator makes it a Path
-        description="The path to the simple results file. Default: results.csv",
-    )
-    originlab_results_file: Path = Field(
-        default=results.default / "originlab_results.csv",  # type: ignore  # Validator makes it a Path
-        description="The path to the results file to be parsed by OriginLab. Default: originlab_results.csv",
-    )
+
     originlab_coldes_file: Path = Field(
         default=project_schema.default / "originlab_coldes.txt",  # type: ignore  # Validator makes it a Path
         description="The path to which the OriginLab column designation string will be written. Default: coldes.txt",
     )
 
+    model_file: Path = Field(
+        default=model.default / "model.dillpickle",  # type: ignore  # Validator makes it a Path
+        description="The path to the pickled model function. Default: model.dillpickle",
+    )
+
+    runs_file: Path = Field(
+        default=runs.default / "runs.csv",  # type: ignore  # Validator makes it a Path
+        description="The path to the runs. Default: runs.csv",
+    )
+
+    simple_results_file: Path = Field(
+        default=results.default / "results.csv",  # type: ignore  # Validator makes it a Path
+        description="The path to the simple results file. Default: results.csv",
+    )
+
+    originlab_results_file: Path = Field(
+        default=results.default / "originlab_results.csv",  # type: ignore  # Validator makes it a Path
+        description="The path to the results file to be parsed by OriginLab. Default: originlab_results.csv",
+    )
+
+    plotter_file: Path = Field(
+        default=project_schema.default / "results.opju",  # type: ignore  # Validator makes it a Path
+        description="The path to the OriginLab plotter file. Default: results.opju",
+    )
+
     # "always" so it'll run even if not in YAML
     @validator(
+        "literature_results_file",
+        "originlab_coldes_file",
         "model_file",
         "runs_file",
         "simple_results_file",
         "originlab_results_file",
-        "originlab_coldes_file",
+        "plotter_file",
         always=True,
     )
     def validate_files(cls, file: Path):

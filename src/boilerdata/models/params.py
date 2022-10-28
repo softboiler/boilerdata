@@ -52,3 +52,7 @@ class Params(MyBaseModel):
         default=False,
         description="Whether to plot the fits of the individual runs.",
     )
+    plots: list[str] = Field(
+        default=["lit_"],
+        description="List of plots to save.",
+    )

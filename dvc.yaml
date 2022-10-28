@@ -1,21 +1,22 @@
 stages:
   literature:
     cmd: "python -m boilerdata.stages.literature"
+    params:
+      - "config/project.yaml":
     deps:
-      - "config"
       - "src/boilerdata/stages/literature.py"
-    # outs:
-    #   - "data/literature_results"
-    # # Can't uncomment this. Deletion breaks schema stage due to cyclic import.
-    # - "src/boilerdata/axes_enum.py"
+      - "config"
+      - "data/literature"
+    outs:
+      - "data/literature_results"
 
   schema:
     cmd: "python -m boilerdata.stages.schema"
     params:
       - "config/project.yaml":
     deps:
-      - "config"
       - "src/boilerdata/stages/schema.py"
+      - "config"
       - "src/boilerdata/models"
     outs:
       - "data/schema"
@@ -27,8 +28,8 @@ stages:
     params:
       - "config/project.yaml":
     deps:
-      - "config"
       - "src/boilerdata/modelfun.ipynb"
+      - "config"
       - "src/boilerdata/models"
       - "data/schema"
     outs:
@@ -51,8 +52,8 @@ stages:
     params:
       - "config/project.yaml":
     deps:
-      - "config"
       - "src/boilerdata" # Do re-run pipeline if anything in boilerdata changes
+      - "config"
       - "src/boilerdata/models"
       - "data/schema"
       - "data/model"
@@ -67,8 +68,9 @@ stages:
     params:
       - "config/project.yaml":
     deps:
-      - "config"
       - "src/boilerdata"
+      - "config"
       - "data/plotter"
+      - "data/literature_results"
       - "data/results"
     plots: ["data/plots/lit_.png"]

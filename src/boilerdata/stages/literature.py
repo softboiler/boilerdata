@@ -14,20 +14,23 @@ Reference: <https://gist.github.com/caiofcm/1088c9b62f0968b665a91f15ff23d447>
 
 import json
 from pathlib import Path
+from typing import Any
 
 import numpy as np
 import pandas as pd
 import toml
 
+from boilerdata.models.project import Project
 
-def main():
+
+def main(proj: Project):
 
     raw_df = pd.DataFrame(
         columns=["year", "authors", "paper", "fig", "dataset", "ΔT", "q''"]
     )
     dfs: list[pd.DataFrame] = []
 
-    for paper in get_dirs_sorted(Path("data/literature")):
+    for paper in get_dirs_sorted(proj.dirs.literature):
         paper_meta = toml.loads((paper / "paper.toml").read_text(encoding="utf-8"))
 
         for fig in get_dirs_sorted(paper):
@@ -37,11 +40,11 @@ def main():
                 .rename(columns=dict(x="ΔT", y="q''", name="dataset"))
                 .sort_values(["dataset", "ΔT", "q''"])
             )
-            fig_df = raw_df.assign(**data, **paper_meta, **fig_meta).convert_dtypes()
+            fig_df = raw_df.assign(**data, **paper_meta, **fig_meta).convert_dtypes()  # type: ignore
             dfs.append(fig_df)
 
     df = pd.concat(dfs)
-    df.to_csv("lit.csv", index=False)
+    df.to_csv(proj.dirs.literature_results_file, index=False)
 
 
 # * -------------------------------------------------------------------------------- * #
@@ -66,17 +69,17 @@ def get_data(file: str | Path) -> pd.DataFrame:
     return get_df(data)
 
 
-def get_dict(data: dict) -> dict:
-    datasetColl = data["datasetColl"]
+def get_dict(data: dict[str, Any]) -> dict[str, Any]:
+    dataset_coll = data["datasetColl"]
     dict_of_data_sets = {}
-    for data_set in datasetColl:
+    for data_set in dataset_coll:
         data = data_set["data"]
-        xy_par = np.array([datum["value"] for datum in data])
+        xy_par = np.array([datum["value"] for datum in data])  # type: ignore
         dict_of_data_sets[data_set["name"]] = xy_par
     return dict_of_data_sets
 
 
-def get_df(data: dict) -> pd.DataFrame:
+def get_df(data: dict[str, Any]) -> pd.DataFrame:
     list_of_dfs = []
     for name, xy_matrix in data.items():
         df = pd.DataFrame(
@@ -93,4 +96,4 @@ def get_df(data: dict) -> pd.DataFrame:
 # * -------------------------------------------------------------------------------- * #
 
 if __name__ == "__main__":
-    main()
+    main(Project.get_project())
