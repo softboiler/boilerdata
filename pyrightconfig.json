@@ -14,7 +14,6 @@
   "reportCallInDefaultInitializer": "error",
   "reportPropertyTypeMismatch": "error",
   "reportUninitializedInstanceVariable": "error",
-  "reportUnnecessaryTypeIgnoreComment": "error",
 
   // Disabled checks
   "reportImplicitStringConcatenation": "none",
@@ -26,6 +25,7 @@
   "reportUnknownMemberType": "none",
   "reportUnknownParameterType": "none",
   "reportUnknownVariableType": "none",
+  "reportUnnecessaryTypeIgnoreComment": "none",
   "reportUntypedBaseClass": "none",
   "reportUnusedCallResult": "none"
 }

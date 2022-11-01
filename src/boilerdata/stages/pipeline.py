@@ -238,7 +238,7 @@ def plot_new_fits(grp: pd.DataFrame, proj: Project, model):
     )
     ax.fill_between(
         x=x_padded,
-        y1=y_padded_min,
+        y1=y_padded_min,  # type: ignore  # Issue with matplotlib stubs
         y2=y_padded_max,  # type: ignore  # Issue with matplotlib stubs
         color=[0.8, 0.8, 0.8],
         edgecolor=[1, 1, 1],
