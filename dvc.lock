@@ -4,16 +4,16 @@ stages:
     cmd: python -m boilerdata.stages.pipeline
     deps:
     - path: data/model
-      md5: 187972c790abaf007061256de33f19c9.dir
-      size: 37395
+      md5: 8c3add98110639e5169a337b35dde484.dir
+      size: 45112
       nfiles: 1
     - path: data/runs
       md5: b4417abdb6b4df1fcbf617a9b686df53.dir
       size: 999154
       nfiles: 1
     - path: src/boilerdata/stages/pipeline.py
-      md5: c162424ed14b92d5dae6fb09d8ab55f7
-      size: 8656
+      md5: 10a77561a5e019eee80e20c86d4db251
+      size: 8392
     params:
       config/project.yaml:
         geometry:
@@ -285,21 +285,13 @@ stages:
   modelfun:
     cmd: jupyter execute src/boilerdata/modelfun.ipynb
     deps:
-    - path: config
-      md5: 4baf7ded2b5e74a8f5e1c5dfde5435a5.dir
-      size: 7881
-      nfiles: 3
     - path: data/schema
       md5: fa6f95c67cfa5d49c4649969a969225b.dir
       size: 26797
       nfiles: 4
     - path: src/boilerdata/modelfun.ipynb
-      md5: e5fc12cb7d2cdc15460ff4de00684548
-      size: 15888
-    - path: src/boilerdata/models
-      md5: db2c25ac0386234c544941a49566a582.dir
-      size: 68280
-      nfiles: 19
+      md5: 9e25a71e98c412101cd3a45e448a3eee
+      size: 15927
     params:
       config/project.yaml:
         geometry:
@@ -345,8 +337,8 @@ stages:
           do_plot: true
     outs:
     - path: data/model
-      md5: 187972c790abaf007061256de33f19c9.dir
-      size: 37395
+      md5: 8c3add98110639e5169a337b35dde484.dir
+      size: 45112
       nfiles: 1
   literature:
     cmd: python -m boilerdata.stages.literature
@@ -418,8 +410,8 @@ stages:
       size: 466712
       nfiles: 2
     - path: src/boilerdata/stages/plots.py
-      md5: c112442dcd9aa1e23522d0716e6ba928
-      size: 4504
+      md5: 3f7e8f70537097184db7a9e1898cdc6b
+      size: 4229
     params:
       config/project.yaml:
         geometry:

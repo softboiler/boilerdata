@@ -1,16 +1,10 @@
-"""Pipeline functions."""
-
 # # Necessary as long as a line marked "triggered only in CI" is in this file
 # pyright: reportUnnecessaryTypeIgnoreComment=none
 
-
-from functools import (
-    wraps,  # pyright: ignore [reportUnusedImport]  # Needed for unpickled model
-)
 import re
 
 import janitor  # pyright: ignore [reportUnusedImport]  # Registers methods on Pandas objects
-import numpy as np  # pyright: ignore [reportUnusedImport]  # Also needed for unpickled model
+import numpy as np
 import pandas as pd
 from propshop import get_prop
 from propshop.library import Mat, Prop
@@ -46,7 +40,6 @@ def main(proj: Project):
             dtype={col.name: col.dtype for col in proj.axes.cols},
         )
         .pipe(handle_invalid_data, validate_initial_df)
-        # Need thermocouple spacing run-to-run
         .pipe(per_run, fit, proj, model, confidence_interval_95)
         .pipe(per_trial, agg_over_runs, proj, confidence_interval_95)
         .pipe(per_trial, get_heat_transfer, proj)  # Water temp varies across trials

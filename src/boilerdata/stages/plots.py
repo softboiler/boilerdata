@@ -1,23 +1,17 @@
-"""Pipeline functions."""
-
 # # Necessary as long as a line marked "triggered only in CI" is in this file
 # pyright: reportUnnecessaryTypeIgnoreComment=none
 
 
-from functools import (
-    wraps,  # pyright: ignore [reportUnusedImport]  # Needed for unpickled model
-)
 from pathlib import Path
 from shutil import copy
 
-import janitor  # pyright: ignore [reportUnusedImport]  # Registers methods on Pandas objects
 from matplotlib import pyplot as plt
-import numpy as np  # pyright: ignore [reportUnusedImport]  # Also needed for unpickled model
+import numpy as np
 import pandas as pd
 from uncertainties import ufloat
 
 from boilerdata.axes_enum import AxesEnum as A  # noqa: N814
-from boilerdata.modelfun import model
+from boilerdata.modelfun import model_with_uncertainty
 from boilerdata.models.project import Project
 from boilerdata.utils import get_tcs, model_with_error, per_run, zip_params
 
@@ -33,7 +27,7 @@ def main(proj: Project):
             index_col=(index_col := [A.trial, A.run]),
             parse_dates=index_col,
             dtype={col.name: col.dtype for col in proj.axes.cols},
-        ).pipe(plot_fits, proj, model)
+        ).pipe(plot_fits, proj, model_with_uncertainty)
     )
 
 
