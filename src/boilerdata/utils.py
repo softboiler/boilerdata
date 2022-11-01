@@ -101,9 +101,9 @@ def model_with_error(model, x, u_params):
     u_x = [ufloat(v, 0, "x") for v in x]
     u_y = model(u_x, *u_params)
     y = np.array([v.nominal_value for v in u_y])
-    y_min = y - [  # pyright: ignore [reportGeneralTypeIssues]  # uncertainties
+    y_min = y - [
         v.std_dev for v in u_y
-    ]
+    ]  # pyright: ignore [reportGeneralTypeIssues]  # uncertainties
     y_max = y + [v.std_dev for v in u_y]
     return y, y_min, y_max
 
