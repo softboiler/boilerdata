@@ -1,3 +1,6 @@
+# # Necessary as long as a line marked "triggered only locally" is in this file
+# pyright: reportUnnecessaryTypeIgnoreComment=none
+
 from os import chdir
 from pathlib import Path
 
@@ -103,7 +106,7 @@ def model_with_error(model, x, u_params):
     y = np.array([v.nominal_value for v in u_y])
     y_min = y - [
         v.std_dev for v in u_y
-    ]  # pyright: ignore [reportGeneralTypeIssues]  # uncertainties
+    ]  # pyright: ignore [reportGeneralTypeIssues]  # uncertainties, triggered only locally
     y_max = y + [v.std_dev for v in u_y]
     return y, y_min, y_max
 
