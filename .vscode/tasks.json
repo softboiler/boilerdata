@@ -8,6 +8,13 @@
     // * -------------------------------------------------------------------------- * //
     // * PROJECT-SPECIFIC * //
     {
+      "label": "dvc: dag",
+      "type": "process",
+      "command": "pwsh",
+      "args": ["-Command", "dvc dag --md | code -"],
+      "problemMatcher": []
+    },
+    {
       "label": "dvc: exp run",
       "type": "process",
       "command": "pwsh",
@@ -54,6 +61,13 @@
       "type": "process",
       "command": "pwsh",
       "args": ["-Command", "dvc repro pipeline"],
+      "problemMatcher": []
+    },
+    {
+      "label": "dvc: repro plots",
+      "type": "process",
+      "command": "pwsh",
+      "args": ["-Command", "dvc repro plots"],
       "problemMatcher": []
     },
     {

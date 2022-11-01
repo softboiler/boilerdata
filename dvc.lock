@@ -3,30 +3,17 @@ stages:
   pipeline:
     cmd: python -m boilerdata.stages.pipeline
     deps:
-    - path: config
-      md5: 4baf7ded2b5e74a8f5e1c5dfde5435a5.dir
-      size: 7881
-      nfiles: 3
     - path: data/model
-      md5: c81fcdd527e7aea920dbf9dc0eac563b.dir
+      md5: 187972c790abaf007061256de33f19c9.dir
       size: 37395
       nfiles: 1
     - path: data/runs
       md5: b4417abdb6b4df1fcbf617a9b686df53.dir
       size: 999154
       nfiles: 1
-    - path: data/schema
-      md5: b15460ea86218255673a2ec5004c1d36.dir
-      size: 26799
-      nfiles: 4
-    - path: src/boilerdata
-      md5: d0b95bf3b0be66d524a10a5648b268f3.dir
-      size: 232845
-      nfiles: 55
-    - path: src/boilerdata/models
-      md5: 875d7e85ac4f74a7e8ebae416a983253.dir
-      size: 68282
-      nfiles: 19
+    - path: src/boilerdata/stages/pipeline.py
+      md5: c162424ed14b92d5dae6fb09d8ab55f7
+      size: 8656
     params:
       config/project.yaml:
         geometry:
@@ -71,16 +58,10 @@ stages:
           records_to_average: 9
           do_plot: true
     outs:
-    - path: data/plots/first_new_fit.png
-      md5: 2c9674324067b32d59d9fd08b4a776eb
-      size: 115589
-    - path: data/plots/last_new_fit.png
-      md5: 64fb3de83305001a87629f4a24aa5884
-      size: 117886
     - path: data/results
-      md5: a352742a1e89df30abaaa82f01c2efba.dir
-      size: 1711596
-      nfiles: 13
+      md5: e5668d2a57d5aeaa2247dce502d54fb9.dir
+      size: 466712
+      nfiles: 2
   plot:
     cmd: python -m boilerdata.plot
     deps:
@@ -111,8 +92,8 @@ stages:
       size: 7881
       nfiles: 3
     - path: src/boilerdata/models
-      md5: 875d7e85ac4f74a7e8ebae416a983253.dir
-      size: 68282
+      md5: db2c25ac0386234c544941a49566a582.dir
+      size: 68280
       nfiles: 19
     - path: src/boilerdata/stages/schema.py
       md5: e0e2cc88261ed0706560745882d45851
@@ -162,8 +143,8 @@ stages:
           do_plot: true
     outs:
     - path: data/schema
-      md5: b15460ea86218255673a2ec5004c1d36.dir
-      size: 26799
+      md5: fa6f95c67cfa5d49c4649969a969225b.dir
+      size: 26797
       nfiles: 4
   originlab:
     cmd: python -m boilerdata.stages.originlab
@@ -243,12 +224,12 @@ stages:
       size: 103226338
       nfiles: 401
     - path: data/schema
-      md5: b15460ea86218255673a2ec5004c1d36.dir
-      size: 26799
+      md5: fa6f95c67cfa5d49c4649969a969225b.dir
+      size: 26797
       nfiles: 4
     - path: src/boilerdata/models
-      md5: 875d7e85ac4f74a7e8ebae416a983253.dir
-      size: 68282
+      md5: db2c25ac0386234c544941a49566a582.dir
+      size: 68280
       nfiles: 19
     - path: src/boilerdata/stages/runs.py
       md5: df2483966545c78a0ab26264e9cf3fee
@@ -309,15 +290,15 @@ stages:
       size: 7881
       nfiles: 3
     - path: data/schema
-      md5: b15460ea86218255673a2ec5004c1d36.dir
-      size: 26799
+      md5: fa6f95c67cfa5d49c4649969a969225b.dir
+      size: 26797
       nfiles: 4
     - path: src/boilerdata/modelfun.ipynb
-      md5: 6fcf92c75e5a9bf2f5138da7cbd3636b
-      size: 51916
+      md5: e5fc12cb7d2cdc15460ff4de00684548
+      size: 15888
     - path: src/boilerdata/models
-      md5: 875d7e85ac4f74a7e8ebae416a983253.dir
-      size: 68282
+      md5: db2c25ac0386234c544941a49566a582.dir
+      size: 68280
       nfiles: 19
     params:
       config/project.yaml:
@@ -364,7 +345,7 @@ stages:
           do_plot: true
     outs:
     - path: data/model
-      md5: c81fcdd527e7aea920dbf9dc0eac563b.dir
+      md5: 187972c790abaf007061256de33f19c9.dir
       size: 37395
       nfiles: 1
   literature:
@@ -429,3 +410,63 @@ stages:
       md5: 2083876e4c9287bf376a02427b093bca.dir
       size: 27127
       nfiles: 1
+  plots:
+    cmd: python -m boilerdata.stages.plots
+    deps:
+    - path: data/results
+      md5: e5668d2a57d5aeaa2247dce502d54fb9.dir
+      size: 466712
+      nfiles: 2
+    - path: src/boilerdata/stages/plots.py
+      md5: c112442dcd9aa1e23522d0716e6ba928
+      size: 4504
+    params:
+      config/project.yaml:
+        geometry:
+          diameter: 0.375
+          rods:
+            W:
+            - 3.525
+            - 3.05
+            - 2.575
+            - 2.1
+            - 0.375
+            X:
+            - 3.5253
+            - 3.05
+            - 2.5756
+            - 2.1006
+            - 0.3754
+            Y:
+            - 3.525
+            - 3.0504
+            - 2.5752
+            - 2.1008
+            - 0.3752
+            R:
+            - 4.1
+            - 3.625
+            - 3.15
+            - 2.675
+            - 0.95
+          coupons:
+            A0: 0.0
+            A1: 0.766
+            A2: 0.77
+            A3: 0.769
+            A4: 0.746
+            A5: 0.734
+            A6: 0.75
+            A7: 0.753
+            A8: 0.753
+            A9: 0.553
+        params:
+          records_to_average: 9
+          do_plot: true
+    outs:
+    - path: data/plots/first_new_fit.png
+      md5: 2c9674324067b32d59d9fd08b4a776eb
+      size: 115589
+    - path: data/plots/last_new_fit.png
+      md5: 5aa6a5c2e630c63168e9031fd05c77d6
+      size: 117886

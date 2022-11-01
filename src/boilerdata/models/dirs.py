@@ -62,6 +62,12 @@ class Dirs(MyBaseModel):
         description="The directory containing plots.",
     )
 
+    new_fits: DirectoryPath = Field(
+        default=plots.default  # pyright: ignore [reportGeneralTypeIssues]  # pydantic
+        / "new_fits",
+        description="The directory in which model fit plots will go for new runs.",
+    )
+
     trials: DirectoryPath = Field(
         default=data.default  # pyright: ignore [reportGeneralTypeIssues]  # pydantic
         / "curves",
@@ -86,12 +92,6 @@ class Dirs(MyBaseModel):
         description="The results directory.",
     )
 
-    new_fits: DirectoryPath = Field(
-        default=results.default  # pyright: ignore [reportGeneralTypeIssues]  # pydantic
-        / "new_fits",
-        description="The directory in which model fit plots will go for new runs.",
-    )
-
     # "always" so it'll run even if not in YAML
     # "pre" because dir must exist pre-validation
     @validator(
@@ -102,11 +102,11 @@ class Dirs(MyBaseModel):
         "literature_results",
         "model",
         "plots",
+        "new_fits",
         "trials",
         "runs",
         "plotter",
         "results",
-        "new_fits",
         always=True,
         pre=True,
     )

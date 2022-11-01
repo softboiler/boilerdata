@@ -1,15 +1,4 @@
 stages:
-  literature:
-    cmd: "python -m boilerdata.stages.literature"
-    params:
-      - "config/project.yaml":
-    deps:
-      - "src/boilerdata/stages/literature.py"
-      - "config"
-      - "data/literature"
-    outs:
-      - "data/literature_results"
-
   schema:
     cmd: "python -m boilerdata.stages.schema"
     params:
@@ -29,8 +18,6 @@ stages:
       - "config/project.yaml":
     deps:
       - "src/boilerdata/modelfun.ipynb"
-      - "config"
-      - "src/boilerdata/models"
       - "data/schema"
     outs:
       - "data/model"
@@ -40,37 +27,53 @@ stages:
     params:
       - "config/project.yaml":
     deps:
-      - "config"
       - "src/boilerdata/stages/runs.py"
-      - "src/boilerdata/models"
       - "data/schema"
       - "data/curves"
-    outs: ["data/runs"]
+    outs:
+      - "data/runs"
 
   pipeline:
     cmd: "python -m boilerdata.stages.pipeline"
     params:
       - "config/project.yaml":
     deps:
-      - "src/boilerdata" # Do re-run pipeline if anything in boilerdata changes
-      - "config"
-      - "src/boilerdata/models"
-      - "data/schema"
+      - "src/boilerdata/stages/pipeline.py"
       - "data/model"
       - "data/runs"
-    outs: ["data/results"]
+    outs:
+      - "data/results"
+
+  plots:
+    cmd: "python -m boilerdata.stages.plots"
+    params:
+      - "config/project.yaml":
+    deps:
+      - "src/boilerdata/stages/plots.py"
+      - "data/results"
     plots:
       - "data/plots/first_new_fit.png"
       - "data/plots/last_new_fit.png"
+
+  literature:
+    cmd: "python -m boilerdata.stages.literature"
+    params:
+      - "config/project.yaml":
+    deps:
+      - "src/boilerdata/stages/literature.py"
+      - "data/schema"
+      - "data/literature"
+    outs:
+      - "data/literature_results"
 
   originlab:
     cmd: "python -m boilerdata.stages.originlab"
     params:
       - "config/project.yaml":
     deps:
-      - "src/boilerdata"
-      - "config"
-      - "data/plotter"
-      - "data/literature_results"
+      - "src/boilerdata/stages/originlab.py"
       - "data/results"
-    plots: ["data/plots/lit_.png"]
+      - "data/literature_results"
+      - "data/plotter"
+    plots:
+      - "data/plots/lit_.png"
