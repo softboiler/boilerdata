@@ -20,64 +20,76 @@ class Dirs(MyBaseModel):
 
     # Careful, "Config" is a special member of BaseClass
     config: DirectoryPath = Field(
-        default=base.default / "config",  # type: ignore  # Validator makes it a Path
+        default=base.default  # pyright: ignore [reportGeneralTypeIssues]  # pydantic
+        / "config",
         description="The config directory.",
     )
 
     data: DirectoryPath = Field(
-        default=base.default / "data",  # type: ignore  # Validator makes it a Path
+        default=base.default  # pyright: ignore [reportGeneralTypeIssues]  # pydantic
+        / "data",
         description="The data directory.",
     )
 
     # Can't be "schema", which is a special member of BaseClass
     project_schema: DirectoryPath = Field(
-        default=data.default / "schema",  # type: ignore  # Validator makes it a Path
+        default=data.default  # pyright: ignore [reportGeneralTypeIssues]  # pydantic
+        / "schema",
         description="The schema directory.",
     )
 
     literature: DirectoryPath = Field(
-        default=data.default / "literature",  # type: ignore  # Validator makes it a Path
-        description="The directory containing literature pictures.",
+        default=data.default  # pyright: ignore [reportGeneralTypeIssues]  # pydantic
+        / "literature",
+        description="The directory containing literature figures.",
     )
 
     literature_results: DirectoryPath = Field(
-        default=data.default / "literature_results",  # type: ignore  # Validator makes it a Path
+        default=data.default  # pyright: ignore [reportGeneralTypeIssues]  # pydantic
+        / "literature_results",
         description="The directory containing processed literature data.",
     )
 
     model: DirectoryPath = Field(
-        default=data.default / "model",  # type: ignore  # Validator makes it a Path
+        default=data.default  # pyright: ignore [reportGeneralTypeIssues]  # pydantic
+        / "model",
         description="The directory containing a pickled model function.",
     )
 
     plots: DirectoryPath = Field(
-        default=data.default / "plots",  # type: ignore  # Validator makes it a Path
+        default=data.default  # pyright: ignore [reportGeneralTypeIssues]  # pydantic
+        / "plots",
         description="The directory containing plots.",
     )
 
     trials: DirectoryPath = Field(
-        default=data.default / "curves",  # type: ignore  # Validator makes it a Path
-        description="The trials directory.",
+        default=data.default  # pyright: ignore [reportGeneralTypeIssues]  # pydantic
+        / "curves",
+        description="The directory containing raw experimental trial data.",
     )
 
     runs: DirectoryPath = Field(
-        default=data.default / "runs",  # type: ignore  # Validator makes it a Path
-        description="The runs directory.",
+        default=data.default  # pyright: ignore [reportGeneralTypeIssues]  # pydantic
+        / "runs",
+        description="The directory containing reduced experimental trial data.",
     )
 
     plotter: DirectoryPath = Field(
-        default=data.default / "plotter",  # type: ignore  # Validator makes it a Path
-        description="The directory in which the OriginLab project is.",
+        default=data.default  # pyright: ignore [reportGeneralTypeIssues]  # pydantic
+        / "plotter",
+        description="The directory containing the OriginLab project.",
     )
 
     results: DirectoryPath = Field(
-        default=data.default / "results",  # type: ignore  # Validator makes it a Path
+        default=data.default  # pyright: ignore [reportGeneralTypeIssues]  # pydantic
+        / "results",
         description="The results directory.",
     )
 
     new_fits: DirectoryPath = Field(
-        default=results.default / "new_fits",  # type: ignore  # Validator makes it a Path
-        description="The directory in which fit plots will go for new runs.",
+        default=results.default  # pyright: ignore [reportGeneralTypeIssues]  # pydantic
+        / "new_fits",
+        description="The directory in which model fit plots will go for new runs.",
     )
 
     # "always" so it'll run even if not in YAML

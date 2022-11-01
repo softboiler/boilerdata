@@ -43,7 +43,11 @@ def per_index(
     **kwargs,
 ) -> pd.DataFrame:
     df = (
-        df.groupby(level=level, sort=False, group_keys=False)  # type: ignore  # Issue w/ pandas-stubs
+        df.groupby(
+            level=level,  # pyright: ignore [reportGeneralTypeIssues]
+            sort=False,
+            group_keys=False,
+        )
         .apply(per_index_func, proj, *args, **kwargs)
         .pipe(set_proj_dtypes, proj)
     )
@@ -69,9 +73,27 @@ def get_tcs(trial: Trial) -> tuple[list[str], list[str]]:
 
 def zip_params(grp: pd.DataFrame, proj: Project):
     model_params = proj.params.model_params
-    params = [param for param in model_params if "err" not in param]  # type: ignore  # Due to use_enum_values
-    param_errors = [param for param in model_params if "err" in param]  # type: ignore  # Due to use_enum_values
-    return zip(grp[params], grp[param_errors], model_params)  # type: ignore  # Due to use_enum_values
+    params = [
+        param
+        for param in model_params
+        if "err"
+        not in param  # pyright: ignore [reportGeneralTypeIssues]  # pydantic: use_enum_values
+    ]
+    param_errors = [
+        param
+        for param in model_params
+        if "err"
+        in param  # pyright: ignore [reportGeneralTypeIssues]  # pydantic: use_enum_values
+    ]
+    return zip(
+        grp[
+            params
+        ],  # pyright: ignore [reportGeneralTypeIssues]  # pydantic: use_enum_values
+        grp[
+            param_errors
+        ],  # pyright: ignore [reportGeneralTypeIssues]  # pydantic: use_enum_values
+        model_params,
+    )
 
 
 def model_with_error(model, x, u_params):
@@ -79,7 +101,9 @@ def model_with_error(model, x, u_params):
     u_x = [ufloat(v, 0, "x") for v in x]
     u_y = model(u_x, *u_params)
     y = np.array([v.nominal_value for v in u_y])
-    y_min = y - [v.std_dev for v in u_y]  # type: ignore  # Due to unknown array type
+    y_min = y - [  # pyright: ignore [reportGeneralTypeIssues]  # uncertainties
+        v.std_dev for v in u_y
+    ]
     y_max = y + [v.std_dev for v in u_y]
     return y, y_min, y_max
 

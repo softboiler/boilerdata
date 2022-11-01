@@ -1,9 +1,11 @@
-from functools import wraps  # type: ignore  # Needed for unpickled model
+from functools import (
+    wraps,  # pyright: ignore [reportUnusedImport]  # Needed for unpickled model
+)
 from pathlib import Path
 import warnings
 
 import dill  # noqa: S403  # Only unpickling an internal object.
-import numpy as np  # type: ignore  # Needed for unpickled model
+import numpy as np  # pyright: ignore [reportUnusedImport]  # Needed for unpickled model
 
 from boilerdata.models.project import Project
 

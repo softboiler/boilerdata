@@ -1,13 +1,19 @@
 """Pipeline functions."""
 
-from functools import wraps  # type: ignore  # Needed for unpickled model
+# # Necessary as long as a line marked "triggered only in CI" is in this file
+# pyright: reportUnnecessaryTypeIgnoreComment=none
+
+
+from functools import (
+    wraps,  # pyright: ignore [reportUnusedImport]  # Needed for unpickled model
+)
 from pathlib import Path
 import re
 from shutil import copy
 
-import janitor  # type: ignore  # Magically registers methods on Pandas objects
+import janitor  # pyright: ignore [reportUnusedImport]  # Registers methods on Pandas objects
 from matplotlib import pyplot as plt
-import numpy as np  # Also needed for unpickled "model"
+import numpy as np  # pyright: ignore [reportUnusedImport]  # Also needed for unpickled model
 import pandas as pd
 from propshop import get_prop
 from propshop.library import Mat, Prop
@@ -110,7 +116,7 @@ def fit(
     grp = grp.assign(
         **pd.Series(
             np.concatenate([model_params_fitted, param_errors]), index=model_params
-        )  # type: ignore  # Issue w/ pandas-stubs
+        )  # pyright: ignore [reportGeneralTypeIssues]  # pandas
     )
     return grp
 
@@ -133,14 +139,23 @@ def agg_over_runs(
     trial = proj.get_trial(pd.Timestamp(grp.name.date()))
     _, tc_errors = get_tcs(trial)
     grp = (
-        grp.groupby(level=[A.trial, A.run], dropna=False)  # type: ignore  # Issue w/ pandas-stubs
+        grp.groupby(
+            level=[
+                A.trial,
+                A.run,
+            ],  # pyright: ignore [reportGeneralTypeIssues]  # pandas
+            dropna=False,
+        )
         .agg(
             **(
                 # Take the default agg for all cols
                 proj.axes.aggs
                 # Override the agg for cols with duplicates in a run to take the first
                 | {
-                    col: pd.NamedAgg(column=col, aggfunc="first")  # type: ignore  # Due to use_enum_values
+                    col: pd.NamedAgg(
+                        column=col,  # pyright: ignore [reportGeneralTypeIssues]  # pydantic: use_enum_values
+                        aggfunc="first",
+                    )
                     for col in (tc_errors + proj.params.model_params)
                 }
             )
@@ -238,8 +253,8 @@ def plot_new_fits(grp: pd.DataFrame, proj: Project, model):
     )
     ax.fill_between(
         x=x_padded,
-        y1=y_padded_min,  # type: ignore  # Issue with matplotlib stubs
-        y2=y_padded_max,  # type: ignore  # Issue with matplotlib stubs
+        y1=y_padded_min,  # pyright: ignore [reportGeneralTypeIssues]  # matplotlib, triggered only in CI
+        y2=y_padded_max,  # pyright: ignore [reportGeneralTypeIssues]  # matplotlib
         color=[0.8, 0.8, 0.8],
         edgecolor=[1, 1, 1],
         label="95% CI",
@@ -256,12 +271,17 @@ def plot_new_fits(grp: pd.DataFrame, proj: Project, model):
 
     # Finishing
     ax.legend()
-    fig.savefig(run_file, dpi=300)  # type: ignore  # Issue w/ matplotlib stubs
+    fig.savefig(
+        run_file,  # pyright: ignore [reportGeneralTypeIssues]  # matplotlib
+        dpi=300,
+    )
 
 
 def get_heat_transfer(df: pd.DataFrame, proj: Project) -> pd.DataFrame:
     """Calculate heat transfer and superheat based on one-dimensional approximation."""
-    trial = proj.get_trial(df.name)  # type: ignore  # Group name is the trial
+    trial = proj.get_trial(
+        df.name  # pyright: ignore [reportGeneralTypeIssues]  # pandas
+    )
     get_saturation_temp = XSteam(XSteam.UNIT_SYSTEM_FLS).tsat_p  # A lookup function
 
     T_w_avg = df[[A.T_w1, A.T_w2, A.T_w3]].mean(axis="columns")  # noqa: N806
@@ -287,7 +307,9 @@ def get_heat_transfer(df: pd.DataFrame, proj: Project) -> pd.DataFrame:
 
 def assign_metadata(df: pd.DataFrame, proj: Project) -> pd.DataFrame:
     """Assign metadata columns to the dataframe."""
-    trial = proj.get_trial(df.name)  # type: ignore  # Group name is the trial
+    trial = proj.get_trial(
+        df.name  # pyright: ignore [reportGeneralTypeIssues]  # pandas
+    )
     # Need to re-apply categorical dtypes
     df = df.assign(
         **{
@@ -322,7 +344,10 @@ def transform_for_originlab(df: pd.DataFrame, proj: Project) -> pd.DataFrame:
     indices = [
         index.to_series()
         .reset_index(drop=True)
-        .replace(superscript, superscript_repl)  # type: ignore  # Issue w/ pandas-stubs
+        .replace(
+            superscript,  # pyright: ignore [reportGeneralTypeIssues]  # pandas
+            superscript_repl,
+        )
         .replace(subscript, subscript_repl)
         for index in (quantity, units)
     ]

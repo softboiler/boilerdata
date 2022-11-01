@@ -68,8 +68,8 @@ def get_run(proj: Project, run: Path) -> pd.DataFrame:
             # Allow source cols to be missing (such as T_6)
             usecols=lambda col: col in [index, *source_col_names],
             index_col=index,
-            parse_dates=[index],  # type: ignore  # Upstream issue w/ pandas-stubs
-            dtype=source_dtypes,  # type: ignore  # Upstream issue w/ pandas-stubs
+            parse_dates=[index],  # pyright: ignore [reportGeneralTypeIssues]  # pandas
+            dtype=source_dtypes,  # pyright: ignore [reportGeneralTypeIssues]  # pandas
             encoding="utf-8",
         )
         # Rarely a run has an all NA record at the end

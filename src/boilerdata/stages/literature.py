@@ -40,7 +40,11 @@ def main(proj: Project):
                 .rename(columns=dict(x="ΔT", y="q''", name="dataset"))
                 .sort_values(["dataset", "ΔT", "q''"])
             )
-            fig_df = raw_df.assign(**data, **paper_meta, **fig_meta).convert_dtypes()  # type: ignore
+            fig_df = raw_df.assign(
+                **data,  # pyright: ignore [reportGeneralTypeIssues]  # pandas
+                **paper_meta,
+                **fig_meta
+            ).convert_dtypes()
             dfs.append(fig_df)
 
     df = pd.concat(dfs)
@@ -74,7 +78,12 @@ def get_dict(data: dict[str, Any]) -> dict[str, Any]:
     dict_of_data_sets = {}
     for data_set in dataset_coll:
         data = data_set["data"]
-        xy_par = np.array([datum["value"] for datum in data])  # type: ignore
+        xy_par = np.array(
+            [
+                datum["value"]  # pyright: ignore [reportGeneralTypeIssues]  # pandas
+                for datum in data
+            ]
+        )
         dict_of_data_sets[data_set["name"]] = xy_par
     return dict_of_data_sets
 
