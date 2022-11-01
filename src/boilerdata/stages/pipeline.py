@@ -108,7 +108,7 @@ def fit(
         model_params_fitted = np.full(dim, np.nan)
         pcov = np.full((dim, dim), np.nan)
 
-    # Compute confidence interval  #! Depends on the order of `param_errors`
+    # Compute confidence interval
     param_standard_errors = np.sqrt(np.diagonal(pcov))
     param_errors = param_standard_errors * confidence_interval_95
 

@@ -8,8 +8,8 @@ stages:
       size: 7881
       nfiles: 3
     - path: data/model
-      md5: ba62bd36aaf52a48230968c6c31aa76f.dir
-      size: 37196
+      md5: c81fcdd527e7aea920dbf9dc0eac563b.dir
+      size: 37395
       nfiles: 1
     - path: data/runs
       md5: b4417abdb6b4df1fcbf617a9b686df53.dir
@@ -20,8 +20,8 @@ stages:
       size: 26799
       nfiles: 4
     - path: src/boilerdata
-      md5: b035b238947b7b72250ea387499c77ce.dir
-      size: 196670
+      md5: d0b95bf3b0be66d524a10a5648b268f3.dir
+      size: 232845
       nfiles: 55
     - path: src/boilerdata/models
       md5: 875d7e85ac4f74a7e8ebae416a983253.dir
@@ -72,14 +72,14 @@ stages:
           do_plot: true
     outs:
     - path: data/plots/first_new_fit.png
-      md5: a203af3e92aab49dbc4db4f76b3ccabf
-      size: 100824
+      md5: 2c9674324067b32d59d9fd08b4a776eb
+      size: 115589
     - path: data/plots/last_new_fit.png
-      md5: 53e7f90bd66b819a7d0e09aaface6fda
-      size: 117756
+      md5: 64fb3de83305001a87629f4a24aa5884
+      size: 117886
     - path: data/results
-      md5: 8d041a6dfb3fe6fadbbfe53b97f34957.dir
-      size: 1741994
+      md5: a352742a1e89df30abaaa82f01c2efba.dir
+      size: 1711596
       nfiles: 13
   plot:
     cmd: python -m boilerdata.plot
@@ -313,8 +313,8 @@ stages:
       size: 26799
       nfiles: 4
     - path: src/boilerdata/modelfun.ipynb
-      md5: c058a419eccb521ee9470b5fd384e70a
-      size: 15900
+      md5: 6fcf92c75e5a9bf2f5138da7cbd3636b
+      size: 51916
     - path: src/boilerdata/models
       md5: 875d7e85ac4f74a7e8ebae416a983253.dir
       size: 68282
@@ -364,8 +364,8 @@ stages:
           do_plot: true
     outs:
     - path: data/model
-      md5: ba62bd36aaf52a48230968c6c31aa76f.dir
-      size: 37196
+      md5: c81fcdd527e7aea920dbf9dc0eac563b.dir
+      size: 37395
       nfiles: 1
   literature:
     cmd: python -m boilerdata.stages.literature
