@@ -12,7 +12,13 @@ from uncertainties import ufloat
 
 from boilerdata.axes_enum import AxesEnum as A  # noqa: N814
 from boilerdata.models.project import Project
-from boilerdata.stages.common import get_tcs, model_with_error, per_run, zip_params
+from boilerdata.stages.common import (
+    get_tcs,
+    get_trial,
+    model_with_error,
+    per_run,
+    zip_params,
+)
 from boilerdata.stages.modelfun import model_with_uncertainty
 
 # * -------------------------------------------------------------------------------- * #
@@ -52,7 +58,7 @@ def plot_fits(df: pd.DataFrame, proj: Project, model) -> pd.DataFrame:
 def plot_new_fits(grp: pd.DataFrame, proj: Project, model):
     """Plot model fits for trials marked as new."""
 
-    trial = proj.get_trial(pd.Timestamp(grp.name[0].date()))
+    trial = get_trial(grp, proj)
     if not trial.new:
         return grp
 

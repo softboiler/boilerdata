@@ -13,6 +13,17 @@ from boilerdata.models.project import Project
 from boilerdata.models.trials import Trial
 
 
+def get_trial(df: pd.DataFrame, proj: Project):
+    """Get the trial represented in a given dataframe, verifying it is the only one."""
+    trials_in_df = df.index.get_level_values(A.trial)
+    if trials_in_df.nunique() > 1:
+        raise RuntimeError("There was more than one trial when getting the trial.")
+    trial = pd.Timestamp(
+        trials_in_df[0].date()  # pyright: ignore [reportGeneralTypeIssues]  # pandas
+    )
+    return proj.get_trial(trial)
+
+
 def per_trial(
     df: pd.DataFrame,
     per_trial_func,

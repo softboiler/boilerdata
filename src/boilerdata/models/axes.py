@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Any, Callable, Optional
 
 import pandas as pd
 from pydantic import Field, validator
@@ -29,14 +29,14 @@ class Axis(MyBaseModel):
 
     # ! AGGREGATION
 
-    agg: PandasAggfun = Field(
+    agg: PandasAggfun | Callable[..., Any] = Field(
         default=PandasAggfun.mean,
         description="The aggregation method to use for this column.",
     )
 
     @validator("agg", always=True)
     def validate_agg(cls, agg, values):
-        return "first" if values["dtype"] == PandasDtype.category else agg
+        return (lambda ser: ser[0]) if values["dtype"] == PandasDtype.category else agg
 
     # ! COLUMNS IN SOURCE DATA
 

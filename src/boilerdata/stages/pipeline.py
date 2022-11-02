@@ -12,7 +12,7 @@ from scipy.stats import t
 from boilerdata.axes_enum import AxesEnum as A  # noqa: N814
 from boilerdata.models.project import Project
 from boilerdata.models.trials import Trial
-from boilerdata.stages.common import get_tcs, per_run, per_trial
+from boilerdata.stages.common import get_tcs, get_trial, per_run, per_trial
 from boilerdata.stages.modelfun import model
 from boilerdata.validation import (
     handle_invalid_data,
@@ -38,9 +38,9 @@ def main(proj: Project):
         .pipe(handle_invalid_data, validate_initial_df)
         .pipe(get_properties)
         .pipe(per_run, fit, proj, model, confidence_interval_95)
-        .pipe(per_trial, agg_over_runs, proj, confidence_interval_95)
+        .pipe(per_trial, agg_over_runs, proj, confidence_interval_95)  # TCs may vary
         .pipe(per_trial, get_superheat, proj)  # Water temp varies across trials
-        .pipe(per_trial, assign_metadata, proj)  # Distinct per trial
+        .pipe(per_trial, assign_metadata, proj)  # Metadata is distinct per trial
         .pipe(validate_final_df)
         .to_csv(proj.dirs.file_results, encoding="utf-8")
     )
@@ -69,7 +69,6 @@ def get_properties(df: pd.DataFrame) -> pd.DataFrame:
             ),
             A.T_w: lambda df: (T_w_avg + T_w_p) / 2,
             A.T_w_diff: lambda df: abs(T_w_avg - T_w_p),
-            # Explicitly index the trial to catch improper application of the mean
         }
     )
 
@@ -83,7 +82,7 @@ def fit(
     """Fit the data to a model function."""
 
     # Make timestamp explicit due to deprecation warning
-    trial = proj.get_trial(pd.Timestamp(grp.name[0].date()))
+    trial = get_trial(grp, proj)
 
     # Get coordinates and model parameters
     model_params = proj.params.model_params
@@ -122,6 +121,10 @@ def fit(
         model_params_fitted = np.full(dim, np.nan)
         pcov = np.full((dim, dim), np.nan)
 
+    dim = len(model_params) // 2
+    model_params_fitted = np.full(dim, np.nan)
+    pcov = np.full((dim, dim), np.nan)
+
     # Compute confidence interval
     param_standard_errors = np.sqrt(np.diagonal(pcov))
     param_errors = param_standard_errors * confidence_interval_95
@@ -150,8 +153,8 @@ def agg_over_runs(
     proj: Project,
     confidence_interval_95: float,
 ) -> pd.DataFrame:
-    """Aggregate properties over each run."""
-    trial = proj.get_trial(pd.Timestamp(grp.name.date()))
+    """Aggregate properties over each run. Runs per trial because TCs can vary."""
+    trial = get_trial(grp, proj)
     _, tc_errors = get_tcs(trial)
     grp = (
         grp.groupby(
@@ -190,9 +193,7 @@ def agg_over_runs(
 def get_superheat(df: pd.DataFrame, proj: Project) -> pd.DataFrame:
     """Calculate heat transfer and superheat based on one-dimensional approximation."""
     # Explicitly index the trial to catch improper application of the mean
-    trial = proj.get_trial(
-        df.name  # pyright: ignore [reportGeneralTypeIssues]  # pandas
-    )
+    trial = get_trial(df, proj)
     return df.assign(
         **{
             A.DT: lambda df: (df[A.T_s] - df.loc[trial.date.isoformat(), A.T_w].mean()),
@@ -201,20 +202,18 @@ def get_superheat(df: pd.DataFrame, proj: Project) -> pd.DataFrame:
     )
 
 
-def assign_metadata(df: pd.DataFrame, proj: Project) -> pd.DataFrame:
+def assign_metadata(grp: pd.DataFrame, proj: Project) -> pd.DataFrame:
     """Assign metadata columns to the dataframe."""
-    trial = proj.get_trial(
-        df.name  # pyright: ignore [reportGeneralTypeIssues]  # pandas
-    )
+    trial = get_trial(grp, proj)
     # Need to re-apply categorical dtypes
-    df = df.assign(
+    grp = grp.assign(
         **{
             field: value
             for field, value in trial.dict().items()  # Dict call avoids excluded properties
             if field not in [idx.name for idx in proj.axes.index]
         }
     )
-    return df
+    return grp
 
 
 # * -------------------------------------------------------------------------------- * #
