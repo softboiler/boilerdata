@@ -4,7 +4,7 @@ stages:
     cmd: python -m boilerdata.stages.pipeline
     deps:
     - path: data/modelfun
-      md5: 03572dedfb4a8d2ced27857713423e24.dir
+      md5: 34a63763d01ff689b40cf31d69d42bbb.dir
       size: 43607
       nfiles: 1
     - path: data/runs
@@ -12,8 +12,8 @@ stages:
       size: 999154
       nfiles: 1
     - path: src/boilerdata/stages/pipeline.py
-      md5: 43a3779ed133bc8ee14f2cc3d1c9508a
-      size: 7453
+      md5: 267587e3019df4be104393ac63f4ce62
+      size: 7247
     params:
       config/project.yaml:
         geometry:
@@ -92,8 +92,8 @@ stages:
       size: 7881
       nfiles: 3
     - path: src/boilerdata/models
-      md5: 51c486374697c9cecf47ee8beee8319c.dir
-      size: 57357
+      md5: a33faff954232cd9a241bec2f698321a.dir
+      size: 57589
       nfiles: 18
     - path: src/boilerdata/stages/schema.py
       md5: 0106ba329192f085f501ac35de5b04ff
@@ -143,8 +143,8 @@ stages:
           do_plot: true
     outs:
     - path: data/schema
-      md5: 2faa38503e7f881ee2020482a5a7cecd.dir
-      size: 25231
+      md5: a2fff282ee11bce4940fd1b9349cd2ac.dir
+      size: 23755
       nfiles: 4
   originlab:
     cmd: python -m boilerdata.stages.originlab
@@ -154,16 +154,16 @@ stages:
       size: 27127
       nfiles: 1
     - path: data/plotter
-      md5: 3c3046346089229e5e65f11916009db9.dir
-      size: 327810
+      md5: c33e42d60d48fd172428f66b5398c75b.dir
+      size: 279731
       nfiles: 1
     - path: data/results
-      md5: 93f0a29fa4e3e221a1d97f2a00c0ca12.dir
-      size: 465025
-      nfiles: 2
+      md5: 99d481d08e49f50501ee6e7ade86f838.dir
+      size: 233056
+      nfiles: 1
     - path: src/boilerdata/stages/originlab.py
-      md5: 300d68eea7d5cd1cf1e5d9831b712cf4
-      size: 2745
+      md5: 0926d35c5dc20b57edf4eef203fad6ac
+      size: 2741
     params:
       config/project.yaml:
         geometry:
@@ -208,8 +208,12 @@ stages:
           records_to_average: 9
           do_plot: true
     outs:
+    - path: data/originlab_results
+      md5: 43635fd05f000f47a41479d53943bdf1.dir
+      size: 231969
+      nfiles: 1
     - path: data/plots/lit_.png
-      md5: 03394913cb6967e28e49398b6e69d5ec
+      md5: 28621c16e0693e710ecf1cc2b4683671
       size: 80894
   runs:
     cmd: python -m boilerdata.stages.runs
@@ -219,8 +223,8 @@ stages:
       size: 103226338
       nfiles: 401
     - path: data/schema
-      md5: 2faa38503e7f881ee2020482a5a7cecd.dir
-      size: 25231
+      md5: a2fff282ee11bce4940fd1b9349cd2ac.dir
+      size: 23755
       nfiles: 4
     - path: src/boilerdata/stages/runs.py
       md5: 945f75deb7cf8691edc4005b2471324b
@@ -277,12 +281,12 @@ stages:
     cmd: jupyter execute src/boilerdata/stages/modelfun.ipynb
     deps:
     - path: data/schema
-      md5: 2faa38503e7f881ee2020482a5a7cecd.dir
-      size: 25231
+      md5: a2fff282ee11bce4940fd1b9349cd2ac.dir
+      size: 23755
       nfiles: 4
     - path: src/boilerdata/stages/modelfun.ipynb
-      md5: 386081cf426b06f255f491b161e17bb7
-      size: 15055
+      md5: 1c8543d164179092d9c7bc24272e4e1d
+      size: 15659
     params:
       config/project.yaml:
         geometry:
@@ -328,7 +332,7 @@ stages:
           do_plot: true
     outs:
     - path: data/modelfun
-      md5: 03572dedfb4a8d2ced27857713423e24.dir
+      md5: 34a63763d01ff689b40cf31d69d42bbb.dir
       size: 43607
       nfiles: 1
   literature:
@@ -339,8 +343,8 @@ stages:
       size: 321985
       nfiles: 9
     - path: data/schema
-      md5: 2faa38503e7f881ee2020482a5a7cecd.dir
-      size: 25231
+      md5: a2fff282ee11bce4940fd1b9349cd2ac.dir
+      size: 23755
       nfiles: 4
     - path: src/boilerdata/stages/literature.py
       md5: 83661520bdd5a68529a6ae12b3b24a80
@@ -397,12 +401,12 @@ stages:
     cmd: python -m boilerdata.stages.plots
     deps:
     - path: data/results
-      md5: 93f0a29fa4e3e221a1d97f2a00c0ca12.dir
-      size: 465025
-      nfiles: 2
+      md5: 99d481d08e49f50501ee6e7ade86f838.dir
+      size: 233056
+      nfiles: 1
     - path: src/boilerdata/stages/plots.py
-      md5: b84bdddd620f223ebe658d472da575a5
-      size: 4320
+      md5: d907391fbdc81f79ae05dac398b260a9
+      size: 4334
     params:
       config/project.yaml:
         geometry:

@@ -15,7 +15,7 @@ def main(proj: Project):
     (
         get_results(proj)
         .pipe(transform_for_originlab, proj)
-        .to_csv("data/results/originlab_results.csv", index=False, encoding="utf-8")
+        .to_csv(proj.dirs.file_originlab_results, index=False, encoding="utf-8")
     )
 
     with open_originlab(proj.dirs.file_plotter):
