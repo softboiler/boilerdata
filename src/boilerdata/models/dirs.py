@@ -52,7 +52,7 @@ class Dirs(MyBaseModel):
 
     model: DirectoryPath = Field(
         default=data.default  # pyright: ignore [reportGeneralTypeIssues]  # pydantic
-        / "model",
+        / "modelfun",
         description="The directory containing a pickled model function.",
     )
 

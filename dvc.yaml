@@ -13,14 +13,14 @@ stages:
       # - "src/boilerdata/axes_enum.py"
 
   modelfun:
-    cmd: "jupyter execute src/boilerdata/modelfun.ipynb"
+    cmd: "jupyter execute src/boilerdata/stages/modelfun.ipynb"
     params:
       - "config/project.yaml":
     deps:
-      - "src/boilerdata/modelfun.ipynb"
+      - "src/boilerdata/stages/modelfun.ipynb"
       - "data/schema"
     outs:
-      - "data/model"
+      - "data/modelfun"
 
   runs:
     cmd: "python -m boilerdata.stages.runs"
@@ -51,6 +51,8 @@ stages:
     deps:
       - "src/boilerdata/stages/plots.py"
       - "data/results"
+    outs:
+      - "data/plots/new_fits"
     plots:
       - "data/plots/first_new_fit.png"
       - "data/plots/last_new_fit.png"
