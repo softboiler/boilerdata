@@ -134,3 +134,12 @@ def chdir_to_nearest_git_root(max_depth: int = 7) -> None:
         f"Original CWD: {original_cwd}\n"
         f"Stopped at : {eventual_cwd}\n"
     )
+
+
+def get_results(proj: Project):
+    return pd.read_csv(
+        proj.dirs.file_results,
+        index_col=(index_col := [A.trial, A.run]),
+        parse_dates=index_col,
+        dtype={col.name: col.dtype for col in proj.axes.cols},
+    )

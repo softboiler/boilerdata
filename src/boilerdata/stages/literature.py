@@ -48,7 +48,7 @@ def main(proj: Project):
             dfs.append(fig_df)
 
     df = pd.concat(dfs)
-    df.to_csv(proj.dirs.literature_results_file, index=False)
+    df.to_csv(proj.dirs.file_literature_results, index=False)
 
 
 # * -------------------------------------------------------------------------------- * #

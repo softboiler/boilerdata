@@ -8,7 +8,7 @@ from pathlib import Path
 import pandas as pd
 
 from boilerdata.models.project import Project
-from boilerdata.utils import set_dtypes
+from boilerdata.stages.common import set_dtypes
 
 # * -------------------------------------------------------------------------------- * #
 # * MAIN
@@ -18,7 +18,7 @@ def main(proj: Project):
     (
         pd.DataFrame(
             columns=[ax.name for ax in proj.axes.cols], data=get_runs(proj)
-        ).to_csv(proj.dirs.runs_file, encoding="utf-8")
+        ).to_csv(proj.dirs.file_runs, encoding="utf-8")
     )
 
 

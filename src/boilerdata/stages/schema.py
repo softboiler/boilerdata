@@ -17,8 +17,8 @@ def main(proj: Project):
             proj.dirs.project_schema / f"{to_snake_case(model.__name__)}_schema.json",
             model,
         )
-    generate_axes_enum([ax.name for ax in proj.axes.all], proj.dirs.axes_enum_file)
-    proj.dirs.originlab_coldes_file.write_text(proj.axes.get_originlab_coldes())
+    generate_axes_enum([ax.name for ax in proj.axes.all], proj.dirs.file_axes_enum)
+    proj.dirs.file_originlab_coldes.write_text(proj.axes.get_originlab_coldes())
 
 
 def generate_axes_enum(axes: list[str], path: Path) -> None:

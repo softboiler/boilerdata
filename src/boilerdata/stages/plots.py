@@ -12,8 +12,8 @@ from uncertainties import ufloat
 
 from boilerdata.axes_enum import AxesEnum as A  # noqa: N814
 from boilerdata.models.project import Project
+from boilerdata.stages.common import get_tcs, model_with_error, per_run, zip_params
 from boilerdata.stages.modelfun import model_with_uncertainty
-from boilerdata.utils import get_tcs, model_with_error, per_run, zip_params
 
 # * -------------------------------------------------------------------------------- * #
 # * MAIN
@@ -23,7 +23,7 @@ def main(proj: Project):
 
     (
         pd.read_csv(
-            proj.dirs.simple_results_file,
+            proj.dirs.file_results,
             index_col=(index_col := [A.trial, A.run]),
             parse_dates=index_col,
             dtype={col.name: col.dtype for col in proj.axes.cols},

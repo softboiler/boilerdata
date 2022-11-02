@@ -29,6 +29,31 @@ class MyBaseModel(
     """
 
 
+# * -------------------------------------------------------------------------------- * #
+# * UNUSED
+
+
+@contextmanager
+def allow_extra(model: BaseModel):
+    """Temporarily allow extra properties to be set on a Pydantic model.
+
+    This is useful when writing a custom `__init__`, where not explicitly allowing extra
+    properties will result in errors, but you don't want to allow extra properties
+    forevermore.
+
+    Parameters
+    ----------
+    model: BaseModel
+        The model to allow extras on.
+    """
+    original_config = model.Config.extra
+    model.Config.extra = Extra.allow
+    try:
+        yield
+    finally:
+        model.Config.extra = original_config
+
+
 def expanduser2(path: StrPath) -> Path:
     """Expand the "~" user construction.
 
@@ -52,38 +77,8 @@ def expanduser2(path: StrPath) -> Path:
         return Path(path)
 
 
-def get_file(path: StrPath, create: bool = False) -> Path:
-    """Generate `pathlib.Path` to a file that exists.
-
-    Handle the "~" user construction if necessary and return a `pathlib.Path` object.
-    Raise exception if the file is not found.
-
-    Parameters
-    ----------
-    path: StrPath
-        The path.
-    create: bool
-        Whether a file should be created at the path if it doesn't already exist.
-
-    Returns
-    -------
-    pathlib.Path
-        The path after handling.
-
-    Raises
-    ------
-    FleNotFoundError
-        If the file doesn't exist or does not refer to a file.
-    """
-    path = expanduser2(path) if isinstance(path, str) else Path(path)
-    if not path.exists():
-        if create:
-            path.touch()
-        else:
-            raise FileNotFoundError(f"The path '{path}' does not exist.")
-    elif not path.is_file():
-        raise FileNotFoundError(f"The path '{path}' does not refer to a file.")
-    return path
+# * -------------------------------------------------------------------------------- * #
+# * COMMON
 
 
 def load_config(path: StrPath, model):
@@ -170,22 +165,35 @@ def write_schema(path: StrPath, model: type[BaseModel]):
     path.write_text(model.schema_json(indent=2) + "\n", encoding="utf-8")
 
 
-@contextmanager
-def allow_extra(model: BaseModel):
-    """Temporarily allow extra properties to be set on a Pydantic model.
+def get_file(path: StrPath, create: bool = False) -> Path:
+    """Generate `pathlib.Path` to a file that exists.
 
-    This is useful when writing a custom `__init__`, where not explicitly allowing extra
-    properties will result in errors, but you don't want to allow extra properties
-    forevermore.
+    Handle the "~" user construction if necessary and return a `pathlib.Path` object.
+    Raise exception if the file is not found.
 
     Parameters
     ----------
-    model: BaseModel
-        The model to allow extras on.
+    path: StrPath
+        The path.
+    create: bool
+        Whether a file should be created at the path if it doesn't already exist.
+
+    Returns
+    -------
+    pathlib.Path
+        The path after handling.
+
+    Raises
+    ------
+    FleNotFoundError
+        If the file doesn't exist or does not refer to a file.
     """
-    original_config = model.Config.extra
-    model.Config.extra = Extra.allow
-    try:
-        yield
-    finally:
-        model.Config.extra = original_config
+    path = expanduser2(path) if isinstance(path, str) else Path(path)
+    if not path.exists():
+        if create:
+            path.touch()
+        else:
+            raise FileNotFoundError(f"The path '{path}' does not exist.")
+    elif not path.is_file():
+        raise FileNotFoundError(f"The path '{path}' does not refer to a file.")
+    return path

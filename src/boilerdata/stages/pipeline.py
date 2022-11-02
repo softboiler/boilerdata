@@ -1,7 +1,5 @@
 from functools import partial
-import re
 
-import janitor  # pyright: ignore [reportUnusedImport]  # Registers methods on Pandas objects
 import numpy as np
 import pandas as pd
 from propshop import get_prop
@@ -14,8 +12,8 @@ from scipy.stats import t
 from boilerdata.axes_enum import AxesEnum as A  # noqa: N814
 from boilerdata.models.project import Project
 from boilerdata.models.trials import Trial
+from boilerdata.stages.common import get_tcs, per_run, per_trial
 from boilerdata.stages.modelfun import model
-from boilerdata.utils import get_tcs, per_run, per_trial
 from boilerdata.validation import (
     handle_invalid_data,
     validate_final_df,
@@ -32,7 +30,7 @@ def main(proj: Project):
 
     (
         pd.read_csv(
-            proj.dirs.runs_file,
+            proj.dirs.file_runs,
             index_col=(index_col := [A.trial, A.run, A.time]),
             parse_dates=index_col,
             dtype={col.name: col.dtype for col in proj.axes.cols},
@@ -44,9 +42,7 @@ def main(proj: Project):
         .pipe(per_trial, get_superheat, proj)  # Water temp varies across trials
         .pipe(per_trial, assign_metadata, proj)  # Distinct per trial
         .pipe(validate_final_df)
-        .also(lambda df: df.to_csv(proj.dirs.simple_results_file, encoding="utf-8"))
-        .pipe(transform_for_originlab, proj)
-        .to_csv(proj.dirs.originlab_results_file, index=False, encoding="utf-8")
+        .to_csv(proj.dirs.file_results, encoding="utf-8")
     )
 
 
@@ -219,40 +215,6 @@ def assign_metadata(df: pd.DataFrame, proj: Project) -> pd.DataFrame:
         }
     )
     return df
-
-
-def transform_for_originlab(df: pd.DataFrame, proj: Project) -> pd.DataFrame:
-    """Move units out of column labels and into a row just below the column labels.
-
-    Explicitly set all dtypes to string to avoid data rendering issues, especially with
-    dates. Convert super/subscripts in units to their OriginLab representation. Reset
-    the index to avoid the extra row between units and data indicating index axis names.
-
-    See: <https://www.originlab.com/doc/en/Origin-Help/Escape-Sequences>
-    """
-
-    superscript = re.compile(r"\^(.*)")
-    superscript_repl = r"\+(\1)"
-    subscript = re.compile(r"\_(.*)")
-    subscript_repl = r"\-(\1)"
-
-    cols = proj.axes.get_col_index()
-    quantity = cols.get_level_values("quantity").map(
-        {col.name: col.pretty_name for col in proj.axes.all}
-    )
-    units = cols.get_level_values("units")
-    indices = [
-        index.to_series()
-        .reset_index(drop=True)
-        .replace(
-            superscript,  # pyright: ignore [reportGeneralTypeIssues]  # pandas
-            superscript_repl,
-        )
-        .replace(subscript, subscript_repl)
-        for index in (quantity, units)
-    ]
-    cols = pd.MultiIndex.from_frame(pd.concat(axis="columns", objs=indices))
-    return df.set_axis(axis="columns", labels=cols).reset_index()
 
 
 # * -------------------------------------------------------------------------------- * #

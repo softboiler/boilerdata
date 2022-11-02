@@ -30,7 +30,7 @@ def fix_model(f) -> Callable[..., Any]:
     return wrapper
 
 
-model_file = Project.get_project().dirs.model_file
+model_file = Project.get_project().dirs.file_model
 file_bytes = Path(model_file).read_bytes()
 with warnings.catch_warnings():
     warnings.simplefilter("ignore")
