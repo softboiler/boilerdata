@@ -1,6 +1,4 @@
-# # Necessary as long as a line marked "triggered only in CI" is in this file
-# pyright: reportUnnecessaryTypeIgnoreComment=none
-
+from functools import partial
 import re
 
 import janitor  # pyright: ignore [reportUnusedImport]  # Registers methods on Pandas objects
@@ -14,9 +12,9 @@ from scipy.optimize import curve_fit
 from scipy.stats import t
 
 from boilerdata.axes_enum import AxesEnum as A  # noqa: N814
-from boilerdata.modelfun import model
 from boilerdata.models.project import Project
 from boilerdata.models.trials import Trial
+from boilerdata.stages.modelfun import model
 from boilerdata.utils import get_tcs, per_run, per_trial
 from boilerdata.validation import (
     handle_invalid_data,
@@ -40,9 +38,10 @@ def main(proj: Project):
             dtype={col.name: col.dtype for col in proj.axes.cols},
         )
         .pipe(handle_invalid_data, validate_initial_df)
+        .pipe(get_properties)
         .pipe(per_run, fit, proj, model, confidence_interval_95)
         .pipe(per_trial, agg_over_runs, proj, confidence_interval_95)
-        .pipe(per_trial, get_heat_transfer, proj)  # Water temp varies across trials
+        .pipe(per_trial, get_superheat, proj)  # Water temp varies across trials
         .pipe(per_trial, assign_metadata, proj)  # Distinct per trial
         .pipe(validate_final_df)
         .also(lambda df: df.to_csv(proj.dirs.simple_results_file, encoding="utf-8"))
@@ -55,13 +54,37 @@ def main(proj: Project):
 # * STAGES
 
 
+def get_properties(df: pd.DataFrame) -> pd.DataFrame:
+    """Get properties."""
+
+    get_saturation_temp = XSteam(XSteam.UNIT_SYSTEM_FLS).tsat_p  # A lookup function
+
+    T_w_avg = df[[A.T_w1, A.T_w2, A.T_w3]].mean(axis="columns")  # noqa: N806
+    T_w_p = convert_temperature(  # noqa: N806
+        df[A.P].apply(get_saturation_temp), "F", "C"
+    )
+
+    return df.assign(
+        **{
+            A.k: lambda df: get_prop(
+                Mat.COPPER,
+                Prop.THERMAL_CONDUCTIVITY,
+                convert_temperature((df[A.T_1] + df[A.T_5]) / 2, "C", "K"),
+            ),
+            A.T_w: lambda df: (T_w_avg + T_w_p) / 2,
+            A.T_w_diff: lambda df: abs(T_w_avg - T_w_p),
+            # Explicitly index the trial to catch improper application of the mean
+        }
+    )
+
+
 def fit(
     grp: pd.DataFrame,
     proj: Project,
     model,
     confidence_interval_95: float,
 ) -> pd.DataFrame:
-    """Fit the data assuming one-dimensional, steady-state conduction."""
+    """Fit the data to a model function."""
 
     # Make timestamp explicit due to deprecation warning
     trial = proj.get_trial(pd.Timestamp(grp.name[0].date()))
@@ -79,17 +102,24 @@ def fit(
             | {A.T_5_err: t_type_error}
         )
     )
-    x, y, y_errors = fit_setup(grp, proj, trial)
 
-    # Perform fit
+    # Prepare for fitting
+    x, y, y_errors = fit_setup(grp, proj, trial)
+    T_w = grp.T_w.mean()  # noqa: N806  # Mean water temperature
+    T_s_bnd = (T_w, np.inf)  # noqa: N806  # Boiling surface temp bounds
+    q_s_bnd = (0, np.inf)  # Surface heat flux bounds
+    h_bnd = (0, np.inf)  # Convection heat transfer coefficient bounds
+
+    # Perform fit  # ! Depends on the order of the parameters
     try:
         model_params_fitted, pcov = curve_fit(
-            model,
+            partial(model, **{A.k: grp[A.k].mean()}),
             x,
             y,
             sigma=y_errors,
             absolute_sigma=True,
-            bounds=(0, np.inf),
+            p0=(T_w, 1, 1),
+            bounds=tuple(zip(T_s_bnd, q_s_bnd, h_bnd)),
         )
     except RuntimeError:
         dim = len(model_params) // 2
@@ -110,6 +140,7 @@ def fit(
 
 
 def fit_setup(grp: pd.DataFrame, proj: Project, trial: Trial):
+    """Reshape vectors to be passed to the curve fit."""
     tcs, tc_errors = get_tcs(trial)
     x_unique = list(trial.thermocouple_pos.values())
     x = np.tile(x_unique, proj.params.records_to_average)
@@ -123,7 +154,7 @@ def agg_over_runs(
     proj: Project,
     confidence_interval_95: float,
 ) -> pd.DataFrame:
-
+    """Aggregate properties over each run."""
     trial = proj.get_trial(pd.Timestamp(grp.name.date()))
     _, tc_errors = get_tcs(trial)
     grp = (
@@ -160,28 +191,14 @@ def agg_over_runs(
     return grp
 
 
-def get_heat_transfer(df: pd.DataFrame, proj: Project) -> pd.DataFrame:
+def get_superheat(df: pd.DataFrame, proj: Project) -> pd.DataFrame:
     """Calculate heat transfer and superheat based on one-dimensional approximation."""
+    # Explicitly index the trial to catch improper application of the mean
     trial = proj.get_trial(
         df.name  # pyright: ignore [reportGeneralTypeIssues]  # pandas
     )
-    get_saturation_temp = XSteam(XSteam.UNIT_SYSTEM_FLS).tsat_p  # A lookup function
-
-    T_w_avg = df[[A.T_w1, A.T_w2, A.T_w3]].mean(axis="columns")  # noqa: N806
-    T_w_p = convert_temperature(  # noqa: N806
-        df[A.P].apply(get_saturation_temp), "F", "C"
-    )
-
     return df.assign(
         **{
-            A.k: lambda df: get_prop(
-                Mat.COPPER,
-                Prop.THERMAL_CONDUCTIVITY,
-                convert_temperature((df[A.T_1] + df[A.T_5]) / 2, "C", "K"),
-            ),
-            A.T_w: lambda df: (T_w_avg + T_w_p) / 2,
-            A.T_w_diff: lambda df: abs(T_w_avg - T_w_p),
-            # Explicitly index the trial to catch improper application of the mean
             A.DT: lambda df: (df[A.T_s] - df.loc[trial.date.isoformat(), A.T_w].mean()),
             A.DT_err: lambda df: df[A.T_s_err],
         }

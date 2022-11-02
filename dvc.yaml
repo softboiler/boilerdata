@@ -39,7 +39,7 @@ stages:
       - "config/project.yaml":
     deps:
       - "src/boilerdata/stages/pipeline.py"
-      - "data/model"
+      - "data/modelfun"
       - "data/runs"
     outs:
       - "data/results"

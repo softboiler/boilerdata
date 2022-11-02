@@ -11,8 +11,8 @@ import pandas as pd
 from uncertainties import ufloat
 
 from boilerdata.axes_enum import AxesEnum as A  # noqa: N814
-from boilerdata.modelfun import model_with_uncertainty
 from boilerdata.models.project import Project
+from boilerdata.stages.modelfun import model_with_uncertainty
 from boilerdata.utils import get_tcs, model_with_error, per_run, zip_params
 
 # * -------------------------------------------------------------------------------- * #
@@ -60,8 +60,11 @@ def plot_new_fits(grp: pd.DataFrame, proj: Project, model):
     tcs, tc_errors = get_tcs(trial)
     x_unique = list(trial.thermocouple_pos.values())
     y_unique = ser[tcs]
-    u_params = np.array(
-        [ufloat(param, err, tag) for param, err, tag in zip_params(ser, proj)]
+    u_params = np.append(
+        np.array(
+            [ufloat(param, err, tag) for param, err, tag in zip_params(ser, proj)]
+        ),
+        np.array(ufloat(grp[A.k], 0, A.k)),
     )
 
     # Plot setup
@@ -107,6 +110,7 @@ def plot_new_fits(grp: pd.DataFrame, proj: Project, model):
     (xlim_min, xlim_max) = ax.get_xlim()
     pad = 0.025 * (xlim_max - xlim_min)
     x_padded = np.linspace(xlim_min - pad, xlim_max + pad)
+
     y_padded, y_padded_min, y_padded_max = model_with_error(model, x_padded, u_params)
     ax.plot(
         x_padded,
