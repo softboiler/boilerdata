@@ -1,83 +1,73 @@
 stages:
   schema:
     cmd: "python -m boilerdata.stages.schema"
-    params:
-      - "config/project.yaml":
     deps:
-      - "src/boilerdata/stages/schema.py"
-      - "config"
-      - "src/boilerdata/models"
+      - "${dirs.stages}/schema.py"
+      - "${dirs.config}"
+      - "${dirs.models}"
     outs:
-      - "data/schema"
+      - "${dirs.project_schema}"
       # # Can't uncomment this. Deletion breaks schema stage due to cyclic import.
       # - "src/boilerdata/axes_enum.py"
 
   modelfun:
-    cmd: "jupyter execute src/boilerdata/stages/modelfun.ipynb"
-    params:
-      - "config/project.yaml":
+    cmd: "jupyter execute ${dirs.stages}/modelfun.ipynb"
     deps:
-      - "src/boilerdata/stages/modelfun.ipynb"
-      - "data/schema"
+      - "${dirs.stages}/modelfun.ipynb"
+      - "${dirs.project_schema}"
     outs:
-      - "data/modelfun"
+      - "${dirs.modelfun}"
 
   runs:
     cmd: "python -m boilerdata.stages.runs"
-    params:
-      - "config/project.yaml":
     deps:
-      - "src/boilerdata/stages/runs.py"
-      - "data/schema"
-      - "data/curves"
+      - "${dirs.stages}/runs.py"
+      - "${dirs.project_schema}"
+      - "${dirs.trials}"
     outs:
-      - "data/runs"
+      - "${dirs.runs}"
 
   pipeline:
     cmd: "python -m boilerdata.stages.pipeline"
-    params:
-      - "config/project.yaml":
     deps:
-      - "src/boilerdata/stages/pipeline.py"
-      - "data/modelfun"
-      - "data/runs"
+      - "${dirs.stages}/pipeline.py"
+      - "${dirs.modelfun}"
+      - "${dirs.runs}"
     outs:
-      - "data/results"
+      - "${dirs.results}"
+    metrics:
+      - "${dirs.file_pipeline_metrics}"
+    plots:
+      - "${dirs.file_pipeline_metrics_plot}"
 
   plots:
     cmd: "python -m boilerdata.stages.plots"
-    params:
-      - "config/project.yaml":
     deps:
-      - "src/boilerdata/stages/plots.py"
-      - "data/results"
+      - "${dirs.stages}/plots.py"
+      - "${dirs.results}"
     outs:
-      - "data/plots/new_fits"
+      - "${dirs.new_fits}"
     plots:
-      - "data/plots/first_new_fit.png"
-      - "data/plots/last_new_fit.png"
+      - "${dirs.plots}/first_new_fit.png"
+      - "${dirs.plots}/last_new_fit.png"
 
   literature:
     cmd: "python -m boilerdata.stages.literature"
-    params:
-      - "config/project.yaml":
     deps:
-      - "src/boilerdata/stages/literature.py"
-      - "data/schema"
-      - "data/literature"
+      - "${dirs.stages}/literature.py"
+      - "${dirs.project_schema}"
+      - "${dirs.literature}"
     outs:
-      - "data/literature_results"
+      - "${dirs.literature_results}"
 
   originlab:
     cmd: "python -m boilerdata.stages.originlab"
-    params:
-      - "config/project.yaml":
     deps:
-      - "src/boilerdata/stages/originlab.py"
-      - "data/results"
-      - "data/literature_results"
-      - "data/plotter"
+      - "${dirs.stages}/originlab.py"
+      - "${dirs.results}"
+      - "${dirs.literature_results}"
+      - "${dirs.plotter}"
     outs:
-      - "data/originlab_results"
+      - "${dirs.originlab_results}"
     plots:
-      - "data/plots/lit_.png"
+      - "${dirs.plots}/lit_.png"

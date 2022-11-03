@@ -87,27 +87,10 @@ def get_tcs(trial: Trial) -> tuple[list[str], list[str]]:
 
 def zip_params(grp: pd.DataFrame, proj: Project):
     model_params = proj.params.model_params
-    params = [
-        param
-        for param in model_params
-        if "err"
-        not in param  # pyright: ignore [reportGeneralTypeIssues]  # pydantic: use_enum_values
-    ]
-    param_errors = [
-        param
-        for param in model_params
-        if "err"
-        in param  # pyright: ignore [reportGeneralTypeIssues]  # pydantic: use_enum_values
-    ]
-    return zip(
-        grp[
-            params
-        ],  # pyright: ignore [reportGeneralTypeIssues]  # pydantic: use_enum_values
-        grp[
-            param_errors
-        ],  # pyright: ignore [reportGeneralTypeIssues]  # pydantic: use_enum_values
-        model_params,
-    )
+    # Reason: pydantic: use_enum_values
+    params: list[str] = [param for param in model_params if "err" not in param]  # type: ignore
+    param_errors: list[str] = [param for param in model_params if "err" in param]  # type: ignore
+    return zip(grp[params], grp[param_errors], model_params)
 
 
 def model_with_error(model, x, u_params):

@@ -27,6 +27,23 @@ class Dirs(MyBaseModel):
         / "config",
     )
 
+    # ! PACKAGE
+
+    package: DirectoryPath = Field(
+        default=base.default  # pyright: ignore [reportGeneralTypeIssues]  # pydantic
+        / "src/boilerdata",
+    )
+
+    stages: DirectoryPath = Field(
+        default=package.default  # pyright: ignore [reportGeneralTypeIssues]  # pydantic
+        / "stages",
+    )
+
+    models: DirectoryPath = Field(
+        default=package.default  # pyright: ignore [reportGeneralTypeIssues]  # pydantic
+        / "models",
+    )
+
     # ! DATA
 
     data: DirectoryPath = Field(
@@ -68,28 +85,14 @@ class Dirs(MyBaseModel):
 
     # ! MODEL FUNCTION
 
-    model: DirectoryPath = Field(
+    modelfun: DirectoryPath = Field(
         default=data.default  # pyright: ignore [reportGeneralTypeIssues]  # pydantic
         / "modelfun",
     )
 
     file_model: Path = Field(
-        default=model.default  # pyright: ignore [reportGeneralTypeIssues]  # pydantic
+        default=modelfun.default  # pyright: ignore [reportGeneralTypeIssues]  # pydantic
         / "model.dillpickle",
-    )
-
-    # ! PLOTS
-
-    plots: DirectoryPath = Field(
-        default=data.default  # pyright: ignore [reportGeneralTypeIssues]  # pydantic
-        / "plots",
-    )
-
-    # ? NEW_FITS
-
-    new_fits: DirectoryPath = Field(
-        default=plots.default  # pyright: ignore [reportGeneralTypeIssues]  # pydantic
-        / "new_fits",
     )
 
     # ! TRIALS
@@ -147,17 +150,47 @@ class Dirs(MyBaseModel):
         / "originlab_results.csv",
     )
 
+    # ! METRICS
+
+    metrics: DirectoryPath = Field(
+        default=data.default  # pyright: ignore [reportGeneralTypeIssues]  # pydantic
+        / "metrics",
+    )
+
+    file_pipeline_metrics: Path = Field(
+        default=metrics.default  # pyright: ignore [reportGeneralTypeIssues]  # pydantic
+        / "pipeline_metrics.json",
+    )
+
+    # ! PLOTS
+
+    plots: DirectoryPath = Field(
+        default=data.default  # pyright: ignore [reportGeneralTypeIssues]  # pydantic
+        / "plots",
+    )
+
+    new_fits: DirectoryPath = Field(
+        default=plots.default  # pyright: ignore [reportGeneralTypeIssues]  # pydantic
+        / "new_fits",
+    )
+
+    file_pipeline_metrics_plot: Path = Field(
+        default=plots.default  # pyright: ignore [reportGeneralTypeIssues]  # pydantic
+        / "pipeline_metrics.png",
+    )
+
     # "always" so it'll run even if not in YAML
     # "pre" because dir must exist pre-validation
     @validator(
         "project_schema",
         "literature_results",
-        "model",
-        "plots",
+        "modelfun",
         "new_fits",
         "runs",
         "results",
         "originlab_results",
+        "metrics",
+        "plots",
         always=True,
         pre=True,
     )

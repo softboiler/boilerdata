@@ -1,5 +1,8 @@
 from functools import partial
+import json
+import warnings
 
+from matplotlib import pyplot as plt
 import numpy as np
 import pandas as pd
 from propshop import get_prop
@@ -42,8 +45,54 @@ def main(proj: Project):
         .pipe(per_trial, get_superheat, proj)  # Water temp varies across trials
         .pipe(per_trial, assign_metadata, proj)  # Metadata is distinct per trial
         .pipe(validate_final_df)
+        .pipe(write_metrics, proj)
         .to_csv(proj.dirs.file_results, encoding="utf-8")
     )
+
+
+def write_metrics(df: pd.DataFrame, proj: Project) -> pd.DataFrame:
+    """Compute summary metrics of the model fit and write them to a file."""
+
+    # sourcery skip: merge-dict-assign
+
+    model_params = proj.params.model_params
+    # Reason: pydantic: use_enum_values
+    errors: list[str] = [p for p in model_params if "err" in p]  # type: ignore
+    fits: list[str] = [p for p in model_params if "err" not in p]  # type: ignore
+    first_fit = fits[0]
+
+    def strip_err(df: pd.DataFrame) -> pd.DataFrame:
+        """Strip the "err" suffix from the column names."""
+        return df.rename(axis="columns", mapper=lambda col: col.removesuffix("_err"))
+
+    error_ratio = df[errors].pipe(strip_err) / df[fits]
+    error_normalized = (df[errors] / df[errors].max()).pipe(strip_err)
+
+    # Compute the rate of failures to fit the model
+    metrics: dict[str, float] = {}
+    metrics["fit_failure_rate"] = df[first_fit].isna().sum() / len(df)
+
+    # Compute the median and spread of the error two ways
+    metric_dfs = {"err_ratio": error_ratio, "err_norm": error_normalized}
+    for err_tag, err_df in metric_dfs.items():
+        for agg in ["median", "std"]:
+            metrics |= {
+                f"{k}_{err_tag}_{agg}": v for k, v in err_df.agg(agg).to_dict().items()
+            }
+    proj.dirs.file_pipeline_metrics.write_text(json.dumps(metrics, indent=2))
+
+    # Box plot of normalized errors
+    fig, ax = plt.subplots(layout="constrained")
+    error_normalized_with_joint = error_normalized.assign(**{A.joint: df[A.joint]})
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore", UserWarning)
+        error_normalized_with_joint.plot.box(by=A.joint, ax=ax)
+    fig.savefig(
+        proj.dirs.file_pipeline_metrics_plot,  # pyright: ignore [reportGeneralTypeIssues]  # matplotlib
+        dpi=300,
+    )
+
+    return df
 
 
 # * -------------------------------------------------------------------------------- * #

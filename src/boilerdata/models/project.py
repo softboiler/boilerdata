@@ -51,5 +51,5 @@ class Project(MyBaseModel):
         raise ValueError(f"Trial '{timestamp.date()}' not found.")
 
     @classmethod
-    def get_project(cls, proj: StrPath = "config/project.yaml"):
+    def get_project(cls, proj: StrPath = "params.yaml"):
         return load_config(proj, cls)

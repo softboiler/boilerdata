@@ -1,4 +1,4 @@
-from typing import Any, Callable, Optional
+from typing import Optional
 
 import pandas as pd
 from pydantic import Field, validator
@@ -29,7 +29,7 @@ class Axis(MyBaseModel):
 
     # ! AGGREGATION
 
-    agg: PandasAggfun | Callable[..., Any] = Field(
+    agg: PandasAggfun = Field(
         default=PandasAggfun.mean,
         description="The aggregation method to use for this column.",
     )
