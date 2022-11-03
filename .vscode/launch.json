@@ -25,6 +25,20 @@
       "console": "internalConsole"
     },
     {
+      "name": "proj: metrics",
+      "type": "python",
+      "request": "launch",
+      "module": "boilerdata.stages.metrics",
+      "console": "internalConsole"
+    },
+    {
+      "name": "proj: literature",
+      "type": "python",
+      "request": "launch",
+      "module": "boilerdata.stages.literature",
+      "console": "internalConsole"
+    },
+    {
       "name": "proj: originlab",
       "type": "python",
       "request": "launch",
@@ -42,14 +56,14 @@
     // * -------------------------------------------------------------------------- * //
     // * GENERAL * //
     {
-      "name": "Current file",
+      "name": "Python: Current file",
       "type": "python",
       "request": "launch",
       "program": "${file}",
       "console": "internalConsole"
     },
     {
-      "name": "Current file: Not just my code",
+      "name": "Python: Current file: Not just my code",
       "type": "python",
       "request": "launch",
       "program": "${file}",

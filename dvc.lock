@@ -49,7 +49,7 @@ stages:
       size: 7427
       nfiles: 2
     - path: src/boilerdata/models
-      md5: 5ed4236d57b96abc71bf6a4ae05456a2.dir
+      md5: 6063fed770c9f544076289259a931120.dir
       size: 63688
       nfiles: 19
     - path: src/boilerdata/stages/schema.py
@@ -128,8 +128,8 @@ stages:
       size: 321985
       nfiles: 9
     - path: data/schema
-      md5: 68854e6d1457232c108ca818c6dd34a0.dir
-      size: 26370
+      md5: e8ce3097cb4a4f5cf01022cda4484ca9.dir
+      size: 26209
       nfiles: 4
     - path: src/boilerdata/stages/literature.py
       md5: 83661520bdd5a68529a6ae12b3b24a80

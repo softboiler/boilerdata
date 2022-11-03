@@ -4,6 +4,24 @@
 
 {
   "version": "2.0.0",
+  "inputs": [
+    {
+      "id": "stage",
+      "type": "pickString",
+      "description": "stage",
+      "default": "",
+      "options": [
+        "",
+        "schema",
+        "modelfun",
+        "runs",
+        "pipeline",
+        "metrics",
+        "literature",
+        "originlab"
+      ]
+    }
+  ],
   "tasks": [
     // * -------------------------------------------------------------------------- * //
     // * PROJECT-SPECIFIC * //
@@ -25,56 +43,7 @@
       "label": "dvc: repro",
       "type": "process",
       "command": "pwsh",
-      "args": ["-Command", "dvc repro"],
-      "problemMatcher": []
-    },
-    {
-      "label": "dvc: repro literature",
-      "type": "process",
-      "command": "pwsh",
-      "args": ["-Command", "dvc repro literature"],
-      "problemMatcher": []
-    },
-    {
-      "label": "dvc: repro schema",
-      "type": "process",
-      "command": "pwsh",
-      "args": ["-Command", "dvc repro schema"],
-      "problemMatcher": []
-    },
-    {
-      "label": "dvc: repro modelfun",
-      "type": "process",
-      "command": "pwsh",
-      "args": ["-Command", "dvc repro modelfun"],
-      "problemMatcher": []
-    },
-    {
-      "label": "dvc: repro runs",
-      "type": "process",
-      "command": "pwsh",
-      "args": ["-Command", "dvc repro runs"],
-      "problemMatcher": []
-    },
-    {
-      "label": "dvc: repro pipeline",
-      "type": "process",
-      "command": "pwsh",
-      "args": ["-Command", "dvc repro pipeline"],
-      "problemMatcher": []
-    },
-    {
-      "label": "dvc: repro metrics",
-      "type": "process",
-      "command": "pwsh",
-      "args": ["-Command", "dvc repro metrics"],
-      "problemMatcher": []
-    },
-    {
-      "label": "dvc: repro originlab",
-      "type": "process",
-      "command": "pwsh",
-      "args": ["-Command", "dvc repro originlab"],
+      "args": ["-Command", "dvc repro ${input:stage}"],
       "problemMatcher": []
     },
     {
