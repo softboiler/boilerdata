@@ -130,7 +130,6 @@
   //! Line-width
 
   //* Formatting
-  "python.formatting.provider": "black",
   "rewrap.wrappingColumn": 88,
   "rewrap.wholeComment": false,
 
@@ -162,6 +161,11 @@
   "[jsonc]": {
     "editor.wordWrap": "wordWrapColumn",
     "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+
+  //* PYTHON
+  "[python]": {
+    "editor.defaultFormatter": "ms-python.black-formatter"
   },
 
   //* TXT

@@ -1,7 +1,7 @@
 from pathlib import Path
 from typing import Optional
 
-from pydantic import DirectoryPath, Field, FilePath, validator
+from pydantic import DirectoryPath, FilePath, validator
 
 from boilerdata.models.common import MyBaseModel, StrPath, default_axes_enum_file
 
@@ -11,173 +11,69 @@ class Dirs(MyBaseModel):
 
     # ! DIRECTORY PER TRIAL
     # Don't validate this here. Handle when initializing Project.
-    per_trial: Optional[Path] = Field(default=None)
+    per_trial: Optional[Path] = None
 
     # ! THIS FILE IS FIXED
-    file_axes_enum: Path = Field(default=default_axes_enum_file)
+    file_axes_enum: Path = default_axes_enum_file
 
     # ! BASE DIRECTORY
-    base: DirectoryPath = Field(default=Path("."))
+    base: DirectoryPath = Path(".")
 
     # ! CONFIG
-
     # Careful, "Config" is a special member of BaseClass
-    config: DirectoryPath = Field(
-        default=base.default  # pyright: ignore [reportGeneralTypeIssues]  # pydantic
-        / "config",
-    )
+    config: DirectoryPath = base / "config"
 
     # ! PACKAGE
-
-    package: DirectoryPath = Field(
-        default=base.default  # pyright: ignore [reportGeneralTypeIssues]  # pydantic
-        / "src/boilerdata",
-    )
-
-    stages: DirectoryPath = Field(
-        default=package.default  # pyright: ignore [reportGeneralTypeIssues]  # pydantic
-        / "stages",
-    )
-
-    models: DirectoryPath = Field(
-        default=package.default  # pyright: ignore [reportGeneralTypeIssues]  # pydantic
-        / "models",
-    )
+    package: DirectoryPath = base / "src/boilerdata"
+    stages: DirectoryPath = package / "stages"
+    models: DirectoryPath = package / "models"
 
     # ! DATA
-
-    data: DirectoryPath = Field(
-        default=base.default  # pyright: ignore [reportGeneralTypeIssues]  # pydantic
-        / "data",
-    )
+    data: DirectoryPath = base / "data"
 
     # ! SCHEMA
-
     # Can't be "schema", which is a special member of BaseClass
-    project_schema: DirectoryPath = Field(
-        default=data.default  # pyright: ignore [reportGeneralTypeIssues]  # pydantic
-        / "schema",
-    )
-
-    file_originlab_coldes: Path = Field(
-        default=project_schema.default  # pyright: ignore [reportGeneralTypeIssues]  # pydantic
-        / "originlab_coldes.txt",
-    )
+    project_schema: DirectoryPath = data / "schema"
+    file_originlab_coldes: Path = project_schema / "originlab_coldes.txt"
 
     # ! LITERATURE
-
-    literature: DirectoryPath = Field(
-        default=data.default  # pyright: ignore [reportGeneralTypeIssues]  # pydantic
-        / "literature",
-    )
+    literature: DirectoryPath = data / "literature"
 
     # ! LITERATURE RESULTS
-
-    literature_results: DirectoryPath = Field(
-        default=data.default  # pyright: ignore [reportGeneralTypeIssues]  # pydantic
-        / "literature_results",
-    )
-
-    file_literature_results: Path = Field(
-        default=literature_results.default  # pyright: ignore [reportGeneralTypeIssues]  # Validator makes it a Path
-        / "lit.csv",
-    )
+    literature_results: DirectoryPath = data / "literature_results"
+    file_literature_results: Path = literature_results / "lit.csv"
 
     # ! MODEL FUNCTION
-
-    modelfun: DirectoryPath = Field(
-        default=data.default  # pyright: ignore [reportGeneralTypeIssues]  # pydantic
-        / "modelfun",
-    )
-
-    file_model: Path = Field(
-        default=modelfun.default  # pyright: ignore [reportGeneralTypeIssues]  # pydantic
-        / "model.dillpickle",
-    )
+    modelfun: DirectoryPath = data / "modelfun"
+    file_model: Path = modelfun / "model.dillpickle"
 
     # ! TRIALS
-
-    trials: DirectoryPath = Field(
-        default=data.default  # pyright: ignore [reportGeneralTypeIssues]  # pydantic
-        / "curves",
-    )
+    trials: DirectoryPath = data / "curves"
 
     # ! RUNS
-
-    runs: DirectoryPath = Field(
-        default=data.default  # pyright: ignore [reportGeneralTypeIssues]  # pydantic
-        / "runs",
-    )
-
-    file_runs: Path = Field(
-        default=runs.default  # pyright: ignore [reportGeneralTypeIssues]  # pydantic
-        / "runs.csv",
-    )
+    runs: DirectoryPath = data / "runs"
+    file_runs: Path = runs / "runs.csv"
 
     # ! RESULTS
-
-    results: DirectoryPath = Field(
-        default=data.default  # pyright: ignore [reportGeneralTypeIssues]  # pydantic
-        / "results",
-    )
-
-    file_results: Path = Field(
-        default=results.default  # pyright: ignore [reportGeneralTypeIssues]  # pydantic
-        / "results.csv",
-    )
+    results: DirectoryPath = data / "results"
+    file_results: Path = results / "results.csv"
 
     # ! PLOTTER
-
-    plotter: DirectoryPath = Field(
-        default=data.default  # pyright: ignore [reportGeneralTypeIssues]  # pydantic
-        / "plotter",
-    )
-
-    file_plotter: FilePath = Field(
-        default=plotter.default  # pyright: ignore [reportGeneralTypeIssues]  # pydantic
-        / "results.opju",
-    )
+    plotter: DirectoryPath = data / "plotter"
+    file_plotter: FilePath = plotter / "results.opju"
 
     # ! ORIGINLAB RESULTS
-
-    originlab_results: DirectoryPath = Field(
-        default=data.default  # pyright: ignore [reportGeneralTypeIssues]  # pydantic
-        / "originlab_results",
-    )
-
-    file_originlab_results: Path = Field(
-        default=originlab_results.default  # pyright: ignore [reportGeneralTypeIssues]  # pydantic
-        / "originlab_results.csv",
-    )
+    originlab_results: DirectoryPath = data / "originlab_results"
+    file_originlab_results: Path = originlab_results / "originlab_results.csv"
 
     # ! METRICS
-
-    metrics: DirectoryPath = Field(
-        default=data.default  # pyright: ignore [reportGeneralTypeIssues]  # pydantic
-        / "metrics",
-    )
-
-    file_pipeline_metrics: Path = Field(
-        default=metrics.default  # pyright: ignore [reportGeneralTypeIssues]  # pydantic
-        / "pipeline_metrics.json",
-    )
+    metrics: DirectoryPath = data / "metrics"
+    file_pipeline_metrics: Path = metrics / "pipeline_metrics.json"
 
     # ! PLOTS
-
-    plots: DirectoryPath = Field(
-        default=data.default  # pyright: ignore [reportGeneralTypeIssues]  # pydantic
-        / "plots",
-    )
-
-    new_fits: DirectoryPath = Field(
-        default=plots.default  # pyright: ignore [reportGeneralTypeIssues]  # pydantic
-        / "new_fits",
-    )
-
-    file_pipeline_metrics_plot: Path = Field(
-        default=plots.default  # pyright: ignore [reportGeneralTypeIssues]  # pydantic
-        / "pipeline_metrics.png",
-    )
+    plots: DirectoryPath = data / "plots"
+    new_fits: DirectoryPath = plots / "new_fits"
+    file_pipeline_metrics_plot: Path = plots / "pipeline_metrics.png"
 
     # "always" so it'll run even if not in YAML
     # "pre" because dir must exist pre-validation
