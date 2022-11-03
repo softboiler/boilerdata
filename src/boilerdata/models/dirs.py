@@ -66,14 +66,11 @@ class Dirs(MyBaseModel):
     originlab_results: DirectoryPath = data / "originlab_results"
     file_originlab_results: Path = originlab_results / "originlab_results.csv"
 
-    # ! METRICS
-    metrics: DirectoryPath = data / "metrics"
-    file_pipeline_metrics: Path = metrics / "pipeline_metrics.json"
-
     # ! PLOTS
-    plots: DirectoryPath = data / "plots"
-    new_fits: DirectoryPath = plots / "new_fits"
-    file_pipeline_metrics_plot: Path = plots / "pipeline_metrics.png"
+    metrics: DirectoryPath = data / "metrics"
+    new_fits: DirectoryPath = metrics / "new_fits"
+    file_pipeline_metrics_plot: Path = metrics / "pipeline_metrics.png"
+    file_pipeline_metrics: Path = metrics / "pipeline_metrics.json"
 
     # "always" so it'll run even if not in YAML
     # "pre" because dir must exist pre-validation
@@ -86,7 +83,6 @@ class Dirs(MyBaseModel):
         "results",
         "originlab_results",
         "metrics",
-        "plots",
         always=True,
         pre=True,
     )

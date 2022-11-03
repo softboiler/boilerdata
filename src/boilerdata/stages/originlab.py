@@ -20,7 +20,9 @@ def main(proj: Project):
 
     with open_originlab(proj.dirs.file_plotter):
         gp = op.find_graph(proj.params.plots[0])
-        fig = gp.save_fig(get_path(proj.dirs.plots, mkdirs=True), type="png", width=800)
+        fig = gp.save_fig(
+            get_path(proj.dirs.metrics, mkdirs=True), type="png", width=800
+        )
         if not fig:
             raise RuntimeError("Failed to save figure.")
 

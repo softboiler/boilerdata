@@ -64,10 +64,10 @@
       "problemMatcher": []
     },
     {
-      "label": "dvc: repro plots",
+      "label": "dvc: repro metrics",
       "type": "process",
       "command": "pwsh",
-      "args": ["-Command", "dvc repro plots"],
+      "args": ["-Command", "dvc repro metrics"],
       "problemMatcher": []
     },
     {

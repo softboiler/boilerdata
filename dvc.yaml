@@ -35,21 +35,20 @@ stages:
       - "${dirs.runs}"
     outs:
       - "${dirs.results}"
+
+  metrics:
+    cmd: "python -m boilerdata.stages.metrics"
+    deps:
+      - "${dirs.stages}/metrics.py"
+      - "${dirs.results}"
+    outs:
+      - "${dirs.new_fits}"
     metrics:
       - "${dirs.file_pipeline_metrics}"
     plots:
       - "${dirs.file_pipeline_metrics_plot}"
-
-  plots:
-    cmd: "python -m boilerdata.stages.plots"
-    deps:
-      - "${dirs.stages}/plots.py"
-      - "${dirs.results}"
-    outs:
-      - "${dirs.new_fits}"
-    plots:
-      - "${dirs.plots}/first_new_fit.png"
-      - "${dirs.plots}/last_new_fit.png"
+      - "${dirs.metrics}/first_new_fit.png"
+      - "${dirs.metrics}/last_new_fit.png"
 
   literature:
     cmd: "python -m boilerdata.stages.literature"
@@ -70,4 +69,4 @@ stages:
     outs:
       - "${dirs.originlab_results}"
     plots:
-      - "${dirs.plots}/lit_.png"
+      - "${dirs.metrics}/lit_.png"

@@ -1,43 +1,41 @@
 # When deleting and regenerating "dirs", swap "\" for "/" to avoid DVC plot issues.
 dirs:
-  file_axes_enum: C:/Users/Blake/Code/mine/boilerdata/src/boilerdata/axes_enum.py
+  file_axes_enum: C:\Users\Blake\Code\mine\boilerdata\src\boilerdata\axes_enum.py
   base: .
   config: config
 
-  package: src/boilerdata
-  stages: src/boilerdata/stages
-  models: src/boilerdata/models
+  package: src\boilerdata
+  stages: src\boilerdata\stages
+  models: src\boilerdata\models
 
   data: data
 
-  project_schema: data/schema
-  file_originlab_coldes: data/schema/originlab_coldes.txt
+  project_schema: data\schema
+  file_originlab_coldes: data\schema\originlab_coldes.txt
 
-  literature: data/literature
-  literature_results: data/literature_results
-  file_literature_results: data/literature_results/lit.csv
+  literature: data\literature
+  literature_results: data\literature_results
+  file_literature_results: data\literature_results\lit.csv
 
-  modelfun: data/modelfun
-  file_model: data/modelfun/model.dillpickle
+  modelfun: data\modelfun
+  file_model: data\modelfun\model.dillpickle
 
-  trials: data/curves
-  runs: data/runs
-  file_runs: data/runs/runs.csv
+  trials: data\curves
+  runs: data\runs
+  file_runs: data\runs\runs.csv
 
-  results: data/results
-  file_results: data/results/results.csv
+  results: data\results
+  file_results: data\results\results.csv
 
-  plotter: data/plotter
-  file_plotter: data/plotter/results.opju
-  originlab_results: data/originlab_results
-  file_originlab_results: data/originlab_results/originlab_results.csv
+  plotter: data\plotter
+  file_plotter: data\plotter\results.opju
+  originlab_results: data\originlab_results
+  file_originlab_results: data\originlab_results\originlab_results.csv
 
-  metrics: data/metrics
-  file_pipeline_metrics: data/metrics/pipeline_metrics.json
-
-  plots: data/plots
-  new_fits: data/plots/new_fits
-  file_pipeline_metrics_plot: data/plots/pipeline_metrics.png
+  metrics: data\metrics
+  new_fits: data\metrics\new_fits
+  file_pipeline_metrics_plot: data\metrics\pipeline_metrics.png
+  file_pipeline_metrics: data\metrics\pipeline_metrics.json
 
 geometry:
   diameter: 0.375
