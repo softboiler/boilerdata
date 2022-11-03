@@ -6,6 +6,10 @@
 # Exclude type stubs from search results in VSCode
 typings
 
+# DVC
+data/*
+!data/*.dvc
+
 # * -------------------------------------------------------------------------------- * #
 # * TEMPLATE-SPECIFIC
 # *
