@@ -28,11 +28,7 @@ jobs:
         with:
           python-version: "3.10"
       - run: bash .tools/scripts/cicd_setup.sh
-      - uses: actions/setup-node@v3.4.1
-        with:
-          node-version: 14
-      - run: npm install
-      - run: node_modules/.bin/pyright
+      - run: pyright
 
   pytest-cov:
     runs-on: windows-2022

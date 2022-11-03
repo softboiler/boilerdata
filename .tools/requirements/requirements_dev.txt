@@ -6,6 +6,9 @@ ipympl~=0.9.2
 # For `python` and `ipython` via `pythonrc.py`
 rich~=12.6.0
 
+# Avoids pyright issue https://github.com/RobertCraigie/pyright-python/issues/45
+nodeenv==1.7.0
+
 # Format
 autoflake~=1.4
 black~=22.10.0  # doesn't follow semver
