@@ -143,14 +143,9 @@
 
   //! Filetype specifics (incl. line width)
 
-  //* MD
-  "[markdown]": {
-    "editor.defaultFormatter": "DavidAnson.vscode-markdownlint",
-    "editor.wordWrap": "wordWrapColumn",
-    //? Roughly matches the width of GitHub Markdown
-    "editor.wordWrapColumn": 124,
-    "editor.rulers": [124],
-    "rewrap.autoWrap.enabled": false
+  //* IPYNB
+  "[ipynb]": {
+    "editor.defaultFormatter": "ms-python.black-formatter"
   },
 
   //* JSON
@@ -163,14 +158,19 @@
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
 
+  //* MD
+  "[markdown]": {
+    "editor.defaultFormatter": "DavidAnson.vscode-markdownlint",
+    "editor.wordWrap": "wordWrapColumn",
+    //? Roughly matches the width of GitHub Markdown
+    "editor.wordWrapColumn": 124,
+    "editor.rulers": [124],
+    "rewrap.autoWrap.enabled": false
+  },
+
   //* PYTHON
   "[python]": {
     "editor.defaultFormatter": "ms-python.black-formatter"
-  },
-
-  //* TXT
-  "[plaintext]": {
-    "editor.wordWrap": "wordWrapColumn"
   },
 
   //* TOML
@@ -186,10 +186,16 @@
     "editor.insertSpaces": false
   },
 
+  //* TXT
+  "[plaintext]": {
+    "editor.wordWrap": "wordWrapColumn"
+  },
+
   //* YAML
   "yaml.format.printWidth": 88,
   "[yaml]": {
     "editor.defaultFormatter": "redhat.vscode-yaml",
     "editor.wordWrap": "wordWrapColumn"
-  }
+  },
+  "python.formatting.provider": "black"
 }

@@ -67,14 +67,13 @@ model_cols = {
         ].dtype,  # pyright: ignore [reportGeneralTypeIssues]  # pydantic: use_enum_values
         nullable=True,
     )
-    for col in proj.params.model_params
+    for col in proj.params.params_and_errors
 }
 
 computed_cols = {
     A.T_w: Column(c[A.T_w].dtype),
     A.T_w_diff: Column(c[A.T_w_diff].dtype, checks=water_temps_agree),
     **model_cols,
-    A.k: Column(c[A.k].dtype),
     A.DT: Column(c[A.DT].dtype, nullable=True),
     A.DT_err: Column(c[A.DT_err].dtype, nullable=True),
 }
@@ -82,10 +81,13 @@ computed_cols = {
 # * -------------------------------------------------------------------------------- * #
 # * VALIDATION
 
+# We know that `meta_cols | runs_cols | computed_cols` are in the DataFrame, but we
+# don't check for their presence (nor do we specify `strict`) because they're all null
+# right now. We can make sure `model_cols` are here, though.
 validate_initial_df = DataFrameSchema(
     unique_column_names=True,
     index=MultiIndex(initial_index),
-    columns=runs_cols,
+    columns=runs_cols | model_cols,
 )
 
 validate_final_df = DataFrameSchema(
