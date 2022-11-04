@@ -12,6 +12,7 @@
       "default": "",
       "options": [
         "",
+        "-f",
         "schema",
         "modelfun",
         "runs",

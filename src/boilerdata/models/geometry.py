@@ -6,8 +6,9 @@ from boilerdata.models.enums import Coupon, Rod
 
 
 class Geometry(MyBaseModel):
-    """The geometry."""
+    """The fixed geometry for the problem."""
 
+    # Prefix with underscore to exclude from schema
     _in_p_m: float = 39.3701  # (in/m) Conversion factor
 
     # ! DIAMETER
@@ -26,7 +27,6 @@ class Geometry(MyBaseModel):
     rods: dict[Rod, NpNDArray] = Field(
         default=...,
         description="Distance of each thermocouple from the cool side of the rod, starting with TC1. Fifth thermocouple may be omitted. Input: inch. Output: meter.",
-        # exclude=True,
     )
 
     @validator("rods", pre=True)

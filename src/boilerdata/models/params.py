@@ -6,7 +6,7 @@ from boilerdata.models.common import MyBaseModel
 
 
 class Params(MyBaseModel):
-    """Parameters of the pipeline."""
+    """Parameters that can vary."""
 
     records_to_average: int = Field(
         default=5,
@@ -26,11 +26,12 @@ class Params(MyBaseModel):
     )
 
     @validator("model_inputs", always=True)
-    def validate_model_inputs(cls, model_inputs):
+    def validate_model_inputs(cls, model_inputs) -> dict[str, float]:
         # Substitute this instead of zero to avoid division by zero
         eps = np.finfo(float).eps
         return {
-            k: eps if v == 0 and "x" not in k else v for k, v in model_inputs.items()
+            k: float(eps) if v == 0 and "x" not in k else v
+            for k, v in model_inputs.items()
         }
 
     model_params: list[A] = Field(
@@ -42,11 +43,11 @@ class Params(MyBaseModel):
             A.q_err,
             A.h_a_err,
         ],
-        description="The parameters of the model to be fitted.",
+        description="Parameters of the model to be fitted.",
     )
     water_temps: list[A] = Field(
         default=[A.T_w1, A.T_w2, A.T_w3],
-        description="The water temperature measurements.",
+        description="Water temperature measurements.",
     )
     do_plot: bool = Field(
         default=False,

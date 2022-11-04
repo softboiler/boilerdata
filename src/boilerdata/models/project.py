@@ -10,21 +10,19 @@ from boilerdata.models.trials import Trial, Trials
 
 
 class Project(MyBaseModel):
-    """Configuration for the package."""
+    """The global project configuration."""
 
     geometry: Geometry
-    params: Params = Field(default=Params())
+    params: Params
 
     # ! DIRS
-    # Use validator instead of `Field(default=Dirs())` to delay directory-creating
-    # side-effects of calling default `Dirs()`.
-    dirs: Dirs = Field(default=None)
-
-    @validator("dirs", always=True, pre=True)
-    def validate_dirs(cls, dirs):
-        return dirs or Dirs()
+    # `default_factory` is in beta. This could also be done w/ `default=None` and a
+    # trivial validator.
+    # https://pydantic-docs.helpmanual.io/usage/models/#field-with-dynamic-default-value
+    dirs: Dirs = Field(default_factory=Dirs)
 
     # ! AXES
+    # Axes are specified separately and loading depends on this model's attributes.
     axes: Axes = Field(default=None)
 
     @validator("axes", always=True, pre=True)
@@ -32,6 +30,7 @@ class Project(MyBaseModel):
         return load_config(values["dirs"].config / "axes.yaml", Axes)
 
     # ! TRIALS
+    # Trials are specified separately and loading depends on this model's attributes.
     trials: list[Trial] = Field(default=None)
 
     @validator("trials", always=True, pre=True)
