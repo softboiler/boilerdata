@@ -1,4 +1,3 @@
-# When deleting and regenerating "dirs", swap "\" for "/" to avoid DVC plot issues.
 dirs:
   file_axes_enum: C:/Users/Blake/Code/mine/boilerdata/src/boilerdata/axes_enum.py
   base: .

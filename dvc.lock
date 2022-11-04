@@ -4,7 +4,7 @@ stages:
     cmd: python -m boilerdata.stages.pipeline
     deps:
     - path: data/modelfun
-      md5: d68260991b36a98fe3a7a134fcb3c9af.dir
+      md5: cbfc3cb200af80628c94d8d72eb35085.dir
       size: 43607
       nfiles: 1
     - path: data/runs
@@ -49,16 +49,16 @@ stages:
       size: 7427
       nfiles: 2
     - path: src/boilerdata/models
-      md5: 9ef39751601b2e5233a239dc04f6dcc8.dir
-      size: 55553
+      md5: fa2f489a08284b8f30bbf18cb6c33c14.dir
+      size: 56397
       nfiles: 18
     - path: src/boilerdata/stages/schema.py
       md5: 0106ba329192f085f501ac35de5b04ff
       size: 1568
     outs:
     - path: data/schema
-      md5: cdfcffebcebd2f762890ae22d0adaa44.dir
-      size: 25538
+      md5: 5d80f02c90533d47c77ef81cc96959f2.dir
+      size: 25495
       nfiles: 4
   originlab:
     cmd: python -m boilerdata.stages.originlab
@@ -94,8 +94,8 @@ stages:
       size: 103226338
       nfiles: 401
     - path: data/schema
-      md5: cdfcffebcebd2f762890ae22d0adaa44.dir
-      size: 25538
+      md5: 5d80f02c90533d47c77ef81cc96959f2.dir
+      size: 25495
       nfiles: 4
     - path: src/boilerdata/stages/runs.py
       md5: 945f75deb7cf8691edc4005b2471324b
@@ -109,15 +109,15 @@ stages:
     cmd: jupyter execute src/boilerdata/stages/modelfun.ipynb
     deps:
     - path: data/schema
-      md5: cdfcffebcebd2f762890ae22d0adaa44.dir
-      size: 25538
+      md5: 5d80f02c90533d47c77ef81cc96959f2.dir
+      size: 25495
       nfiles: 4
     - path: src/boilerdata/stages/modelfun.ipynb
       md5: 4cb6d1a3476a8579c2711339c4eeb068
       size: 15109
     outs:
     - path: data/modelfun
-      md5: d68260991b36a98fe3a7a134fcb3c9af.dir
+      md5: cbfc3cb200af80628c94d8d72eb35085.dir
       size: 43607
       nfiles: 1
   literature:
@@ -128,8 +128,8 @@ stages:
       size: 321985
       nfiles: 9
     - path: data/schema
-      md5: cdfcffebcebd2f762890ae22d0adaa44.dir
-      size: 25538
+      md5: 5d80f02c90533d47c77ef81cc96959f2.dir
+      size: 25495
       nfiles: 4
     - path: src/boilerdata/stages/literature.py
       md5: 83661520bdd5a68529a6ae12b3b24a80

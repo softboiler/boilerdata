@@ -1,5 +1,7 @@
+from __future__ import annotations
+
 from pathlib import Path
-from typing import Optional
+from typing import Any, Optional
 
 from pydantic import DirectoryPath, FilePath, validator
 
@@ -8,6 +10,13 @@ from boilerdata.models.common import MyBaseModel, StrPath, default_axes_enum_fil
 
 class Dirs(MyBaseModel):
     """Directories relevant to the project."""
+
+    class Config:
+        @staticmethod
+        def schema_extra(schema: dict[str, Any], model: Dirs):
+            for prop in schema.get("properties", {}).values():
+                if default := prop.get("default"):
+                    prop["default"] = default.replace("\\", "/")
 
     # ! DIRECTORY PER TRIAL
     # Don't validate this here. Handle when initializing Project.
