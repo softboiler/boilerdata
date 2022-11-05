@@ -2,7 +2,7 @@ import numpy as np
 from pydantic import Field, validator
 
 from boilerdata.axes_enum import AxesEnum as A  # noqa: N814
-from boilerdata.models.common import MyBaseModel
+from boilerdata.models.common import MyBaseModel, allow_extra
 
 
 class Params(MyBaseModel):
@@ -37,14 +37,20 @@ class Params(MyBaseModel):
     model_params: list[A] = Field(
         default=[
             A.T_s,
-            A.q,
+            A.q_s,
             A.h_a,
             A.T_s_err,
-            A.q_err,
+            A.q_s_err,
             A.h_a_err,
         ],
         description="Parameters of the model to be fitted.",
     )
+
+    fixed_params: list[A] = [
+        A.k,
+        # A.h_w,  # TODO: Uncomment this
+    ]  # type: ignore
+
     water_temps: list[A] = Field(
         default=[A.T_w1, A.T_w2, A.T_w3],
         description="Water temperature measurements.",
@@ -57,3 +63,17 @@ class Params(MyBaseModel):
         default=["lit_"],
         description="List of plots to save.",
     )
+
+    def __init__(self, **data):
+        super().__init__(**data)
+        with allow_extra(self):
+            self.free_params = [
+                p for p in self.model_params if p not in self.fixed_params
+            ]
+            self.free_errors = self.get_model_errors(self.free_params)
+            self.model_errors = self.get_model_errors(self.model_params)
+            self.fixed_errors = self.get_model_errors(self.fixed_params)
+            self.params_and_errors = self.model_params + self.model_errors
+
+    def get_model_errors(self, model_params) -> list[str]:
+        return [f"{param}_err" for param in model_params]

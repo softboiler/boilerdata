@@ -125,24 +125,23 @@ all:
   - name: "T_s_err"
     units: "C"
 
-  - name: "q"
-    pretty_name: "q''"
+  - name: "q_s"
+    pretty_name: "q''_s"
     units: "W/cm^2"
     originlab_coldes: "Y"
 
-  - name: "q_err"
-    pretty_name: "q''_err"
+  - name: "q_s_err"
+    pretty_name: "q''s_err"
     units: "W/cm^2"
     originlab_coldes: "E"
 
+  - name: "k"
+    units: "W/m-K"
   - name: "h_a"
     units: "W/m^2-K"
 
   - name: "h_a_err"
     units: "W/m^2-K"
-
-  - name: "k"
-    units: "W/m-K"
 
   - name: "DT"
     pretty_name: "∆T"
