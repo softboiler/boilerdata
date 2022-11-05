@@ -22,7 +22,6 @@ class Params(MyBaseModel):
             T_infw=100.0,  # (C)
             x_s=0,  # (m)
             x_wa=0.0381,  # (m)
-            h_w=0,  # (W/m^2-K)  # TODO: Move this back
         ),
         description="The inputs to the model to be fitted.",
     )
