@@ -22,6 +22,7 @@ class Params(MyBaseModel):
             T_infw=100.0,  # (C)
             x_s=0,  # (m)
             x_wa=0.0381,  # (m)
+            h_w=0,  # (W/m^2-K)  # TODO: Move this back
         ),
         description="The inputs to the model to be fitted.",
     )
@@ -29,15 +30,23 @@ class Params(MyBaseModel):
     @validator("model_inputs", always=True)
     def validate_model_inputs(cls, model_inputs) -> dict[str, float]:
         """Substitute this instead of zero to avoid division by zero"""
-        eps = np.finfo(float).eps
+        eps = float(np.finfo(float).eps)
         return {
-            k: float(eps) if v == 0 and "x" not in k else v
-            for k, v in model_inputs.items()
+            k: eps if v == 0 and "x" not in k else v for k, v in model_inputs.items()
         }
 
     # Reason: pydantic: use_enum_values
-    model_params: list[A] = [A.T_s, A.q_s, A.k, A.h_a, A.h_w]  # type: ignore
-    fixed_params: list[A] = [A.k, A.h_w]  # type: ignore
+    model_params: list[A] = [
+        A.T_s,
+        A.q_s,
+        A.k,
+        A.h_a,
+        # A.h_w,  # TODO: Uncomment this
+    ]  # type: ignore
+    fixed_params: list[A] = [
+        A.k,
+        # A.h_w,  # TODO: Uncomment this
+    ]  # type: ignore
 
     water_temps: list[A] = Field(
         default=[A.T_w1, A.T_w2, A.T_w3],

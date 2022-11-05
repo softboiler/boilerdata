@@ -130,8 +130,7 @@ def plot_new_fits(grp: pd.DataFrame, proj: Project, model):
     # Initial plot boundaries
     x_bounds = np.array([0, trial.thermocouple_pos[A.T_1]])
 
-    u_params = u_params[:-1]  # TODO: Remove this
-    u_params[-1] = max(u_params[-1], ufloat(0.01, u_params[-1].s, "h_a"))  # type: ignore  # TODO: Remove this
+    u_params[3] = max(ufloat(1e-2, u_params[3].s, "h_a"), u_params[3])  # type: ignore  # TODO: Remove this
     y_bounds = model(x_bounds, *[param.nominal_value for param in u_params])
     ax.plot(
         x_bounds,
