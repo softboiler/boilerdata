@@ -137,6 +137,16 @@ all:
 
   - name: "k"
     units: "W/m-K"
+
+  - name: "k_err"
+    units: "W/m-K"
+
+  - name: "h_w"
+    units: "W/m^2-K"
+
+  - name: "h_w_err"
+    units: "W/m^2-K"
+
   - name: "h_a"
     units: "W/m^2-K"
 

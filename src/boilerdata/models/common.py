@@ -46,12 +46,22 @@ def allow_extra(model: BaseModel):
     model: BaseModel
         The model to allow extras on.
     """
-    original_config = model.Config.extra
+
+    # Store the current value of the attribute or note its absence
+    try:
+        original_config = model.Config.extra
+    except AttributeError:
+        original_config = None
     model.Config.extra = Extra.allow
+
+    # Yield the temporarily changed config, resetting or deleting it when done
     try:
         yield
     finally:
-        model.Config.extra = original_config
+        if original_config:
+            model.Config.extra = original_config
+        else:
+            del model.Config.extra
 
 
 def expanduser2(path: StrPath) -> Path:
