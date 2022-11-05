@@ -14,7 +14,11 @@ from boilerdata.models.project import Project
 from boilerdata.models.trials import Trial
 from boilerdata.stages.common import get_tcs, get_trial, per_run, per_trial
 from boilerdata.stages.modelfun import model
-from boilerdata.validation import handle_invalid_data, validate_initial_df
+from boilerdata.validation import (
+    handle_invalid_data,
+    validate_final_df,
+    validate_initial_df,
+)
 
 # * -------------------------------------------------------------------------------- * #
 # * MAIN
@@ -37,7 +41,7 @@ def main(proj: Project):
         .pipe(per_trial, agg_over_runs, proj, confidence_interval_95)  # TCs may vary
         .pipe(per_trial, get_superheat, proj)  # Water temp varies across trials
         .pipe(per_trial, assign_metadata, proj)  # Metadata is distinct per trial
-        # .pipe(validate_final_df)  # TODO: Uncomment
+        .pipe(validate_final_df)  # TODO: Uncomment
         .to_csv(proj.dirs.file_results, encoding="utf-8")
     )
 
