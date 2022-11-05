@@ -39,13 +39,13 @@ class Params(MyBaseModel):
     model_params: list[A] = [
         A.T_s,
         A.q_s,
-        # A.k,
+        A.k,
         A.h_a,
-        # A.h_w,  # TODO: Uncomment this
+        A.h_w,
     ]  # type: ignore
     fixed_params: list[A] = [
         A.k,
-        # A.h_w,  # TODO: Uncomment this
+        A.h_w,
     ]  # type: ignore
 
     water_temps: list[A] = Field(
