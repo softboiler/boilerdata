@@ -48,17 +48,15 @@ def write_metrics(df: pd.DataFrame, proj: Project) -> pd.DataFrame:
     """Compute summary metrics of the model fit and write them to a file."""
 
     # sourcery skip: merge-dict-assign
-
-    model_params = proj.params.model_params
-    # Reason: pydantic: use_enum_values
-    errors: list[str] = [p for p in model_params if "err" in p]  # type: ignore
-    fits: list[str] = [p for p in model_params if "err" not in p]  # type: ignore
+    fits: list[str] = proj.params.model_params  # type: ignore
+    errors: list[str] = proj.params.model_errors  # type: ignore
     first_fit = fits[0]
 
     def strip_err(df: pd.DataFrame) -> pd.DataFrame:
         """Strip the "err" suffix from the column names."""
         return df.rename(axis="columns", mapper=lambda col: col.removesuffix("_err"))
 
+    # Reason: pydantic: use_enum_values
     error_ratio = df[errors].pipe(strip_err) / df[fits]
     error_normalized = (df[errors] / df[errors].max()).pipe(strip_err)
 
@@ -73,6 +71,7 @@ def write_metrics(df: pd.DataFrame, proj: Project) -> pd.DataFrame:
             metrics |= {
                 f"{k}_{err_tag}_{agg}": v for k, v in err_df.agg(agg).to_dict().items()
             }
+    metrics |= {k: 0 for k, v in metrics.items() if np.isnan(v)}
     proj.dirs.file_pipeline_metrics.write_text(json.dumps(metrics, indent=2))
 
     # Box plot of normalized errors
@@ -114,11 +113,8 @@ def plot_new_fits(grp: pd.DataFrame, proj: Project, model):
     tcs, tc_errors = get_tcs(trial)
     x_unique = list(trial.thermocouple_pos.values())
     y_unique = ser[tcs]
-    u_params = np.append(
-        np.array(
-            [ufloat(param, err, tag) for param, err, tag in zip_params(ser, proj)]
-        ),
-        np.array(ufloat(grp[A.k], 0, A.k)),
+    u_params = np.array(
+        [ufloat(param, err, tag) for param, err, tag in zip_params(ser, proj)]
     )
 
     # Plot setup
@@ -134,7 +130,9 @@ def plot_new_fits(grp: pd.DataFrame, proj: Project, model):
 
     # Initial plot boundaries
     x_bounds = np.array([0, trial.thermocouple_pos[A.T_1]])
-    y_bounds = model(x_bounds, *[param.nominal_value for param in u_params])
+
+    # u_params[3] = max(ufloat(1e-2, u_params[3].s, "h_a"), u_params[3])  # type: ignore  # TODO: Remove this
+    y_bounds = model(x_bounds, *[param.nominal_value for param in u_params], grp[A.k])  # type: ignore # TODO: Remove A.k
     ax.plot(
         x_bounds,
         y_bounds,
@@ -165,7 +163,7 @@ def plot_new_fits(grp: pd.DataFrame, proj: Project, model):
     pad = 0.025 * (xlim_max - xlim_min)
     x_padded = np.linspace(xlim_min - pad, xlim_max + pad)
 
-    y_padded, y_padded_min, y_padded_max = model_with_error(model, x_padded, u_params)
+    y_padded, y_padded_min, y_padded_max = model_with_error(model, x_padded, u_params, grp[A.k])  # type: ignore # TODO: Remove A.k
     ax.plot(
         x_padded,
         y_padded,

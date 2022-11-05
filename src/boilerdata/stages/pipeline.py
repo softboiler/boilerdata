@@ -32,12 +32,12 @@ def main(proj: Project):
             dtype={col.name: col.dtype for col in proj.axes.cols},
         )
         .pipe(handle_invalid_data, validate_initial_df)
-        .pipe(get_properties)
+        .pipe(get_properties, proj)
         .pipe(per_run, fit, proj, model, confidence_interval_95)
         .pipe(per_trial, agg_over_runs, proj, confidence_interval_95)  # TCs may vary
         .pipe(per_trial, get_superheat, proj)  # Water temp varies across trials
         .pipe(per_trial, assign_metadata, proj)  # Metadata is distinct per trial
-        # .pipe(validate_final_df)
+        # .pipe(validate_final_df)  # TODO: Uncomment
         .to_csv(proj.dirs.file_results, encoding="utf-8")
     )
 
@@ -46,7 +46,7 @@ def main(proj: Project):
 # * STAGES
 
 
-def get_properties(df: pd.DataFrame) -> pd.DataFrame:
+def get_properties(df: pd.DataFrame, proj: Project) -> pd.DataFrame:
     """Get properties."""
 
     get_saturation_temp = XSteam(XSteam.UNIT_SYSTEM_FLS).tsat_p  # A lookup function
@@ -57,19 +57,22 @@ def get_properties(df: pd.DataFrame) -> pd.DataFrame:
     )
 
     return df.assign(
-        **{
-            A.k: lambda df: get_prop(
-                Mat.COPPER,
-                Prop.THERMAL_CONDUCTIVITY,
-                convert_temperature((df[A.T_1] + df[A.T_5]) / 2, "C", "K"),
-            ),
-            A.T_w: lambda df: (T_w_avg + T_w_p) / 2,
-            A.T_w_diff: lambda df: abs(T_w_avg - T_w_p),
-            # TODO: Remove these
-            A.k_err: 0,
-            A.h_w: 0,
-            A.h_w_err: 0,
-        }
+        **(
+            {
+                A.k: lambda df: get_prop(
+                    Mat.COPPER,
+                    Prop.THERMAL_CONDUCTIVITY,
+                    convert_temperature((df[A.T_1] + df[A.T_5]) / 2, "C", "K"),
+                ),
+                A.h_w: float(np.finfo(float).eps),  # TODO: We wrapped this in float
+                A.T_w: lambda df: (T_w_avg + T_w_p) / 2,
+                A.T_w_diff: lambda df: abs(T_w_avg - T_w_p),
+                # TODO: Remove these
+                A.k_err: 0,
+                A.h_w_err: 0,
+            }
+            | {k: 0 for k in proj.params.fixed_errors}  # Zero error for fixed params
+        )
     )
 
 
@@ -85,7 +88,12 @@ def fit(
     trial = get_trial(grp, proj)
 
     # Get coordinates and model parameters
-    model_params = proj.params.model_params
+    fixed_param_values = dict(
+        zip(
+            proj.params.fixed_params,
+            grp[proj.params.fixed_params].mean(),  # type: ignore  # pydantic: use_enum_values
+        )
+    )
     _, tc_errors = get_tcs(trial)
 
     # Assign thermocouple errors
@@ -103,32 +111,33 @@ def fit(
     T_w = grp.T_w.mean()  # noqa: N806  # Mean water temperature
     T_s_bnd = (T_w, np.inf)  # noqa: N806  # Boiling surface temp bounds
     q_s_bnd = (0, np.inf)  # Surface heat flux bounds
-    h_bnd = (0, np.inf)  # Convection heat transfer coefficient bounds
+    h_a_bnd = (0, np.inf)  # Convection heat transfer coefficient bounds
 
     # Perform fit  # ! Depends on the order of the parameters
     try:
-        model_params_fitted, pcov = curve_fit(
-            partial(model, **{A.k: grp[A.k].mean()}),
+        fitted_params, pcov = curve_fit(
+            partial(model, **fixed_param_values),
             x,
             y,
             sigma=y_errors,
             absolute_sigma=True,
             p0=(T_w, 1, 1),
-            bounds=tuple(zip(T_s_bnd, q_s_bnd, h_bnd)),
+            bounds=tuple(zip(T_s_bnd, q_s_bnd, h_a_bnd)),
         )
     except RuntimeError:
-        dim = len(model_params) // 2
-        model_params_fitted = np.full(dim, np.nan)
+        dim = len(proj.params.free_params)
+        fitted_params = np.full(dim, np.nan)
         pcov = np.full((dim, dim), np.nan)
 
     # Compute confidence interval
-    param_standard_errors = np.sqrt(np.diagonal(pcov))
-    param_errors = param_standard_errors * confidence_interval_95
+    standard_errors = np.sqrt(np.diagonal(pcov))
+    errors = standard_errors * confidence_interval_95
 
     # Assign the same fit to all time slots in the run. Will be agged later.
     grp = grp.assign(
         **pd.Series(
-            np.concatenate([model_params_fitted, param_errors]), index=model_params
+            np.concatenate([fitted_params, errors]),
+            index=proj.params.free_params + proj.params.free_errors,
         )  # pyright: ignore [reportGeneralTypeIssues]  # pandas
     )
     return grp
@@ -170,7 +179,7 @@ def agg_over_runs(
                         column=col,  # pyright: ignore [reportGeneralTypeIssues]  # pydantic: use_enum_values
                         aggfunc="first",
                     )
-                    for col in (tc_errors + proj.params.model_params)
+                    for col in (tc_errors + proj.params.params_and_errors)
                 }
             )
         )

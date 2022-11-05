@@ -4,20 +4,20 @@ stages:
     cmd: python -m boilerdata.stages.pipeline
     deps:
     - path: data/modelfun
-      md5: 59117d66ec1eee19f3f3214bbc559c95.dir
-      size: 43706
+      md5: 6c73a8fed2056edadc7c640c9afc0642.dir
+      size: 46852
       nfiles: 1
     - path: data/runs
       md5: ee5866df2c07ee4e2f26fa099618d7a8.dir
       size: 1009895
       nfiles: 1
     - path: src/boilerdata/stages/pipeline.py
-      md5: 3019fbf3b9847587ce9cdfec78842896
-      size: 7358
+      md5: 1e66d73357adb0f734fe186a0e88d316
+      size: 7752
     outs:
     - path: data/results
-      md5: ab573a807d10f0294244ef1ff230dd87.dir
-      size: 237531
+      md5: d300de3a2b68bb12d9064c7a575a35fe.dir
+      size: 238473
       nfiles: 1
   plot:
     cmd: python -m boilerdata.plot
@@ -49,16 +49,16 @@ stages:
       size: 7561
       nfiles: 2
     - path: src/boilerdata/models
-      md5: a32fbb38076cf82d179ffd3b1410808c.dir
-      size: 58385
+      md5: 1dce16edd4051b6b92651408c95ed07b.dir
+      size: 58324
       nfiles: 17
     - path: src/boilerdata/stages/schema.py
       md5: 0106ba329192f085f501ac35de5b04ff
       size: 1568
     outs:
     - path: data/schema
-      md5: 08d29bce2c330a90bd4b3d9f7b7901f8.dir
-      size: 25538
+      md5: 30a0a7ab2c6b7d39813ec35ff3d0e139.dir
+      size: 25374
       nfiles: 4
   originlab:
     cmd: python -m boilerdata.stages.originlab
@@ -94,8 +94,8 @@ stages:
       size: 103226338
       nfiles: 401
     - path: data/schema
-      md5: 08d29bce2c330a90bd4b3d9f7b7901f8.dir
-      size: 25538
+      md5: 30a0a7ab2c6b7d39813ec35ff3d0e139.dir
+      size: 25374
       nfiles: 4
     - path: src/boilerdata/stages/runs.py
       md5: 945f75deb7cf8691edc4005b2471324b
@@ -109,16 +109,16 @@ stages:
     cmd: jupyter execute src/boilerdata/stages/modelfun.ipynb
     deps:
     - path: data/schema
-      md5: 08d29bce2c330a90bd4b3d9f7b7901f8.dir
-      size: 25538
+      md5: 30a0a7ab2c6b7d39813ec35ff3d0e139.dir
+      size: 25374
       nfiles: 4
     - path: src/boilerdata/stages/modelfun.ipynb
       md5: 4cb6d1a3476a8579c2711339c4eeb068
       size: 15705
     outs:
     - path: data/modelfun
-      md5: 59117d66ec1eee19f3f3214bbc559c95.dir
-      size: 43706
+      md5: 6c73a8fed2056edadc7c640c9afc0642.dir
+      size: 46852
       nfiles: 1
   literature:
     cmd: python -m boilerdata.stages.literature
@@ -164,26 +164,26 @@ stages:
     cmd: python -m boilerdata.stages.metrics
     deps:
     - path: data/results
-      md5: ab573a807d10f0294244ef1ff230dd87.dir
-      size: 237531
+      md5: d300de3a2b68bb12d9064c7a575a35fe.dir
+      size: 238473
       nfiles: 1
     - path: src/boilerdata/stages/metrics.py
-      md5: 3863d9e8dc704f80091c8c8f082ab48c
-      size: 6283
+      md5: 66e6ade9c5f077e4594cf12b257bd5e9
+      size: 6390
     outs:
     - path: data/metrics/first_new_fit.png
-      md5: 0f1a7a239ae2f191947f80a11cfa5cb2
-      size: 100317
+      md5: 26d1035fe8759a38296da79b8ccd91f2
+      size: 100247
     - path: data/metrics/last_new_fit.png
-      md5: 858666ce3070a4b9db116066b65c077a
-      size: 78098
+      md5: 1b71b190d7e7b77aba32754753159c8e
+      size: 129059
     - path: data/metrics/new_fits
-      md5: c2b6e0a7318dce12ea66ad2ca6ae646a.dir
-      size: 1220499
+      md5: 4bcdae54a8e44a38cac5d0a2c06e5bde.dir
+      size: 1262615
       nfiles: 11
     - path: data/metrics/pipeline_metrics.json
-      md5: 4d867a33116e2d69206eb93d1899ee9e
-      size: 599
+      md5: 5f1b95d42b9cec16e347e521ca797391
+      size: 553
     - path: data/metrics/pipeline_metrics.png
-      md5: c16962f1e3fc83574ee1c25d3d6814b6
-      size: 77413
+      md5: 69b7093cbd736df2365f0cbf32a72a2e
+      size: 76698
