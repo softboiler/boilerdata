@@ -5,7 +5,12 @@ from typing import Any, Optional
 
 from pydantic import DirectoryPath, FilePath, validator
 
-from boilerdata.models.common import MyBaseModel, StrPath, default_axes_enum_file
+from boilerdata.models.common import (
+    MyBaseModel,
+    StrPath,
+    allow_extra,
+    default_axes_enum_file,
+)
 
 
 class Dirs(MyBaseModel):
@@ -21,9 +26,6 @@ class Dirs(MyBaseModel):
     # ! DIRECTORY PER TRIAL
     # Don't validate this here. Handle when initializing Project.
     per_trial: Optional[Path] = None
-
-    # ! THIS FILE IS FIXED
-    file_axes_enum: Path = default_axes_enum_file
 
     # ! BASE DIRECTORY
     base: DirectoryPath = Path(".")
@@ -100,3 +102,9 @@ class Dirs(MyBaseModel):
         directory = Path(directory)
         directory.mkdir(parents=True, exist_ok=True)
         return directory
+
+    def __init__(self, **data):
+        super().__init__(**data)
+        with allow_extra(self):
+            # ! THIS FILE PATH IS DYNAMICALLY GENERATED BASED ON THE PACKAGE DIRECTORY
+            self.file_axes_enum: Path = default_axes_enum_file
