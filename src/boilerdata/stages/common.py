@@ -3,6 +3,7 @@
 
 from os import chdir
 from pathlib import Path
+from typing import Any
 
 import numpy as np
 import pandas as pd
@@ -85,18 +86,33 @@ def get_tcs(trial: Trial) -> tuple[list[str], list[str]]:
     return tcs, tc_errors
 
 
-def zip_params(grp: pd.DataFrame, proj: Project):
+def get_params_mapping(grp: pd.DataFrame, params: list[Any]) -> dict[str, Any]:
+    """Get a mapping of parameter names to values."""
+    # Reason: pydantic: use_enum_values
+    return dict(zip(params, grp[params]))  # type: ignore
+
+
+def get_params_mapping_with_uncertainties(
+    grp: pd.DataFrame, proj: Project
+) -> dict[str, Any]:
+    """Get a mapping of parameter names to values with uncertainty."""
     model_params_and_errors = proj.params.params_and_errors
     # Reason: pydantic: use_enum_values
     params: list[str] = proj.params.model_params  # type: ignore
     param_errors: list[str] = proj.params.model_errors  # type: ignore
-    return zip(grp[params], grp[param_errors], model_params_and_errors)
+    u_params = [
+        ufloat(param, err, tag)
+        for param, err, tag in zip(
+            grp[params], grp[param_errors], model_params_and_errors
+        )
+    ]
+    return dict(zip(model_params_and_errors, u_params))
 
 
-def model_with_error(model, x, u_params, k):  # type: ignore # TODO: Remove k
+def model_with_error(model, x, u_params):
     """Evaluate the model for x and return y with errors."""
     u_x = [ufloat(v, 0, "x") for v in x]
-    u_y = model(u_x, *u_params, k)  # type: ignore # TODO: Remove k
+    u_y = model(u_x, **u_params)
     y = np.array([v.nominal_value for v in u_y])
     y_min = y - [
         v.std_dev for v in u_y

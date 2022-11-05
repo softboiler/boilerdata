@@ -67,9 +67,6 @@ def get_properties(df: pd.DataFrame, proj: Project) -> pd.DataFrame:
                 A.h_w: float(np.finfo(float).eps),  # TODO: We wrapped this in float
                 A.T_w: lambda df: (T_w_avg + T_w_p) / 2,
                 A.T_w_diff: lambda df: abs(T_w_avg - T_w_p),
-                # TODO: Remove these
-                A.k_err: 0,
-                A.h_w_err: 0,
             }
             | {k: 0 for k in proj.params.fixed_errors}  # Zero error for fixed params
         )
@@ -94,6 +91,7 @@ def fit(
             grp[proj.params.fixed_params].mean(),  # type: ignore  # pydantic: use_enum_values
         )
     )
+    del fixed_param_values["h_w"]  # TODO: Remove this when h_w is parametrized
     _, tc_errors = get_tcs(trial)
 
     # Assign thermocouple errors

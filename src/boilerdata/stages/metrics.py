@@ -9,16 +9,16 @@ import warnings
 from matplotlib import pyplot as plt
 import numpy as np
 import pandas as pd
-from uncertainties import ufloat
 
 from boilerdata.axes_enum import AxesEnum as A  # noqa: N814
 from boilerdata.models.project import Project
 from boilerdata.stages.common import (
+    get_params_mapping,
+    get_params_mapping_with_uncertainties,
     get_tcs,
     get_trial,
     model_with_error,
     per_run,
-    zip_params,
 )
 from boilerdata.stages.modelfun import model_with_uncertainty
 
@@ -113,9 +113,12 @@ def plot_new_fits(grp: pd.DataFrame, proj: Project, model):
     tcs, tc_errors = get_tcs(trial)
     x_unique = list(trial.thermocouple_pos.values())
     y_unique = ser[tcs]
-    u_params = np.array(
-        [ufloat(param, err, tag) for param, err, tag in zip_params(ser, proj)]
-    )
+
+    # TODO: Uncomment this and move defs closer when the modelfun changes
+    params = get_params_mapping(ser, proj.params.model_params)
+    u_params = get_params_mapping_with_uncertainties(ser, proj)
+    del params["h_w"]
+    del u_params["h_w"]
 
     # Plot setup
     fig, ax = plt.subplots(layout="constrained")
@@ -131,8 +134,7 @@ def plot_new_fits(grp: pd.DataFrame, proj: Project, model):
     # Initial plot boundaries
     x_bounds = np.array([0, trial.thermocouple_pos[A.T_1]])
 
-    # u_params[3] = max(ufloat(1e-2, u_params[3].s, "h_a"), u_params[3])  # type: ignore  # TODO: Remove this
-    y_bounds = model(x_bounds, *[param.nominal_value for param in u_params], grp[A.k])  # type: ignore # TODO: Remove A.k
+    y_bounds = model(x_bounds, **params)
     ax.plot(
         x_bounds,
         y_bounds,
@@ -158,12 +160,11 @@ def plot_new_fits(grp: pd.DataFrame, proj: Project, model):
     )
 
     # Confidence interval
-    # model = uncertainties.wrap(model)
     (xlim_min, xlim_max) = ax.get_xlim()
     pad = 0.025 * (xlim_max - xlim_min)
     x_padded = np.linspace(xlim_min - pad, xlim_max + pad)
 
-    y_padded, y_padded_min, y_padded_max = model_with_error(model, x_padded, u_params, grp[A.k])  # type: ignore # TODO: Remove A.k
+    y_padded, y_padded_min, y_padded_max = model_with_error(model, x_padded, u_params)
     ax.plot(
         x_padded,
         y_padded,
