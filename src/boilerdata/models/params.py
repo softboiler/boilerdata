@@ -35,18 +35,14 @@ class Params(MyBaseModel):
             k: eps if v == 0 and "x" not in k else v for k, v in model_inputs.items()
         }
 
-    model_params: list[A] = Field(
-        default=[
-            A.T_s,
-            A.q_s,
-            A.h_a,
-            A.T_s_err,
-            A.q_s_err,
-            A.h_a_err,
-        ],
-        description="Parameters of the model to be fitted.",
-    )
-
+    # Reason: pydantic: use_enum_values
+    model_params: list[A] = [
+        A.T_s,
+        A.q_s,
+        # A.k,
+        A.h_a,
+        # A.h_w,  # TODO: Uncomment this
+    ]  # type: ignore
     fixed_params: list[A] = [
         A.k,
         # A.h_w,  # TODO: Uncomment this

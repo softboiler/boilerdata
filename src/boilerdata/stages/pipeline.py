@@ -37,7 +37,7 @@ def main(proj: Project):
         .pipe(per_trial, agg_over_runs, proj, confidence_interval_95)  # TCs may vary
         .pipe(per_trial, get_superheat, proj)  # Water temp varies across trials
         .pipe(per_trial, assign_metadata, proj)  # Metadata is distinct per trial
-        # .pipe(validate_final_df)
+        # .pipe(validate_final_df)  # TODO: Uncomment
         .to_csv(proj.dirs.file_results, encoding="utf-8")
     )
 
@@ -57,19 +57,22 @@ def get_properties(df: pd.DataFrame, proj: Project) -> pd.DataFrame:
     )
 
     return df.assign(
-        **{
-            A.k: lambda df: get_prop(
-                Mat.COPPER,
-                Prop.THERMAL_CONDUCTIVITY,
-                convert_temperature((df[A.T_1] + df[A.T_5]) / 2, "C", "K"),
-            ),
-            A.T_w: lambda df: (T_w_avg + T_w_p) / 2,
-            A.T_w_diff: lambda df: abs(T_w_avg - T_w_p),
-            # TODO: Remove these
-            A.k_err: 0,
-            A.h_w: 0,
-            A.h_w_err: 0,
-        }
+        **(
+            {
+                A.k: lambda df: get_prop(
+                    Mat.COPPER,
+                    Prop.THERMAL_CONDUCTIVITY,
+                    convert_temperature((df[A.T_1] + df[A.T_5]) / 2, "C", "K"),
+                ),
+                A.h_w: float(np.finfo(float).eps),  # TODO: We wrapped this in float
+                A.T_w: lambda df: (T_w_avg + T_w_p) / 2,
+                A.T_w_diff: lambda df: abs(T_w_avg - T_w_p),
+                # TODO: Remove these
+                A.k_err: 0,
+                A.h_w_err: 0,
+            }
+            | {k: 0 for k in proj.params.fixed_errors}  # Zero error for fixed params
+        )
     )
 
 

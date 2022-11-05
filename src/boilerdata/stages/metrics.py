@@ -131,8 +131,8 @@ def plot_new_fits(grp: pd.DataFrame, proj: Project, model):
     # Initial plot boundaries
     x_bounds = np.array([0, trial.thermocouple_pos[A.T_1]])
 
-    u_params[3] = max(ufloat(1e-2, u_params[3].s, "h_a"), u_params[3])  # type: ignore  # TODO: Remove this
-    y_bounds = model(x_bounds, *[param.nominal_value for param in u_params])
+    # u_params[3] = max(ufloat(1e-2, u_params[3].s, "h_a"), u_params[3])  # type: ignore  # TODO: Remove this
+    y_bounds = model(x_bounds, *[param.nominal_value for param in u_params], grp[A.k])  # type: ignore # TODO: Remove A.k
     ax.plot(
         x_bounds,
         y_bounds,
@@ -163,7 +163,7 @@ def plot_new_fits(grp: pd.DataFrame, proj: Project, model):
     pad = 0.025 * (xlim_max - xlim_min)
     x_padded = np.linspace(xlim_min - pad, xlim_max + pad)
 
-    y_padded, y_padded_min, y_padded_max = model_with_error(model, x_padded, u_params)
+    y_padded, y_padded_min, y_padded_max = model_with_error(model, x_padded, u_params, grp[A.k])  # type: ignore # TODO: Remove A.k
     ax.plot(
         x_padded,
         y_padded,
