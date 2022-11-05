@@ -1,5 +1,4 @@
 dirs:
-  file_axes_enum: C:/Users/Blake/Code/mine/boilerdata/src/boilerdata/axes_enum.py
   base: .
   config: config
 

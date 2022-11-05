@@ -4,20 +4,20 @@ stages:
     cmd: python -m boilerdata.stages.pipeline
     deps:
     - path: data/modelfun
-      md5: c5a9aa9b3d10adc51c30685b3e8f9042.dir
-      size: 46852
+      md5: 1ad53c048df139159c9448264f333ba4.dir
+      size: 46524
       nfiles: 1
     - path: data/runs
       md5: ee5866df2c07ee4e2f26fa099618d7a8.dir
       size: 1009895
       nfiles: 1
     - path: src/boilerdata/stages/pipeline.py
-      md5: 43bd853790dcba4bf26f9916db4b57ed
-      size: 7735
+      md5: 9234579388aacf69d8a6282ae5feeb3e
+      size: 7654
     outs:
     - path: data/results
-      md5: c76af95977b1140f05a222225ee9948b.dir
-      size: 238448
+      md5: 0b5317e363f80691799127710dbf5f07.dir
+      size: 238563
       nfiles: 1
   plot:
     cmd: python -m boilerdata.plot
@@ -49,16 +49,16 @@ stages:
       size: 7561
       nfiles: 2
     - path: src/boilerdata/models
-      md5: 6be55c810dda890682afb170c07d33c3.dir
-      size: 58293
+      md5: 7fb3911f00658b76defdd691acceb236.dir
+      size: 58227
       nfiles: 17
     - path: src/boilerdata/stages/schema.py
       md5: 0106ba329192f085f501ac35de5b04ff
       size: 1568
     outs:
     - path: data/schema
-      md5: 3ba5108018368c3ce6a2faba67bfb3e7.dir
-      size: 25432
+      md5: 176f7a4b6bf2d76feef80addec364063.dir
+      size: 25409
       nfiles: 4
   originlab:
     cmd: python -m boilerdata.stages.originlab
@@ -94,8 +94,8 @@ stages:
       size: 103226338
       nfiles: 401
     - path: data/schema
-      md5: 3ba5108018368c3ce6a2faba67bfb3e7.dir
-      size: 25432
+      md5: 176f7a4b6bf2d76feef80addec364063.dir
+      size: 25409
       nfiles: 4
     - path: src/boilerdata/stages/runs.py
       md5: 945f75deb7cf8691edc4005b2471324b
@@ -109,16 +109,16 @@ stages:
     cmd: jupyter execute src/boilerdata/stages/modelfun.ipynb
     deps:
     - path: data/schema
-      md5: 3ba5108018368c3ce6a2faba67bfb3e7.dir
-      size: 25432
+      md5: 176f7a4b6bf2d76feef80addec364063.dir
+      size: 25409
       nfiles: 4
     - path: src/boilerdata/stages/modelfun.ipynb
-      md5: 4cb6d1a3476a8579c2711339c4eeb068
-      size: 15705
+      md5: 8bbcb1cfc8fe06effb17aa75a4ea599a
+      size: 17519
     outs:
     - path: data/modelfun
-      md5: c5a9aa9b3d10adc51c30685b3e8f9042.dir
-      size: 46852
+      md5: 1ad53c048df139159c9448264f333ba4.dir
+      size: 46524
       nfiles: 1
   literature:
     cmd: python -m boilerdata.stages.literature
@@ -128,8 +128,8 @@ stages:
       size: 321985
       nfiles: 9
     - path: data/schema
-      md5: 3ba5108018368c3ce6a2faba67bfb3e7.dir
-      size: 25432
+      md5: 176f7a4b6bf2d76feef80addec364063.dir
+      size: 25409
       nfiles: 4
     - path: src/boilerdata/stages/literature.py
       md5: 83661520bdd5a68529a6ae12b3b24a80
@@ -164,26 +164,26 @@ stages:
     cmd: python -m boilerdata.stages.metrics
     deps:
     - path: data/results
-      md5: c76af95977b1140f05a222225ee9948b.dir
-      size: 238448
+      md5: 0b5317e363f80691799127710dbf5f07.dir
+      size: 238563
       nfiles: 1
     - path: src/boilerdata/stages/metrics.py
-      md5: 4bb097f9385873d9c5a3b1ceb41e001c
-      size: 6271
+      md5: 46d6eb324b70d0a6a0b2596295b0a670
+      size: 6116
     outs:
     - path: data/metrics/first_new_fit.png
-      md5: 15272575935389a2f1f94f665d027ff3
-      size: 100306
+      md5: 560c6addfaa27ce00eb0c4e2ad763b29
+      size: 100260
     - path: data/metrics/last_new_fit.png
-      md5: efb64c378848bfefc083747cfff9485a
-      size: 129058
+      md5: 5b01f456b86a9fbd8c9661e4fc411a3c
+      size: 129199
     - path: data/metrics/new_fits
-      md5: b35f5a5e926513b0e6a88b364590b0b5.dir
-      size: 1262690
+      md5: f65bd5d103deaeecdab802b583a485ab.dir
+      size: 1275643
       nfiles: 11
     - path: data/metrics/pipeline_metrics.json
-      md5: 0e94eac8828f1c8481bc4abe208c5372
-      size: 777
+      md5: 9307878ba053c1f0facc5f9761d39ba3
+      size: 778
     - path: data/metrics/pipeline_metrics.png
-      md5: c47b6ec3cd3a92104046e8c21085fab4
-      size: 93182
+      md5: ae9905ab1e0669eb7c4dc33954e657c8
+      size: 96105

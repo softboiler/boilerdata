@@ -114,12 +114,6 @@ def plot_new_fits(grp: pd.DataFrame, proj: Project, model):
     x_unique = list(trial.thermocouple_pos.values())
     y_unique = ser[tcs]
 
-    # TODO: Uncomment this and move defs closer when the modelfun changes
-    params = get_params_mapping(ser, proj.params.model_params)
-    u_params = get_params_mapping_with_uncertainties(ser, proj)
-    del params["h_w"]
-    del u_params["h_w"]
-
     # Plot setup
     fig, ax = plt.subplots(layout="constrained")
 
@@ -134,7 +128,7 @@ def plot_new_fits(grp: pd.DataFrame, proj: Project, model):
     # Initial plot boundaries
     x_bounds = np.array([0, trial.thermocouple_pos[A.T_1]])
 
-    y_bounds = model(x_bounds, **params)
+    y_bounds = model(x_bounds, **get_params_mapping(ser, proj.params.model_params))
     ax.plot(
         x_bounds,
         y_bounds,
@@ -164,7 +158,9 @@ def plot_new_fits(grp: pd.DataFrame, proj: Project, model):
     pad = 0.025 * (xlim_max - xlim_min)
     x_padded = np.linspace(xlim_min - pad, xlim_max + pad)
 
-    y_padded, y_padded_min, y_padded_max = model_with_error(model, x_padded, u_params)
+    y_padded, y_padded_min, y_padded_max = model_with_error(
+        model, x_padded, get_params_mapping_with_uncertainties(ser, proj)
+    )
     ax.plot(
         x_padded,
         y_padded,

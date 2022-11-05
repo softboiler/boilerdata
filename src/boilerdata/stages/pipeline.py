@@ -91,7 +91,6 @@ def fit(
             grp[proj.params.fixed_params].mean(),  # type: ignore  # pydantic: use_enum_values
         )
     )
-    del fixed_param_values["h_w"]  # TODO: Remove this when h_w is parametrized
     _, tc_errors = get_tcs(trial)
 
     # Assign thermocouple errors
