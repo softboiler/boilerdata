@@ -71,6 +71,7 @@ def write_metrics(df: pd.DataFrame, proj: Project) -> pd.DataFrame:
             metrics |= {
                 f"{k}_{err_tag}_{agg}": v for k, v in err_df.agg(agg).to_dict().items()
             }
+    metrics |= {k: 0 for k, v in metrics.items() if np.isnan(v)}
     proj.dirs.file_pipeline_metrics.write_text(json.dumps(metrics, indent=2))
 
     # Box plot of normalized errors
