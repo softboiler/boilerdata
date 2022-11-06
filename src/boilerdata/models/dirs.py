@@ -16,7 +16,7 @@ from boilerdata.models.common import (
 class Dirs(MyBaseModel):
     """Directories relevant to the project."""
 
-    class Config:
+    class Config(MyBaseModel.Config):
         @staticmethod
         def schema_extra(schema: dict[str, Any], model: Dirs):
             for prop in schema.get("properties", {}).values():
