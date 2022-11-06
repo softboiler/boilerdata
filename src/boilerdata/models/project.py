@@ -12,13 +12,8 @@ from boilerdata.models.trials import Trial, Trials
 class Project(MyBaseModel):
     """The global project configuration."""
 
-    geometry: Geometry
-    params: Params
-
-    # ! DIRS
-    # `default_factory` is in beta. This could also be done w/ `default=None` and a
-    # trivial validator.
-    # https://pydantic-docs.helpmanual.io/usage/models/#field-with-dynamic-default-value
+    geometry: Geometry = Field(default_factory=Geometry)
+    params: Params = Field(default_factory=Params)
     dirs: Dirs = Field(default_factory=Dirs)
 
     # ! AXES
