@@ -1,6 +1,3 @@
-geometry:
-  diameter: 300
-
 params:
   do_plot: true
   records_to_average: 9
