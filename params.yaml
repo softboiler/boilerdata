@@ -13,22 +13,16 @@ dirs:
 
   literature: data/literature
   literature_results: data/literature_results
-  file_literature_results: data/literature_results/lit.csv
 
   modelfun: data/modelfun
-  file_model: data/modelfun/model.dillpickle
 
   trials: data/curves
   runs: data/runs
-  file_runs: data/runs/runs.csv
 
   results: data/results
-  file_results: data/results/results.csv
 
   plotter: data/plotter
-  file_plotter: data/plotter/results.opju
   originlab_results: data/originlab_results
-  file_originlab_results: data/originlab_results/originlab_results.csv
 
   metrics: data/metrics
   new_fits: data/metrics/new_fits
@@ -57,5 +51,19 @@ geometry:
     A9: 0.553
 
 params:
-  records_to_average: 9
   do_plot: true
+  records_to_average: 9
+
+  initial_values:
+    T_s: 95
+    q_s: 0
+    k: 400
+    h_a: 0
+    h_w: 0
+
+  model_bounds:
+    T_s: [95, inf]
+    q_s: [0, inf]
+    k: [350, 450]
+    h_a: [0, inf]
+    h_w: [0, inf]

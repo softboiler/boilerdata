@@ -41,7 +41,7 @@ def main(proj: Project):
         .pipe(per_trial, agg_over_runs, proj, confidence_interval_95)  # TCs may vary
         .pipe(per_trial, get_superheat, proj)  # Water temp varies across trials
         .pipe(per_trial, assign_metadata, proj)  # Metadata is distinct per trial
-        .pipe(validate_final_df)  # TODO: Uncomment
+        .pipe(validate_final_df)
         .to_csv(proj.dirs.file_results, encoding="utf-8")
     )
 
@@ -68,7 +68,7 @@ def get_properties(df: pd.DataFrame, proj: Project) -> pd.DataFrame:
                     Prop.THERMAL_CONDUCTIVITY,
                     convert_temperature((df[A.T_1] + df[A.T_5]) / 2, "C", "K"),
                 ),
-                A.h_w: float(np.finfo(float).eps),  # TODO: We wrapped this in float
+                A.h_w: float(np.finfo(float).eps),
                 A.T_w: lambda df: (T_w_avg + T_w_p) / 2,
                 A.T_w_diff: lambda df: abs(T_w_avg - T_w_p),
             }
@@ -110,9 +110,16 @@ def fit(
     # Prepare for fitting
     x, y, y_errors = fit_setup(grp, proj, trial)
     T_w = grp.T_w.mean()  # noqa: N806  # Mean water temperature
-    T_s_bnd = (T_w, np.inf)  # noqa: N806  # Boiling surface temp bounds
-    q_s_bnd = (0, np.inf)  # Surface heat flux bounds
-    h_a_bnd = (0, np.inf)  # Convection heat transfer coefficient bounds
+
+    # Get bounds and override some
+    model_bounds = proj.params.model_bounds
+    model_bounds[A.T_s] = (T_w, np.inf)  # type: ignore  # pydantic: use_enum_values
+
+    # Get guesses and override some
+    initial_values = proj.params.initial_values
+    initial_values[A.T_s] = model_bounds[A.T_s][0]  # type: ignore  # pydantic: use_enum_values
+
+    (bounds, guesses) = get_free_bounds_and_guesses(proj, model_bounds, initial_values)
 
     # Perform fit  # ! Depends on the order of the parameters
     try:
@@ -122,8 +129,8 @@ def fit(
             y,
             sigma=y_errors,
             absolute_sigma=True,
-            p0=(T_w, 1, 1),
-            bounds=tuple(zip(T_s_bnd, q_s_bnd, h_a_bnd)),
+            p0=guesses,
+            bounds=tuple(zip(*bounds)),  # Expects ([L1, L2, L3], [H1, H2, H3])
         )
     except RuntimeError:
         dim = len(proj.params.free_params)
@@ -152,6 +159,22 @@ def fit_setup(grp: pd.DataFrame, proj: Project, trial: Trial):
     y = grp[tcs].stack()
     y_errors = grp[tc_errors].stack()
     return x, y, y_errors
+
+
+def get_free_bounds_and_guesses(proj, model_bounds, initial_values):
+    """Given model bounds and initial values, return just the free parameter values."""
+    bounds = tuple(
+        bound
+        for param, bound in model_bounds.items()
+        if param in proj.params.free_params
+    )
+    guesses = tuple(
+        guess
+        for param, guess in initial_values.items()
+        if param in proj.params.free_params
+    )
+
+    return bounds, guesses
 
 
 def agg_over_runs(
