@@ -1,3 +1,24 @@
+geometry:
+  diameter: 300
+
+params:
+  do_plot: true
+  records_to_average: 9
+
+  initial_values:
+    T_s: 95
+    q_s: 0
+    k: 400
+    h_a: 0
+    h_w: 0
+
+  model_bounds:
+    T_s: [95, inf]
+    q_s: [0, inf]
+    k: [350, 450]
+    h_a: [0, inf]
+    h_w: [0, inf]
+
 dirs:
   base: .
   config: config
@@ -28,21 +49,3 @@ dirs:
   new_fits: data/metrics/new_fits
   file_pipeline_metrics_plot: data/metrics/pipeline_metrics.png
   file_pipeline_metrics: data/metrics/pipeline_metrics.json
-
-params:
-  do_plot: true
-  records_to_average: 9
-
-  initial_values:
-    T_s: 95
-    q_s: 0
-    k: 400
-    h_a: 0
-    h_w: 0
-
-  model_bounds:
-    T_s: [95, inf]
-    q_s: [0, inf]
-    k: [350, 450]
-    h_a: [0, inf]
-    h_w: [0, inf]
