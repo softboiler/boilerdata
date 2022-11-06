@@ -42,10 +42,14 @@ class Dirs(MyBaseModel):
     # ! DATA
     data: DirectoryPath = base / "data"
 
+    # ! AXES
+    axes: DirectoryPath = data / "axes"
+    file_axes_enum_copy = axes / "axes_enum.py"
+    file_originlab_coldes: Path = axes / "originlab_coldes.txt"
+
     # ! SCHEMA
     # Can't be "schema", which is a special member of BaseClass
     project_schema: DirectoryPath = data / "schema"
-    file_originlab_coldes: Path = project_schema / "originlab_coldes.txt"
 
     # ! LITERATURE
     literature: DirectoryPath = data / "literature"
@@ -86,6 +90,7 @@ class Dirs(MyBaseModel):
     # "always" so it'll run even if not in YAML
     # "pre" because dir must exist pre-validation
     @validator(
+        "axes",
         "project_schema",
         "literature_results",
         "modelfun",

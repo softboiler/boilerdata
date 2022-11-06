@@ -30,7 +30,7 @@
   "python.analysis.autoSearchPaths": false,
   //? See "useLibraryCodeForTypes" in pyrightconfig.json
   "python.analysis.typeCheckingMode": "off",
-  "python.analysis.completeFunctionParens": true,
+  "python.analysis.completeFunctionParens": false, // Buggy for now
 
   //! Lint, test
 

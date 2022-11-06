@@ -1,20 +1,27 @@
 stages:
+  axes:
+    cmd: "python -m boilerdata.stages.axes"
+    deps:
+      - "${dirs.stages}/axes.py"
+      - "${dirs.config}/axes.yaml"
+      - "${dirs.models}/axes.py"
+    outs:
+      - "${dirs.axes}"
+
   schema:
     cmd: "python -m boilerdata.stages.schema"
     deps:
       - "${dirs.stages}/schema.py"
-      - "${dirs.config}"
+      - "${dirs.axes}"
       - "${dirs.models}"
     outs:
       - "${dirs.project_schema}"
-      # # Can't uncomment this. Deletion breaks schema stage due to cyclic import.
-      # - "src/boilerdata/axes_enum.py"
 
   modelfun:
     cmd: "jupyter execute ${dirs.stages}/modelfun.ipynb"
     deps:
       - "${dirs.stages}/modelfun.ipynb"
-      - "${dirs.project_schema}"
+      - "${dirs.axes}"
     outs:
       - "${dirs.modelfun}"
 
@@ -22,7 +29,7 @@ stages:
     cmd: "python -m boilerdata.stages.runs"
     deps:
       - "${dirs.stages}/runs.py"
-      - "${dirs.project_schema}"
+      - "${dirs.axes}"
       - "${dirs.trials}"
     outs:
       - "${dirs.runs}"
@@ -54,7 +61,7 @@ stages:
     cmd: "python -m boilerdata.stages.literature"
     deps:
       - "${dirs.stages}/literature.py"
-      - "${dirs.project_schema}"
+      - "${dirs.axes}"
       - "${dirs.literature}"
     outs:
       - "${dirs.literature_results}"
@@ -63,6 +70,7 @@ stages:
     cmd: "python -m boilerdata.stages.originlab"
     deps:
       - "${dirs.stages}/originlab.py"
+      - "${dirs.axes}"
       - "${dirs.results}"
       - "${dirs.literature_results}"
       - "${dirs.plotter}"

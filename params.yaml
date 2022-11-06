@@ -17,14 +17,14 @@ params:
     h_w: [0, inf]
 
 dirs:
-  base: .
   config: config
 
-  package: src/boilerdata
   stages: src/boilerdata/stages
   models: src/boilerdata/models
 
   data: data
+
+  axes: data/axes
 
   project_schema: data/schema
   file_originlab_coldes: data/schema/originlab_coldes.txt
