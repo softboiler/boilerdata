@@ -82,6 +82,9 @@ class Dirs(MyBaseModel):
 
     # ! PLOTS
     metrics: DirectoryPath = data / "metrics"
+    file_new_fit_0: Path = metrics / "new_fit_0.png"
+    file_new_fit_1: Path = metrics / "new_fit_1.png"
+    file_new_fit_2: Path = metrics / "new_fit_2.png"
     new_fits: DirectoryPath = metrics / "new_fits"
     file_pipeline_metrics_plot: Path = metrics / "pipeline_metrics.png"
     file_pipeline_metrics: Path = metrics / "pipeline_metrics.json"

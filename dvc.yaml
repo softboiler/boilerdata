@@ -68,8 +68,9 @@ stages:
       - "${dirs.file_pipeline_metrics}"
     plots:
       - "${dirs.file_pipeline_metrics_plot}"
-      - "${dirs.metrics}/first_new_fit.png"
-      - "${dirs.metrics}/last_new_fit.png"
+      - "${dirs.file_new_fit_0}"
+      - "${dirs.file_new_fit_1}"
+      - "${dirs.file_new_fit_2}"
     params:
       - params.do_plot
 

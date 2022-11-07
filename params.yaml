@@ -66,6 +66,9 @@ dirs:
   originlab_results: data/originlab_results
   file_originlab_results: data/originlab_results/originlab_results.csv
   metrics: data/metrics
+  file_new_fit_0: data/metrics/new_fit_0.png
+  file_new_fit_1: data/metrics/new_fit_1.png
+  file_new_fit_2: data/metrics/new_fit_2.png
   new_fits: data/metrics/new_fits
   file_pipeline_metrics_plot: data/metrics/pipeline_metrics.png
   file_pipeline_metrics: data/metrics/pipeline_metrics.json

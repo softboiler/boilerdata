@@ -93,9 +93,15 @@ def plot_fits(df: pd.DataFrame, proj: Project, model) -> pd.DataFrame:
     if proj.params.do_plot:
         per_run(df, plot_new_fits, proj, model)
         if figs_src := sorted(proj.dirs.new_fits.iterdir()):
-            figs_src = (figs_src[0], figs_src[-1])
+            figs_src = (
+                figs_src[0],
+                figs_src[len(figs_src) // 2],
+                figs_src[-1],
+            )
             figs_dst = (
-                proj.dirs.metrics / f"{num}_new_fit.png" for num in ("first", "last")
+                proj.dirs.file_new_fit_0,
+                proj.dirs.file_new_fit_1,
+                proj.dirs.file_new_fit_2,
             )
             for fig_src, fig_dst in zip(figs_src, figs_dst):
                 copy(fig_src, fig_dst)
