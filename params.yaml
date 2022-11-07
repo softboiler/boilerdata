@@ -1,6 +1,30 @@
 params:
   do_plot: true
+
   records_to_average: 9
+
+  water_temps:
+    - T_w1
+    - T_w2
+    - T_w3
+
+  model_inputs:
+    r: 0.0047625
+    T_infa: 25
+    T_infw: 100
+    x_s: 0
+    x_wa: 0.0381
+
+  model_params:
+    - T_s
+    - q_s
+    - k
+    - h_a
+    - h_w
+
+  fixed_params:
+    - k
+    - h_w
 
   initial_values:
     T_s: 95
@@ -16,23 +40,24 @@ params:
     h_a: [0, inf]
     h_w: [0, inf]
 
+# Don't modify dirs manually. They are generated from the model defaults.
 dirs:
   config: config
 
-  stages: src/boilerdata/stages
   models: src/boilerdata/models
+  validation: src/boilerdata/validation.py
 
   data: data
 
   axes: data/axes
 
   project_schema: data/schema
-  file_originlab_coldes: data/schema/originlab_coldes.txt
 
   literature: data/literature
   literature_results: data/literature_results
 
   modelfun: data/modelfun
+  file_model: data/modelfun/model.dillpickle
 
   trials: data/curves
   runs: data/runs
@@ -46,3 +71,13 @@ dirs:
   new_fits: data/metrics/new_fits
   file_pipeline_metrics_plot: data/metrics/pipeline_metrics.png
   file_pipeline_metrics: data/metrics/pipeline_metrics.json
+
+  stages: src/boilerdata/stages
+  stage_axes: src/boilerdata/stages/axes.py
+  stage_literature: src/boilerdata/stages/literature.py
+  stage_metrics: src/boilerdata/stages/metrics.py
+  stage_modelfun: src/boilerdata/stages/modelfun.ipynb
+  stage_originlab: src/boilerdata/stages/originlab.py
+  stage_pipeline: src/boilerdata/stages/pipeline.py
+  stage_runs: src/boilerdata/stages/runs.py
+  stage_schema: src/boilerdata/stages/schema.py

@@ -1,4 +1,5 @@
 from functools import partial
+from typing import Mapping, Sequence, TypeVar
 
 import numpy as np
 import pandas as pd
@@ -119,7 +120,11 @@ def fit(
     initial_values = proj.params.initial_values
     initial_values[A.T_s] = model_bounds[A.T_s][0]  # type: ignore  # pydantic: use_enum_values
 
-    (bounds, guesses) = get_free_bounds_and_guesses(proj, model_bounds, initial_values)
+    (bounds, guesses) = get_free_bounds_and_guesses(
+        proj,
+        model_bounds,  # pyright: ignore [reportGeneralTypeIssues]  # pydantic: Type coerced in validation
+        initial_values,
+    )
 
     # Perform fit  # ! Depends on the order of the parameters
     try:
@@ -161,7 +166,15 @@ def fit_setup(grp: pd.DataFrame, proj: Project, trial: Trial):
     return x, y, y_errors
 
 
-def get_free_bounds_and_guesses(proj, model_bounds, initial_values):
+bound_T = TypeVar("bound_T", bound=tuple[float, float])  # noqa: N816  # TypeVar
+guess_T = TypeVar("guess_T", bound=float)  # noqa: N816  # TypeVar
+
+
+def get_free_bounds_and_guesses(
+    proj: Project,
+    model_bounds: Mapping[A, bound_T],
+    initial_values: Mapping[A, guess_T],
+) -> tuple[Sequence[bound_T], Sequence[guess_T]]:
     """Given model bounds and initial values, return just the free parameter values."""
     bounds = tuple(
         bound

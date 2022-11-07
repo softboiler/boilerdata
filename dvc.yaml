@@ -2,51 +2,66 @@ stages:
   axes:
     cmd: "python -m boilerdata.stages.axes"
     deps:
-      - "${dirs.stages}/axes.py"
+      - "${dirs.stage_axes}"
       - "${dirs.config}/axes.yaml"
       - "${dirs.models}/axes.py"
+      - "${dirs.models}/dirs.py"
     outs:
       - "${dirs.axes}"
+    params: []
 
   schema:
     cmd: "python -m boilerdata.stages.schema"
     deps:
-      - "${dirs.stages}/schema.py"
+      - "${dirs.stage_schema}"
       - "${dirs.axes}"
       - "${dirs.models}"
     outs:
       - "${dirs.project_schema}"
+    params: []
 
   modelfun:
-    cmd: "jupyter execute ${dirs.stages}/modelfun.ipynb"
+    cmd: "jupyter execute ${dirs.stage_modelfun}"
     deps:
-      - "${dirs.stages}/modelfun.ipynb"
+      - "${dirs.stage_modelfun}"
       - "${dirs.axes}"
+      - "${dirs.models}"
     outs:
       - "${dirs.modelfun}"
+    params:
+      - params.model_inputs
+      - params.model_params
+      - params.fixed_params
 
   runs:
     cmd: "python -m boilerdata.stages.runs"
     deps:
-      - "${dirs.stages}/runs.py"
+      - "${dirs.stage_runs}"
       - "${dirs.axes}"
       - "${dirs.trials}"
+      - "${dirs.models}"
     outs:
       - "${dirs.runs}"
+    params:
+      - params.records_to_average
 
   pipeline:
     cmd: "python -m boilerdata.stages.pipeline"
     deps:
-      - "${dirs.stages}/pipeline.py"
+      - "${dirs.stage_pipeline}"
       - "${dirs.modelfun}"
       - "${dirs.runs}"
+      - "${dirs.validation}"
     outs:
       - "${dirs.results}"
+    params:
+      - params.initial_values
+      - params.model_bounds
 
   metrics:
     cmd: "python -m boilerdata.stages.metrics"
     deps:
-      - "${dirs.stages}/metrics.py"
+      - "${dirs.stage_metrics}"
       - "${dirs.results}"
     outs:
       - "${dirs.new_fits}"
@@ -56,21 +71,22 @@ stages:
       - "${dirs.file_pipeline_metrics_plot}"
       - "${dirs.metrics}/first_new_fit.png"
       - "${dirs.metrics}/last_new_fit.png"
+    params:
+      - params.do_plot
 
   literature:
     cmd: "python -m boilerdata.stages.literature"
     deps:
-      - "${dirs.stages}/literature.py"
-      - "${dirs.axes}"
+      - "${dirs.stage_literature}"
       - "${dirs.literature}"
+      - "${dirs.models}/dirs.py"
     outs:
       - "${dirs.literature_results}"
 
   originlab:
     cmd: "python -m boilerdata.stages.originlab"
     deps:
-      - "${dirs.stages}/originlab.py"
-      - "${dirs.axes}"
+      - "${dirs.stage_originlab}"
       - "${dirs.results}"
       - "${dirs.literature_results}"
       - "${dirs.plotter}"
@@ -78,3 +94,4 @@ stages:
       - "${dirs.originlab_results}"
     plots:
       - "${dirs.metrics}/lit_.png"
+    frozen: true

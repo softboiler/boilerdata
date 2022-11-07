@@ -5,12 +5,7 @@ from typing import Any, Optional
 
 from pydantic import DirectoryPath, FilePath, validator
 
-from boilerdata.models.common import (
-    MyBaseModel,
-    StrPath,
-    allow_extra,
-    default_axes_enum_file,
-)
+from boilerdata.models.common import MyBaseModel, StrPath, default_axes_enum_file
 
 
 class Dirs(MyBaseModel):
@@ -38,6 +33,7 @@ class Dirs(MyBaseModel):
     package: DirectoryPath = base / "src/boilerdata"
     stages: DirectoryPath = package / "stages"
     models: DirectoryPath = package / "models"
+    validation: FilePath = package / "validation.py"
 
     # ! DATA
     data: DirectoryPath = base / "data"
@@ -108,8 +104,13 @@ class Dirs(MyBaseModel):
         directory.mkdir(parents=True, exist_ok=True)
         return directory
 
-    def __init__(self, **data):
-        super().__init__(**data)
-        with allow_extra(self):
-            # ! THIS FILE PATH IS DYNAMICALLY GENERATED BASED ON THE PACKAGE DIRECTORY
-            self.file_axes_enum: Path = default_axes_enum_file
+    file_axes_enum: FilePath = default_axes_enum_file
+
+    stage_axes: FilePath = stages / "axes.py"
+    stage_literature: FilePath = stages / "literature.py"
+    stage_metrics: FilePath = stages / "metrics.py"
+    stage_modelfun: FilePath = stages / "modelfun.ipynb"
+    stage_originlab: FilePath = stages / "originlab.py"
+    stage_pipeline: FilePath = stages / "pipeline.py"
+    stage_runs: FilePath = stages / "runs.py"
+    stage_schema: FilePath = stages / "schema.py"
