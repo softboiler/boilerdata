@@ -12,4 +12,3 @@ pip install -U -r .tools/requirements/requirements_dev.txt
 pip uninstall -y boilerdata
 python .tools/scripts/bump_pyproject.py
 pip install -e .
-pip install -U -r requirements_dynamic.txt
