@@ -135,8 +135,8 @@ stages:
       size: 238372
       nfiles: 1
     - path: src/boilerdata/stages/metrics.py
-      md5: c7a2ec4ca7c65ff7884f531696ddda15
-      size: 6255
+      md5: 9914b45640d08f2b68b0d199aa54766d
+      size: 7172
     params:
       params.yaml:
         params.do_plot: true
@@ -158,8 +158,8 @@ stages:
       md5: ff81f764280e2194120364d02d38f0c2
       size: 777
     - path: data/metrics/pipeline_metrics.png
-      md5: 2dc5e61e99544f84fa9346f6e8eca997
-      size: 103953
+      md5: 14ff00cdb37e531cb24e065c3c3ff329
+      size: 99722
   literature:
     cmd: python -m boilerdata.stages.literature
     deps:

@@ -41,7 +41,7 @@ def main(proj: Project):
 
 
 # * -------------------------------------------------------------------------------- * #
-# * STAGES
+# * METRICS
 
 
 def write_metrics(df: pd.DataFrame, proj: Project) -> pd.DataFrame:
@@ -75,17 +75,29 @@ def write_metrics(df: pd.DataFrame, proj: Project) -> pd.DataFrame:
     proj.dirs.file_pipeline_metrics.write_text(json.dumps(metrics, indent=2))
 
     # Box plot of normalized errors
+    plot_error(df, proj)
+
+    return df
+
+
+def plot_error(df: pd.DataFrame, proj: Project):
     fig, ax = plt.subplots(layout="constrained")
-    error_normalized_with_joint = error_normalized.assign(**{A.joint: df[A.joint]})
+    error = (
+        df[[A.joint, *proj.params.model_errors]]
+        .drop(axis="columns", labels=proj.params.fixed_errors)
+        .pipe(add_units, proj)
+    )
     with warnings.catch_warnings():
         warnings.simplefilter("ignore", UserWarning)
-        error_normalized_with_joint.plot.box(by=A.joint, ax=ax)
+        error.plot.box(by=A.joint, ax=ax)
     fig.savefig(
         proj.dirs.file_pipeline_metrics_plot,  # pyright: ignore [reportGeneralTypeIssues]  # matplotlib
         dpi=300,
     )
 
-    return df
+
+# * -------------------------------------------------------------------------------- * #
+# * METRICS
 
 
 def plot_fits(df: pd.DataFrame, proj: Project, model) -> pd.DataFrame:
@@ -197,6 +209,25 @@ def plot_new_fits(grp: pd.DataFrame, proj: Project, model):
         run_file,  # pyright: ignore [reportGeneralTypeIssues]  # matplotlib
         dpi=300,
     )
+
+
+# * -------------------------------------------------------------------------------- * #
+# * HELPER FUNCTIONS
+
+
+def add_units(df: pd.DataFrame, proj: Project) -> pd.DataFrame:
+    """Make the columns a multi-index representing units."""
+    cols = proj.axes.get_col_index()
+    quantity = cols.get_level_values("quantity")
+    units = cols.get_level_values("units")
+
+    old = (col.name for col in proj.axes.cols)
+    new = (add_unit(q, u) for q, u in zip(quantity, units))
+    return df.rename(axis="columns", mapper=dict(zip(old, new)))
+
+
+def add_unit(quantity: str, units: str) -> str:
+    return f"{quantity} ({units})" if units else quantity
 
 
 # * -------------------------------------------------------------------------------- * #
