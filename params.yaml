@@ -39,40 +39,38 @@ params:
     k: [350, 450]
     h_a: [0, inf]
     h_w: [0, inf]
-
-# Don't modify dirs manually. They are generated from the model defaults.
 dirs:
+  base: .
+  file_proj: params.yaml
   config: config
-
+  package: src/boilerdata
+  stages: src/boilerdata/stages
   models: src/boilerdata/models
   validation: src/boilerdata/validation.py
-
   data: data
-
   axes: data/axes
-
+  file_originlab_coldes: data/axes/originlab_coldes.txt
   project_schema: data/schema
-
   literature: data/literature
   literature_results: data/literature_results
-
+  file_literature_results: data/literature_results/lit.csv
   modelfun: data/modelfun
   file_model: data/modelfun/model.dillpickle
-
   trials: data/curves
   runs: data/runs
-
+  file_runs: data/runs/runs.csv
   results: data/results
-
+  file_results: data/results/results.csv
   plotter: data/plotter
+  file_plotter: data/plotter/results.opju
   originlab_results: data/originlab_results
-
+  file_originlab_results: data/originlab_results/originlab_results.csv
   metrics: data/metrics
   new_fits: data/metrics/new_fits
   file_pipeline_metrics_plot: data/metrics/pipeline_metrics.png
   file_pipeline_metrics: data/metrics/pipeline_metrics.json
-
-  stages: src/boilerdata/stages
+  file_axes_enum: C:/Users/Blake/Code/mine/boilerdata/src/boilerdata/axes_enum.py
+  stage_setup: src/boilerdata/stages/setup.py
   stage_axes: src/boilerdata/stages/axes.py
   stage_literature: src/boilerdata/stages/literature.py
   stage_metrics: src/boilerdata/stages/metrics.py
@@ -81,3 +79,4 @@ dirs:
   stage_pipeline: src/boilerdata/stages/pipeline.py
   stage_runs: src/boilerdata/stages/runs.py
   stage_schema: src/boilerdata/stages/schema.py
+  file_axes_enum_copy: data/axes/axes_enum.py

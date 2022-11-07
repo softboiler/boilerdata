@@ -32,7 +32,7 @@
   "python.analysis.typeCheckingMode": "off",
   "python.analysis.completeFunctionParens": false, // Buggy for now
 
-  //! Lint, test
+  //! Lint, test, format
 
   //* pytest
   "python.testing.unittestEnabled": false,
@@ -42,6 +42,10 @@
   "markdownlint.config": {
     "first-line-heading": false
   },
+
+  //* black
+  // This might become unnecessary eventually, but for now it's needed
+  "python.formatting.provider": "black",
 
   //! GitHub Actions
   "github-actions.workflows.pinned.workflows": [".github/workflows/main.yml"],
@@ -194,8 +198,7 @@
   //* YAML
   "yaml.format.printWidth": 88,
   "[yaml]": {
-    "editor.defaultFormatter": "redhat.vscode-yaml",
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
     "editor.wordWrap": "wordWrapColumn"
-  },
-  "python.formatting.provider": "black"
+  }
 }

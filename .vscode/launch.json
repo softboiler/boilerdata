@@ -4,6 +4,13 @@
     // * -------------------------------------------------------------------------- * //
     // * PROJECT-SPECIFIC * //
     {
+      "name": "proj: dirs",
+      "type": "python",
+      "request": "launch",
+      "module": "boilerdata.stages.dirs",
+      "console": "internalConsole"
+    },
+    {
       "name": "proj: axes",
       "type": "python",
       "request": "launch",

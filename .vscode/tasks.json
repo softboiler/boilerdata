@@ -28,6 +28,13 @@
     // * -------------------------------------------------------------------------- * //
     // * PROJECT-SPECIFIC * //
     {
+      "label": "dvc: setup",
+      "type": "process",
+      "command": "pwsh",
+      "args": ["-Command", "python -m boilerdata.stages.setup"],
+      "problemMatcher": []
+    },
+    {
       "label": "dvc: dag",
       "type": "process",
       "command": "pwsh",
@@ -47,6 +54,7 @@
       "command": "pwsh",
       "args": ["-Command", "dvc repro ${input:stage}"],
       "problemMatcher": []
+      // "dependsOn": ["dvc: setup"]  // Let's do this as needed, since it takes a sec.
     },
     {
       "label": "proj: Profile the pipeline",

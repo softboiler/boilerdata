@@ -25,6 +25,9 @@ class Dirs(MyBaseModel):
     # ! BASE DIRECTORY
     base: DirectoryPath = Path(".")
 
+    # ! PROJECT FILE
+    file_proj: FilePath = base / "params.yaml"
+
     # ! CONFIG
     # Careful, "Config" is a special member of BaseClass
     config: DirectoryPath = base / "config"
@@ -106,6 +109,7 @@ class Dirs(MyBaseModel):
 
     file_axes_enum: FilePath = default_axes_enum_file
 
+    stage_setup: FilePath = stages / "setup.py"
     stage_axes: FilePath = stages / "axes.py"
     stage_literature: FilePath = stages / "literature.py"
     stage_metrics: FilePath = stages / "metrics.py"
