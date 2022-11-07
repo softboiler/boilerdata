@@ -8,7 +8,6 @@ stages:
       - "${dirs.models}/dirs.py"
     outs:
       - "${dirs.axes}"
-    params: []
 
   schema:
     cmd: "python -m boilerdata.stages.schema"
@@ -18,7 +17,6 @@ stages:
       - "${dirs.models}"
     outs:
       - "${dirs.project_schema}"
-    params: []
 
   modelfun:
     cmd: "jupyter execute ${dirs.stage_modelfun}"
