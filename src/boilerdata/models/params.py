@@ -1,6 +1,7 @@
 from __future__ import annotations
 
-from typing import Literal, TypeAlias
+from types import EllipsisType
+from typing import Literal, TypeAlias, TypeVar
 
 import numpy as np
 from pydantic import Field, validator
@@ -9,35 +10,42 @@ from boilerdata.axes_enum import AxesEnum as A  # noqa: N814
 from boilerdata.models.common import MyBaseModel, allow_extra
 
 bound: TypeAlias = float | Literal["-inf", "inf"]
+T = TypeVar("T")
+
+
+def default_opt(default: T, optional: bool = False) -> EllipsisType | T:
+    """Has a default that will be passed to a Pydantic model if optional.
+
+    It is useful to set `optional` to `True` when actively developing a parameter, then
+    revert it to `False` when that parameter is going to always be coming from a
+    configuration file.
+    """
+    return default if optional else ...
 
 
 class Params(MyBaseModel):
     """Parameters that can vary."""
 
     records_to_average: int = Field(
-        default=5,
+        default=default_opt(5),
         description="The number of records over which to average in a given trial.",
     )
 
     # Reason: pydantic: use_enum_values
     model_params: list[A] = Field(
-        default=[
-            A.T_s,
-            A.q_s,
-            A.k,
-            A.h_a,
-            A.h_w,
-        ],
+        default=default_opt([A.T_s, A.q_s, A.k, A.h_a, A.h_w]),
         description="Parameters that can vary in the model. Some will be fixed.",
     )
 
     model_inputs: dict[str, float] = Field(
-        default=dict(
-            r=0.0047625,  # (m)
-            T_infa=25.0,  # (C)
-            T_infw=100.0,  # (C)
-            x_s=0,  # (m)
-            x_wa=0.0381,  # (m)
+        default=default_opt(
+            dict(
+                r=0.0047625,  # (m)
+                T_infa=25.0,  # (C)
+                T_infw=100.0,  # (C)
+                x_s=0,  # (m)
+                x_wa=0.0381,  # (m)
+            )
         ),
         description="Inputs to the symbolic model float evaluation stage.",
     )
@@ -46,13 +54,15 @@ class Params(MyBaseModel):
 
     # Reason: pydantic: use_enum_values
     model_bounds: dict[A, tuple[bound, bound]] = Field(
-        default={
-            A.T_s: (95, "inf"),  # (C) T_s
-            A.q_s: (0, "inf"),  # (W/m^2) q_s
-            A.k: (350, 450),  # (W/m-K) k
-            A.h_a: (0, "inf"),  # (W/m^2-K) h_a
-            A.h_w: (0, "inf"),  # (W/m^2-K) h_w
-        },
+        default=default_opt(
+            {
+                A.T_s: (95, "inf"),  # (C) T_s
+                A.q_s: (0, "inf"),  # (W/m^2) q_s
+                A.k: (350, 450),  # (W/m-K) k
+                A.h_a: (0, "inf"),  # (W/m^2-K) h_a
+                A.h_w: (0, "inf"),  # (W/m^2-K) h_w
+            }
+        ),
         description="Bounds for the model parameters. Not used if parameter is fixed.",
     )
 
@@ -68,10 +78,12 @@ class Params(MyBaseModel):
     # ! FIXED PARAMS
 
     fixed_params: list[A] = Field(
-        default=[
-            A.k,
-            A.h_w,
-        ],
+        default=default_opt(
+            [
+                A.k,
+                A.h_w,
+            ]
+        ),
         description="Parameters to fix. Evaluated before fitting, overridable in code.",
     )
 
@@ -85,13 +97,15 @@ class Params(MyBaseModel):
     # ! INITIAL VALUES
 
     initial_values: dict[A, float] = Field(
-        default={
-            A.T_s: 95,  # (C) T_s
-            A.q_s: 0,  # (W/m^2) q_s
-            A.k: 400,  # (W/m-K) k
-            A.h_a: 0,  # (W/m^2-K) h_a
-            A.h_w: 0,  # (W/m^2-K) h_w
-        },
+        default=default_opt(
+            {
+                A.T_s: 95,  # (C) T_s
+                A.q_s: 0,  # (W/m^2) q_s
+                A.k: 400,  # (W/m-K) k
+                A.h_a: 0,  # (W/m^2-K) h_a
+                A.h_w: 0,  # (W/m^2-K) h_w
+            }
+        ),
         description="Initial guess for free parameters, constant value otherwise.",
     )
 
@@ -108,15 +122,19 @@ class Params(MyBaseModel):
     # !
 
     water_temps: list[A] = Field(
-        default=[A.T_w1, A.T_w2, A.T_w3],
+        default=default_opt([A.T_w1, A.T_w2, A.T_w3]),
         description="Water temperature measurements.",
     )
+
     do_plot: bool = Field(
-        default=False,
+        default=default_opt(False),
         description="Whether to plot the fits of the individual runs.",
     )
     plots: list[str] = Field(
-        default=["lit_"],
+        default=default_opt(
+            ["lit_"],
+            optional=True,  # This isn't needed in `parms.yaml` yet
+        ),
         description="List of plots to save.",
     )
 
