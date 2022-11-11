@@ -6,14 +6,19 @@ from time import sleep
 import originpro as op
 import pandas as pd
 
+from boilerdata.axes_enum import AxesEnum as A  # noqa: N814
 from boilerdata.models.project import Project
-from boilerdata.stages.common import get_results
 
 
 def main(proj: Project):
 
     (
-        get_results(proj)
+        pd.read_csv(
+            proj.dirs.file_results,
+            index_col=(index := [A.trial, A.run]),
+            parse_dates=index,
+            dtype={col.name: col.dtype for col in proj.axes.cols},
+        )
         .pipe(transform_for_originlab, proj)
         .to_csv(proj.dirs.file_originlab_results, index=False, encoding="utf-8")
     )

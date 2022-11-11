@@ -5,7 +5,8 @@ from typing import Any, Optional
 
 from pydantic import DirectoryPath, FilePath, validator
 
-from boilerdata.models.common import MyBaseModel, StrPath, default_axes_enum_file
+import boilerdata
+from boilerdata.models.common import MyBaseModel, StrPath
 
 
 class Dirs(MyBaseModel):
@@ -35,8 +36,10 @@ class Dirs(MyBaseModel):
     # ! PACKAGE
     package: DirectoryPath = base / "src/boilerdata"
     stages: DirectoryPath = package / "stages"
+    notebooks: DirectoryPath = stages / "notebooks"
     models: DirectoryPath = package / "models"
     validation: FilePath = package / "validation.py"
+    file_axes_enum: FilePath = Path(boilerdata.__file__).parent / "axes_enum.py"
 
     # ! DATA
     data: DirectoryPath = base / "data"
@@ -81,13 +84,29 @@ class Dirs(MyBaseModel):
     file_originlab_results: Path = originlab_results / "originlab_results.csv"
 
     # ! PLOTS
+    file_style: FilePath = base / "style.mplstyle"
     metrics: DirectoryPath = data / "metrics"
-    file_new_fit_0: Path = metrics / "new_fit_0.png"
-    file_new_fit_1: Path = metrics / "new_fit_1.png"
-    file_new_fit_2: Path = metrics / "new_fit_2.png"
+    plot_new_fit_0: Path = metrics / "new_fit_0.png"
+    plot_new_fit_1: Path = metrics / "new_fit_1.png"
+    plot_new_fit_2: Path = metrics / "new_fit_2.png"
+    plot_median_error_by_joint: Path = metrics / "median_error_by_joint.png"
+    plot_max_error_by_joint: Path = metrics / "max_error_by_joint.png"
+    plot_median_error_by_range: Path = metrics / "median_error_by_range.png"
+    plot_max_error_by_range: Path = metrics / "max_error_by_range.png"
     new_fits: DirectoryPath = metrics / "new_fits"
     file_pipeline_metrics_plot: Path = metrics / "pipeline_metrics.png"
     file_pipeline_metrics: Path = metrics / "pipeline_metrics.json"
+
+    # ! STAGES
+    stage_setup: FilePath = stages / "setup.py"
+    stage_axes: FilePath = stages / "axes.py"
+    stage_literature: FilePath = stages / "literature.py"
+    stage_metrics: FilePath = notebooks / "metrics.ipynb"
+    stage_modelfun: FilePath = notebooks / "modelfun.ipynb"
+    stage_originlab: FilePath = stages / "originlab.py"
+    stage_pipeline: FilePath = stages / "pipeline.py"
+    stage_runs: FilePath = stages / "runs.py"
+    stage_schema: FilePath = stages / "schema.py"
 
     # "always" so it'll run even if not in YAML
     # "pre" because dir must exist pre-validation
@@ -109,15 +128,3 @@ class Dirs(MyBaseModel):
         directory = Path(directory)
         directory.mkdir(parents=True, exist_ok=True)
         return directory
-
-    file_axes_enum: FilePath = default_axes_enum_file
-
-    stage_setup: FilePath = stages / "setup.py"
-    stage_axes: FilePath = stages / "axes.py"
-    stage_literature: FilePath = stages / "literature.py"
-    stage_metrics: FilePath = stages / "metrics.py"
-    stage_modelfun: FilePath = stages / "modelfun.ipynb"
-    stage_originlab: FilePath = stages / "originlab.py"
-    stage_pipeline: FilePath = stages / "pipeline.py"
-    stage_runs: FilePath = stages / "runs.py"
-    stage_schema: FilePath = stages / "schema.py"

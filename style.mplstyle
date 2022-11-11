@@ -1,0 +1,9 @@
+figure.autolayout: True
+
+#* Saving figures
+#? Fix the whitespace around axes
+savefig.bbox: tight
+savefig.pad_inches: 0.2
+#?
+savefig.dpi: 300
+savefig.transparent: False

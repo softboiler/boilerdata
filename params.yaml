@@ -39,14 +39,23 @@ params:
     k: [350, 450]
     h_a: [0, inf]
     h_w: [0, inf]
+  error_scale:
+    T_s_err: 30
+    q_s_err: 5
+    k_err: 0
+    h_a_err: 40
+    h_w_err: 0
+
 dirs:
   base: .
   file_proj: params.yaml
   config: config
   package: src/boilerdata
   stages: src/boilerdata/stages
+  notebooks: src/boilerdata/stages/notebooks
   models: src/boilerdata/models
   validation: src/boilerdata/validation.py
+  file_axes_enum: C:/Users/Blake/Code/mine/boilerdata/src/boilerdata/axes_enum.py
   data: data
   axes: data/axes
   file_originlab_coldes: data/axes/originlab_coldes.txt
@@ -65,19 +74,23 @@ dirs:
   file_plotter: data/plotter/results.opju
   originlab_results: data/originlab_results
   file_originlab_results: data/originlab_results/originlab_results.csv
+  file_style: style.mplstyle
   metrics: data/metrics
-  file_new_fit_0: data/metrics/new_fit_0.png
-  file_new_fit_1: data/metrics/new_fit_1.png
-  file_new_fit_2: data/metrics/new_fit_2.png
+  plot_new_fit_0: data/metrics/new_fit_0.png
+  plot_new_fit_1: data/metrics/new_fit_1.png
+  plot_new_fit_2: data/metrics/new_fit_2.png
+  plot_median_error_by_joint: data/metrics/median_error_by_joint.png
+  plot_max_error_by_joint: data/metrics/max_error_by_joint.png
+  plot_median_error_by_range: data/metrics/median_error_by_range.png
+  plot_max_error_by_range: data/metrics/max_error_by_range.png
   new_fits: data/metrics/new_fits
   file_pipeline_metrics_plot: data/metrics/pipeline_metrics.png
   file_pipeline_metrics: data/metrics/pipeline_metrics.json
-  file_axes_enum: C:/Users/Blake/Code/mine/boilerdata/src/boilerdata/axes_enum.py
   stage_setup: src/boilerdata/stages/setup.py
   stage_axes: src/boilerdata/stages/axes.py
   stage_literature: src/boilerdata/stages/literature.py
-  stage_metrics: src/boilerdata/stages/metrics.py
-  stage_modelfun: src/boilerdata/stages/modelfun.ipynb
+  stage_metrics: src/boilerdata/stages/notebooks/metrics.ipynb
+  stage_modelfun: src/boilerdata/stages/notebooks/modelfun.ipynb
   stage_originlab: src/boilerdata/stages/originlab.py
   stage_pipeline: src/boilerdata/stages/pipeline.py
   stage_runs: src/boilerdata/stages/runs.py

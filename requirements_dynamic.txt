@@ -1,2 +1,0 @@
-# For property lookup
-git+https://github.com/blakeNaccarato/propshop.git@main

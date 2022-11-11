@@ -1,8 +1,8 @@
 import pandas as pd
-from pydantic import Field, validator
+from pydantic import Field
 
 from boilerdata.models.axes import Axes
-from boilerdata.models.common import MyBaseModel, StrPath, load_config
+from boilerdata.models.common import MyBaseModel, StrPath, allow_extra, load_config
 from boilerdata.models.dirs import Dirs
 from boilerdata.models.geometry import Geometry
 from boilerdata.models.params import Params
@@ -16,24 +16,16 @@ class Project(MyBaseModel):
     params: Params = Field(default_factory=Params)
     dirs: Dirs = Field(default_factory=Dirs)
 
-    # ! AXES
-    # Axes are specified separately and loading depends on this model's attributes.
-    axes: Axes = Field(default=None)
-
-    @validator("axes", always=True, pre=True)
-    def validate_axes(cls, _, values):
-        return load_config(values["dirs"].config / "axes.yaml", Axes)
-
-    # ! TRIALS
-    # Trials are specified separately and loading depends on this model's attributes.
-    trials: list[Trial] = Field(default=None)
-
-    @validator("trials", always=True, pre=True)
-    def validate_trials(cls, _, values):
-        trials = load_config(values["dirs"].config / "trials.yaml", Trials).trials
-        for trial in trials:
-            trial.setup(values["dirs"], values["geometry"])
-        return trials
+    def __init__(self, **data):
+        super().__init__(**data)
+        with allow_extra(self):
+            # Set up axes
+            self.axes = load_config(self.dirs.config / "axes.yaml", Axes)
+            # Set up trials
+            trials = load_config(self.dirs.config / "trials.yaml", Trials).trials
+            for trial in trials:
+                trial.setup(self.dirs, self.geometry)
+            self.trials = trials
 
     # ! METHODS
 

@@ -93,6 +93,9 @@ class Axes(MyBaseModel):
 
     all: list[Axis]  # noqa: A003
 
+    def __getitem__(self, key):
+        return [axis for axis in self.all if axis.name == key][0]
+
     @property
     def index(self) -> list[Axis]:
         index = [ax for ax in self.all if ax.index]

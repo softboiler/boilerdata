@@ -1,18 +1,12 @@
 from contextlib import contextmanager
-from os import PathLike
-from pathlib import Path
 from typing import Any
 
 import numpy as np
 from pydantic import BaseModel, Extra, MissingError, ValidationError
 import yaml
 
-import boilerdata
+from boilerdata.common import StrPath, get_file
 
-default_axes_enum_file = Path(boilerdata.__file__).parent / "axes_enum.py"
-
-
-StrPath = str | PathLike[str]
 NpNDArray = np.ndarray[Any, Any]
 NpFloating = np.floating[Any]
 
@@ -31,10 +25,6 @@ class MyBaseModel(BaseModel):
         use_enum_values = True  # To use enums in schema, but not in code
         arbitrary_types_allowed = True  # To use Numpy types
         extra = Extra.forbid  # To forbid extra fields
-
-
-# * -------------------------------------------------------------------------------- * #
-# * UNUSED
 
 
 @contextmanager
@@ -66,29 +56,6 @@ def allow_extra(model: BaseModel):
             model.Config.extra = original_config
         else:
             del model.Config.extra
-
-
-def expanduser2(path: StrPath) -> Path:
-    """Expand the "~" user construction.
-
-    Unlike the builtin `posixpath.expanduser`, this always works on Windows, and returns
-    a `pathlib.Path` object.
-
-    Parameters
-    ----------
-    path: str
-        A string that may contain "~" at the start.
-
-    Returns
-    -------
-    pathlib.Path
-        The path after user expansion.
-    """
-    home = "~/"
-    if isinstance(path, str) and path.startswith(home):
-        return Path.home() / path.lstrip(home)
-    else:
-        return Path(path)
 
 
 # * -------------------------------------------------------------------------------- * #
@@ -177,37 +144,3 @@ def write_schema(path: StrPath, model: type[BaseModel]):
     if path.suffix != ".json":
         raise ValueError(f"The path '{path}' does not refer to a JSON file.")
     path.write_text(model.schema_json(indent=2) + "\n", encoding="utf-8")
-
-
-def get_file(path: StrPath, create: bool = False) -> Path:
-    """Generate `pathlib.Path` to a file that exists.
-
-    Handle the "~" user construction if necessary and return a `pathlib.Path` object.
-    Raise exception if the file is not found.
-
-    Parameters
-    ----------
-    path: StrPath
-        The path.
-    create: bool
-        Whether a file should be created at the path if it doesn't already exist.
-
-    Returns
-    -------
-    pathlib.Path
-        The path after handling.
-
-    Raises
-    ------
-    FleNotFoundError
-        If the file doesn't exist or does not refer to a file.
-    """
-    path = expanduser2(path) if isinstance(path, str) else Path(path)
-    if not path.exists():
-        if create:
-            path.touch()
-        else:
-            raise FileNotFoundError(f"The path '{path}' does not exist.")
-    elif not path.is_file():
-        raise FileNotFoundError(f"The path '{path}' does not refer to a file.")
-    return path
