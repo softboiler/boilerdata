@@ -119,21 +119,6 @@ class Params(MyBaseModel):
             for param, v in model_inputs.items()
         }
 
-    # ! METRICS
-
-    error_scale: dict[A, float] = Field(
-        default=default_opt(
-            {
-                A.T_s_err: 30,
-                A.q_s_err: 5,
-                A.k_err: 0.0,
-                A.h_a_err: 40,
-                A.h_w_err: 0.0,
-            }
-        ),
-        description="The error scale for normalizing errors.",
-    )
-
     # !
 
     water_temps: list[A] = Field(

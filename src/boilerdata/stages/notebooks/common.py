@@ -1,6 +1,3 @@
-# # Necessary as long as a line marked "triggered only locally" is in this file
-# pyright: reportUnnecessaryTypeIgnoreComment=none
-
 from os import chdir
 from pathlib import Path
 
@@ -47,37 +44,5 @@ def chdir_to_nearest_git_root_and_get_project():
     return Project.get_project()
 
 
-# * -------------------------------------------------------------------------------- * #
-# * HELPER FUNCTIONS
-
-
-def add_units(df: pd.DataFrame, proj: Project) -> pd.DataFrame:
-    """Make the columns a multi-index representing units."""
-    cols = proj.axes.get_col_index()
-    quantity = cols.get_level_values("quantity")
-    units = cols.get_level_values("units")
-
-    old = (col.name for col in proj.axes.cols)
-    new = (add_unit(q, u) for q, u in zip(quantity, units))
-    return df.rename(axis="columns", mapper=dict(zip(old, new)))
-
-
-def add_unit(quantity: str, units: str) -> str:
-    return f"{quantity} ({units})" if units else quantity
-
-
-def tex_wrap(df: pd.DataFrame) -> pd.DataFrame:
-    """Wrap all column titles in LaTeX flags ($)."""
-    mapper: dict[str, str] = {}
-    for src_col in df.columns:
-        col = f"${handle_subscript(src_col)}$"
-        mapper[src_col] = col
-    return df.rename(axis="columns", mapper=mapper)
-
-
-def handle_subscript(val: str) -> str:
-    """Wrap everything after the first underscore and replace others with commas."""
-    if "_" not in val:
-        return val
-    parts = val.split("_")
-    return f"{parts[0]}_" + "{" + ",".join(parts[1:]) + "}"
+proj = chdir_to_nearest_git_root_and_get_project()
+"""Notebooks run below root, so we need to go to root, then get the project config."""

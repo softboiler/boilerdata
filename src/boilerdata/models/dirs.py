@@ -83,18 +83,20 @@ class Dirs(MyBaseModel):
     originlab_results: DirectoryPath = data / "originlab_results"
     file_originlab_results: Path = originlab_results / "originlab_results.csv"
 
+    # ! PLOT CONFIG
+    plot_config: DirectoryPath = config / "plotting"
+    mpl_base: FilePath = plot_config / "base.mplstyle"
+    mpl_hide_title: FilePath = plot_config / "hide_title.mplstyle"
+
     # ! PLOTS
-    file_style: FilePath = base / "style.mplstyle"
     metrics: DirectoryPath = data / "metrics"
     plot_new_fit_0: Path = metrics / "new_fit_0.png"
     plot_new_fit_1: Path = metrics / "new_fit_1.png"
     plot_new_fit_2: Path = metrics / "new_fit_2.png"
-    plot_median_error_by_joint: Path = metrics / "median_error_by_joint.png"
-    plot_max_error_by_joint: Path = metrics / "max_error_by_joint.png"
-    plot_median_error_by_range: Path = metrics / "median_error_by_range.png"
-    plot_max_error_by_range: Path = metrics / "max_error_by_range.png"
+    plot_error_T_s: Path = metrics / "error_T_s.png"  # noqa: N815
+    plot_error_q_s: Path = metrics / "error_q_s.png"
+    plot_error_h_a: Path = metrics / "error_h_a.png"
     new_fits: DirectoryPath = metrics / "new_fits"
-    file_pipeline_metrics_plot: Path = metrics / "pipeline_metrics.png"
     file_pipeline_metrics: Path = metrics / "pipeline_metrics.json"
 
     # ! STAGES

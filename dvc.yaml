@@ -58,7 +58,8 @@ stages:
       - "params.model_bounds"
 
   metrics:
-    cmd: "jupyter execute ${dirs.stage_modelfun}"
+    cmd: "jupyter execute ${dirs.stage_metrics}"
+    # cmd: "papermill ${dirs.stage_metrics} -p debug false > $null"  # TODO: Fix
     deps:
       - "${dirs.stage_metrics}"
       - "${dirs.results}"
@@ -67,14 +68,12 @@ stages:
     metrics:
       - "${dirs.file_pipeline_metrics}"
     plots:
-      - "${dirs.file_pipeline_metrics_plot}"
       - "${dirs.plot_new_fit_0}"
       - "${dirs.plot_new_fit_1}"
       - "${dirs.plot_new_fit_2}"
-      - "${dirs.plot_median_error_by_joint}"
-      - "${dirs.plot_max_error_by_joint}"
-      - "${dirs.plot_median_error_by_range}"
-      - "${dirs.plot_max_error_by_range}"
+      - "${dirs.plot_error_T_s}"
+      - "${dirs.plot_error_q_s}"
+      - "${dirs.plot_error_h_a}"
     params:
       - "params.do_plot"
 

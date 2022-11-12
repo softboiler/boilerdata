@@ -39,13 +39,6 @@ params:
     k: [350, 450]
     h_a: [0, inf]
     h_w: [0, inf]
-  error_scale:
-    T_s_err: 30
-    q_s_err: 5
-    k_err: 0
-    h_a_err: 40
-    h_w_err: 0
-
 dirs:
   base: .
   file_proj: params.yaml
@@ -74,17 +67,17 @@ dirs:
   file_plotter: data/plotter/results.opju
   originlab_results: data/originlab_results
   file_originlab_results: data/originlab_results/originlab_results.csv
-  file_style: style.mplstyle
+  plot_config: config/plotting
+  mpl_base: config/plotting/base.mplstyle
+  mpl_hide_title: config/plotting/hide_title.mplstyle
   metrics: data/metrics
   plot_new_fit_0: data/metrics/new_fit_0.png
   plot_new_fit_1: data/metrics/new_fit_1.png
   plot_new_fit_2: data/metrics/new_fit_2.png
-  plot_median_error_by_joint: data/metrics/median_error_by_joint.png
-  plot_max_error_by_joint: data/metrics/max_error_by_joint.png
-  plot_median_error_by_range: data/metrics/median_error_by_range.png
-  plot_max_error_by_range: data/metrics/max_error_by_range.png
+  plot_error_T_s: data/metrics/error_T_s.png
+  plot_error_q_s: data/metrics/error_q_s.png
+  plot_error_h_a: data/metrics/error_h_a.png
   new_fits: data/metrics/new_fits
-  file_pipeline_metrics_plot: data/metrics/pipeline_metrics.png
   file_pipeline_metrics: data/metrics/pipeline_metrics.json
   stage_setup: src/boilerdata/stages/setup.py
   stage_axes: src/boilerdata/stages/axes.py

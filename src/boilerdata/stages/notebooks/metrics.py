@@ -1,249 +1,123 @@
-# # # Necessary as long as a line marked "triggered only in CI" is in this file
-# # pyright: reportUnnecessaryTypeIgnoreComment=none
+from contextlib import contextmanager
+from typing import Any, Mapping
+
+from IPython.display import Markdown, display
+import matplotlib as mpl
+import numpy as np
+import pandas as pd
+from uncertainties import ufloat
+
+from boilerdata.models.project import Project
+
+# * -------------------------------------------------------------------------------- * #
+# * MODULE VARIABLES
+
+idxs = pd.IndexSlice
+"""Use to slice pd.MultiIndex indices."""
+
+# * -------------------------------------------------------------------------------- * #
+# * PLOTTING CONTEXTS
 
 
-# import json
-# from shutil import copy
-# import warnings
-
-# from matplotlib import pyplot as plt
-# import numpy as np
-# import pandas as pd
-
-# import janitor  # pyright: ignore [reportUnusedImport]  # adds methods to pd.DataFrame
-
-
-# from boilerdata.axes_enum import AxesEnum as A  # noqa: N814
-# from boilerdata.models.project import Project
-# from boilerdata.stages.common import (
-#     get_params_mapping,
-#     get_params_mapping_with_uncertainties,
-#     get_tcs,
-#     get_trial,
-#     model_with_error,
-#     per_run,
-# )
-# from boilerdata.stages.modelfun import model_with_uncertainty
-
-# # * -------------------------------------------------------------------------------- * #
-# # * MAIN
+@contextmanager
+def manual_subplot_spacing():
+    """Context manager that allows custom spacing of subplots."""
+    with mpl.rc_context({"figure.autolayout": False}):
+        try:
+            yield
+        finally:
+            ...
 
 
-# def main(proj: Project):
-
-#     meta = [col.name for col in proj.axes.meta]
-#     errors = proj.params.free_errors
-#     cols = meta + errors
-#     dtypes = {col.name: col.dtype for col in proj.axes.cols if col.name in cols}
-#     (
-#         pd.read_csv(
-#             proj.dirs.file_results,
-#             index_col=(index := [A.trial, A.run]),
-#             # Allow source cols to be missing (such as T_6)
-#             usecols=lambda col: col in index + cols,
-#             parse_dates=index,
-#             dtype=dtypes,  # pyright: ignore [reportGeneralTypeIssues]  # pandas
-#         )
-#         .also(plot_error_distribution, proj, errors)
-#         .also(plot_error_groups, proj, errors)
-#         .also(write_metrics, proj)
-#         .also(plot_fits, proj, model_with_uncertainty)
-#     )
+# * -------------------------------------------------------------------------------- * #
+# * FUNCTIONS
 
 
-# # * -------------------------------------------------------------------------------- * #
-# # * PLOTS
+def display_named(*args: tuple[Any, str]):
+    """Display objects with names above them."""
+    for elem, name in args:
+        display(Markdown(f"##### {name}"))
+        display(elem)
 
 
-# def plot_error_distribution(df: pd.DataFrame, proj: Project, errors: list[str]):
-#     """Produce a box-plot showing the error by joint type in each free parameter."""
-#     fig, ax = plt.subplots(layout="constrained")
-#     df = df[[A.joint, *errors]].pipe(add_units, proj)
-#     with warnings.catch_warnings():
-#         warnings.simplefilter("ignore", UserWarning)
-#         df.plot.box(by=A.joint, ax=ax)
-#     fig.savefig(
-#         proj.dirs.file_pipeline_metrics_plot,  # pyright: ignore [reportGeneralTypeIssues]  # matplotlib
-#         dpi=300,
-#     )
+def tex_wrap(df: pd.DataFrame) -> tuple[pd.DataFrame, Mapping[str, str]]:
+    """Wrap column titles in LaTeX flags if they contain underscores ($)."""
+    mapper: dict[str, str] = {}
+    for src_col in df.columns:
+        col = f"${handle_subscript(src_col)}$" if "_" in src_col else src_col
+        mapper[src_col] = col
+    return df.rename(axis="columns", mapper=mapper), mapper
 
 
-# def plot_error_groups(df: pd.DataFrame, proj: Project, errors: list[str]):
-#     fig, ax = plt.subplots(layout="constrained")
-#     df = df[[A.joint, *errors]].pipe(add_units, proj)
-#     ...
+def add_units(
+    df: pd.DataFrame, proj: Project
+) -> tuple[pd.DataFrame, Mapping[str, str]]:
+    """Make the columns a multi-index representing units."""
+    cols = proj.axes.get_col_index()
+    quantity = cols.get_level_values("quantity")
+    units = cols.get_level_values("units")
+
+    old = (col.name for col in proj.axes.cols)
+    new = (add_unit(q, u) for q, u in zip(quantity, units))
+    mapper = dict(zip(old, new))
+    return df.rename(axis="columns", mapper=mapper), mapper
 
 
-# # * -------------------------------------------------------------------------------- * #
-# # * METRICS
+def get_params_mapping_with_uncertainties(
+    grp: pd.DataFrame, proj: Project
+) -> dict[str, Any]:
+    """Get a mapping of parameter names to values with uncertainty."""
+    model_params_and_errors = proj.params.params_and_errors
+    # Reason: pydantic: use_enum_values
+    params: list[str] = proj.params.model_params  # type: ignore
+    param_errors: list[str] = proj.params.model_errors
+    u_params = [
+        ufloat(param, err, tag)
+        for param, err, tag in zip(
+            grp[params], grp[param_errors], model_params_and_errors
+        )
+    ]
+    return dict(zip(model_params_and_errors, u_params))
 
 
-# def write_metrics(df: pd.DataFrame, proj: Project):
-#     """Compute summary metrics of the model fit and write them to a file."""
-
-#     # sourcery skip: merge-dict-assign
-#     fits: list[str] = proj.params.model_params  # type: ignore
-#     errors: list[str] = proj.params.model_errors  # type: ignore
-#     first_fit = fits[0]
-
-#     def strip_err(df: pd.DataFrame) -> pd.DataFrame:
-#         """Strip the "err" suffix from the column names."""
-#         return df.rename(axis="columns", mapper=lambda col: col.removesuffix("_err"))
-
-#     # Reason: pydantic: use_enum_values
-#     error_ratio = df[errors].pipe(strip_err) / df[fits]
-#     error_normalized = (df[errors] / df[errors].max()).pipe(strip_err)
-
-#     # Compute the rate of failures to fit the model
-#     metrics: dict[str, float] = {}
-#     metrics["fit_failure_rate"] = df[first_fit].isna().sum() / len(df)
-
-#     # Compute the median and spread of the error two ways
-#     metric_dfs = {"err_ratio": error_ratio, "err_norm": error_normalized}
-#     for err_tag, err_df in metric_dfs.items():
-#         for agg in ["median", "std"]:
-#             metrics |= {
-#                 f"{k}_{err_tag}_{agg}": v for k, v in err_df.agg(agg).to_dict().items()
-#             }
-#     metrics |= {k: 0 for k, v in metrics.items() if np.isnan(v)}
-#     proj.dirs.file_pipeline_metrics.write_text(json.dumps(metrics, indent=2))
+def get_params_mapping(grp: pd.DataFrame, params: list[Any]) -> dict[str, Any]:
+    """Get a mapping of parameter names to values."""
+    # Reason: pydantic: use_enum_values
+    return dict(zip(params, grp[params]))
 
 
-# # * -------------------------------------------------------------------------------- * #
-# # * PLOT FITS
+def model_with_error(model, x, u_params):
+    """Evaluate the model for x and return y with errors."""
+    u_x = [ufloat(v, 0, "x") for v in x]
+    u_y = model(u_x, **u_params)
+    y = np.array([v.nominal_value for v in u_y])
+    y_min = y - [v.std_dev for v in u_y]
+    y_max = y + [v.std_dev for v in u_y]
+    return y, y_min, y_max
 
 
-# def plot_fits(df: pd.DataFrame, proj: Project, model) -> pd.DataFrame:
-#     """Get the latest new model fit plot."""
-#     if proj.params.do_plot:
-#         per_run(df, plot_new_fits, proj, model)
-#         if figs_src := sorted(proj.dirs.new_fits.iterdir()):
-#             figs_src = (
-#                 figs_src[0],
-#                 figs_src[len(figs_src) // 2],
-#                 figs_src[-1],
-#             )
-#             figs_dst = (
-#                 proj.dirs.file_new_fit_0,
-#                 proj.dirs.file_new_fit_1,
-#                 proj.dirs.file_new_fit_2,
-#             )
-#             for fig_src, fig_dst in zip(figs_src, figs_dst):
-#                 copy(fig_src, fig_dst)
-#     return df
+# * -------------------------------------------------------------------------------- * #
+# * HELPER FUNCTIONS
 
 
-# def plot_new_fits(grp: pd.DataFrame, proj: Project, model):
-#     """Plot model fits for trials marked as new."""
-
-#     trial = get_trial(grp, proj)
-#     if not trial.new:
-#         return grp
-
-#     ser = grp.squeeze()
-#     tcs, tc_errors = get_tcs(trial)
-#     x_unique = list(trial.thermocouple_pos.values())
-#     y_unique = ser[tcs]
-
-#     # Plot setup
-#     fig, ax = plt.subplots(layout="constrained")
-
-#     run = ser.name[-1].isoformat()
-#     run_file = proj.dirs.new_fits / f"{run.replace(':', '-')}.png"
-
-#     ax.margins(0, 0)
-#     ax.set_title(f"{run = }")
-#     ax.set_xlabel("x (m)")
-#     ax.set_ylabel("T (C)")
-
-#     # Initial plot boundaries
-#     x_bounds = np.array([0, trial.thermocouple_pos[A.T_1]])
-
-#     y_bounds = model(x_bounds, **get_params_mapping(ser, proj.params.model_params))
-#     ax.plot(
-#         x_bounds,
-#         y_bounds,
-#         "none",
-#     )
-
-#     # Measurements
-#     measurements_color = [0.2, 0.2, 0.2]
-#     ax.plot(
-#         x_unique,
-#         y_unique,
-#         ".",
-#         label="Measurements",
-#         color=measurements_color,
-#         markersize=10,
-#     )
-#     ax.errorbar(
-#         x=x_unique,
-#         y=y_unique,
-#         yerr=ser[tc_errors],
-#         fmt="none",
-#         color=measurements_color,
-#     )
-
-#     # Confidence interval
-#     (xlim_min, xlim_max) = ax.get_xlim()
-#     pad = 0.025 * (xlim_max - xlim_min)
-#     x_padded = np.linspace(xlim_min - pad, xlim_max + pad)
-
-#     y_padded, y_padded_min, y_padded_max = model_with_error(
-#         model, x_padded, get_params_mapping_with_uncertainties(ser, proj)
-#     )
-#     ax.plot(
-#         x_padded,
-#         y_padded,
-#         "--",
-#         label="Model Fit",
-#     )
-#     ax.fill_between(
-#         x=x_padded,
-#         y1=y_padded_min,  # pyright: ignore [reportGeneralTypeIssues]  # matplotlib, triggered only in CI
-#         y2=y_padded_max,  # pyright: ignore [reportGeneralTypeIssues]  # matplotlib
-#         color=[0.8, 0.8, 0.8],
-#         edgecolor=[1, 1, 1],
-#         label="95% CI",
-#     )
-
-#     # Extrapolation
-#     ax.plot(
-#         0,
-#         ser[A.T_s],
-#         "x",
-#         label="Extrapolation",
-#         color=[1, 0, 0],
-#     )
-
-#     # Finishing
-#     ax.legend()
-#     fig.savefig(
-#         run_file,  # pyright: ignore [reportGeneralTypeIssues]  # matplotlib
-#         dpi=300,
-#     )
+def handle_subscript(val: str) -> str:
+    """Wrap everything after the first underscore and replace others with commas."""
+    quantity, units = sep_unit(val)
+    parts = quantity.split("_")
+    quantity = f"{parts[0]}_" + "{" + ",".join(parts[1:]) + "}"
+    return add_unit(quantity, units, tex=True)
 
 
-# # * -------------------------------------------------------------------------------- * #
-# # * HELPER FUNCTIONS
+def add_unit(quantity: str, units: str, tex: bool = False) -> str:
+    """Append units to a quantity."""
+    if not tex:
+        return f"{quantity} ({units})" if units else quantity
+    units = units.replace("-", r"{\cdot}")
+    return rf"{quantity}\;({units})" if units else quantity
 
 
-# def add_units(df: pd.DataFrame, proj: Project) -> pd.DataFrame:
-#     """Make the columns a multi-index representing units."""
-#     cols = proj.axes.get_col_index()
-#     quantity = cols.get_level_values("quantity")
-#     units = cols.get_level_values("units")
-
-#     old = (col.name for col in proj.axes.cols)
-#     new = (add_unit(q, u) for q, u in zip(quantity, units))
-#     return df.rename(axis="columns", mapper=dict(zip(old, new)))
-
-
-# def add_unit(quantity: str, units: str) -> str:
-#     return f"{quantity} ({units})" if units else quantity
-
-
-# # * -------------------------------------------------------------------------------- * #
-
-# if __name__ == "__main__":
-#     main(Project.get_project())
+def sep_unit(val: str) -> tuple[str, str]:
+    """Split a quantity and its units."""
+    quantity, units = val.split(" (")
+    units = units.removesuffix(")")
+    return quantity, units
