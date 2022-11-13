@@ -20,7 +20,7 @@ stages:
       - "${dirs.project_schema}"
 
   modelfun:
-    cmd: "jupyter execute ${dirs.stage_modelfun}"
+    cmd: "papermill ${dirs.stage_modelfun} -p DEBUG false > $null"
     deps:
       - "${dirs.stage_modelfun}"
       - "${dirs.axes}"
@@ -58,8 +58,7 @@ stages:
       - "params.model_bounds"
 
   metrics:
-    cmd: "jupyter execute ${dirs.stage_metrics}"
-    # cmd: "papermill ${dirs.stage_metrics} -p debug false > $null"  # TODO: Fix
+    cmd: "papermill ${dirs.stage_metrics} -p DEBUG false > $null"
     deps:
       - "${dirs.stage_metrics}"
       - "${dirs.results}"

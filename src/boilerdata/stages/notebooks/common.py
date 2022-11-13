@@ -42,7 +42,3 @@ def chdir_to_nearest_git_root_and_get_project():
     """Ensure this notebook runs at project root regardless of how it is executed."""
     chdir_to_nearest_git_root()
     return Project.get_project()
-
-
-proj = chdir_to_nearest_git_root_and_get_project()
-"""Notebooks run below root, so we need to go to root, then get the project config."""

@@ -2,12 +2,15 @@ from contextlib import contextmanager
 from typing import Any, Mapping
 
 from IPython.display import Markdown, display
+from matplotlib import pyplot as plt
 import matplotlib as mpl
 import numpy as np
 import pandas as pd
 from uncertainties import ufloat
 
+from boilerdata.axes_enum import AxesEnum as A  # noqa: N814
 from boilerdata.models.project import Project
+from boilerdata.stages.common import get_tcs, get_trial
 
 # * -------------------------------------------------------------------------------- * #
 # * MODULE VARIABLES
@@ -91,7 +94,7 @@ def model_with_error(model, x, u_params):
     u_x = [ufloat(v, 0, "x") for v in x]
     u_y = model(u_x, **u_params)
     y = np.array([v.nominal_value for v in u_y])
-    y_min = y - [v.std_dev for v in u_y]
+    y_min = y - [v.std_dev for v in u_y]  # type: ignore
     y_max = y + [v.std_dev for v in u_y]
     return y, y_min, y_max
 
@@ -121,3 +124,98 @@ def sep_unit(val: str) -> tuple[str, str]:
     quantity, units = val.split(" (")
     units = units.removesuffix(")")
     return quantity, units
+
+
+# * -------------------------------------------------------------------------------- * #
+# * MODEL FITS
+
+
+def plot_new_fits(grp: pd.DataFrame, proj: Project, model):
+    """Plot model fits for trials marked as new."""
+
+    trial = get_trial(grp, proj)
+    if not trial.new:
+        return grp
+
+    ser = grp.squeeze()
+    tcs, tc_errors = get_tcs(trial)
+    x_unique = list(trial.thermocouple_pos.values())
+    y_unique = ser[tcs]
+
+    # Plot setup
+    fig, ax = plt.subplots(layout="constrained")
+
+    run = ser.name[-1].isoformat()
+    run_file = proj.dirs.new_fits / f"{run.replace(':', '-')}.png"
+
+    ax.margins(0, 0)
+    ax.set_title(f"{run = }")
+    ax.set_xlabel("x (m)")
+    ax.set_ylabel("T (C)")
+
+    # Initial plot boundaries
+    x_bounds = np.array([0, trial.thermocouple_pos[A.T_1]])
+
+    y_bounds = model(x_bounds, **get_params_mapping(ser, proj.params.model_params))
+    ax.plot(
+        x_bounds,
+        y_bounds,
+        "none",
+    )
+
+    # Measurements
+    measurements_color = [0.2, 0.2, 0.2]
+    ax.plot(
+        x_unique,
+        y_unique,
+        ".",
+        label="Measurements",
+        color=measurements_color,
+        markersize=10,
+    )
+    ax.errorbar(
+        x=x_unique,
+        y=y_unique,
+        yerr=ser[tc_errors],
+        fmt="none",
+        color=measurements_color,
+    )
+
+    # Confidence interval
+    (xlim_min, xlim_max) = ax.get_xlim()
+    pad = 0.025 * (xlim_max - xlim_min)
+    x_padded = np.linspace(xlim_min - pad, xlim_max + pad)
+
+    y_padded, y_padded_min, y_padded_max = model_with_error(
+        model, x_padded, get_params_mapping_with_uncertainties(ser, proj)
+    )
+    ax.plot(
+        x_padded,
+        y_padded,
+        "--",
+        label="Model Fit",
+    )
+    ax.fill_between(
+        x=x_padded,
+        y1=y_padded_min,
+        y2=y_padded_max,  # pyright: ignore [reportGeneralTypeIssues]  # matplotlib
+        color=[0.8, 0.8, 0.8],
+        edgecolor=[1, 1, 1],
+        label="95% CI",
+    )
+
+    # Extrapolation
+    ax.plot(
+        0,
+        ser[A.T_s],
+        "x",
+        label="Extrapolation",
+        color=[1, 0, 0],
+    )
+
+    # Finishing
+    ax.legend()
+    fig.savefig(
+        run_file,  # pyright: ignore [reportGeneralTypeIssues]  # matplotlib
+        dpi=300,
+    )

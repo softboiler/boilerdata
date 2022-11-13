@@ -5,7 +5,6 @@ from typing import Any, Optional
 
 from pydantic import DirectoryPath, FilePath, validator
 
-import boilerdata
 from boilerdata.models.common import MyBaseModel, StrPath
 
 
@@ -39,7 +38,7 @@ class Dirs(MyBaseModel):
     notebooks: DirectoryPath = stages / "notebooks"
     models: DirectoryPath = package / "models"
     validation: FilePath = package / "validation.py"
-    file_axes_enum: FilePath = Path(boilerdata.__file__).parent / "axes_enum.py"
+    file_axes_enum: FilePath = package / "axes_enum.py"
 
     # ! DATA
     data: DirectoryPath = base / "data"
