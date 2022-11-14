@@ -8,16 +8,16 @@ stages:
       size: 1001
       nfiles: 2
     - path: src/boilerdata/models
-      md5: 40110da30f09b9d1598a44c2cc18147c.dir
-      size: 62960
+      md5: fba7677b331add5d85cefa254c631dbd.dir
+      size: 62868
       nfiles: 17
     - path: src/boilerdata/stages/schema.py
       md5: cb9547fdf4dfd06c03baef2588464b28
       size: 843
     outs:
     - path: data/schema
-      md5: fa4144e91db851854297d25de6430d3a.dir
-      size: 24209
+      md5: bed055e71a97a04f15028ebc05a6e200.dir
+      size: 24418
       nfiles: 3
   modelfun:
     cmd: papermill src/boilerdata/stages/notebooks/modelfun.ipynb NUL
