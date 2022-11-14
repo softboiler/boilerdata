@@ -1,3 +1,6 @@
+# # * There are minor "type: ignore" differences between local and CI in this file.
+# pyright: reportUnnecessaryTypeIgnoreComment=false
+
 from collections import deque
 from contextlib import contextmanager
 from typing import Any, Mapping
@@ -180,7 +183,7 @@ def plot_new_fits(grp: pd.DataFrame, proj: Project, model):
         )
         ax.fill_between(
             x=x_padded,
-            y1=y_padded_min,
+            y1=y_padded_min,  # type: ignore  # pydantic: use_enum_values # Only in CI
             y2=y_padded_max,  # type: ignore  # matplotlib
             color=[0.8, 0.8, 0.8],
             edgecolor=[1, 1, 1],
@@ -238,6 +241,6 @@ def model_with_error(model, x, u_params):
     u_x = [ufloat(v, 0, "x") for v in x]
     u_y = model(u_x, **u_params)
     y = np.array([v.nominal_value for v in u_y])
-    y_min = y - [v.std_dev for v in u_y]  # type: ignore
+    y_min = y - [v.std_dev for v in u_y]  # type: ignore  # Only locally, not in CI
     y_max = y + [v.std_dev for v in u_y]
     return y, y_min, y_max

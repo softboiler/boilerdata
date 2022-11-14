@@ -52,7 +52,7 @@ stages:
         - h_w
     outs:
     - path: data/modelfun
-      md5: ea30bd132b4d83fab01216475ca10485.dir
+      md5: 3e0edc4381e803fb1c25c4aa871d670d.dir
       size: 46424
       nfiles: 1
   runs:
@@ -85,7 +85,7 @@ stages:
     cmd: python -m boilerdata.stages.pipeline
     deps:
     - path: data/modelfun
-      md5: ea30bd132b4d83fab01216475ca10485.dir
+      md5: 3e0edc4381e803fb1c25c4aa871d670d.dir
       size: 46424
       nfiles: 1
     - path: data/runs
@@ -135,8 +135,8 @@ stages:
       size: 238372
       nfiles: 1
     - path: src/boilerdata/stages/notebooks/metrics.ipynb
-      md5: 4a37081cb5d5a7217843ca04c6a05d6a
-      size: 7321
+      md5: b8537a51a49492124a89e97666c927a7
+      size: 7254
     params:
       params.yaml:
         params.do_plot: true
