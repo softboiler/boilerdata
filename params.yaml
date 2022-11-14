@@ -7,7 +7,6 @@ params:
     - T_w1
     - T_w2
     - T_w3
-
   model_inputs:
     r: 0.0047625
     T_infa: 25
@@ -21,11 +20,9 @@ params:
     - k
     - h_a
     - h_w
-
   fixed_params:
     - k
     - h_w
-
   initial_values:
     T_s: 95
     q_s: 0
@@ -34,11 +31,21 @@ params:
     h_w: 0
 
   model_bounds:
-    T_s: [95, inf]
-    q_s: [0, inf]
-    k: [350, 450]
-    h_a: [0, inf]
-    h_w: [0, inf]
+    T_s:
+      - 95
+      - inf
+    q_s:
+      - 0
+      - inf
+    k:
+      - 350
+      - 450
+    h_a:
+      - 0
+      - inf
+    h_w:
+      - 0
+      - inf
 dirs:
   base: .
   file_proj: params.yaml
