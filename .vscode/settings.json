@@ -200,5 +200,8 @@
   "[yaml]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode",
     "editor.wordWrap": "wordWrapColumn"
-  }
+  },
+
+  //! Extension: Jupyter Notebooks
+  "jupyter.notebookFileRoot": "${workspaceFolder}"
 }

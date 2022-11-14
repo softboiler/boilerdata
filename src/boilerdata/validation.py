@@ -61,13 +61,7 @@ runs_cols = {
 # Model fits are nullable because they may not converge. Nullability propagates to other
 # columns downstream.
 model_cols = {
-    col: Column(
-        c[
-            col
-        ].dtype,  # pyright: ignore [reportGeneralTypeIssues]  # pydantic: use_enum_values
-        nullable=True,
-    )
-    for col in proj.params.params_and_errors
+    col: Column(c[col].dtype, nullable=True) for col in proj.params.params_and_errors  # type: ignore  # pydantic: use_enum_values
 }
 
 computed_cols = {

@@ -122,7 +122,7 @@ def fit(
 
     (bounds, guesses) = get_free_bounds_and_guesses(
         proj,
-        model_bounds,  # pyright: ignore [reportGeneralTypeIssues]  # pydantic: Type coerced in validation
+        model_bounds,  # type: ignore  # pydantic: Type coerced in validation
         initial_values,
     )
 
@@ -151,7 +151,7 @@ def fit(
         **pd.Series(
             np.concatenate([fitted_params, errors]),
             index=proj.params.free_params + proj.params.free_errors,
-        )  # pyright: ignore [reportGeneralTypeIssues]  # pandas
+        )  # type: ignore  # pandas
     )
     return grp
 
@@ -199,23 +199,14 @@ def agg_over_runs(
     trial = get_trial(grp, proj)
     _, tc_errors = get_tcs(trial)
     grp = (
-        grp.groupby(
-            level=[
-                A.trial,
-                A.run,
-            ],  # pyright: ignore [reportGeneralTypeIssues]  # pandas
-            dropna=False,
-        )
+        grp.groupby(level=[A.trial, A.run], dropna=False)  # type: ignore  # pandas
         .agg(
             **(
                 # Take the default agg for all cols
                 proj.axes.aggs
                 # Override the agg for cols with duplicates in a run to take the first
                 | {
-                    col: pd.NamedAgg(
-                        column=col,  # pyright: ignore [reportGeneralTypeIssues]  # pydantic: use_enum_values
-                        aggfunc="first",
-                    )
+                    col: pd.NamedAgg(column=col, aggfunc="first")  # type: ignore  # pydantic: use_enum_values
                     for col in (tc_errors + proj.params.params_and_errors)
                 }
             )

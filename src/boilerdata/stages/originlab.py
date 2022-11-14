@@ -55,10 +55,7 @@ def transform_for_originlab(df: pd.DataFrame, proj: Project) -> pd.DataFrame:
     indices = [
         index.to_series()
         .reset_index(drop=True)
-        .replace(
-            superscript,  # pyright: ignore [reportGeneralTypeIssues]  # pandas
-            superscript_repl,
-        )
+        .replace(superscript, superscript_repl)  # type: ignore  # pandas
         .replace(subscript, subscript_repl)
         for index in (quantity, units)
     ]

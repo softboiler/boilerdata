@@ -198,7 +198,7 @@ def plot_new_fits(grp: pd.DataFrame, proj: Project, model):
     ax.fill_between(
         x=x_padded,
         y1=y_padded_min,
-        y2=y_padded_max,  # pyright: ignore [reportGeneralTypeIssues]  # matplotlib
+        y2=y_padded_max,  # type: ignore  # matplotlib
         color=[0.8, 0.8, 0.8],
         edgecolor=[1, 1, 1],
         label="95% CI",
@@ -216,6 +216,6 @@ def plot_new_fits(grp: pd.DataFrame, proj: Project, model):
     # Finishing
     ax.legend()
     fig.savefig(
-        run_file,  # pyright: ignore [reportGeneralTypeIssues]  # matplotlib
+        run_file,  # type: ignore  # matplotlib
         dpi=300,
     )

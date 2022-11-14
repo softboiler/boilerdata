@@ -20,7 +20,7 @@ stages:
       - "${dirs.project_schema}"
 
   modelfun:
-    cmd: "papermill ${dirs.stage_modelfun} -p DEBUG false > $null"
+    cmd: "papermill ${dirs.stage_modelfun} NUL"
     deps:
       - "${dirs.stage_modelfun}"
       - "${dirs.axes}"
@@ -58,7 +58,7 @@ stages:
       - "params.model_bounds"
 
   metrics:
-    cmd: "papermill ${dirs.stage_metrics} -p DEBUG false > $null"
+    cmd: "papermill ${dirs.stage_metrics} NUL"
     deps:
       - "${dirs.stage_metrics}"
       - "${dirs.results}"
