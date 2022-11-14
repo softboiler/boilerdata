@@ -87,16 +87,21 @@ class Dirs(MyBaseModel):
     mpl_base: FilePath = plot_config / "base.mplstyle"
     mpl_hide_title: FilePath = plot_config / "hide_title.mplstyle"
 
-    # ! PLOTS
+    # ! TOP-LEVEL METRICS DIR
     metrics: DirectoryPath = data / "metrics"
-    plot_new_fit_0: Path = metrics / "new_fit_0.png"
-    plot_new_fit_1: Path = metrics / "new_fit_1.png"
-    plot_new_fit_2: Path = metrics / "new_fit_2.png"
-    plot_error_T_s: Path = metrics / "error_T_s.png"  # noqa: N815
-    plot_error_q_s: Path = metrics / "error_q_s.png"
-    plot_error_h_a: Path = metrics / "error_h_a.png"
-    new_fits: DirectoryPath = metrics / "new_fits"
-    file_pipeline_metrics: Path = metrics / "pipeline_metrics.json"
+
+    # ! PLOTS
+    plots: DirectoryPath = metrics / "plots"
+    plot_new_fit_0: Path = plots / "new_fit_0.png"
+    plot_new_fit_1: Path = plots / "new_fit_1.png"
+    plot_new_fit_2: Path = plots / "new_fit_2.png"
+    plot_error_T_s: Path = plots / "error_T_s.png"  # noqa: N815
+    plot_error_q_s: Path = plots / "error_q_s.png"
+    plot_error_h_a: Path = plots / "error_h_a.png"
+
+    # ! TABLES
+    tables: DirectoryPath = metrics / "tables"
+    file_pipeline_metrics: Path = tables / "pipeline_metrics.json"
 
     # ! STAGES
     stage_setup: FilePath = stages / "setup.py"
@@ -113,14 +118,15 @@ class Dirs(MyBaseModel):
     # "pre" because dir must exist pre-validation
     @validator(
         "axes",
-        "project_schema",
         "literature_results",
-        "modelfun",
-        "new_fits",
-        "runs",
-        "results",
-        "originlab_results",
         "metrics",
+        "modelfun",
+        "originlab_results",
+        "plots",
+        "project_schema",
+        "results",
+        "runs",
+        "tables",
         always=True,
         pre=True,
     )

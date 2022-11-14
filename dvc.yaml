@@ -62,8 +62,6 @@ stages:
     deps:
       - "${dirs.stage_metrics}"
       - "${dirs.results}"
-    outs:
-      - "${dirs.new_fits}"
     metrics:
       - "${dirs.file_pipeline_metrics}"
     plots:
