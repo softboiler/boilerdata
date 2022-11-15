@@ -148,6 +148,9 @@ class Params(MyBaseModel):
             self.model_errors = self.get_model_errors(self.model_params)
             self.fixed_errors = self.get_model_errors(self.fixed_params)
             self.params_and_errors = self.model_params + self.model_errors
+            self.fixed_values = {
+                k: v for k, v in self.initial_values.items() if k in self.fixed_params
+            }
 
     def get_model_errors(self, model_params) -> list[str]:
         return [f"{param}_err" for param in model_params]

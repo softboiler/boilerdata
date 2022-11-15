@@ -1,8 +1,6 @@
 params:
   do_plot: true
-
   records_to_average: 9
-
   water_temps:
     - T_w1
     - T_w2
@@ -13,7 +11,6 @@ params:
     T_infw: 100
     x_s: 0
     x_wa: 0.0381
-
   model_params:
     - T_s
     - q_s
@@ -29,7 +26,6 @@ params:
     k: 400
     h_a: 0
     h_w: 0
-
   model_bounds:
     T_s:
       - 95

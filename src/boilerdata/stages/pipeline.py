@@ -69,7 +69,6 @@ def get_properties(df: pd.DataFrame, proj: Project) -> pd.DataFrame:
                     Prop.THERMAL_CONDUCTIVITY,
                     convert_temperature((df[A.T_1] + df[A.T_5]) / 2, "C", "K"),
                 ),
-                A.h_w: float(np.finfo(float).eps),
                 A.T_w: lambda df: (T_w_avg + T_w_p) / 2,
                 A.T_w_diff: lambda df: abs(T_w_avg - T_w_p),
             }
@@ -86,19 +85,10 @@ def fit(
 ) -> pd.DataFrame:
     """Fit the data to a model function."""
 
-    # Make timestamp explicit due to deprecation warning
     trial = get_trial(grp, proj)
 
-    # Get coordinates and model parameters
-    fixed_param_values = dict(
-        zip(
-            proj.params.fixed_params,
-            grp[proj.params.fixed_params].mean(),  # type: ignore  # pydantic: use_enum_values
-        )
-    )
+    # Assign thermocouple errors trial-by-trial (since they can vary)
     _, tc_errors = get_tcs(trial)
-
-    # Assign thermocouple errors
     k_type_error = 2.2
     t_type_error = 1.0
     grp = grp.assign(
@@ -112,24 +102,27 @@ def fit(
     x, y, y_errors = fit_setup(grp, proj, trial)
     T_w = grp.T_w.mean()  # noqa: N806  # Mean water temperature
 
-    # Get bounds and override some
+    # Get fixed values
+    fixed_values: dict[str, float] = proj.params.fixed_values  # type: ignore
+    for key in fixed_values:
+        if not all(grp[key].isna()):
+            fixed_values[key] = grp[key].mean()
+
+    # Get bounds/guesses and override some. Can't do it earlier because of the override.
     model_bounds = proj.params.model_bounds
     model_bounds[A.T_s] = (T_w, np.inf)  # type: ignore  # pydantic: use_enum_values
-
-    # Get guesses and override some
     initial_values = proj.params.initial_values
     initial_values[A.T_s] = model_bounds[A.T_s][0]  # type: ignore  # pydantic: use_enum_values
-
     (bounds, guesses) = get_free_bounds_and_guesses(
         proj,
         model_bounds,  # type: ignore  # pydantic: Type coerced in validation
         initial_values,
     )
 
-    # Perform fit  # ! Depends on the order of the parameters
+    # Perform fit
     try:
         fitted_params, pcov = curve_fit(
-            partial(model, **fixed_param_values),
+            partial(model, **fixed_values),
             x,
             y,
             sigma=y_errors,
@@ -175,7 +168,11 @@ def get_free_bounds_and_guesses(
     model_bounds: Mapping[A, bound_T],
     initial_values: Mapping[A, guess_T],
 ) -> tuple[Sequence[bound_T], Sequence[guess_T]]:
-    """Given model bounds and initial values, return just the free parameter values."""
+    """Given model bounds and initial values, return just the free parameter values.
+
+    Returns a tuple of sequences of bounds and guesses required by the interface of
+    `curve_fit`.
+    """
     bounds = tuple(
         bound
         for param, bound in model_bounds.items()
