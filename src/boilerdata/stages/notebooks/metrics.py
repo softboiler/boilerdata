@@ -170,7 +170,7 @@ def plot_new_fits(grp: pd.DataFrame, proj: Project, model):
         # Confidence interval
         (xlim_min, xlim_max) = ax.get_xlim()
         pad = 0.025 * (xlim_max - xlim_min)
-        x_padded = np.linspace(xlim_min - pad, xlim_max + pad)
+        x_padded = np.linspace(xlim_min - pad, xlim_max + pad, 200)
 
         y_padded, y_padded_min, y_padded_max = model_with_error(
             model, x_padded, get_params_mapping_with_uncertainties(ser, proj)

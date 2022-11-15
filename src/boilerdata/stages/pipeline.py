@@ -91,6 +91,7 @@ def fit(
     _, tc_errors = get_tcs(trial)
     k_type_error = 2.2
     t_type_error = 1.0
+    # Need to assign here (not at the end) because these are used in the model fit
     grp = grp.assign(
         **(
             {tc_error: k_type_error for tc_error in tc_errors}
@@ -105,7 +106,10 @@ def fit(
     # Get fixed values
     fixed_values: dict[str, float] = proj.params.fixed_values  # type: ignore
     for key in fixed_values:
-        if not all(grp[key].isna()):
+        if all(grp[key].isna()):
+            # While we're at it, assign the fixed value back to the dataframe
+            grp.assign(**{key: fixed_values[key]})
+        else:
             fixed_values[key] = grp[key].mean()
 
     # Get bounds/guesses and override some. Can't do it earlier because of the override.
@@ -139,12 +143,16 @@ def fit(
     standard_errors = np.sqrt(np.diagonal(pcov))
     errors = standard_errors * confidence_interval_95
 
-    # Assign the same fit to all time slots in the run. Will be agged later.
     grp = grp.assign(
+        **{
+            key: lambda grp: fixed_values[key]
+            for key in fixed_values
+            if all(grp[key].isna())
+        },
         **pd.Series(
             np.concatenate([fitted_params, errors]),
             index=proj.params.free_params + proj.params.free_errors,
-        )  # type: ignore  # pandas
+        ),  # type: ignore  # pandas
     )
     return grp
 
