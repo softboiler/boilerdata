@@ -2,7 +2,6 @@
 dill~=0.3.6
 dvc[gs]~=2.34.1
 matplotlib~=3.6.0
-nbclient~=0.7.0
 originpro~=1.1.2
 pandas~=1.5.0
 pandera~=0.13.1
