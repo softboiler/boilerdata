@@ -94,4 +94,3 @@ stages:
       - "${dirs.originlab_results}"
     plots:
       - "${dirs.metrics}/lit_.png"
-    frozen: true

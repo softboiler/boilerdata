@@ -4,10 +4,10 @@
     // * -------------------------------------------------------------------------- * //
     // * PROJECT-SPECIFIC * //
     {
-      "name": "proj: dirs",
+      "name": "proj: setup",
       "type": "python",
       "request": "launch",
-      "module": "boilerdata.stages.dirs",
+      "module": "boilerdata.stages.setup",
       "console": "internalConsole"
     },
     {
@@ -36,13 +36,6 @@
       "type": "python",
       "request": "launch",
       "module": "boilerdata.stages.pipeline",
-      "console": "internalConsole"
-    },
-    {
-      "name": "proj: metrics",
-      "type": "python",
-      "request": "launch",
-      "module": "boilerdata.stages.metrics",
       "console": "internalConsole"
     },
     {
