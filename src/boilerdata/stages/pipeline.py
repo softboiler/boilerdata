@@ -107,10 +107,7 @@ def fit(
     # Get fixed values
     fixed_values: dict[str, float] = proj.params.fixed_values  # type: ignore
     for key in fixed_values:
-        if all(grp[key].isna()):
-            # While we're at it, assign the fixed value back to the dataframe
-            grp.assign(**{key: fixed_values[key]})
-        else:
+        if not all(grp[key].isna()):
             fixed_values[key] = grp[key].mean()
 
     # Get bounds/guesses and override some. Can't do it earlier because of the override.
@@ -145,11 +142,7 @@ def fit(
     errors = standard_errors * confidence_interval_95
 
     grp = grp.assign(
-        **{
-            key: lambda grp: fixed_values[key]
-            for key in fixed_values
-            if all(grp[key].isna())
-        },
+        **{key: fixed_values[key] for key in fixed_values if all(grp[key].isna())},
         **pd.Series(
             np.concatenate([fitted_params, errors]),
             index=proj.params.free_params + proj.params.free_errors,

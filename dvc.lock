@@ -93,8 +93,8 @@ stages:
       size: 1009895
       nfiles: 1
     - path: src/boilerdata/stages/pipeline.py
-      md5: 7d269033ff732a64fabcd72a68423016
-      size: 8833
+      md5: 6cab66043baafd2c7de581c5ab199f4e
+      size: 8629
     - path: src/boilerdata/validation.py
       md5: 89dcf57bffadc8d6b61b9d537ff78397
       size: 4446
