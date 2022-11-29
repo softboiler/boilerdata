@@ -1,6 +1,5 @@
 import datetime
 import re
-from typing import Optional
 
 import numpy as np
 import pandas as pd
@@ -33,7 +32,7 @@ class Trial(MyBaseModel):
     group: Group
     rod: Rod
     coupon: Coupon
-    sample: Optional[Sample]
+    sample: Sample | None
     joint: Joint
     sixth_tc: bool = Field(
         default=False,

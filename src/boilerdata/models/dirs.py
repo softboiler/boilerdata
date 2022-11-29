@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
 
 from pydantic import DirectoryPath, FilePath, validator
 
@@ -20,7 +20,7 @@ class Dirs(MyBaseModel):
 
     # ! DIRECTORY PER TRIAL
     # Don't validate this here. Handle when initializing Project.
-    per_trial: Optional[Path] = None
+    per_trial: Path | None = None
 
     # ! BASE DIRECTORY
     base: DirectoryPath = Path(".")

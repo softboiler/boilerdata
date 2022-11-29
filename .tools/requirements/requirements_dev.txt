@@ -12,6 +12,8 @@ nodeenv==1.7.0
 # Format
 autoflake~=1.4
 black~=22.10.0  # doesn't follow semver
+isort~=5.10.1
+pyupgrade~=3.2.2
 
 # Lint
 flake8-codes~=0.2.2  # flake8 error code introspection

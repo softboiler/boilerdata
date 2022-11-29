@@ -1,5 +1,3 @@
-from typing import Optional
-
 import pandas as pd
 from pydantic import Field, validator
 
@@ -40,7 +38,7 @@ class Axis(MyBaseModel):
 
     # ! COLUMNS IN SOURCE DATA
 
-    source: Optional[str] = Field(
+    source: str | None = Field(
         default=None,
         description="The name of the input column that this column is based off of.",
     )
@@ -77,7 +75,7 @@ class Axis(MyBaseModel):
     # ! PRETTY NAME
 
     # Can be None, but never accessed directly.
-    pretty_name_: Optional[str] = Field(
+    pretty_name_: str | None = Field(
         default=None,
         alias="pretty_name",  # So we can make this a dynamic property below
         description="The pretty version of the column name.",

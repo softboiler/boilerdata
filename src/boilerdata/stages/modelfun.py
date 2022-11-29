@@ -1,6 +1,7 @@
+from collections.abc import Callable
 from functools import wraps
 from pathlib import Path
-from typing import Any, Callable
+from typing import Any
 import warnings
 
 import dill  # noqa: S403  # Only unpickling an internal object.

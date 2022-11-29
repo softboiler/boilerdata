@@ -2,8 +2,9 @@
 # pyright: reportUnnecessaryTypeIgnoreComment=false
 
 from collections import deque
+from collections.abc import Mapping
 from contextlib import contextmanager
-from typing import Any, Mapping
+from typing import Any
 
 from IPython.display import Markdown, display
 from matplotlib import pyplot as plt

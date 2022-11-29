@@ -1,5 +1,6 @@
+from collections.abc import Mapping, Sequence
 from functools import partial
-from typing import Mapping, Sequence, TypeVar
+from typing import TypeVar
 
 import numpy as np
 import pandas as pd
