@@ -47,7 +47,7 @@ repos:
       - id: pyupgrade
         args: [--py310-plus]
   - repo: https://github.com/iterative/dvc
-    rev: "2.35.2"
+    rev: "2.36.0"
     hooks:
       - id: dvc-pre-commit
         language_version: python3
@@ -64,3 +64,4 @@ repos:
         language_version: python3
         stages:
           - post-checkout
+  

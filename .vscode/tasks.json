@@ -116,6 +116,13 @@
     // * OTHER TASKS * //
 
     {
+      "label": "task: sphinx-autobuild",
+      "type": "process",
+      "command": "pwsh",
+      "args": ["-Command", "sphinx-autobuild docs _site"],
+      "problemMatcher": []
+    },
+    {
       "label": "task: snakeviz",
       "type": "process",
       "command": "pwsh",
@@ -136,7 +143,7 @@
       "label": "task: pytest-cov: Generate coverage",
       "type": "process",
       "command": "pwsh",
-      "args": ["-Command", "pytest -c pytest_local.ini --cov --cov-report xml"],
+      "args": ["-Command", "pytest --cov --cov-report xml"],
       "problemMatcher": []
     },
     {
