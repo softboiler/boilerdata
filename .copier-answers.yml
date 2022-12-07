@@ -1,9 +1,10 @@
 # Changes here will be overwritten by Copier; NEVER EDIT MANUALLY
-_commit: 731383c
+_commit: 960e79c
 _src_path: gh:blakeNaccarato/copier-python
 github_repo_name: boilerdata
 include_funding: true
 override: true
+override_cicd_setup: false
 override_codecov: false
 override_coveragerc: false
 override_env: false

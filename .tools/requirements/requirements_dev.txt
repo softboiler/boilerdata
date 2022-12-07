@@ -6,14 +6,9 @@ ipympl~=0.9.2
 # For `python` and `ipython` via `pythonrc.py`
 rich~=12.6.0
 
-# Avoids pyright issue https://github.com/RobertCraigie/pyright-python/issues/45
-nodeenv==1.7.0
-
 # Format
 autoflake~=1.4
 black~=22.10.0  # doesn't follow semver
-isort~=5.10.1
-pyupgrade~=3.2.2
 
 # Lint
 flake8-codes~=0.2.2  # flake8 error code introspection
@@ -25,6 +20,6 @@ snakeviz~=2.1.1
 pre-commit~=2.20.0
 
 # For local publishing to PyPi with flit
-keyring~=23.9.0
+keyring~=23.11.0
 
 -r requirements_both.txt
