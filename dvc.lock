@@ -211,8 +211,8 @@ stages:
       size: 27127
       nfiles: 1
     - path: data/plotter
-      md5: 45836a5f5656f2cab1b9acaed044ea63.dir
-      size: 320923
+      md5: 68c979e5a6a1eccb6e96f4ba1e90b604.dir
+      size: 319450
       nfiles: 1
     - path: data/results
       md5: 5bc4facb51e76ab8563411f43d93897b.dir
@@ -223,7 +223,7 @@ stages:
       size: 2907
     outs:
     - path: data/metrics/lit_.png
-      md5: 85622f68774aa4516057d6fcedfed985
+      md5: 03312e7f00b3a18c0b19ce0fca8fe406
       size: 39915
     - path: data/originlab_results
       md5: 823824f3e8299008f49edb2b128d330b.dir
