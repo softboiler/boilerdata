@@ -102,7 +102,13 @@ class Dirs(MyBaseModel):
 
     # ! ORIGINLAB PLOTS
     originlab_plots: DirectoryPath = metrics / "originlab_plots"
-    originlab_plot_shortnames: list[str] = Field(default=["lit"], exclude=True)
+    originlab_plot_shortnames: list[str] = Field(
+        default=[
+            "lit",
+            "low",
+        ],
+        exclude=True,
+    )
     originlab_plot_files: dict[str, Path] = Field(default=None)
 
     @validator("originlab_plot_files", always=True, pre=True)

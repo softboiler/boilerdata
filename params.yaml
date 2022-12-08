@@ -85,6 +85,7 @@ dirs:
   originlab_plots: data/metrics/originlab_plots
   originlab_plot_files:
     lit: data/metrics/originlab_plots/lit.svg
+    low: data/metrics/originlab_plots/low.svg
   tables: data/metrics/tables
   file_pipeline_metrics: data/metrics/tables/pipeline_metrics.json
   stage_setup: src/boilerdata/stages/setup.py

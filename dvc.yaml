@@ -95,3 +95,4 @@ stages:
       - "${dirs.originlab_results}"
     plots:
       - "${dirs.originlab_plot_files.lit}"
+      - "${dirs.originlab_plot_files.low}"
