@@ -93,4 +93,4 @@ stages:
     outs:
       - "${dirs.originlab_results}"
     plots:
-      - "${dirs.metrics}/lit_.png"
+      - "${dirs.originlab_plot_files.lit}"

@@ -130,13 +130,6 @@ class Params(MyBaseModel):
         default=default_opt(False),
         description="Whether to plot the fits of the individual runs.",
     )
-    plots: list[str] = Field(
-        default=default_opt(
-            ["lit_"],
-            optional=True,  # This isn't needed in `parms.yaml` yet
-        ),
-        description="List of plots to save.",
-    )
 
     def __init__(self, **data):
         super().__init__(**data)

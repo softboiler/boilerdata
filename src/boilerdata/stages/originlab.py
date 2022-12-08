@@ -24,12 +24,11 @@ def main(proj: Project):
     )
 
     with open_originlab(proj.dirs.file_plotter):
-        gp = op.find_graph(proj.params.plots[0])
-        fig = gp.save_fig(
-            get_path(proj.dirs.metrics, mkdirs=True), type="png", width=800
-        )
-        if not fig:
-            raise RuntimeError("Failed to save figure.")
+        for shortname, file in proj.dirs.originlab_plot_files.items():
+            gp = op.find_graph(shortname)
+            fig = gp.save_fig(get_path(file), type="svg")
+            if not fig:
+                raise RuntimeError("Failed to save figure.")
 
 
 def transform_for_originlab(df: pd.DataFrame, proj: Project) -> pd.DataFrame:

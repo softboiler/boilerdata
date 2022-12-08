@@ -3,7 +3,7 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Any
 
-from pydantic import DirectoryPath, FilePath, validator
+from pydantic import DirectoryPath, Field, FilePath, validator
 
 from boilerdata.models.common import MyBaseModel, StrPath
 
@@ -15,7 +15,8 @@ class Dirs(MyBaseModel):
         @staticmethod
         def schema_extra(schema: dict[str, Any], model: Dirs):
             for prop in schema.get("properties", {}).values():
-                if default := prop.get("default"):
+                default = prop.get("default")
+                if isinstance(default, str):
                     prop["default"] = default.replace("\\", "/")
 
     # ! DIRECTORY PER TRIAL
@@ -92,12 +93,30 @@ class Dirs(MyBaseModel):
 
     # ! PLOTS
     plots: DirectoryPath = metrics / "plots"
-    plot_new_fit_0: Path = plots / "new_fit_0.png"
-    plot_new_fit_1: Path = plots / "new_fit_1.png"
-    plot_new_fit_2: Path = plots / "new_fit_2.png"
-    plot_error_T_s: Path = plots / "error_T_s.png"  # noqa: N815
-    plot_error_q_s: Path = plots / "error_q_s.png"
-    plot_error_h_a: Path = plots / "error_h_a.png"
+    plot_new_fit_0: Path = plots / "new_fit_0.svg"
+    plot_new_fit_1: Path = plots / "new_fit_1.svg"
+    plot_new_fit_2: Path = plots / "new_fit_2.svg"
+    plot_error_T_s: Path = plots / "error_T_s.svg"  # noqa: N815
+    plot_error_q_s: Path = plots / "error_q_s.svg"
+    plot_error_h_a: Path = plots / "error_h_a.svg"
+
+    # ! ORIGINLAB PLOTS
+    originlab_plots: DirectoryPath = metrics / "originlab_plots"
+    originlab_plot_shortnames: list[str] = Field(default=["lit"], exclude=True)
+    originlab_plot_files: dict[str, Path] = Field(default=None)
+
+    @validator("originlab_plot_files", always=True, pre=True)
+    def validate_originlab_plot_files(cls, _, values) -> dict[str, Path]:
+        """Produce plot filenames based on shortnames.
+
+        Can't do it in __init__ because
+        lots of other logic would have to change in param file generation and schema
+        generation.
+        """
+        return {
+            shortname: values["originlab_plots"] / f"{shortname}.svg"
+            for shortname in values["originlab_plot_shortnames"]
+        }
 
     # ! TABLES
     tables: DirectoryPath = metrics / "tables"
@@ -123,6 +142,7 @@ class Dirs(MyBaseModel):
         "modelfun",
         "originlab_results",
         "plots",
+        "originlab_plots",
         "project_schema",
         "results",
         "runs",
