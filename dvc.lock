@@ -93,8 +93,8 @@ stages:
       size: 1009895
       nfiles: 1
     - path: src/boilerdata/stages/pipeline.py
-      md5: e53de677634863fea3c0e57415e58973
-      size: 8424
+      md5: b5385ad7796cc36705940b5bed59f8b3
+      size: 8981
     - path: src/boilerdata/validation.py
       md5: 89dcf57bffadc8d6b61b9d537ff78397
       size: 4446
@@ -136,29 +136,29 @@ stages:
       size: 237922
       nfiles: 1
     - path: src/boilerdata/stages/notebooks/metrics.ipynb
-      md5: 542986ff84661b7fa805b28522f15250
-      size: 7830
+      md5: ceb83b869c1315a9deaf8661a5c14834
+      size: 7579
     params:
       params.yaml:
         params.do_plot: true
     outs:
     - path: data/metrics/plots/error_T_s.svg
-      md5: 91e9449d83df8fd7e096babefc3d6315
+      md5: 0018e8c758bba8ea8df7e3be2e692a55
       size: 258229
     - path: data/metrics/plots/error_h_a.svg
-      md5: 0acb1aefee79ed8c9bc5c79b5ffa46f7
+      md5: c435bd6ad565ff4494bc0c03eb6f9381
       size: 259236
     - path: data/metrics/plots/error_q_s.svg
-      md5: 9d9e9c6e9c2ec24da2127dc0d3661e53
+      md5: a8c2ae61417ff6bd0de97459d7ddb875
       size: 259340
     - path: data/metrics/plots/new_fit_0.svg
-      md5: 1d4f534ad11eda9ce584b1ebe71085df
+      md5: 8c3867cc3f3e2c3862b90ff99c95159e
       size: 44205
     - path: data/metrics/plots/new_fit_1.svg
-      md5: bfbc1a01ad420ed0930e06cef3bf6915
+      md5: a3a23c0d1a862db59de7b84676d991d7
       size: 43863
     - path: data/metrics/plots/new_fit_2.svg
-      md5: 3a8b7474c7c7690bb4be622d20b224fa
+      md5: 2b68a8391bbc646227d9bffe1d2ec2c7
       size: 46037
     - path: data/metrics/tables/pipeline_metrics.json
       md5: 1aa224e207ef9602b1fa51fe360d52c2

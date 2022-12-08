@@ -1,6 +1,8 @@
 from collections.abc import Mapping, Sequence
 from functools import partial
 from typing import TypeVar
+import warnings
+from warnings import catch_warnings
 
 import numpy as np
 import pandas as pd
@@ -118,26 +120,34 @@ def fit(
         initial_values,
     )
 
-    # Perform fit
-    try:
-        fitted_params, pcov = curve_fit(
-            partial(model, **fixed_values),
-            x,
-            y,
-            sigma=y_errors,
-            absolute_sigma=True,
-            p0=guesses,
-            bounds=tuple(zip(*bounds)),  # Expects ([L1, L2, L3], [H1, H2, H3])
-            method=proj.params.fit_method,
-        )
-    except RuntimeError:
-        dim = len(proj.params.free_params)
-        fitted_params = np.full(dim, np.nan)
-        pcov = np.full((dim, dim), np.nan)
+    from scipy.optimize import OptimizeWarning
+
+    # Perform fit, filling "nan" on failure or when covariance computation fails
+    with catch_warnings():
+        warnings.simplefilter("error", category=OptimizeWarning)
+        try:
+            fitted_params, pcov = curve_fit(
+                partial(model, **fixed_values),
+                x,
+                y,
+                sigma=y_errors,
+                absolute_sigma=True,
+                p0=guesses,
+                bounds=tuple(zip(*bounds)),  # Expects ([L1, L2, L3], [H1, H2, H3])
+                method=proj.params.fit_method,
+            )
+        except (RuntimeError, OptimizeWarning):
+            dim = len(proj.params.free_params)
+            fitted_params = np.full(dim, np.nan)
+            pcov = np.full((dim, dim), np.nan)
 
     # Compute confidence interval
     standard_errors = np.sqrt(np.diagonal(pcov))
     errors = standard_errors * confidence_interval_95
+
+    # Catching `OptimizeWarning` should be enough, but let's explicitly check for inf
+    fitted_params = np.where(np.isinf(errors), np.nan, fitted_params)
+    errors = np.where(np.isinf(errors), np.nan, errors)
 
     grp = grp.assign(
         **{key: fixed_values[key] for key in fixed_values if all(grp[key].isna())},

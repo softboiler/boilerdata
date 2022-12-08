@@ -59,7 +59,12 @@
     {
       "label": "dvc: repro all",
       "dependsOrder": "sequence",
-      "dependsOn": ["dvc: setup", "git: Stage all files", "pre-commit"],
+      "dependsOn": [
+        "dvc: setup",
+        "git: Stage all files",
+        "pre-commit",
+        "git: Stage all files"
+      ],
       "type": "process",
       "command": "pwsh",
       "args": ["-Command", "dvc repro"],
