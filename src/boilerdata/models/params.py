@@ -70,7 +70,7 @@ class Params(MyBaseModel):
     def validate_model_bounds(cls, model_bounds) -> dict[A, tuple[float, float]]:
         """Substitute inf for np.inf."""
         for param, b in model_bounds.items():
-            b0 = -np.inf if isinstance(b[0], str) and "inf" in b[0] else b[0]
+            b0 = -np.inf if isinstance(b[0], str) and "-inf" in b[0] else b[0]
             b1 = np.inf if isinstance(b[0], str) and "inf" in b[1] else b[1]
             model_bounds[param] = (b0, b1)
         return model_bounds

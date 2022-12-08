@@ -28,10 +28,10 @@ params:
     h_w: 0
   model_bounds:
     T_s:
-      - 95
+      - -273.15
       - inf
     q_s:
-      - 0
+      - -inf
       - inf
     k:
       - 350
