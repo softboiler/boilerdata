@@ -102,7 +102,6 @@ def fit(
 
     # Prepare for fitting
     x, y, y_errors = fit_setup(grp, proj, trial)
-    T_w = grp.T_w.mean()  # noqa: N806  # Mean water temperature
 
     # Get fixed values
     fixed_values: dict[str, float] = proj.params.fixed_values  # type: ignore
@@ -112,9 +111,7 @@ def fit(
 
     # Get bounds/guesses and override some. Can't do it earlier because of the override.
     model_bounds = proj.params.model_bounds
-    model_bounds[A.T_s] = (T_w, np.inf)  # type: ignore  # pydantic: use_enum_values
     initial_values = proj.params.initial_values
-    initial_values[A.T_s] = model_bounds[A.T_s][0]  # type: ignore  # pydantic: use_enum_values
     (bounds, guesses) = get_free_bounds_and_guesses(
         proj,
         model_bounds,  # type: ignore  # pydantic: Type coerced in validation

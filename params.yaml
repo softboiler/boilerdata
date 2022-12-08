@@ -28,7 +28,7 @@ params:
     h_w: 0
   model_bounds:
     T_s:
-      - -273.15
+      - -inf
       - inf
     q_s:
       - -inf
