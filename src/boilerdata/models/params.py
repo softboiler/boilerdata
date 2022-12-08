@@ -8,6 +8,7 @@ from pydantic import Field, validator
 
 from boilerdata.axes_enum import AxesEnum as A  # noqa: N814
 from boilerdata.models.common import MyBaseModel, allow_extra
+from boilerdata.models.enums import FitMethod
 
 bound: TypeAlias = float | Literal["-inf", "inf"]
 T = TypeVar("T")
@@ -30,6 +31,8 @@ class Params(MyBaseModel):
         default=default_opt(5),
         description="The number of records over which to average in a given trial.",
     )
+
+    fit_method: FitMethod = Field(default=default_opt(FitMethod.trf, optional=False))
 
     # Reason: pydantic: use_enum_values
     model_params: list[A] = Field(

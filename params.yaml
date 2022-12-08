@@ -1,6 +1,7 @@
 params:
   do_plot: true
   records_to_average: 9
+  fit_method: trf
   water_temps:
     - T_w1
     - T_w2

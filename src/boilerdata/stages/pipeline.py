@@ -128,6 +128,7 @@ def fit(
             absolute_sigma=True,
             p0=guesses,
             bounds=tuple(zip(*bounds)),  # Expects ([L1, L2, L3], [H1, H2, H3])
+            method=proj.params.fit_method,
         )
     except RuntimeError:
         dim = len(proj.params.free_params)

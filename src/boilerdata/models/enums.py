@@ -72,6 +72,14 @@ class Joint(GetNameEnum):
     none = auto()
 
 
+class FitMethod(GetNameEnum):
+    """Valid methods for curve fitting."""
+
+    lm = auto()
+    trf = auto()
+    dogbox = auto()
+
+
 class PandasDtype(GetNameEnum):
     """Valid data types for Pandas objects.
 

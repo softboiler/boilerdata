@@ -51,10 +51,18 @@
     },
     {
       "label": "dvc: repro",
-      "dependsOn": "pre-commit",
       "type": "process",
       "command": "pwsh",
       "args": ["-Command", "dvc repro ${input:stage}"],
+      "problemMatcher": []
+    },
+    {
+      "label": "dvc: repro all",
+      "dependsOrder": "sequence",
+      "dependsOn": ["dvc: setup", "git: Stage all files", "pre-commit"],
+      "type": "process",
+      "command": "pwsh",
+      "args": ["-Command", "dvc repro"],
       "problemMatcher": []
     },
     {
@@ -75,6 +83,13 @@
       "type": "process",
       "command": "git",
       "args": ["rebase", "-i", "--fork-point", "main"],
+      "problemMatcher": []
+    },
+    {
+      "label": "git: Stage all files",
+      "type": "process",
+      "command": "git",
+      "args": ["add", "-A"],
       "problemMatcher": []
     },
 
@@ -112,7 +127,6 @@
       "args": ["-Command", "pre-commit"],
       "problemMatcher": []
     },
-
     {
       "label": "pre-commit: All files",
       "type": "process",

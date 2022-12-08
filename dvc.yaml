@@ -54,6 +54,7 @@ stages:
     outs:
       - "${dirs.results}"
     params:
+      - "params.fit_method"
       - "params.initial_values"
       - "params.model_bounds"
 
