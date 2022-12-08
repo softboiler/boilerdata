@@ -38,10 +38,10 @@ params:
       - 350
       - 450
     h_a:
-      - 0
+      - -inf
       - inf
     h_w:
-      - 0
+      - -inf
       - inf
 dirs:
   base: .
