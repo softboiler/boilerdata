@@ -8,7 +8,7 @@ stages:
       size: 1001
       nfiles: 2
     - path: src/boilerdata/models
-      md5: 84914917acd9e670581ecb7bf518bd45.dir
+      md5: 3ccb5cbb674bf811bc55bc3db9236ab2.dir
       size: 65118
       nfiles: 17
     - path: src/boilerdata/stages/schema.py
@@ -16,7 +16,7 @@ stages:
       size: 843
     outs:
     - path: data/schema
-      md5: 677bfdf81307a92f34a73db22ba6a7b6.dir
+      md5: 97cc0eb0c146faeb65df5f1dd484f250.dir
       size: 25153
       nfiles: 3
   modelfun:
@@ -27,7 +27,7 @@ stages:
       size: 1001
       nfiles: 2
     - path: src/boilerdata/models
-      md5: 84914917acd9e670581ecb7bf518bd45.dir
+      md5: 3ccb5cbb674bf811bc55bc3db9236ab2.dir
       size: 65118
       nfiles: 17
     - path: src/boilerdata/stages/notebooks/modelfun.ipynb
@@ -52,7 +52,7 @@ stages:
         - h_w
     outs:
     - path: data/modelfun
-      md5: b564c53bafd4abf26893c0372deadd87.dir
+      md5: ce4e3207c5dc0e5b0b30c3c6cf0487ff.dir
       size: 46425
       nfiles: 1
   runs:
@@ -67,7 +67,7 @@ stages:
       size: 103226338
       nfiles: 401
     - path: src/boilerdata/models
-      md5: 84914917acd9e670581ecb7bf518bd45.dir
+      md5: 3ccb5cbb674bf811bc55bc3db9236ab2.dir
       size: 65118
       nfiles: 17
     - path: src/boilerdata/stages/runs.py
@@ -85,7 +85,7 @@ stages:
     cmd: python -m boilerdata.stages.pipeline
     deps:
     - path: data/modelfun
-      md5: b564c53bafd4abf26893c0372deadd87.dir
+      md5: ce4e3207c5dc0e5b0b30c3c6cf0487ff.dir
       size: 46425
       nfiles: 1
     - path: data/runs
@@ -136,30 +136,30 @@ stages:
       size: 237922
       nfiles: 1
     - path: src/boilerdata/stages/notebooks/metrics.ipynb
-      md5: ceb83b869c1315a9deaf8661a5c14834
-      size: 7579
+      md5: 6d1062e96fb5397e7b553168ab48e3a3
+      size: 7976
     params:
       params.yaml:
         params.do_plot: true
     outs:
-    - path: data/metrics/plots/error_T_s.svg
-      md5: 0018e8c758bba8ea8df7e3be2e692a55
-      size: 258229
-    - path: data/metrics/plots/error_h_a.svg
-      md5: c435bd6ad565ff4494bc0c03eb6f9381
-      size: 259236
-    - path: data/metrics/plots/error_q_s.svg
-      md5: a8c2ae61417ff6bd0de97459d7ddb875
-      size: 259340
-    - path: data/metrics/plots/new_fit_0.svg
-      md5: 8c3867cc3f3e2c3862b90ff99c95159e
-      size: 44205
-    - path: data/metrics/plots/new_fit_1.svg
-      md5: a3a23c0d1a862db59de7b84676d991d7
-      size: 43863
-    - path: data/metrics/plots/new_fit_2.svg
-      md5: 2b68a8391bbc646227d9bffe1d2ec2c7
-      size: 46037
+    - path: data/metrics/plots/error_T_s.png
+      md5: cc31ffbec03533656fe12a8835a6d6e6
+      size: 123500
+    - path: data/metrics/plots/error_h_a.png
+      md5: 6854e409b9baad799df2f340ddf55338
+      size: 202340
+    - path: data/metrics/plots/error_q_s.png
+      md5: 0594d8092c87c00f82491bf5efb83461
+      size: 172762
+    - path: data/metrics/plots/new_fit_0.png
+      md5: 99ed73f5d9e1f4d32a9fcb6bf7f6c38e
+      size: 110902
+    - path: data/metrics/plots/new_fit_1.png
+      md5: 232f46326b58842728cb781c1c8d3692
+      size: 104019
+    - path: data/metrics/plots/new_fit_2.png
+      md5: 4ecfa93269508182334333c66299ab62
+      size: 114917
     - path: data/metrics/tables/pipeline_metrics.json
       md5: 1aa224e207ef9602b1fa51fe360d52c2
       size: 207
@@ -171,7 +171,7 @@ stages:
       size: 321985
       nfiles: 9
     - path: src/boilerdata/models/dirs.py
-      md5: 0392029f9e1fd09b24e4490fa5b9e7e1
+      md5: 6c12598fa69c9d1381641b6a7885e42e
       size: 5498
     - path: src/boilerdata/stages/literature.py
       md5: fe6bb66ba942704e5bf52e4647a4ceb1
@@ -191,7 +191,7 @@ stages:
       md5: 27d4a58d6c3cc77841bc20fbda168d80
       size: 4353
     - path: src/boilerdata/models/dirs.py
-      md5: 0392029f9e1fd09b24e4490fa5b9e7e1
+      md5: 6c12598fa69c9d1381641b6a7885e42e
       size: 5498
     - path: src/boilerdata/stages/axes.py
       md5: 85d884316f153228b1f51f921c98a8e1
@@ -220,15 +220,15 @@ stages:
       size: 237922
       nfiles: 1
     - path: src/boilerdata/stages/originlab.py
-      md5: c81a73d916a0a404a5a2b27e7210987e
+      md5: 1f06e2e4a8a68932df41a736f1ef1b36
       size: 2923
     outs:
-    - path: data/metrics/originlab_plots/lit.svg
-      md5: e3354218e4008ef59f5e171a9941a7d1
-      size: 466997
-    - path: data/metrics/originlab_plots/low.svg
-      md5: 011f9b1730745457afc13d9ea55a1ea3
-      size: 491376
+    - path: data/metrics/originlab_plots/lit.png
+      md5: 36a10c85f39bc98f521545ee0156fb52
+      size: 141883
+    - path: data/metrics/originlab_plots/low.png
+      md5: a0b575be898a3a8e8119500944d2433f
+      size: 133140
     - path: data/originlab_results
       md5: e08e92b0b19a99cfd1e1881dc4491fd7.dir
       size: 236927
