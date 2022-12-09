@@ -26,7 +26,7 @@ def main(proj: Project):
     with open_originlab(proj.dirs.file_plotter):
         for shortname, file in proj.dirs.originlab_plot_files.items():
             gp = op.find_graph(shortname)
-            fig = gp.save_fig(get_path(file), type="svg")
+            fig = gp.save_fig(get_path(file), type="png")
             if not fig:
                 raise RuntimeError("Failed to save figure.")
 

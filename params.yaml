@@ -76,15 +76,15 @@ dirs:
   mpl_hide_title: config/plotting/hide_title.mplstyle
   metrics: data/metrics
   plots: data/metrics/plots
-  plot_new_fit_0: data/metrics/plots/new_fit_0.svg
-  plot_new_fit_1: data/metrics/plots/new_fit_1.svg
-  plot_new_fit_2: data/metrics/plots/new_fit_2.svg
-  plot_error_T_s: data/metrics/plots/error_T_s.svg
-  plot_error_q_s: data/metrics/plots/error_q_s.svg
-  plot_error_h_a: data/metrics/plots/error_h_a.svg
+  plot_new_fit_0: data/metrics/plots/new_fit_0.png
+  plot_new_fit_1: data/metrics/plots/new_fit_1.png
+  plot_new_fit_2: data/metrics/plots/new_fit_2.png
+  plot_error_T_s: data/metrics/plots/error_T_s.png
+  plot_error_q_s: data/metrics/plots/error_q_s.png
+  plot_error_h_a: data/metrics/plots/error_h_a.png
   originlab_plots: data/metrics/originlab_plots
   originlab_plot_files:
-    lit: data/metrics/originlab_plots/lit.svg
+    lit: data/metrics/originlab_plots/lit.png
   tables: data/metrics/tables
   file_pipeline_metrics: data/metrics/tables/pipeline_metrics.json
   stage_setup: src/boilerdata/stages/setup.py

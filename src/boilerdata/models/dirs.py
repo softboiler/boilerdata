@@ -93,12 +93,12 @@ class Dirs(MyBaseModel):
 
     # ! PLOTS
     plots: DirectoryPath = metrics / "plots"
-    plot_new_fit_0: Path = plots / "new_fit_0.svg"
-    plot_new_fit_1: Path = plots / "new_fit_1.svg"
-    plot_new_fit_2: Path = plots / "new_fit_2.svg"
-    plot_error_T_s: Path = plots / "error_T_s.svg"  # noqa: N815
-    plot_error_q_s: Path = plots / "error_q_s.svg"
-    plot_error_h_a: Path = plots / "error_h_a.svg"
+    plot_new_fit_0: Path = plots / "new_fit_0.png"
+    plot_new_fit_1: Path = plots / "new_fit_1.png"
+    plot_new_fit_2: Path = plots / "new_fit_2.png"
+    plot_error_T_s: Path = plots / "error_T_s.png"  # noqa: N815
+    plot_error_q_s: Path = plots / "error_q_s.png"
+    plot_error_h_a: Path = plots / "error_h_a.png"
 
     # ! ORIGINLAB PLOTS
     originlab_plots: DirectoryPath = metrics / "originlab_plots"
@@ -114,7 +114,7 @@ class Dirs(MyBaseModel):
         generation.
         """
         return {
-            shortname: values["originlab_plots"] / f"{shortname}.svg"
+            shortname: values["originlab_plots"] / f"{shortname}.png"
             for shortname in values["originlab_plot_shortnames"]
         }
 
