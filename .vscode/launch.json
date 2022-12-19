@@ -32,6 +32,13 @@
       "console": "internalConsole"
     },
     {
+      "name": "proj: associate_benchmakrs",
+      "type": "python",
+      "request": "launch",
+      "module": "boilerdata.stages.associate_benchmarks",
+      "console": "internalConsole"
+    },
+    {
       "name": "proj: pipeline",
       "type": "python",
       "request": "launch",

@@ -60,9 +60,6 @@ class Dirs(MyBaseModel):
     literature_results: DirectoryPath = data / "literature_results"
     file_literature_results: Path = literature_results / "lit.csv"
 
-    # ! BENCHMARKS
-    benchmarks: DirectoryPath = base / "benchmarks"
-
     # ! MODEL FUNCTION
     modelfun: DirectoryPath = data / "modelfun"
     file_model: Path = modelfun / "model.dillpickle"
@@ -70,9 +67,16 @@ class Dirs(MyBaseModel):
     # ! TRIALS
     trials: DirectoryPath = data / "curves"
 
+    # ! BENCHMARKS
+    benchmarks: DirectoryPath = data / "benchmarks"
+
     # ! RUNS
     runs: DirectoryPath = data / "runs"
     file_runs: Path = runs / "runs.csv"
+
+    # ! RUNS WITH BENCHMARKS
+    runs_with_benchmarks: DirectoryPath = data / "runs_with_benchmarks"
+    file_runs_with_benchmarks: Path = runs_with_benchmarks / "runs_with_benchmarks.csv"
 
     # ! RESULTS
     results: DirectoryPath = data / "results"
@@ -134,6 +138,7 @@ class Dirs(MyBaseModel):
     # ! STAGES
     stage_setup: FilePath = stages / "setup.py"
     stage_axes: FilePath = stages / "axes.py"
+    stage_associate_benchmarks: FilePath = stages / "associate_benchmarks.py"
     stage_literature: FilePath = stages / "literature.py"
     stage_metrics: FilePath = notebooks / "metrics.ipynb"
     stage_modelfun: FilePath = notebooks / "modelfun.ipynb"
@@ -146,6 +151,7 @@ class Dirs(MyBaseModel):
     # "pre" because dir must exist pre-validation
     @validator(
         "axes",
+        "benchmarks",
         "literature_results",
         "metrics",
         "modelfun",
@@ -155,6 +161,7 @@ class Dirs(MyBaseModel):
         "project_schema",
         "results",
         "runs",
+        "runs_with_benchmarks",
         "tables",
         always=True,
         pre=True,

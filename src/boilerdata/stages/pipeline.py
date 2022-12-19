@@ -34,7 +34,7 @@ def main(proj: Project):
 
     (
         pd.read_csv(
-            proj.dirs.file_runs,
+            proj.dirs.file_runs_with_benchmarks,
             index_col=(index_col := [A.trial, A.run, A.time]),
             parse_dates=index_col,
             dtype={col.name: col.dtype for col in proj.axes.cols},

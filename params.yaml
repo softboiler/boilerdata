@@ -60,12 +60,14 @@ dirs:
   literature: data/literature
   literature_results: data/literature_results
   file_literature_results: data/literature_results/lit.csv
-  benchmarks: benchmarks
   modelfun: data/modelfun
   file_model: data/modelfun/model.dillpickle
   trials: data/curves
+  benchmarks: data/benchmarks
   runs: data/runs
   file_runs: data/runs/runs.csv
+  runs_with_benchmarks: data/runs_with_benchmarks
+  file_runs_with_benchmarks: data/runs_with_benchmarks/runs_with_benchmarks.csv
   results: data/results
   file_results: data/results/results.csv
   plotter: data/plotter
@@ -91,6 +93,7 @@ dirs:
   file_pipeline_metrics: data/metrics/tables/pipeline_metrics.json
   stage_setup: src/boilerdata/stages/setup.py
   stage_axes: src/boilerdata/stages/axes.py
+  stage_associate_benchmarks: src/boilerdata/stages/associate_benchmarks.py
   stage_literature: src/boilerdata/stages/literature.py
   stage_metrics: src/boilerdata/stages/notebooks/metrics.ipynb
   stage_modelfun: src/boilerdata/stages/notebooks/modelfun.ipynb

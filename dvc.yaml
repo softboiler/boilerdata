@@ -44,12 +44,20 @@ stages:
     params:
       - "params.records_to_average"
 
+  associate_benchmarks:
+    cmd: "python -m boilerdata.stages.associate_benchmarks"
+    deps:
+      - "${dirs.benchmarks}"
+      - "${dirs.runs}"
+    outs:
+      - "${dirs.runs_with_benchmarks}"
+
   pipeline:
     cmd: "python -m boilerdata.stages.pipeline"
     deps:
       - "${dirs.stage_pipeline}"
       - "${dirs.modelfun}"
-      - "${dirs.runs}"
+      - "${dirs.runs_with_benchmarks}"
       - "${dirs.validation}"
     outs:
       - "${dirs.results}"

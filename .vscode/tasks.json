@@ -17,6 +17,7 @@
         "schema",
         "modelfun",
         "runs",
+        "associate_benchmarks",
         "pipeline",
         "metrics",
         "literature",
