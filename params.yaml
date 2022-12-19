@@ -60,6 +60,7 @@ dirs:
   literature: data/literature
   literature_results: data/literature_results
   file_literature_results: data/literature_results/lit.csv
+  benchmarks: benchmarks
   modelfun: data/modelfun
   file_model: data/modelfun/model.dillpickle
   trials: data/curves

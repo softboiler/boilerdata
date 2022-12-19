@@ -60,6 +60,9 @@ class Dirs(MyBaseModel):
     literature_results: DirectoryPath = data / "literature_results"
     file_literature_results: Path = literature_results / "lit.csv"
 
+    # ! BENCHMARKS
+    benchmarks: DirectoryPath = base / "benchmarks"
+
     # ! MODEL FUNCTION
     modelfun: DirectoryPath = data / "modelfun"
     file_model: Path = modelfun / "model.dillpickle"

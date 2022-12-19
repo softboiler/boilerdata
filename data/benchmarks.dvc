@@ -1,5 +1,5 @@
 outs:
-- md5: a9da7fb2f4a033d5684203fa9692cf6f.dir
-  size: 364334
-  nfiles: 1
+- md5: 479a0dd8c0b2304c2257df37be190ad8.dir
+  size: 1501194
+  nfiles: 5
   path: benchmarks
