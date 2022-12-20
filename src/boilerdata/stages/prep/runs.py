@@ -3,12 +3,12 @@
 
 
 from datetime import datetime
-from pathlib import Path
 
 import pandas as pd
 
 from boilerdata.models.project import Project
 from boilerdata.stages.common import set_dtypes
+from boilerdata.stages.prep.common import get_run
 
 # * -------------------------------------------------------------------------------- * #
 # * MAIN
@@ -35,7 +35,11 @@ def get_runs(proj: Project) -> pd.DataFrame:
     multiindex: list[tuple[datetime, datetime, datetime]] = []
     for trial in proj.trials:
         for file, run_index in zip(trial.run_files, trial.run_index):
-            run = get_run(proj, file)
+            run = (
+                get_run(proj, file)
+                .tail(proj.params.records_to_average)
+                .pipe(rename_columns, proj)
+            )
             runs.append(run)
             multiindex.extend(
                 tuple((*run_index, record_time) for record_time in run.index)
@@ -49,38 +53,6 @@ def get_runs(proj: Project) -> pd.DataFrame:
             )
         )
         .pipe(set_dtypes, dtypes)
-    )
-
-
-def get_run(proj: Project, run: Path) -> pd.DataFrame:
-    """Get data for a single run."""
-
-    # Get source columns
-    index = proj.axes.index[-1].source  # Get the last index, associated with source
-    source_col_names = [col.source for col in proj.axes.source_cols]
-    source_dtypes = {col.source: col.dtype for col in proj.axes.source_cols}
-
-    # Assign columns from CSV and metadata to the structured dataframe. Get the tail.
-    df = pd.DataFrame(
-        columns=source_col_names,
-        data=pd.read_csv(
-            run,
-            # Allow source cols to be missing (such as T_6)
-            usecols=lambda col: col in [index, *source_col_names],
-            index_col=index,
-            parse_dates=[index],  # type: ignore  # pandas
-            dtype=source_dtypes,  # type: ignore  # pandas
-            encoding="utf-8",
-        )
-        # Rarely a run has an all NA record at the end
-    ).dropna(how="all")
-
-    # Need "df" defined so we can call "df.index.dropna()"
-    return (
-        df.reindex(index=df.index.dropna())  # A run can have an NA index at the end
-        .dropna(how="all")  # A CSV can have an all NA record at the end
-        .tail(proj.params.records_to_average)
-        .pipe(rename_columns, proj)
     )
 
 

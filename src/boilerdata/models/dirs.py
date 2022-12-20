@@ -36,6 +36,7 @@ class Dirs(MyBaseModel):
     # ! PACKAGE
     package: DirectoryPath = base / "src/boilerdata"
     stages: DirectoryPath = package / "stages"
+    prep: DirectoryPath = stages / "prep"
     notebooks: DirectoryPath = stages / "notebooks"
     models: DirectoryPath = package / "models"
     validation: FilePath = package / "validation.py"
@@ -138,13 +139,13 @@ class Dirs(MyBaseModel):
     # ! STAGES
     stage_setup: FilePath = stages / "setup.py"
     stage_axes: FilePath = stages / "axes.py"
-    stage_associate_benchmarks: FilePath = stages / "associate_benchmarks.py"
+    stage_associate_benchmarks: FilePath = prep / "associate_benchmarks.py"
     stage_literature: FilePath = stages / "literature.py"
     stage_metrics: FilePath = notebooks / "metrics.ipynb"
     stage_modelfun: FilePath = notebooks / "modelfun.ipynb"
     stage_originlab: FilePath = stages / "originlab.py"
     stage_pipeline: FilePath = stages / "pipeline.py"
-    stage_runs: FilePath = stages / "runs.py"
+    stage_runs: FilePath = prep / "runs.py"
     stage_schema: FilePath = stages / "schema.py"
 
     # "always" so it'll run even if not in YAML

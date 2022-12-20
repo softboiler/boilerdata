@@ -49,6 +49,7 @@ dirs:
   config: config
   package: src/boilerdata
   stages: src/boilerdata/stages
+  prep: src/boilerdata/stages/prep
   notebooks: src/boilerdata/stages/notebooks
   models: src/boilerdata/models
   validation: src/boilerdata/validation.py
@@ -93,12 +94,12 @@ dirs:
   file_pipeline_metrics: data/metrics/tables/pipeline_metrics.json
   stage_setup: src/boilerdata/stages/setup.py
   stage_axes: src/boilerdata/stages/axes.py
-  stage_associate_benchmarks: src/boilerdata/stages/associate_benchmarks.py
+  stage_associate_benchmarks: src/boilerdata/stages/prep/associate_benchmarks.py
   stage_literature: src/boilerdata/stages/literature.py
   stage_metrics: src/boilerdata/stages/notebooks/metrics.ipynb
   stage_modelfun: src/boilerdata/stages/notebooks/modelfun.ipynb
   stage_originlab: src/boilerdata/stages/originlab.py
   stage_pipeline: src/boilerdata/stages/pipeline.py
-  stage_runs: src/boilerdata/stages/runs.py
+  stage_runs: src/boilerdata/stages/prep/runs.py
   stage_schema: src/boilerdata/stages/schema.py
   file_axes_enum_copy: data/axes/axes_enum.py
