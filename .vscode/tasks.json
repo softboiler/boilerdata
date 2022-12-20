@@ -36,13 +36,6 @@
       "problemMatcher": []
     },
     {
-      "label": "dvc: dag",
-      "type": "process",
-      "command": "pwsh",
-      "args": ["-Command", "dvc dag --md | code -"],
-      "problemMatcher": []
-    },
-    {
       "label": "dvc: exp run",
       "dependsOn": "pre-commit",
       "type": "process",
@@ -78,6 +71,18 @@
       "args": [
         "-Command",
         "python -m cProfile -o .prof -m boilerdata.stages.pipeline"
+      ],
+      "problemMatcher": []
+    },
+    // * -------------------------------------------------------------------------- * //
+    // * DVC DAG * //
+    {
+      "label": "dvc: dag",
+      "type": "process",
+      "command": "pwsh",
+      "args": [
+        "-Command",
+        "(dvc dag --md) -Replace 'mermaid', '{mermaid}' > docs/dag.md && . '~/.local/nodeenvs/markdownlint/Scripts/Activate.ps1' && markdownlint --fix docs/dag.md"
       ],
       "problemMatcher": []
     },

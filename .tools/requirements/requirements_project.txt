@@ -1,2 +1,3 @@
 # Specify project-specific requirements here. Don't delete this file even if empty.
 pandas-stubs~=1.5.0.220926
+sphinxcontrib-mermaid~=0.7.1

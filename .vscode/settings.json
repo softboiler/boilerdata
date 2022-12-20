@@ -38,11 +38,6 @@
   "python.testing.unittestEnabled": false,
   "python.testing.pytestEnabled": true,
 
-  //* markdownlint
-  "markdownlint.config": {
-    "first-line-heading": false
-  },
-
   //* black
   // This might become unnecessary eventually, but for now it's needed
   "python.formatting.provider": "black",
@@ -80,7 +75,7 @@
     "*.tsx": "${capture}.ts",
     "tsconfig.json": "tsconfig.*.json",
     "package.json": "package-lock.json, yarn.lock",
-    ".nest_tools_config": "coverage.xml, setup.ps1, update.ps1, *.code-workspace, *.prof, .copier-answers.yml, .coverage, .coveragerc, .env, .flake8, .gitattributes, .gitmodules, .isort.cfg, .pre-commit-config.yaml, .pytest_cache, .sourcery.yaml, codecov.yml, pyrightconfig.json, pytest.ini, pythonrc.py, renovate.json",
+    ".nest_tools_config": "coverage.xml, setup.ps1, update.ps1, *.code-workspace, *.prof, .copier-answers.yml, .coverage, .coveragerc, .env, .flake8, .gitattributes, .gitmodules, .isort.cfg, .markdownlint.yaml, .pre-commit-config.yaml, .pytest_cache, .sourcery.yaml, codecov.yml, pyrightconfig.json, pytest.ini, pythonrc.py, renovate.json",
     ".nest_md": "*.md, LICENSE"
   },
 

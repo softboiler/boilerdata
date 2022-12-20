@@ -1,0 +1,29 @@
+```{mermaid}
+flowchart TD
+ node1["associate_benchmarks"]
+ node2["axes"]
+ node3["data\benchmarks.dvc"]
+ node4["data\curves.dvc"]
+ node5["data\literature.dvc"]
+ node6["data\plotter.dvc"]
+ node7["literature"]
+ node8["metrics"]
+ node9["modelfun"]
+ node10["originlab"]
+ node11["pipeline"]
+ node12["runs"]
+ node13["schema"]
+ node1-->node11
+ node2-->node9
+ node2-->node12
+ node2-->node13
+ node3-->node1
+ node4-->node12
+ node5-->node7
+ node6-->node10
+ node7-->node10
+ node9-->node11
+ node11-->node8
+ node11-->node10
+ node12-->node1
+```
