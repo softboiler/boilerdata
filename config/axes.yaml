@@ -33,11 +33,6 @@ all:
     dtype: "category"
     meta: true
 
-  - name: "sixth_tc"
-    pretty_name: sixth-tc # Avoid underscore-subscript conversion
-    dtype: "boolean"
-    meta: true
-
   - name: "good"
     dtype: "boolean"
     meta: true
@@ -92,10 +87,6 @@ all:
 
   - name: "T_5_err"
     units: "C"
-
-  - name: "T_6"
-    units: "C"
-    source: "T6cal"
 
   - name: "T_w1"
     units: "C"

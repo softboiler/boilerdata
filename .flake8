@@ -69,16 +69,6 @@ per-file-ignores =
         ; Ignore assert from bandit. Not a security issue in tests
         S101,
 
-    project/test_*:
-        ; We indicate custom fixtures w/ ALL_CAPS to distinguish from other args
-        ; function name should be lowercase
-        N802,
-        ; argument name should be lowercase
-        N803,
-
-        ; Ignore assert from bandit. Not a security issue in tests
-        S101,
-
     __init__.py:
         ; 'from module import *' used
         F403,

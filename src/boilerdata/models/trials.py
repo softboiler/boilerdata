@@ -1,7 +1,6 @@
 import datetime
 import re
 
-import numpy as np
 import pandas as pd
 from pydantic import DirectoryPath, Field, FilePath, validator
 
@@ -34,10 +33,6 @@ class Trial(MyBaseModel):
     coupon: Coupon
     sample: Sample | None
     joint: Joint
-    sixth_tc: bool = Field(
-        default=False,
-        description="Whether this trial includes a thermocouple at the top of the coupon.",
-    )
     good: bool = Field(
         default=True,
         description="Whether the boiling curve is good.",
@@ -81,9 +76,9 @@ class Trial(MyBaseModel):
         exclude=True,
     )
 
-    def setup(self, dirs: Dirs, geometry: Geometry):
+    def setup(self, dirs: Dirs, geometry: Geometry, copper_temps: list[A]):
         self.set_paths(dirs)
-        self.set_geometry(geometry)
+        self.set_geometry(geometry, copper_temps)
 
     def set_paths(self, dirs: Dirs):
         """Get the path to the data for this trial. Called during project setup."""
@@ -115,15 +110,10 @@ class Trial(MyBaseModel):
             )
         self.run_index = run_index
 
-    def set_geometry(self, geometry: Geometry):
+    def set_geometry(self, geometry: Geometry, copper_temps: list[A]):
         """Get relevant geometry for the trial."""
-        thermocouples = [A.T_1, A.T_2, A.T_3, A.T_4, A.T_5]
         thermocouple_pos = geometry.rods[self.rod] + geometry.coupons[self.coupon]  # type: ignore  # pydantic: use_enum_values
-        if self.sixth_tc:
-            thermocouples.append(A.T_6)
-            # Since zero is defined as the surface
-            thermocouple_pos = np.append(thermocouple_pos, 0)
-        self.thermocouple_pos = dict(zip(thermocouples, thermocouple_pos))
+        self.thermocouple_pos = dict(zip(copper_temps, thermocouple_pos))  # type: ignore  # pydantic: use_enum_values
 
 
 class Trials(MyBaseModel):

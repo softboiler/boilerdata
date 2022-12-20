@@ -24,7 +24,7 @@ class Project(MyBaseModel):
             # Set up trials
             trials = load_config(self.dirs.config / "trials.yaml", Trials).trials
             for trial in trials:
-                trial.setup(self.dirs, self.geometry)
+                trial.setup(self.dirs, self.geometry, self.params.copper_temps)
             self.trials = trials
 
     # ! METHODS

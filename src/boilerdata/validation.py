@@ -31,7 +31,6 @@ meta_cols = {
     A.coupon: Column(c[A.coupon].dtype),
     A.sample: Column(c[A.sample].dtype, nullable=True),
     A.joint: Column(c[A.joint].dtype),
-    A.sixth_tc: Column(c[A.sixth_tc].dtype),
     A.good: Column(c[A.good].dtype),
     A.new: Column(c[A.new].dtype),
 }
@@ -50,7 +49,6 @@ runs_cols = {
     A.T_4_err: Column(c[A.T_4_err].dtype, nullable=True),
     A.T_5: Column(c[A.T_5].dtype),
     A.T_5_err: Column(c[A.T_5_err].dtype, nullable=True),
-    A.T_6: Column(c[A.T_6].dtype, nullable=True),  # Some trials don't have it
     A.T_w1: Column(c[A.T_w1].dtype, water_tc_in_range),
     A.T_w2: Column(c[A.T_w2].dtype, water_tc_in_range),
     A.T_w3: Column(c[A.T_w3].dtype, water_tc_in_range),

@@ -18,7 +18,7 @@ def get_run(proj: Project, run: Path) -> pd.DataFrame:
         columns=source_col_names,
         data=pd.read_csv(
             run,
-            # Allow source cols to be missing (such as T_6)
+            # Allow source cols to be missing (such as certain thermocouples)
             usecols=lambda col: col in [index, *source_col_names],
             index_col=index,
             parse_dates=[index],  # type: ignore  # pandas

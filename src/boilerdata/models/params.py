@@ -122,12 +122,21 @@ class Params(MyBaseModel):
             for param, v in model_inputs.items()
         }
 
-    # !
+    # ! EXCLUDED FROM PARAMS FILE
+
+    copper_temps: list[A] = Field(
+        default=(A.T_1, A.T_2, A.T_3, A.T_4, A.T_5),
+        description="Copper temperature measurements.",
+        exclude=True,
+    )
 
     water_temps: list[A] = Field(
-        default=default_opt([A.T_w1, A.T_w2, A.T_w3]),
+        default=(A.T_w1, A.T_w2, A.T_w3),
         description="Water temperature measurements.",
+        exclude=True,
     )
+
+    # !
 
     do_plot: bool = Field(
         default=default_opt(False),

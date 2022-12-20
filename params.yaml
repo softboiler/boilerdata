@@ -2,10 +2,6 @@ params:
   do_plot: true
   records_to_average: 9
   fit_method: trf
-  water_temps:
-    - T_w1
-    - T_w2
-    - T_w3
   model_inputs:
     r: 0.0047625
     T_infa: 25
