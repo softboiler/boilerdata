@@ -92,8 +92,8 @@ stages:
     cmd: python -m boilerdata.stages.pipeline
     deps:
     - path: data/benchmarks_parsed
-      md5: b17e798abc4b2f18bfbcf75c87773461.dir
-      size: 1883
+      md5: 838bf4e6e1c7dcdf45b9fe924d79c5b6.dir
+      size: 302
       nfiles: 1
     - path: data/modelfun
       md5: cee581351ee51f7a58354ed84fbdb242.dir
@@ -282,14 +282,14 @@ stages:
       size: 958
       nfiles: 2
     - path: data/benchmarks
-      md5: 479a0dd8c0b2304c2257df37be190ad8.dir
-      size: 1501194
-      nfiles: 5
+      md5: 576b5ae374ca9d3b01d5f99dfe89947a.dir
+      size: 673801
+      nfiles: 2
     - path: src/boilerdata/stages/prep/parse_benchmarks.py
-      md5: 99289a66f6fe2639e599e677374d53fe
-      size: 1795
+      md5: e8a21d4b9060c0d8dadc89a7befd768e
+      size: 1443
     outs:
     - path: data/benchmarks_parsed
-      md5: b17e798abc4b2f18bfbcf75c87773461.dir
-      size: 1883
+      md5: 838bf4e6e1c7dcdf45b9fe924d79c5b6.dir
+      size: 302
       nfiles: 1

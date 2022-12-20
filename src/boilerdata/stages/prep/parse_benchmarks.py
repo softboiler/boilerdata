@@ -2,7 +2,6 @@
 
 from pathlib import Path
 
-import numpy as np
 import pandas as pd
 
 from boilerdata.axes_enum import AxesEnum as A  # noqa: N814
@@ -23,29 +22,21 @@ def main(proj: Project):
 def get_benchmarks(proj: Project) -> pd.DataFrame:
     """Get runs from all trials."""
     benchmarks = [
-        get_run(proj, benchmark).pipe(get_statistics, proj)
+        get_run(proj, benchmark).pipe(parse_benchmark, proj)
         for benchmark in Path(proj.dirs.benchmarks).glob("*.csv")
     ]
     return pd.concat(benchmarks)
 
 
-def get_statistics(df: pd.DataFrame, proj: Project) -> pd.DataFrame:
+def parse_benchmark(df: pd.DataFrame, proj: Project) -> pd.DataFrame:
+    """Get all temperatures when base temperature has risen 90% of its total change."""
     df = df[[A.T_0, *proj.params.copper_temps]]  # type: ignore  # use_enum_values
-    start = df.index[0]
-    df.index = (df.index - start).total_seconds()  # type: ignore  # pandas
-    normalized_temps = (df - df.min()) / (df.max() - df.min())
-    rise_times = normalized_temps[normalized_temps > 0.9].idxmax().rename("rise_time")
-    temps_at_rise_time = df.loc[rise_times[A.T_0], :].rename("temps_at_rise_time")  # type: ignore  # pandas
-    return pd.concat([rise_times, temps_at_rise_time], axis="columns").set_axis(
-        axis="index",
-        labels=pd.MultiIndex.from_product(
-            [[start], rise_times.index], names=["time", "temperature"]
-        ),
-    )
-
-
-def exponential(x, tau):
-    return np.exp(x / tau)
+    base = df[A.T_0]
+    start = base.head(10).mean()
+    end = base.tail(10).mean()
+    base_normalized = (base - start) / (end - start)
+    time_of_90_rise = (base_normalized > 0.9).idxmax()
+    return df.loc[[time_of_90_rise], :]
 
 
 # * -------------------------------------------------------------------------------- * #
