@@ -1,5 +1,5 @@
 # Changes here will be overwritten by Copier; NEVER EDIT MANUALLY
-_commit: cf0b7c2
+_commit: 5a678ac
 _src_path: gh:blakeNaccarato/copier-python
 github_repo_name: boilerdata
 include_funding: true
@@ -12,6 +12,7 @@ override_flake8: true
 override_gitattributes: false
 override_gitignore: false
 override_isort: false
+override_markdownlint: false
 override_precommit: false
 override_pyrightconfig: false
 override_pytest: false
