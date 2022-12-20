@@ -35,11 +35,7 @@ def get_runs(proj: Project) -> pd.DataFrame:
     multiindex: list[tuple[datetime, datetime, datetime]] = []
     for trial in proj.trials:
         for file, run_index in zip(trial.run_files, trial.run_index):
-            run = (
-                get_run(proj, file)
-                .tail(proj.params.records_to_average)
-                .pipe(rename_columns, proj)
-            )
+            run = get_run(proj, file).tail(proj.params.records_to_average)
             runs.append(run)
             multiindex.extend(
                 tuple((*run_index, record_time) for record_time in run.index)
@@ -54,11 +50,6 @@ def get_runs(proj: Project) -> pd.DataFrame:
         )
         .pipe(set_dtypes, dtypes)
     )
-
-
-def rename_columns(df: pd.DataFrame, proj: Project) -> pd.DataFrame:
-    """Rename source columns."""
-    return df.rename(columns={col.source: col.name for col in proj.axes.cols})
 
 
 # * -------------------------------------------------------------------------------- * #

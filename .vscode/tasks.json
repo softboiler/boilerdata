@@ -17,7 +17,7 @@
         "schema",
         "modelfun",
         "runs",
-        "associate_benchmarks",
+        "parse_benchmarks",
         "pipeline",
         "metrics",
         "literature",
@@ -130,7 +130,6 @@
 
     // * -------------------------------------------------------------------------- * //
     // * PRE-COMMIT * //
-
     {
       "label": "pre-commit",
       "type": "process",

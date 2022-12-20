@@ -24,7 +24,8 @@ stages:
     deps:
       - "${dirs.stage_modelfun}"
       - "${dirs.axes}"
-      - "${dirs.models}"
+      - "${dirs.models}/dirs.py"
+      - "${dirs.models}/project.py"
     outs:
       - "${dirs.modelfun}"
     params:
@@ -38,26 +39,30 @@ stages:
       - "${dirs.stage_runs}"
       - "${dirs.axes}"
       - "${dirs.trials}"
-      - "${dirs.models}"
+      - "${dirs.models}/axes.py"
+      - "${dirs.models}/dirs.py"
+      - "${dirs.models}/trials.py"
     outs:
       - "${dirs.runs}"
     params:
       - "params.records_to_average"
 
-  associate_benchmarks:
-    cmd: "python -m boilerdata.stages.prep.associate_benchmarks"
+  parse_benchmarks:
+    cmd: "python -m boilerdata.stages.prep.parse_benchmarks"
     deps:
+      - "${dirs.stage_parse_benchmarks}"
+      - "${dirs.axes}"
       - "${dirs.benchmarks}"
-      - "${dirs.runs}"
     outs:
-      - "${dirs.runs_with_benchmarks}"
+      - "${dirs.benchmarks_parsed}"
 
   pipeline:
     cmd: "python -m boilerdata.stages.pipeline"
     deps:
       - "${dirs.stage_pipeline}"
       - "${dirs.modelfun}"
-      - "${dirs.runs_with_benchmarks}"
+      - "${dirs.runs}"
+      - "${dirs.benchmarks_parsed}"
       - "${dirs.validation}"
     outs:
       - "${dirs.results}"

@@ -1,10 +1,9 @@
-"""Configuration utilities for Pydantic models and their schema."""
+"""Generate `axes_enum.py`."""
 
 from pathlib import Path
 from shutil import copy
 from textwrap import dedent
 
-from pydantic import MissingError, ValidationError
 import yaml
 
 from boilerdata.models.axes import Axes
@@ -39,19 +38,8 @@ def generate_axes_enum(axes: list[str], path: Path) -> None:
 
 
 if __name__ == "__main__":
-    # Repeats some logic from load_config() to sidestep cyclic dependencies.
+    # Repeats boilerdata.models.common.load_config() logic to avoid cyclic dependencies.
     path = get_file("params.yaml")
-    if path.suffix != ".yaml":
-        raise ValueError(f"The path '{path}' does not refer to a YAML file.")
     raw_config = yaml.safe_load(path.read_text(encoding="utf-8"))
-    if not raw_config:
-        raise ValueError("The configuration file is empty.")
-    try:
-        dirs = Dirs(**raw_config["dirs"])
-    except ValidationError as exception:
-        addendum = "\n  The field may be undefined in the configuration file."
-        for error in exception.errors():
-            if error["msg"] == MissingError.msg_template:
-                error["msg"] += addendum
-        raise exception
+    dirs = Dirs(**raw_config["dirs"])
     main(dirs)

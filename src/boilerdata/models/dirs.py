@@ -76,8 +76,8 @@ class Dirs(MyBaseModel):
     file_runs: Path = runs / "runs.csv"
 
     # ! RUNS WITH BENCHMARKS
-    runs_with_benchmarks: DirectoryPath = data / "runs_with_benchmarks"
-    file_runs_with_benchmarks: Path = runs_with_benchmarks / "runs_with_benchmarks.csv"
+    benchmarks_parsed: DirectoryPath = data / "benchmarks_parsed"
+    file_benchmarks_parsed: Path = benchmarks_parsed / "benchmarks_parsed.csv"
 
     # ! RESULTS
     results: DirectoryPath = data / "results"
@@ -139,7 +139,7 @@ class Dirs(MyBaseModel):
     # ! STAGES
     stage_setup: FilePath = stages / "setup.py"
     stage_axes: FilePath = stages / "axes.py"
-    stage_associate_benchmarks: FilePath = prep / "associate_benchmarks.py"
+    stage_parse_benchmarks: FilePath = prep / "parse_benchmarks.py"
     stage_literature: FilePath = stages / "literature.py"
     stage_metrics: FilePath = notebooks / "metrics.ipynb"
     stage_modelfun: FilePath = notebooks / "modelfun.ipynb"
@@ -152,17 +152,17 @@ class Dirs(MyBaseModel):
     # "pre" because dir must exist pre-validation
     @validator(
         "axes",
+        "benchmarks_parsed",
         "benchmarks",
         "literature_results",
         "metrics",
         "modelfun",
+        "originlab_plots",
         "originlab_results",
         "plots",
-        "originlab_plots",
         "project_schema",
         "results",
         "runs",
-        "runs_with_benchmarks",
         "tables",
         always=True,
         pre=True,

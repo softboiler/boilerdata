@@ -30,4 +30,11 @@ def get_run(proj: Project, run: Path) -> pd.DataFrame:
 
     # Need "df" defined so we can call "df.index.dropna()". Repeat `dropna` because a
     # run can have an NA index at the end and a CSV can have an all NA record at the end
-    return df.reindex(index=df.index.dropna()).dropna(how="all")
+    return (
+        df.reindex(index=df.index.dropna()).dropna(how="all").pipe(rename_columns, proj)
+    )
+
+
+def rename_columns(df: pd.DataFrame, proj: Project) -> pd.DataFrame:
+    """Rename source columns."""
+    return df.rename(columns={col.source: col.name for col in proj.axes.cols})

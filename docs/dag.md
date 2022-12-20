@@ -1,29 +1,30 @@
 ```{mermaid}
 flowchart TD
- node1["associate_benchmarks"]
- node2["axes"]
- node3["data\benchmarks.dvc"]
- node4["data\curves.dvc"]
- node5["data\literature.dvc"]
- node6["data\plotter.dvc"]
- node7["literature"]
- node8["metrics"]
- node9["modelfun"]
- node10["originlab"]
+ node1["axes"]
+ node2["data\benchmarks.dvc"]
+ node3["data\curves.dvc"]
+ node4["data\literature.dvc"]
+ node5["data\plotter.dvc"]
+ node6["literature"]
+ node7["metrics"]
+ node8["modelfun"]
+ node9["originlab"]
+ node10["parse_benchmarks"]
  node11["pipeline"]
  node12["runs"]
  node13["schema"]
- node1-->node11
- node2-->node9
- node2-->node12
- node2-->node13
- node3-->node1
- node4-->node12
- node5-->node7
- node6-->node10
- node7-->node10
- node9-->node11
- node11-->node8
- node11-->node10
- node12-->node1
+ node1-->node8
+ node1-->node10
+ node1-->node12
+ node1-->node13
+ node2-->node10
+ node3-->node12
+ node4-->node6
+ node5-->node9
+ node6-->node9
+ node8-->node11
+ node10-->node11
+ node11-->node7
+ node11-->node9
+ node12-->node11
 ```

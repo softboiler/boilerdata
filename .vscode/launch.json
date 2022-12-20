@@ -35,7 +35,7 @@
       "name": "proj: associate_benchmakrs",
       "type": "python",
       "request": "launch",
-      "module": "boilerdata.stages.associate_benchmarks",
+      "module": "boilerdata.stages.parse_benchmarks",
       "console": "internalConsole"
     },
     {
