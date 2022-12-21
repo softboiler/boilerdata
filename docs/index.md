@@ -1,9 +1,11 @@
 ```{include} ../README.md
-
+:relative-docs: docs/
+:relative-images:
 ```
 
-## DAG
+## Data process graph
 
-```{include} dag.md
-
+```{image} _static/dag.png
+:alt: dag
+:align: center
 ```

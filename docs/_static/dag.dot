@@ -1,0 +1,33 @@
+digraph G {
+    edge [comment="Wildcard node added automatic in EG."];
+    node [comment="Wildcard node added automatic in EG.",
+          fontname="Tahoma",
+          shape="box",
+          fillcolor="light blue"];
+    "metrics";
+    "originlab";
+    "runs";
+    "schema";
+    "pipeline";
+    "curves";
+    "benchmarks";
+    "literature";
+    "axes";
+    "plotter";
+    "modelfun";
+    "literature";
+    "parse_benchmarks";
+    "runs" -> "pipeline";
+    "pipeline" -> "metrics";
+    "pipeline" -> "originlab";
+    "curves" -> "runs";
+    "benchmarks" -> "parse_benchmarks";
+    "axes" -> "runs";
+    "axes" -> "schema";
+    "axes" -> "modelfun";
+    "axes" -> "parse_benchmarks";
+    "plotter" -> "originlab";
+    "modelfun" -> "pipeline";
+    "literature" -> "originlab";
+    "parse_benchmarks" -> "pipeline";
+}
