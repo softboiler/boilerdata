@@ -1,5 +1,5 @@
 # Changes here will be overwritten by Copier; NEVER EDIT MANUALLY
-_commit: 62b84e7
+_commit: d32bfe1
 _src_path: gh:blakeNaccarato/copier-python
 actions_runner: windows-latest
 github_repo_name: boilerdata

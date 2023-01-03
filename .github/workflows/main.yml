@@ -1,11 +1,6 @@
 name: "main"
 
-on:
-  workflow_dispatch:
-  push:
-    branches: ["main"]
-  pull_request:
-    branches: ["main"]
+on: ["workflow_dispatch", "push"]
 
 jobs:
   changes:
@@ -41,7 +36,7 @@ jobs:
           commit_message: "Update repo to latest template"
   flake8:
     needs: "bump_template"
-    if: "${{ always() }}"
+    if: "${{ !failure() }}"
     runs-on: "windows-latest"
     steps:
       - uses: "blakeNaccarato/copier-python-workflow-setup@v0.0.8"
@@ -50,7 +45,7 @@ jobs:
       - run: "flake8"
   pyright:
     needs: "bump_template"
-    if: "${{ always() }}"
+    if: "${{ !failure() }}"
     runs-on: "windows-latest"
     steps:
       - uses: "blakeNaccarato/copier-python-workflow-setup@v0.0.8"
@@ -59,7 +54,7 @@ jobs:
       - run: "pyright"
   pytest-cov:
     needs: "bump_template"
-    if: "${{ always() }}"
+    if: "${{ !failure() }}"
     runs-on: "windows-latest"
     steps:
       - uses: "blakeNaccarato/copier-python-workflow-setup@v0.0.8"
