@@ -11,6 +11,9 @@
 #
 # (https://github.com/microsoft/vscode-python/issues/10165)
 
+ci:
+  autoupdate_schedule: quarterly
+
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: "v4.4.0"
@@ -27,23 +30,35 @@ repos:
       - id: black
     rev: "22.12.0"
   - repo: https://github.com/PyCQA/isort
-    rev: "v5.11.3"
+    rev: "5.11.4"
     hooks:
       - id: isort
+  - repo: https://github.com/srstevenson/nb-clean
+    rev: "2.4.0"
+    hooks:
+      - id: nb-clean
+        args:
+          - --remove-empty-cells
+          - --preserve-cell-metadata
+          - tags
+          - slideshow
+          - special
+          - --
   - repo: https://github.com/asottile/pyupgrade
     rev: "v3.3.1"
     hooks:
       - id: pyupgrade
-        args: [--py310-plus]
+        args: ["--py310-plus"]
   - repo: https://github.com/asottile/blacken-docs
     rev: "v1.12.1"
     hooks:
       - id: blacken-docs
         additional_dependencies: ["black==22.12.0"]
   - repo: https://github.com/DavidAnson/markdownlint-cli2
-    rev: "v0.5.1"
+    rev: "v0.6.0"
     hooks:
       - id: markdownlint-cli2-fix
+
   - repo: https://github.com/iterative/dvc
     rev: "2.38.1"
     hooks:

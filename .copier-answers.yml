@@ -1,14 +1,13 @@
 # Changes here will be overwritten by Copier; NEVER EDIT MANUALLY
-_commit: 5a678ac
-_src_path: gh:blakeNaccarato/copier-python
+_src_path: template
+actions_runner: ubuntu-latest
 github_repo_name: boilerdata
 include_funding: true
 override: true
-override_cicd_setup: false
 override_codecov: false
 override_coveragerc: false
 override_env: false
-override_flake8: true
+override_flake8: false
 override_gitattributes: false
 override_gitignore: false
 override_isort: false

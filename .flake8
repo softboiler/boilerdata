@@ -27,9 +27,6 @@ max_complexity = 10
 
 ignore =
 
-    ; https://docs.python-guide.org/writing/gotchas/#id5
-    B023,
-
     ; Conflict with black
     ; Whitespace before ''
     E203,
