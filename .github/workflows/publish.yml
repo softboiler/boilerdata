@@ -8,7 +8,7 @@ on:
 
 jobs:
   publish:
-    runs-on: "ubuntu-latest"
+    runs-on: "windows-latest"
     steps:
       - uses: "blakeNaccarato/copier-python-workflow-setup@v0.0.8"
         with:

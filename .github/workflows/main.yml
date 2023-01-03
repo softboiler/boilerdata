@@ -9,7 +9,7 @@ on:
 
 jobs:
   changes:
-    runs-on: "ubuntu-latest"
+    runs-on: "windows-latest"
     steps:
       - uses: "actions/checkout@v3"
       - uses: "dorny/paths-filter@v2"
@@ -23,7 +23,7 @@ jobs:
   bump_template:
     needs: "changes"
     if: "${{ needs.changes.outputs.template == 'true' }}"
-    runs-on: "ubuntu-latest"
+    runs-on: "windows-latest"
     steps:
       - uses: "actions/checkout@v3"
         with:
@@ -42,7 +42,7 @@ jobs:
   flake8:
     needs: "bump_template"
     if: "${{ always() }}"
-    runs-on: "ubuntu-latest"
+    runs-on: "windows-latest"
     steps:
       - uses: "blakeNaccarato/copier-python-workflow-setup@v0.0.8"
         with:
@@ -51,7 +51,7 @@ jobs:
   pyright:
     needs: "bump_template"
     if: "${{ always() }}"
-    runs-on: "ubuntu-latest"
+    runs-on: "windows-latest"
     steps:
       - uses: "blakeNaccarato/copier-python-workflow-setup@v0.0.8"
         with:
@@ -60,7 +60,7 @@ jobs:
   pytest-cov:
     needs: "bump_template"
     if: "${{ always() }}"
-    runs-on: "ubuntu-latest"
+    runs-on: "windows-latest"
     steps:
       - uses: "blakeNaccarato/copier-python-workflow-setup@v0.0.8"
         with:

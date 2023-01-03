@@ -1,6 +1,7 @@
 # Changes here will be overwritten by Copier; NEVER EDIT MANUALLY
-_src_path: template
-actions_runner: ubuntu-latest
+_commit: 62b84e7
+_src_path: gh:blakeNaccarato/copier-python
+actions_runner: windows-latest
 github_repo_name: boilerdata
 include_funding: true
 override: true
