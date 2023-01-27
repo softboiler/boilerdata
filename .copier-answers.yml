@@ -1,5 +1,5 @@
 # Changes here will be overwritten by Copier; NEVER EDIT MANUALLY
-_commit: 480469d
+_commit: c128146
 _src_path: gh:blakeNaccarato/copier-python
 actions_runner: windows-latest
 advanced: false
