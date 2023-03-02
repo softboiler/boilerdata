@@ -3,6 +3,8 @@
   "configurations": [
     // * -------------------------------------------------------------------------- * //
     // * PROJECT-SPECIFIC * //
+    // Introduce any project-specific debug configurations here.
+    // Be sure to say override this file in the Copier questionnaire to keep changes.
     {
       "name": "proj: setup",
       "type": "python",

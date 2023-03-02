@@ -1,17 +1,17 @@
 {
   // * -------------------------------------------------------------------------- * //
   // * PROJECT-SPECIFIC * //
+  // Introduce any project-specific settings here.
+  // Be sure to say override this file in the Copier questionnaire to keep changes.
+
+  // * -------------------------------------------------------------------------- * //
+  // * GENERAL * //
+
+  "task.allowAutomaticTasks": "on",
 
   // Environment variables don't load properly otherwise
   // See: https://github.com/microsoft/vscode-python/issues/944#issuecomment-808516207
   "terminal.integrated.defaultProfile.linux": "pwsh",
-
-  //! Schema
-  "yaml.schemas": {
-    "data/schema/axes_schema.json": "axes.yaml",
-    "data/schema/project_schema.json": "params.yaml",
-    "data/schema/trials_schema.json": "trials.yaml"
-  },
 
   //! Pylance
   //* Pylance settings aren't very discoverable.
@@ -38,9 +38,22 @@
   "python.testing.unittestEnabled": false,
   "python.testing.pytestEnabled": true,
 
-  //* black
-  // This might become unnecessary eventually, but for now it's needed
-  "python.formatting.provider": "black",
+  //* markdownlint
+  "markdownlint.config": {
+    "first-line-heading": false
+  },
+
+  //* black, flake8, isort
+  "black-formatter.importStrategy": "fromEnvironment",
+  "black-formatter.args": [],
+  "flake8.importStrategy": "fromEnvironment",
+  "flake8.args": [],
+  "isort.importStrategy": "fromEnvironment",
+  "isort.args": [],
+  "isort.check": true,
+  "isort.severity": {
+    "E": "Warning"
+  },
 
   //! GitHub Actions
   "github-actions.workflows.pinned.workflows": [".github/workflows/main.yml"],
@@ -82,12 +95,11 @@
   //* File associations
   "files.associations": {
     ".coveragerc": "ini",
-    ".dvc/config": "ini",
     ".env": "dotenv",
     ".pylintrc": "ini",
     "pyrightconfig.json": "jsonc",
     "*requirements*.txt": "pip-requirements",
-    ".nest_md": "plaintext",
+    ".nest_md": "markdown",
     ".nest_tools_config": "plaintext",
     ".sourcery.yaml": "yaml"
   },
@@ -100,9 +112,6 @@
     { "icon": "ini", "extensions": ["nest_tools_config"], "format": "svg" },
     { "icon": "markdown", "extensions": ["nest_md"], "format": "svg" }
   ],
-
-  // * -------------------------------------------------------------------------- * //
-  // * GENERAL * //
 
   //! Built-in
 
@@ -125,6 +134,15 @@
 
   //* Markdown editor moves jarringly when this is "true"
   "markdown.preview.scrollEditorWithPreview": false,
+
+  //* Exclude
+  "search.exclude": {
+    "**/node_modules": true,
+    "**/bower_components": true,
+    "**/*.code-search": true,
+    "typings": true,
+    "template": true
+  },
 
   //! Line-width
 
@@ -149,7 +167,7 @@
 
   //* MD
   "[markdown]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.defaultFormatter": "DavidAnson.vscode-markdownlint",
     "editor.wordWrap": "wordWrapColumn",
     //? Roughly matches the width of GitHub Markdown
     "editor.wordWrapColumn": 124,
@@ -172,6 +190,11 @@
     "editor.defaultFormatter": "ms-python.black-formatter"
   },
 
+  //* TXT
+  "[plaintext]": {
+    "editor.wordWrap": "wordWrapColumn"
+  },
+
   //* TOML
   "evenBetterToml.formatter.columnWidth": 88,
   "[toml]": {
@@ -183,11 +206,6 @@
   "[tsv]": {
     //? Indent with tabs
     "editor.insertSpaces": false
-  },
-
-  //* TXT
-  "[plaintext]": {
-    "editor.wordWrap": "wordWrapColumn"
   },
 
   //* YAML
