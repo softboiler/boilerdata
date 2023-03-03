@@ -1,5 +1,8 @@
-from IPython.core.display import Math
-from IPython.display import display
+# # * There are minor "type: ignore" differences between local and CI in this file.
+# pyright: reportUnnecessaryTypeIgnoreComment=none
+
+from IPython.core.display import Math  # pyright: ignore [reportMissingImports]
+from IPython.display import display  # pyright: ignore [reportMissingImports]
 from sympy import FiniteSet
 from sympy.printing.latex import latex
 

@@ -1,13 +1,13 @@
 # # * There are minor "type: ignore" differences between local and CI in this file.
-# pyright: reportUnnecessaryTypeIgnoreComment=false
+# pyright: reportUnnecessaryTypeIgnoreComment=none
 
 from collections import deque
 from collections.abc import Mapping
 from contextlib import contextmanager
 from typing import Any
 
-from IPython.core.display import Markdown
-from IPython.display import display
+from IPython.core.display import Markdown  # pyright: ignore [reportMissingImports]
+from IPython.display import display  # pyright: ignore [reportMissingImports]
 from matplotlib import pyplot as plt
 import matplotlib as mpl
 import numpy as np

@@ -33,8 +33,8 @@ stages:
       md5: 7c722908ebe9832e8b8680fc06a57821
       size: 1487
     - path: src/boilerdata/stages/notebooks/modelfun.ipynb
-      md5: e8138b5494e5d07f0f662edd980328f0
-      size: 15285
+      md5: c7d7cbcc2c429c8ad2d1c4dc27a563fb
+      size: 15287
     params:
       params.yaml:
         params.fixed_params:
@@ -54,7 +54,7 @@ stages:
         - h_w
     outs:
     - path: data/modelfun
-      md5: 5412229d566bb0ff0dc9ed420fe149e2.dir
+      md5: 927a4e5b9a2734c4fb120f4d8b637037.dir
       size: 46744
       nfiles: 1
   runs:
@@ -96,7 +96,7 @@ stages:
       size: 302
       nfiles: 1
     - path: data/modelfun
-      md5: 5412229d566bb0ff0dc9ed420fe149e2.dir
+      md5: 927a4e5b9a2734c4fb120f4d8b637037.dir
       size: 46744
       nfiles: 1
     - path: data/runs
