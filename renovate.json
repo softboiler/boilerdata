@@ -7,6 +7,10 @@
     ":preserveSemverRanges"
   ],
   "enabledManagers": ["pip_requirements", "git-submodules"],
+  "pip_requirements": {
+    "description": "Don't detect any requirements files by default",
+    "ignorePaths": ["**"]
+  },
   "git-submodules": { "enabled": true },
   "packageRules": [
     {
