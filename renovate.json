@@ -12,14 +12,12 @@
     "includePaths": ["requirements.txt"]
   },
   "git-submodules": { "enabled": true },
-  "pip_requirements": {
-    "description": "Override default detection of other requirements files.",
-    "includePaths": ["requirements.txt"]
-  },
   "packageRules": [
     {
       "groupName": "package",
-      "matchFiles": ["requirements.txt"]
+      "matchFiles": ["requirements.txt"],
+      "description": "https://github.com/nteract/papermill/issues/711",
+      "excludeDepNames": ["jupyter-client"]
     },
     {
       "groupName": "project_tooling",
