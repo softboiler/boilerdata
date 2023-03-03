@@ -125,7 +125,6 @@ def plot_new_fits(grp: pd.DataFrame, proj: Project, model):
     x_unique = list(trial.thermocouple_pos.values())
 
     for i, (ser_name, ser) in enumerate(grp.iterrows()):
-
         if i in runs_to_plot:
             fig_dst = figs_dst.popleft()
         else:

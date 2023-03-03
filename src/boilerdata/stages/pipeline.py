@@ -29,7 +29,6 @@ from boilerdata.validation import (
 
 
 def main(proj: Project):
-
     confidence_interval_95 = t.interval(0.95, proj.params.records_to_average)[1]
 
     (
