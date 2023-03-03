@@ -4,6 +4,13 @@
   // Introduce any project-specific settings here.
   // Be sure to say override this file in the Copier questionnaire to keep changes.
 
+  //! Schema
+  "yaml.schemas": {
+    "data/schema/axes_schema.json": "axes.yaml",
+    "data/schema/project_schema.json": "params.yaml",
+    "data/schema/trials_schema.json": "trials.yaml"
+  },
+
   // * -------------------------------------------------------------------------- * //
   // * GENERAL * //
 
