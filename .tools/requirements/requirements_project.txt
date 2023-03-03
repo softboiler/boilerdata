@@ -1,3 +1,2 @@
 # Specify project-specific requirements here. Don't delete this file even if empty.
 sphinxcontrib-mermaid~=0.7.1
-git+https://github.com/blakeNaccarato/propshop@main
