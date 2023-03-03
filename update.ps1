@@ -8,7 +8,7 @@ $VENV_ACTIVATE_UNIX = '.venv/bin/Activate.ps1'
 if ( Test-Path $VENV_ACTIVATE_WINDOWS ) { . $VENV_ACTIVATE_WINDOWS }
 elseif ( Test-Path $VENV_ACTIVATE_UNIX ) { . $VENV_ACTIVATE_UNIX }
 else {
-throw [System.Management.Automation.ItemNotFoundException] 'Could not find a virtual environment.'
+    throw [System.Management.Automation.ItemNotFoundException] 'Could not find a virtual environment.'
 }
 
 # Install dev requirements
