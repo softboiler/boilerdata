@@ -130,7 +130,6 @@ class Axes(MyBaseModel):
         }
 
     def get_col_index(self) -> pd.MultiIndex:
-
         # Rename columns and extract them into a row
         quantity = pd.DataFrame(
             [ax.name for ax in self.cols],

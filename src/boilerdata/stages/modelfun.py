@@ -23,7 +23,7 @@ def fix_model(f) -> Callable[..., Any]:
     def wrapper(*args, **kwargs):
         result = f(
             *(np.array(arg) for arg in args),
-            **{k: np.array(v) for k, v in kwargs.items()}
+            **{k: np.array(v) for k, v in kwargs.items()},
         )
 
         return result if result.size > 1 else result.item()
