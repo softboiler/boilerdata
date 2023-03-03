@@ -24,7 +24,6 @@ from boilerdata.models.project import Project
 
 
 def main(proj: Project):
-
     raw_df = pd.DataFrame(
         columns=["year", "authors", "paper", "fig", "dataset", "ΔT", "q''"]
     )
