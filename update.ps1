@@ -8,8 +8,8 @@ throw [System.Management.Automation.ItemNotFoundException] 'Could not find a vir
 }
 python -m pip install -U pip # instructed to do this by pip
 pip install -U setuptools wheel # must be done separately from above
-pip install -U -r .tools/requirements/requirements_dev.txt
+pip install -U -r .tools/requirements/requirements_dev.txt -c constraints.txt
 pip uninstall -y boilerdata
 python .tools/scripts/bump_pyproject.py
-pip install -e .
+pip install -e . -c constraints.txt
 pre-commit install --install-hooks

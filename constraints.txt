@@ -1,0 +1,2 @@
+# https://github.com/nteract/papermill/issues/711
+jupyter-client<8
