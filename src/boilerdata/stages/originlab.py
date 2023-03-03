@@ -11,7 +11,6 @@ from boilerdata.models.project import Project
 
 
 def main(proj: Project):
-
     (
         pd.read_csv(
             proj.dirs.file_results,

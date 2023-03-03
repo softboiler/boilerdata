@@ -94,7 +94,6 @@ class Trial(MyBaseModel):
         run_re = re.compile(r"(?P<date>.*)T(?P<time>.*)")
         run_index: list[tuple[pd.Timestamp, pd.Timestamp]] = []
         for run_file in self.run_files:
-
             run_time = run_file.stem.removeprefix("results_")
 
             if m := run_re.match(run_time):
