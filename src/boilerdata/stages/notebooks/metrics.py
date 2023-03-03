@@ -6,7 +6,8 @@ from collections.abc import Mapping
 from contextlib import contextmanager
 from typing import Any
 
-from IPython.display import Markdown, display
+from IPython.core.display import Markdown
+from IPython.display import display
 from matplotlib import pyplot as plt
 import matplotlib as mpl
 import numpy as np

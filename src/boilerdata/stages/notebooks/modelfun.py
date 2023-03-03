@@ -1,4 +1,5 @@
-from IPython.display import Math, display
+from IPython.core.display import Math
+from IPython.display import display
 from sympy import FiniteSet
 from sympy.printing.latex import latex
 
