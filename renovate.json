@@ -8,8 +8,8 @@
   ],
   "enabledManagers": ["pip_requirements", "git-submodules"],
   "pip_requirements": {
-    "description": "Don't detect any requirements files by default",
-    "ignorePaths": ["**"]
+    "description": "Override default detection of other requirements files.",
+    "includePaths": ["requirements.txt"]
   },
   "git-submodules": { "enabled": true },
   "packageRules": [
