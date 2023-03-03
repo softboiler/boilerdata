@@ -12,6 +12,10 @@
     "includePaths": ["requirements.txt"]
   },
   "git-submodules": { "enabled": true },
+  "pip_requirements": {
+    "description": "Override default detection of other requirements files.",
+    "includePaths": ["requirements.txt"]
+  },
   "packageRules": [
     {
       "groupName": "package",
