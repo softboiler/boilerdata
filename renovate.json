@@ -8,20 +8,24 @@
   ],
   "enabledManagers": ["pip_requirements", "git-submodules"],
   "pip_requirements": {
-    "description": "Override default detection of other requirements files.",
+    "description": "Override default detection of other requirements files",
     "includePaths": ["requirements.txt"]
   },
   "git-submodules": { "enabled": true },
   "packageRules": [
     {
-      "groupName": "package",
-      "matchFiles": ["requirements.txt"],
-      "description": "https://github.com/nteract/papermill/issues/711",
-      "excludeDepNames": ["jupyter-client"]
-    },
-    {
       "groupName": "project_tooling",
       "matchFiles": ["template/.tools/requirements/requirements_project.txt"]
+    },
+    {
+      "description": "",
+      "groupName": "project_dependencies",
+      "matchFiles": ["requirements.txt"]
+    },
+    {
+      "description": "https://github.com/nteract/papermill/issues/711",
+      "matchPackageNames": ["jupyter-client"],
+      "allowedVersions": "<8"
     }
   ]
 }
