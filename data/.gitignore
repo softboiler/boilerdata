@@ -1,2 +1,4 @@
+..dvc_plots
 *
+!.gitignore
 !*.dvc
