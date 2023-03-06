@@ -50,17 +50,10 @@
     "first-line-heading": false
   },
 
-  //* black, flake8, isort
+  //* black, ruff
   "black-formatter.importStrategy": "fromEnvironment",
   "black-formatter.args": [],
-  "flake8.importStrategy": "fromEnvironment",
-  "flake8.args": [],
-  "isort.importStrategy": "fromEnvironment",
-  "isort.args": [],
-  "isort.check": true,
-  "isort.severity": {
-    "E": "Warning"
-  },
+  "ruff.importStrategy": "fromEnvironment",
 
   //! GitHub Actions
   "github-actions.workflows.pinned.workflows": [".github/workflows/main.yml"],
@@ -94,8 +87,8 @@
     "*.jsx": "${capture}.js",
     "*.tsx": "${capture}.ts",
     "tsconfig.json": "tsconfig.*.json",
-    "package.json": "package-lock.json, yarn.lock",
-    ".nest_tools_config": "coverage.xml, setup.ps1, update.ps1, *.code-workspace, *.prof, .copier-answers.yml, .coverage, .coveragerc, .env, .flake8, .gitattributes, .gitmodules, .isort.cfg, .markdownlint.yaml, .pre-commit-config.yaml, .pytest_cache, .sourcery.yaml, codecov.yml, pyrightconfig.json, pytest.ini, pythonrc.py, renovate.json",
+    "package.json": "package-lock.json, yarn.lock, pnpm-lock.yaml",
+    ".nest_tools_config": "coverage.xml, setup.ps1, update.ps1, *.code-workspace, *.prof, .copier-answers.yml, .coverage, .coveragerc, .env, .gitattributes, .gitmodules, .markdownlint.yaml, .pre-commit-config.yaml, .pytest_cache, .sourcery.yaml, codecov.yml, pyrightconfig.json, pytest.ini, pythonrc.py, renovate.json",
     ".nest_md": "*.md, LICENSE"
   },
 
@@ -126,8 +119,15 @@
   "editor.bracketPairColorization.enabled": true,
   "editor.guides.bracketPairs": true,
 
-  //* Format on save. Adjust CTRL+[SHIFT/ALT]+S in "keybindings.json" as well
+  //* Editor format on save and more. Can run "File: Save without formatting" to skip.
+  "editor.formatOnPaste": true,
+  "editor.formatOnType": true,
   "editor.formatOnSave": true,
+  "editor.formatOnSaveMode": "file",
+  "editor.codeActionsOnSave": {
+    "source.fixAll": true,
+    "source.organizeImports": true
+  },
 
   //* Enforce whitespace and newlines.
   //? Automatically enforce whitespace conventions.
