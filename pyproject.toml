@@ -45,22 +45,20 @@ target-version = "py311"
 extend-exclude = ["template", "typings", ".github", ".tools", ".venv"]
 ignore = [
     "ANN",    # Don't require type annotations
-    "ARG005", # Allow unused lambda argument. For consistency across df pipelines
+    "ARG005", # Allow unused lambda argument. For consistency across df pipelines.
     "C408",   # Allow dict calls
     "COM",    # Allow magic commas and magic missing commas
     "D10",    # Missing docstrings
     "D20",    # Don't reformat docstrings in these ways
     "D213",   # Multi-line docstring summary should start at the second line
-    "DTZ",    # Timezones are important, but only contextually necessary
+    "DTZ",    # Timezones are important, but only contextually necessary.
     "E501",   # Black enforces this
     "EM",     # Don't check for exception message issues
-    "ERA",    # False positives. Don't get rid of commented out code
-    "F841",   # Don't clean up unused variables, and pyright already warns
+    "ERA",    # False positives. Don't get rid of commented out code.
     "FBT",    # Allow boolean "traps"
     "INP001", # False positives. Checks for packages missing `__init__.py`
-    "ISC",    # False positives. Implicit string concatenation is fine
-    "PD013",  # Not all uses of stack and melt are directly interchangable
-    "PD901",  # Allow `df` variable name. We are all consenting adults here
+    "ISC",    # False positives. Implicit string concatenation is fine.
+    "PD901",  # Allow `df` variable name. We are all consenting adults here.
     "PGH003", # Until black stops wrapping special ignores, let's allow bare
     "RET",    # Return checks are flaky, Sourcery does fine analysing these paths
     "TCH",    # Type checking linter doesn't play nicely with pydantic
