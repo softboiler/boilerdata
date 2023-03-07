@@ -1,10 +1,10 @@
+import warnings
 from collections.abc import Callable
 from functools import wraps
 from pathlib import Path
 from typing import Any
-import warnings
 
-import dill  # noqa: S403  # Only unpickling an internal object.
+import dill
 import numpy as np
 
 from boilerdata.models.project import Project
@@ -35,6 +35,6 @@ model_file = Project.get_project().dirs.file_model
 file_bytes = Path(model_file).read_bytes()
 with warnings.catch_warnings():
     warnings.simplefilter("ignore", dill.UnpicklingWarning)
-    unpickled_model = dill.loads(file_bytes)  # noqa: S301  # Known unpickling.
+    unpickled_model = dill.loads(file_bytes)
 model = unpickled_model.basic
 model_with_uncertainty = fix_model(unpickled_model.for_ufloat)

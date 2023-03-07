@@ -1,6 +1,6 @@
+import re
 from contextlib import contextmanager
 from pathlib import Path
-import re
 from time import sleep
 
 import originpro as op

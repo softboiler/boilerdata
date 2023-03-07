@@ -6,12 +6,12 @@ from collections.abc import Mapping
 from contextlib import contextmanager
 from typing import Any
 
-from IPython.core.display import Markdown  # pyright: ignore [reportMissingImports]
-from IPython.display import display  # pyright: ignore [reportMissingImports]
-from matplotlib import pyplot as plt
 import matplotlib as mpl
 import numpy as np
 import pandas as pd
+from IPython.core.display import Markdown  # pyright: ignore [reportMissingImports]
+from IPython.display import display  # pyright: ignore [reportMissingImports]
+from matplotlib import pyplot as plt
 from uncertainties import ufloat
 
 from boilerdata.axes_enum import AxesEnum as A  # noqa: N814
@@ -67,8 +67,8 @@ def add_units(
     units = cols.get_level_values("units")
 
     old = (col.name for col in proj.axes.cols)
-    new = (add_unit(q, u) for q, u in zip(quantity, units))
-    mapper = dict(zip(old, new))
+    new = (add_unit(q, u) for q, u in zip(quantity, units, strict=True))
+    mapper = dict(zip(old, new, strict=True))
     return df.rename(axis="columns", mapper=mapper), mapper
 
 
@@ -217,7 +217,7 @@ def get_params_mapping(
 ) -> dict[str, Any]:
     """Get a mapping of parameter names to values."""
     # Reason: pydantic: use_enum_values
-    return dict(zip(params, grp[params]))
+    return dict(zip(params, grp[params], strict=True))
 
 
 def get_params_mapping_with_uncertainties(
@@ -231,10 +231,10 @@ def get_params_mapping_with_uncertainties(
     u_params = [
         ufloat(param, err, tag)
         for param, err, tag in zip(
-            grp[params], grp[param_errors], model_params_and_errors
+            grp[params], grp[param_errors], model_params_and_errors, strict=True
         )
     ]
-    return dict(zip(model_params_and_errors, u_params))
+    return dict(zip(model_params_and_errors, u_params, strict=True))
 
 
 def model_with_error(model, x, u_params):

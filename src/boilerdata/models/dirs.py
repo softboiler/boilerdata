@@ -13,7 +13,7 @@ class Dirs(MyBaseModel):
 
     class Config(MyBaseModel.Config):
         @staticmethod
-        def schema_extra(schema: dict[str, Any], model: Dirs):
+        def schema_extra(schema: dict[str, Any]):
             for prop in schema.get("properties", {}).values():
                 default = prop.get("default")
                 if isinstance(default, str):

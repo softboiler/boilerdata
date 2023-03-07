@@ -8,8 +8,8 @@ stages:
       size: 958
       nfiles: 2
     - path: src/boilerdata/models
-      md5: e751795a602878fbdd4d4ef55982db53.dir
-      size: 64763
+      md5: 951af0b5133ed5b9b4fb4b28db092448.dir
+      size: 64722
       nfiles: 16
     - path: src/boilerdata/stages/schema.py
       md5: cb9547fdf4dfd06c03baef2588464b28
@@ -27,8 +27,8 @@ stages:
       size: 958
       nfiles: 2
     - path: src/boilerdata/models/dirs.py
-      md5: de772097db45a10696e2640c9b13de10
-      size: 5915
+      md5: 12914c46fdeac283e6851dad46eaa538
+      size: 5902
     - path: src/boilerdata/models/project.py
       md5: 7c722908ebe9832e8b8680fc06a57821
       size: 1487
@@ -54,8 +54,8 @@ stages:
         - h_w
     outs:
     - path: data/modelfun
-      md5: 927a4e5b9a2734c4fb120f4d8b637037.dir
-      size: 46744
+      md5: 9902ae5d03d11ac4a6db9d7b56d2c615.dir
+      size: 46743
       nfiles: 1
   runs:
     cmd: python -m boilerdata.stages.prep.runs
@@ -72,14 +72,14 @@ stages:
       md5: 78c6258471317bb08e14f042295fac78
       size: 4351
     - path: src/boilerdata/models/dirs.py
-      md5: de772097db45a10696e2640c9b13de10
-      size: 5915
+      md5: 12914c46fdeac283e6851dad46eaa538
+      size: 5902
     - path: src/boilerdata/models/trials.py
-      md5: a9ddf743f216d8357d24f292c1de48b8
-      size: 3902
+      md5: bbff9f71522c8ecbfb5321d5ca52ec5a
+      size: 3915
     - path: src/boilerdata/stages/prep/runs.py
-      md5: 16e9fa1802e9fe78d172fc9520e14fca
-      size: 1754
+      md5: 4c67c6a555059858daae1f70f9eefcff
+      size: 1767
     params:
       params.yaml:
         params.records_to_average: 9
@@ -96,19 +96,19 @@ stages:
       size: 302
       nfiles: 1
     - path: data/modelfun
-      md5: 927a4e5b9a2734c4fb120f4d8b637037.dir
-      size: 46744
+      md5: 9902ae5d03d11ac4a6db9d7b56d2c615.dir
+      size: 46743
       nfiles: 1
     - path: data/runs
       md5: 8c10394d339392419f59e52a796ec253.dir
       size: 1002736
       nfiles: 1
     - path: src/boilerdata/stages/pipeline.py
-      md5: 4bf680c6f3007b076be0f20ce0c5a3f8
-      size: 8979
+      md5: 65dc3d104fbb82500c99626d07ae753c
+      size: 9064
     - path: src/boilerdata/validation.py
-      md5: 6a8fbac54635b8e0448c257378ff2bca
-      size: 4320
+      md5: bbc6a96fe256132bf099466836208d76
+      size: 4418
     params:
       params.yaml:
         params.fit_method: trf
@@ -182,8 +182,8 @@ stages:
       size: 321985
       nfiles: 9
     - path: src/boilerdata/models/dirs.py
-      md5: de772097db45a10696e2640c9b13de10
-      size: 5915
+      md5: 12914c46fdeac283e6851dad46eaa538
+      size: 5902
     - path: src/boilerdata/stages/literature.py
       md5: 6747ff4e69c23cc379e4c8cd862894ed
       size: 3369
@@ -202,14 +202,14 @@ stages:
       md5: 78c6258471317bb08e14f042295fac78
       size: 4351
     - path: src/boilerdata/models/dirs.py
-      md5: de772097db45a10696e2640c9b13de10
-      size: 5915
+      md5: 12914c46fdeac283e6851dad46eaa538
+      size: 5902
     - path: src/boilerdata/stages/axes.py
       md5: fa810bf0a2571b74d17010f76ec95151
       size: 1320
     - path: src/boilerdata/stages/setup.py
-      md5: 7f7e818f303f8d8d1018156b820492ef
-      size: 733
+      md5: b5fabfed1e82acbeff8267dc4d67bc92
+      size: 791
     outs:
     - path: data/axes
       md5: 45b652ccabd4cc7c61f64caa7472bdc3.dir
@@ -231,14 +231,14 @@ stages:
       size: 235130
       nfiles: 1
     - path: src/boilerdata/stages/originlab.py
-      md5: 223c915352537e417a9e9a38d78c0ef3
+      md5: a08dab29a9e85ca1a4c3d8ab2309704a
       size: 2921
     outs:
     - path: data/metrics/originlab_plots/lit.png
-      md5: 5647fcf97b36547042a43a7a57122dd3
+      md5: e716308f2d264832d1fd7e44337b1122
       size: 141883
     - path: data/metrics/originlab_plots/low.png
-      md5: 6f61d0c27e47203ce39a79f206e4dc2f
+      md5: 9de6fe7e4827f176682a22236f1ea5d6
       size: 131899
     - path: data/originlab_results
       md5: 709f9028bbd698ba748b62b9419e6a56.dir
@@ -286,8 +286,8 @@ stages:
       size: 673801
       nfiles: 2
     - path: src/boilerdata/stages/prep/parse_benchmarks.py
-      md5: e8a21d4b9060c0d8dadc89a7befd768e
-      size: 1443
+      md5: 63ba31156bb26260714eeb85e90996f6
+      size: 1470
     outs:
     - path: data/benchmarks_parsed
       md5: 838bf4e6e1c7dcdf45b9fe924d79c5b6.dir

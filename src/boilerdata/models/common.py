@@ -2,8 +2,8 @@ from contextlib import contextmanager
 from typing import Any
 
 import numpy as np
-from pydantic import BaseModel, Extra, MissingError, ValidationError
 import yaml
+from pydantic import BaseModel, Extra, MissingError, ValidationError
 
 from boilerdata.common import StrPath, get_file
 
@@ -96,13 +96,13 @@ def load_config(path: StrPath, model):
         raise ValueError("The configuration file is empty.")
 
     try:
-        config = model(**{key: raw_config.get(key) for key in raw_config.keys()})
+        config = model(**{key: raw_config.get(key) for key in raw_config})
     except ValidationError as exception:
         addendum = "\n  The field may be undefined in the configuration file."
         for error in exception.errors():
             if error["msg"] == MissingError.msg_template:
                 error["msg"] += addendum
-        raise exception
+        raise
     return config
 
 

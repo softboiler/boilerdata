@@ -1,5 +1,7 @@
 """A setup stage that should be run before DVC pipeline reproduction."""
 
+# sourcery skip: name-type-suffix  # dirs_dict is fine
+
 from pathlib import Path
 
 from ruamel.yaml import YAML

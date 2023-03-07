@@ -34,7 +34,7 @@ def get_runs(proj: Project) -> pd.DataFrame:
     runs: list[pd.DataFrame] = []
     multiindex: list[tuple[datetime, datetime, datetime]] = []
     for trial in proj.trials:
-        for file, run_index in zip(trial.run_files, trial.run_index):
+        for file, run_index in zip(trial.run_files, trial.run_index, strict=True):
             run = get_run(proj, file).tail(proj.params.records_to_average)
             runs.append(run)
             multiindex.extend(

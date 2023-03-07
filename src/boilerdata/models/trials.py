@@ -112,7 +112,7 @@ class Trial(MyBaseModel):
     def set_geometry(self, geometry: Geometry, copper_temps: list[A]):
         """Get relevant geometry for the trial."""
         thermocouple_pos = geometry.rods[self.rod] + geometry.coupons[self.coupon]  # type: ignore  # pydantic: use_enum_values
-        self.thermocouple_pos = dict(zip(copper_temps, thermocouple_pos))  # type: ignore  # pydantic: use_enum_values
+        self.thermocouple_pos = dict(zip(copper_temps, thermocouple_pos, strict=True))  # type: ignore  # pydantic: use_enum_values
 
 
 class Trials(MyBaseModel):

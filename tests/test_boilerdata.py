@@ -1,8 +1,9 @@
 import re
+from subprocess import run
 
-from pydantic import BaseModel
-from pytest import mark as m, raises
+import pytest
 import yaml
+from pydantic import BaseModel
 
 from boilerdata.models.common import dump_model, load_config, write_schema
 
@@ -43,28 +44,35 @@ SCHEMA_JSON = """\
 """
 
 
-@m.parametrize("test_id, file", [("does_not_exist", "file"), ("not_a_file", "")])
+def test_repro():
+    run(["dvc", "pull"])
+    run(["dvc", "repro", "metrics"])
+
+
+@pytest.mark.parametrize(
+    ("test_id", "file"), [("does_not_exist", "file"), ("not_a_file", "")]
+)
 def test_load_config_raises(test_id, file, tmp_path):
-    with raises(FileNotFoundError):
+    with pytest.raises(FileNotFoundError):
         load_config(tmp_path / file, UserModel)
 
 
 def test_load_config_raises_not_yaml(tmp_path):
     file = tmp_path / "test.not_yaml"
     file.touch()
-    with raises(ValueError, match=re.compile("yaml file", re.IGNORECASE)):
+    with pytest.raises(ValueError, match=re.compile("yaml file", re.IGNORECASE)):
         load_config(file, UserModel)
 
 
 def test_load_config_raises_value_error(tmp_path):
     user_model_path = tmp_path / "test.yaml"
     user_model_path.write_text("\n", encoding="utf-8")
-    with raises(ValueError, match=re.compile("file is empty", re.IGNORECASE)):
+    with pytest.raises(ValueError, match=re.compile("file is empty", re.IGNORECASE)):
         load_config(user_model_path, UserModel)
 
 
-@m.parametrize(
-    "test_id, model, match",
+@pytest.mark.parametrize(
+    ("test_id", "model", "match"),
     [
         ("contains_null", USER_MODEL_CONTAINS_NULL_YAML, "none is not an allowed"),
         ("missing_key", USER_MODEL_MISSING_KEY_YAML, "may be undefined"),
@@ -74,7 +82,7 @@ def test_load_config_raises_validation(test_id, model, match, tmp_path):
     user_model_path = tmp_path / "test.yaml"
     user_model_path.write_text(model, encoding="utf-8")
     # Can't check for ValidationError directly for some reason
-    with raises(Exception, match=re.compile(match, re.IGNORECASE)):
+    with pytest.raises(Exception, match=re.compile(match, re.IGNORECASE)):
         load_config(user_model_path, UserModel)
 
 
@@ -93,7 +101,7 @@ def test_dump_model(tmp_path):
 
 def test_write_schema_raises_not_json(tmp_path):
     file = tmp_path / "test.not_json"
-    with raises(ValueError):
+    with pytest.raises(ValueError):  # noqa: PT011  # Broad due to pydantic
         write_schema(file, UserModel)
 
 

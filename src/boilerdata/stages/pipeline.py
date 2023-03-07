@@ -1,7 +1,7 @@
+import warnings
 from collections.abc import Mapping, Sequence
 from functools import partial
 from typing import TypeVar
-import warnings
 from warnings import catch_warnings
 
 import numpy as np
@@ -132,7 +132,9 @@ def fit(
                 sigma=y_errors,
                 absolute_sigma=True,
                 p0=guesses,
-                bounds=tuple(zip(*bounds)),  # Expects ([L1, L2, L3], [H1, H2, H3])
+                bounds=tuple(
+                    zip(*bounds, strict=True)
+                ),  # Expects ([L1, L2, L3], [H1, H2, H3])
                 method=proj.params.fit_method,
             )
         except (RuntimeError, OptimizeWarning):
@@ -219,7 +221,7 @@ def agg_over_runs(
         )
         .assign(
             **{
-                tc_error: lambda df: df[tc_error]
+                tc_error: lambda df: df[tc_error]  # noqa: B023  # False positive
                 * confidence_interval_95
                 / np.sqrt(proj.params.records_to_average)
                 for tc_error in tc_errors

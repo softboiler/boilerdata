@@ -11,6 +11,9 @@
     "data/schema/trials_schema.json": "trials.yaml"
   },
 
+  //! DVC
+  "dvc.studio.shareExperimentsLive": true,
+
   // * -------------------------------------------------------------------------- * //
   // * GENERAL * //
 

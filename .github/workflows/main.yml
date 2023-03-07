@@ -21,8 +21,6 @@ jobs:
     runs-on: "windows-latest"
     steps:
       - uses: "actions/checkout@v3"
-        with:
-          submodules: true
       - uses: "actions/setup-python@v4"
         with:
           python-version: "3.10"
@@ -62,6 +60,9 @@ jobs:
           python-version: "3.10"
       - run: "pyright"
   pytest-cov:
+    permissions:
+      contents: "read"
+      id-token: "write"
     needs: "bump_template"
     if: "${{ !failure() }}"
     runs-on: "windows-latest"
@@ -69,5 +70,15 @@ jobs:
       - uses: "blakeNaccarato/copier-python-workflow-setup@v0.0.11"
         with:
           python-version: "3.10"
+      - uses: "google-github-actions/auth@v1.0.0"
+        with:
+          workload_identity_provider: "projects/326920613558/locations/global/workloadIdentityPools/github-com/providers/github-com-oidc"
+          service_account: "iterative-studio@secure-garden-355020.iam.gserviceaccount.com"
+      - uses: "google-github-actions/setup-gcloud@v1.1.0"
+      - run: "dvc pull"
+        env:
+          GH_TOKEN: ${{ github.token }}
       - run: "pytest --cov"
+        env:
+          OPENCV_SAMPLES_DATA_PATH: data/samples_data
       - uses: "codecov/codecov-action@v3.1.1"

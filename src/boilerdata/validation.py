@@ -107,10 +107,14 @@ def handle_invalid_data(df: pd.DataFrame, validator: DataFrameSchema) -> pd.Data
                 # Only handle certain columns
                 or exc.check_output.name not in columns_to_automatically_handle
             ):
-                raise exc
+                raise
             failed = exc.check_output
             df = df.assign(
-                **{failed.name: (lambda df: df[failed.name].where(failed).ffill())}
+                **{
+                    failed.name: (
+                        lambda df: df[failed.name].where(failed).ffill()  # noqa: B023
+                    )
+                }
             )
             continue
         else:
