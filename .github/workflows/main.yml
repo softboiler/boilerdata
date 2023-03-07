@@ -24,9 +24,8 @@ jobs:
           python-version: "3.10"
       - uses: "google-github-actions/auth@v1.0.0"
         with:
-          project_id: 326920613558
-          workload_identity_provider: "{{ secrets.workload_identity_provider }}"
-          service_account: "{{ secrets.service_account }}"
+          workload_identity_provider: "projects/326920613558/locations/global/workloadIdentityPools/github-com/providers/github-com-oidc"
+          service_account: "iterative-studio@secure-garden-355020.iam.gserviceaccount.com"
       - uses: "google-github-actions/setup-gcloud@v1.1.0"
       - run: "dvc pull"
         env:
