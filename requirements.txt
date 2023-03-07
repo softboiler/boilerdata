@@ -2,7 +2,6 @@
 dill==0.3.6
 dvc[gs]==2.45.1
 matplotlib==3.7.1
-originpro==1.1.4
 pandas==1.5.3
 pandera==0.13.4
 papermill==2.4.0
