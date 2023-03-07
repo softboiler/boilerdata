@@ -17,4 +17,4 @@ scipy==1.10.1
 sympy==1.11.1
 uncertainties==3.1.7
 # https://github.com/nteract/papermill/issues/711
-jupyter-client<8
+jupyter-client<9
