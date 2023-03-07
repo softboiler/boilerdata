@@ -8,7 +8,7 @@ on:
 
 jobs:
   sync:
-    runs-on: "windows-latest"
+    runs-on: "ubuntu-latest"
     steps:
       - uses: "dropseed/changerelease@v1"
         with:

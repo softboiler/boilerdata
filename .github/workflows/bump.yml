@@ -10,7 +10,7 @@ jobs:
   # * Changes below may be lost in significant template updates.
 
   bump_project:
-    runs-on: "windows-latest"
+    runs-on: "ubuntu-latest"
     steps:
       - uses: "blakeNaccarato/copier-python-workflow-setup@v0.0.12"
         with:

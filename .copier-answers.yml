@@ -1,8 +1,8 @@
 # Changes here will be overwritten by Copier; NEVER EDIT MANUALLY
 _commit: afcad5a
 _src_path: gh:blakeNaccarato/copier-python
-actions_runner: windows-latest
-advanced: false
+actions_runner: ubuntu-latest
+advanced: true
 docs_engine: MyST
 github_repo_name: boilerdata
 include_funding: true
