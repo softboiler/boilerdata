@@ -1,64 +1,22 @@
 name: "main"
 
-on: ["workflow_dispatch", "push"]
+on: ["push", "workflow_dispatch"]
 
 jobs:
-  changes:
-    runs-on: "windows-latest"
-    steps:
-      - uses: "actions/checkout@v3"
-      - uses: "dorny/paths-filter@v2"
-        id: "filter"
-        with:
-          filters: |
-            template:
-              - "template/**"
-    outputs:
-      template: "${{ steps.filter.outputs.template }}"
-  bump_template:
-    needs: "changes"
-    if: "${{ needs.changes.outputs.template == 'true' }}"
-    runs-on: "windows-latest"
-    steps:
-      - uses: "actions/checkout@v3"
-      - uses: "actions/setup-python@v4"
-        with:
-          python-version: "3.10"
-      - run: |-
-          python -m pip install -U pip
-          pip install -U setuptools wheel
-          pip install copier
-          copier -f -r $(git rev-parse HEAD:template)
-      - uses: "stefanzweifel/git-auto-commit-action@v4"
-        with:
-          commit_message: "Update repo to latest template"
-  ruff:
-    needs: "bump_template"
-    if: "${{ !failure() }}"
-    runs-on: "windows-latest"
-    steps:
-      - uses: "blakeNaccarato/copier-python-workflow-setup@v0.0.11"
-        with:
-          python-version: "3.10"
-      - run: "ruff check --no-fix ."
+  # * ------------------------------------------------------------------------------ * #
+  # * Changes below may be lost in significant template updates.
+
   pyright:
-    needs: "bump_template"
-    if: "${{ !failure() }}"
     runs-on: "windows-latest"
     steps:
-      - uses: "blakeNaccarato/copier-python-workflow-setup@v0.0.11"
+      - uses: "blakeNaccarato/copier-python-workflow-setup@v0.0.12"
         with:
           python-version: "3.10"
       - run: "pyright"
   pytest-cov:
-    permissions:
-      contents: "read"
-      id-token: "write"
-    needs: "bump_template"
-    if: "${{ !failure() }}"
     runs-on: "windows-latest"
     steps:
-      - uses: "blakeNaccarato/copier-python-workflow-setup@v0.0.11"
+      - uses: "blakeNaccarato/copier-python-workflow-setup@v0.0.12"
         with:
           python-version: "3.10"
       - uses: "google-github-actions/auth@v1.0.0"
@@ -73,3 +31,6 @@ jobs:
         env:
           OPENCV_SAMPLES_DATA_PATH: data/samples_data
       - uses: "codecov/codecov-action@v3.1.1"
+
+  # * ------------------------------------------------------------------------------ * #
+  # * Changes below should persist in significant template updates.
