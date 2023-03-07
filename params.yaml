@@ -42,6 +42,8 @@ params:
 dirs:
   base: .
   file_proj: params.yaml
+  requirements: requirements.txt
+  dev_requirements: .tools/requirements
   config: config
   package: src/boilerdata
   stages: src/boilerdata/stages

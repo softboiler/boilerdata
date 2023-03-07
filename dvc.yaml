@@ -4,6 +4,8 @@ stages:
     deps:
       - "${dirs.stage_axes}"
       - "${dirs.stage_setup}"
+      - "${dirs.requirements}"
+      - "${dirs.dev_requirements}"
       - "${dirs.config}/axes.yaml"
       - "${dirs.models}/axes.py"
       - "${dirs.models}/dirs.py"

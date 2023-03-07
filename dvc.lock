@@ -8,16 +8,16 @@ stages:
       size: 958
       nfiles: 2
     - path: src/boilerdata/models
-      md5: 951af0b5133ed5b9b4fb4b28db092448.dir
-      size: 64722
+      md5: ebb2c868f3dd9a3963e2c311d7e45808.dir
+      size: 64987
       nfiles: 16
     - path: src/boilerdata/stages/schema.py
       md5: cb9547fdf4dfd06c03baef2588464b28
       size: 843
     outs:
     - path: data/schema
-      md5: 17c6bb1dc6ee6db4bdd3dc4a6eda8936.dir
-      size: 26259
+      md5: 30060f54c25ec30835aa6260d186615b.dir
+      size: 26633
       nfiles: 3
   modelfun:
     cmd: papermill src/boilerdata/stages/notebooks/modelfun.ipynb NUL
@@ -27,8 +27,8 @@ stages:
       size: 958
       nfiles: 2
     - path: src/boilerdata/models/dirs.py
-      md5: 12914c46fdeac283e6851dad46eaa538
-      size: 5902
+      md5: 77f6cffe31178699750e18559f876735
+      size: 6050
     - path: src/boilerdata/models/project.py
       md5: 7c722908ebe9832e8b8680fc06a57821
       size: 1487
@@ -54,8 +54,8 @@ stages:
         - h_w
     outs:
     - path: data/modelfun
-      md5: 9902ae5d03d11ac4a6db9d7b56d2c615.dir
-      size: 46743
+      md5: 3b6bf056462b3db75a00b54ad31ad704.dir
+      size: 46744
       nfiles: 1
   runs:
     cmd: python -m boilerdata.stages.prep.runs
@@ -72,8 +72,8 @@ stages:
       md5: 78c6258471317bb08e14f042295fac78
       size: 4351
     - path: src/boilerdata/models/dirs.py
-      md5: 12914c46fdeac283e6851dad46eaa538
-      size: 5902
+      md5: 77f6cffe31178699750e18559f876735
+      size: 6050
     - path: src/boilerdata/models/trials.py
       md5: bbff9f71522c8ecbfb5321d5ca52ec5a
       size: 3915
@@ -96,8 +96,8 @@ stages:
       size: 302
       nfiles: 1
     - path: data/modelfun
-      md5: 9902ae5d03d11ac4a6db9d7b56d2c615.dir
-      size: 46743
+      md5: 3b6bf056462b3db75a00b54ad31ad704.dir
+      size: 46744
       nfiles: 1
     - path: data/runs
       md5: 8c10394d339392419f59e52a796ec253.dir
@@ -182,8 +182,8 @@ stages:
       size: 321985
       nfiles: 9
     - path: src/boilerdata/models/dirs.py
-      md5: 12914c46fdeac283e6851dad46eaa538
-      size: 5902
+      md5: 77f6cffe31178699750e18559f876735
+      size: 6050
     - path: src/boilerdata/stages/literature.py
       md5: 6747ff4e69c23cc379e4c8cd862894ed
       size: 3369
@@ -195,15 +195,22 @@ stages:
   axes:
     cmd: python -m boilerdata.stages.axes
     deps:
+    - path: .tools/requirements
+      md5: 85fb5d410dcb12871d3aa24804a58f14.dir
+      size: 1819
+      nfiles: 5
     - path: config/axes.yaml
       md5: 9748e924133c725651afdd88d7a4059e
       size: 2320
+    - path: requirements.txt
+      md5: ee1e12014e8bd85c755bedaf68c9aa1d
+      size: 533
     - path: src/boilerdata/models/axes.py
       md5: 78c6258471317bb08e14f042295fac78
       size: 4351
     - path: src/boilerdata/models/dirs.py
-      md5: 12914c46fdeac283e6851dad46eaa538
-      size: 5902
+      md5: 77f6cffe31178699750e18559f876735
+      size: 6050
     - path: src/boilerdata/stages/axes.py
       md5: fa810bf0a2571b74d17010f76ec95151
       size: 1320

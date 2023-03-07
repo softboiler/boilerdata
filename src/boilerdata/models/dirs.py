@@ -29,6 +29,10 @@ class Dirs(MyBaseModel):
     # ! PROJECT FILE
     file_proj: FilePath = base / "params.yaml"
 
+    # ! REQUIREMENTS
+    requirements: FilePath = base / "requirements.txt"
+    dev_requirements: DirectoryPath = base / ".tools/requirements"
+
     # ! CONFIG
     # Careful, "Config" is a special member of BaseClass
     config: DirectoryPath = base / "config"
