@@ -231,14 +231,14 @@ stages:
       size: 235130
       nfiles: 1
     - path: src/boilerdata/stages/originlab.py
-      md5: a08dab29a9e85ca1a4c3d8ab2309704a
-      size: 2921
+      md5: 01048e7dfcc0da2285785e5c6fa97f6b
+      size: 3101
     outs:
     - path: data/metrics/originlab_plots/lit.png
-      md5: e716308f2d264832d1fd7e44337b1122
+      md5: f8f4402257ffb1591166abb18b482990
       size: 141883
     - path: data/metrics/originlab_plots/low.png
-      md5: 9de6fe7e4827f176682a22236f1ea5d6
+      md5: 97e085295c2f4f4171cb95633a99867d
       size: 131899
     - path: data/originlab_results
       md5: 709f9028bbd698ba748b62b9419e6a56.dir
