@@ -14,6 +14,11 @@
   },
   "packageRules": [
     {
+      "description": "https://github.com/nteract/papermill/issues/711",
+      "matchPackageNames": ["jupyter-client"],
+      "allowedVersions": "<8"
+    },
+    {
       "description": "Update project dependencies.",
       "groupName": "project_dependencies",
       "matchFiles": ["requirements.txt"]
