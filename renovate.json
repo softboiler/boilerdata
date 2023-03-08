@@ -16,7 +16,7 @@
   ],
   "pip_requirements": {
     "description": "Additionally monitor these files",
-    "fileMatch": ["^template/\\.tools/requirements/*"],
+    "fileMatch": ["^\\.tools/requirements/*"],
     "ignorePaths": ["frozen_requirements.txt"]
   },
   "packageRules": [
@@ -27,7 +27,7 @@
     },
     {
       "description": "Ignore dependencies managed by the template.",
-      "matchPaths": ["template/.tools/requirements/*"],
+      "matchPaths": [".tools/requirements/*"],
       "ignoreDeps": [
         "jupyter-book",
         "watch-files",
