@@ -2,11 +2,11 @@
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
     "config:base",
-    "group:allNonMajor",
     ":automergeAll",
     ":enablePreCommit",
     ":preserveSemverRanges"
   ],
+  "schedule": ["on the 8th day of the month"],
   "git-submodules": { "enabled": true },
   "enabledManagers": [
     "git-submodules",
@@ -26,7 +26,28 @@
       "allowedVersions": "<8"
     },
     {
-      "description": "Ignore dependencies managed by the template.",
+      "groupName": "all non-major dependencies except pyright",
+      "groupSlug": "all-minor-patch",
+      "matchPackagePatterns": ["*"],
+      "matchUpdateTypes": ["minor", "patch"],
+      "excludeDepNames": ["pyright"]
+    },
+    {
+      "description": "Check for typings updates all the time.",
+      "matchManagers": ["git-submodules"],
+      "matchDepNames": ["typings"],
+      "schedule": ["at any time"]
+    },
+    {
+      "description": "Don't automerge pyright. It should be manually synced with typings.",
+      "matchManagers": ["pip_requirements"],
+      "matchDepNames": ["pyright"],
+      "schedule": ["at any time"],
+      "automerge": false
+    },
+    {
+      "description": "Ignore dependencies managed by the template. Do manage pyright.",
+      "matchManagers": ["pip_requirements"],
       "matchPaths": [".tools/requirements/*"],
       "ignoreDeps": [
         "jupyter-book",
@@ -35,9 +56,9 @@
         "sphinx-autobuild",
         "sphinx-book-theme",
         "sphinx-design",
+        "copier",
         "toml",
         "flit",
-        "pyright",
         "ruff",
         "pytest",
         "pytest-cov",
