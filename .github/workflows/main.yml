@@ -6,6 +6,16 @@ jobs:
   # * ------------------------------------------------------------------------------ * #
   # * Changes below may be lost in significant template updates.
 
+  bump_project:
+    runs-on: "ubuntu-latest"
+    steps:
+      - uses: "blakeNaccarato/copier-python-workflow-setup@v0.0.12"
+        with:
+          python-version: "3.10"
+          install-project: false
+      - uses: "stefanzweifel/git-auto-commit-action@v4"
+        with:
+          commit_message: "Bump project template and compose `pyproject.toml`."
   pyright:
     runs-on: "ubuntu-latest"
     steps:
