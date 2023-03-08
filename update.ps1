@@ -2,7 +2,7 @@
 Update the local virtual environment to the latest tracked dependencies.
 #>
 
-# * ------------------------------------------------------------------------------ * #
+# * -------------------------------------------------------------------------------- * #
 # * Changes below may be lost in significant template updates.
 
 # Activate environment
@@ -30,5 +30,3 @@ pre-commit install --install-hooks
 
 # * -------------------------------------------------------------------------------- * #
 # * Changes below should persist in significant template updates.
-
-pre-commit install --install-hooks --hook-type pre-push --hook-type post-checkout
