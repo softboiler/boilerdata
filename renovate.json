@@ -16,7 +16,8 @@
   ],
   "pip_requirements": {
     "description": "Additionally monitor these files",
-    "fileMatch": ["^template/\\.tools/requirements/*"]
+    "fileMatch": ["^template/\\.tools/requirements/*"],
+    "ignorePaths": ["frozen_requirements.txt"]
   },
   "packageRules": [
     {
