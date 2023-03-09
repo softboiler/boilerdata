@@ -33,8 +33,8 @@ stages:
       md5: 7c722908ebe9832e8b8680fc06a57821
       size: 1487
     - path: src/boilerdata/stages/notebooks/modelfun.ipynb
-      md5: c7d7cbcc2c429c8ad2d1c4dc27a563fb
-      size: 15287
+      md5: 70317e84bda49b0e5c54a3ef404e7f7b
+      size: 15236
     params:
       params.yaml:
         params.fixed_params:
@@ -54,7 +54,7 @@ stages:
         - h_w
     outs:
     - path: data/modelfun
-      md5: 3b6bf056462b3db75a00b54ad31ad704.dir
+      md5: a5afa3f7429e8f7a6523cd4c7a81e17e.dir
       size: 46744
       nfiles: 1
   runs:
@@ -96,7 +96,7 @@ stages:
       size: 302
       nfiles: 1
     - path: data/modelfun
-      md5: 3b6bf056462b3db75a00b54ad31ad704.dir
+      md5: a5afa3f7429e8f7a6523cd4c7a81e17e.dir
       size: 46744
       nfiles: 1
     - path: data/runs
@@ -147,29 +147,29 @@ stages:
       size: 235130
       nfiles: 1
     - path: src/boilerdata/stages/notebooks/metrics.ipynb
-      md5: 566cd9d54d0f9fdbc4063f18ca473c0c
-      size: 7557
+      md5: ce2bbd1c8a0edb8bd3759bf3afd108db
+      size: 7627
     params:
       params.yaml:
         params.do_plot: true
     outs:
     - path: data/metrics/plots/error_T_s.png
-      md5: eb0fc9e4a7d8d3f681712e5485eedea6
+      md5: edf34d1ca13b90916ccfafe265f41c4e
       size: 122679
     - path: data/metrics/plots/error_h_a.png
-      md5: fe5f6f59653c18b064e6edd4f24e53f0
+      md5: bf28fb60ce7b6b6443e8ca6611694ca3
       size: 200120
     - path: data/metrics/plots/error_q_s.png
-      md5: ea43e699bcbfd61a0aaecfb3f1b1dc8e
+      md5: aa6192a393e0bb5e0151f20e6d23ee26
       size: 171453
     - path: data/metrics/plots/new_fit_0.png
-      md5: 5aeeb0a2e6100c2d80cf4edcc5dbc903
+      md5: 65c33ce980ed22f49f95aa9a93282769
       size: 119322
     - path: data/metrics/plots/new_fit_1.png
-      md5: e16b88492f451b014b2cc2224ae21c56
+      md5: fb913a5ce9683838a8db9587a75479c8
       size: 113970
     - path: data/metrics/plots/new_fit_2.png
-      md5: f8f4d449fa5f1a0768d3979c975de2a6
+      md5: 2e519cb734a3933c7b6ad31febec3229
       size: 125344
     - path: data/metrics/tables/pipeline_metrics.json
       md5: 1aa224e207ef9602b1fa51fe360d52c2
@@ -196,14 +196,14 @@ stages:
     cmd: python -m boilerdata.stages.axes
     deps:
     - path: .tools/requirements
-      md5: 85fb5d410dcb12871d3aa24804a58f14.dir
-      size: 1819
+      md5: ed649d92ab64373274b50b7918d6920d.dir
+      size: 1809
       nfiles: 5
     - path: config/axes.yaml
       md5: 9748e924133c725651afdd88d7a4059e
       size: 2320
     - path: requirements.txt
-      md5: ee1e12014e8bd85c755bedaf68c9aa1d
+      md5: 269805b0d5ac52cf16b15504397dffb3
       size: 533
     - path: src/boilerdata/models/axes.py
       md5: 78c6258471317bb08e14f042295fac78

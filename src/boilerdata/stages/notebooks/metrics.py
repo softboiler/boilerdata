@@ -224,17 +224,14 @@ def get_params_mapping_with_uncertainties(
     grp: pd.Series | pd.DataFrame, proj: Project  # type: ignore  # pandas
 ) -> dict[str, Any]:
     """Get a mapping of parameter names to values with uncertainty."""
-    model_params_and_errors = proj.params.params_and_errors
     # Reason: pydantic: use_enum_values
     params: list[str] = proj.params.model_params  # type: ignore
     param_errors: list[str] = proj.params.model_errors
     u_params = [
         ufloat(param, err, tag)
-        for param, err, tag in zip(
-            grp[params], grp[param_errors], model_params_and_errors, strict=True
-        )
+        for param, err, tag in zip(grp[params], grp[param_errors], params, strict=True)
     ]
-    return dict(zip(model_params_and_errors, u_params, strict=True))
+    return dict(zip(params, u_params, strict=True))
 
 
 def model_with_error(model, x, u_params):
