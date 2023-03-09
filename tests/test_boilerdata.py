@@ -45,8 +45,7 @@ SCHEMA_JSON = """\
 
 
 def test_repro():
-    run(["dvc", "pull"])
-    run(["dvc", "repro", "metrics"])
+    run(["dvc", "repro", "metrics", "--pull"])
 
 
 @pytest.mark.parametrize(

@@ -37,11 +37,9 @@ jobs:
           workload_identity_provider: "projects/326920613558/locations/global/workloadIdentityPools/github-com/providers/github-com-oidc"
           service_account: "iterative-studio@secure-garden-355020.iam.gserviceaccount.com"
       - uses: "google-github-actions/setup-gcloud@v1.1.0"
-      - run: "dvc pull"
-        env:
-          GH_TOKEN: ${{ github.token }}
       - run: "pytest --cov"
         env:
+          GH_TOKEN: ${{ github.token }}
           OPENCV_SAMPLES_DATA_PATH: data/samples_data
       - uses: "codecov/codecov-action@v3.1.1"
 
