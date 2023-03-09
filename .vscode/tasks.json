@@ -28,21 +28,14 @@
   "tasks": [
     // * -------------------------------------------------------------------------- * //
     // * Changes below should persist in significant template updates.
-
     {
-      "label": "dvc: setup",
+      "label": "proj: Profile the pipeline",
       "type": "process",
       "command": "pwsh",
-      "args": ["-Command", "python -m boilerdata.stages.setup"],
-      "icon": { "id": "graph" },
-      "problemMatcher": []
-    },
-    {
-      "label": "dvc: exp run",
-      "dependsOn": "pre-commit",
-      "type": "process",
-      "command": "pwsh",
-      "args": ["-Command", "dvc exp run"],
+      "args": [
+        "-Command",
+        "python -m cProfile -o .prof -m boilerdata.stages.pipeline"
+      ],
       "icon": { "id": "graph" },
       "problemMatcher": []
     },
@@ -58,6 +51,7 @@
       "label": "dvc: repro all",
       "dependsOrder": "sequence",
       "dependsOn": [
+        "setup: Update project",
         "dvc: freeze",
         "dvc: setup",
         "git: Stage all files",
@@ -78,17 +72,13 @@
         "-Command",
         "pip freeze --requirement requirements.txt --local --exclude-editable > frozen_requirements.txt"
       ],
-      "icon": { "id": "graph" },
       "problemMatcher": []
     },
     {
-      "label": "proj: Profile the pipeline",
+      "label": "dvc: setup",
       "type": "process",
       "command": "pwsh",
-      "args": [
-        "-Command",
-        "python -m cProfile -o .prof -m boilerdata.stages.pipeline"
-      ],
+      "args": ["-Command", "python -m boilercv.stages.setup"],
       "icon": { "id": "graph" },
       "problemMatcher": []
     },
