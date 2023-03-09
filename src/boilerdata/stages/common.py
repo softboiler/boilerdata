@@ -62,7 +62,7 @@ def set_proj_dtypes(df: pd.DataFrame, proj: Project) -> pd.DataFrame:
 
 def set_dtypes(df: pd.DataFrame, dtypes: dict[str, str]) -> pd.DataFrame:
     """Set column datatypes in a dataframe."""
-    return df.assign(**{name: df[name].astype(dtype) for name, dtype in dtypes.items()})  # type: ignore  # noqa: E501
+    return df.assign(**{name: df[name].astype(dtype) for name, dtype in dtypes.items()})  # type: ignore
 
 
 def get_tcs(trial: Trial) -> tuple[list[str], list[str]]:
