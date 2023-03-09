@@ -12,7 +12,7 @@ def math_mod(expr, long_frac_ratio=3, **kwargs):
 
 
 def disp(title, *exprs, **kwargs):
-    print(f"{title}:")  # noqa: T201  # Allow print
+    print(f"{title}:")
     display(*(math_mod(expr, **kwargs) for expr in exprs))
 
 
