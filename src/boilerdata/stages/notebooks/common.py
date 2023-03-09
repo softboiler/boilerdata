@@ -10,4 +10,4 @@ def set_format():
     """
     float_spec = ":#.4g"
     pd.options.display.min_rows = pd.options.display.max_rows = 50
-    pd.options.display.float_format = f"{{{float_spec}}}".format  # type: ignore  # pandas
+    pd.options.display.float_format = f"{{{float_spec}}}".format
