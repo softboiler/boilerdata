@@ -29,13 +29,12 @@
     // * -------------------------------------------------------------------------- * //
     // * Changes below should persist in significant template updates.
     {
-      "label": "proj: Profile the pipeline",
+      "label": "dvc: repro",
+      "dependsOrder": "sequence",
+      "dependsOn": ["dvc: setup"],
       "type": "process",
       "command": "pwsh",
-      "args": [
-        "-Command",
-        "python -m cProfile -o .prof -m boilerdata.stages.pipeline"
-      ],
+      "args": ["-Command", "dvc repro ${input:stage}"],
       "icon": { "id": "graph" },
       "problemMatcher": []
     },
