@@ -1,7 +1,7 @@
 # * -------------------------------------------------------------------------------- * #
 # * Changes below should persist in significant template updates.
 
-originpro==1.1.4
+originpro==1.1.5
 
 # * -------------------------------------------------------------------------------- * #
 # * Changes below may be lost in significant template updates.
