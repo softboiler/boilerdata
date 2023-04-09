@@ -6,16 +6,6 @@ jobs:
   # * ------------------------------------------------------------------------------ * #
   # * Changes below may be lost in significant template updates.
 
-  bump_project:
-    runs-on: "ubuntu-latest"
-    steps:
-      - uses: "blakeNaccarato/copier-python-workflow-setup@v0.0.12"
-        with:
-          python-version: "3.10"
-          install-project: false
-      - uses: "stefanzweifel/git-auto-commit-action@v4"
-        with:
-          commit_message: "Bump project template and compose `pyproject.toml`."
   pyright:
     runs-on: "ubuntu-latest"
     steps:
@@ -24,9 +14,6 @@ jobs:
           python-version: "3.10"
       - run: "pyright"
   pytest-cov:
-    permissions:
-      contents: "read"
-      id-token: "write"
     runs-on: "ubuntu-latest"
     steps:
       - uses: "blakeNaccarato/copier-python-workflow-setup@v0.0.12"
@@ -42,6 +29,17 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           OPENCV_SAMPLES_DATA_PATH: data/samples_data
       - uses: "codecov/codecov-action@v3.1.1"
+  bump_project:
+    needs: ["pyright", "pytest-cov"]
+    runs-on: "ubuntu-latest"
+    steps:
+      - uses: "blakeNaccarato/copier-python-workflow-setup@v0.0.12"
+        with:
+          python-version: "3.10"
+          install-project: false
+      - uses: "stefanzweifel/git-auto-commit-action@v4.16.0"
+        with:
+          commit_message: "Bump project template and compose `pyproject.toml`."
 
   # * ------------------------------------------------------------------------------ * #
   # * Changes below should persist in significant template updates.

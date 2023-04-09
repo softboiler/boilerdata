@@ -1,11 +1,8 @@
 # Changes here will be overwritten by Copier; NEVER EDIT MANUALLY
-_commit: d562b92
+_commit: 00ccc3b
 _src_path: gh:blakeNaccarato/copier-python
 actions_runner: ubuntu-latest
-advanced: true
-docs_engine: MyST
 github_repo_name: boilerdata
-include_funding: true
 project_email: blake.naccarato+boilerdata@gmail.com
 project_name: boilerdata
 project_owner_github_username: blakeNaccarato
