@@ -35,6 +35,6 @@ model_file = Project.get_project().dirs.file_model
 file_bytes = Path(model_file).read_bytes()
 with warnings.catch_warnings():
     warnings.simplefilter("ignore", dill.UnpicklingWarning)
-    unpickled_model = dill.loads(file_bytes)
+    unpickled_model = dill.loads(file_bytes)  # noqa: S301
 model = unpickled_model.basic
 model_with_uncertainty = fix_model(unpickled_model.for_ufloat)

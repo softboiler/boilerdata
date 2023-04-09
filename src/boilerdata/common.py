@@ -10,22 +10,15 @@ def get_file(path: StrPath, create: bool = False) -> Path:
     Handle the "~" user construction if necessary and return a `pathlib.Path` object.
     Raise exception if the file is not found.
 
-    Parameters
-    ----------
-    path: StrPath
-        The path.
-    create: bool
-        Whether a file should be created at the path if it doesn't already exist.
+    Args:
+        path: Path.
+        create: Whether a file should be created if it doesn't already exist.
 
-    Returns
-    -------
-    pathlib.Path
-        The path after handling.
+    Returns:
+        pathlib.Path: The path after handling.
 
-    Raises
-    ------
-    FleNotFoundError
-        If the file doesn't exist or does not refer to a file.
+    Raises:
+        FleNotFoundError: If the file doesn't exist or does not refer to a file.
     """
     path = expanduser2(path) if isinstance(path, str) else Path(path)
     if not path.exists():
@@ -44,15 +37,11 @@ def expanduser2(path: StrPath) -> Path:
     Unlike the builtin `posixpath.expanduser`, this always works on Windows, and returns
     a `pathlib.Path` object.
 
-    Parameters
-    ----------
-    path: str
-        A string that may contain "~" at the start.
+    Args:
+        path: A string that may contain "~" at the start.
 
-    Returns
-    -------
-    pathlib.Path
-        The path after user expansion.
+    Returns:
+        pathlib.Path: The path after user expansion.
     """
     home = "~/"
     if isinstance(path, str) and path.startswith(home):

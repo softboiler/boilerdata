@@ -35,10 +35,8 @@ def allow_extra(model: BaseModel):
     properties will result in errors, but you don't want to allow extra properties
     forevermore.
 
-    Parameters
-    ----------
-    model: BaseModel
-        The model to allow extras on.
+    Args:
+        model: The model to allow extras on.
     """
 
     # Store the current value of the attribute or note its absence
@@ -68,24 +66,16 @@ def load_config(path: StrPath, model):
     Given a path to a YAML file, automatically unpack its fields into the provided
     Pydantic model.
 
-    Parameters
-    ----------
-    path: StrPath
-        The path to a YAML file.
-    model: type[pydantic.BaseModel]
-        The Pydantic model class to which the contents of the YAML file will be passed.
+    Args:
+        path: The path to a YAML file.
+        model: The Pydantic model class to which the YAML file contents will be passed.
 
-    Returns
-    -------
-    pydantic.BaseModel
-        An instance of the Pydantic model after validation.
+    Returns:
+        pydantic.BaseModel: An instance of the Pydantic model after validation.
 
-    Raises
-    ------
-    ValueError
-        If the path does not refer to a YAML file, or the YAML file is empty.
-    ValidationError
-        If the configuration file is missing a required field.
+    Raises:
+        ValueError: The path does not refer to a valid YAML file.
+    ValidationError: If the configuration file is missing a required field.
     """
     path = get_file(path)
     if path.suffix != ".yaml":
