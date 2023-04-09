@@ -155,7 +155,7 @@ def fit(
         **pd.Series(
             np.concatenate([fitted_params, errors]),
             index=proj.params.free_params + proj.params.free_errors,
-        ),  # type: ignore  # pandas
+        ),
     )
     return grp
 

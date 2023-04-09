@@ -39,7 +39,7 @@ def main(proj: Project):
                 .rename(columns=dict(x="ΔT", y="q''", name="dataset"))
                 .sort_values(["dataset", "ΔT", "q''"])
             )
-            fig_df = raw_df.assign(**data, **paper_meta, **fig_meta).convert_dtypes()  # type: ignore  # pandas
+            fig_df = raw_df.assign(**data, **paper_meta, **fig_meta).convert_dtypes()
             dfs.append(fig_df)
 
     df = pd.concat(dfs)
