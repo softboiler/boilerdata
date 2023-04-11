@@ -80,7 +80,7 @@
       "command": "pwsh",
       "args": [
         "-Command",
-        "pip freeze --requirement requirements.txt --local --exclude-editable > frozen_requirements.txt"
+        "pip freeze --requirement requirements.txt --local --exclude-editable > repro.txt"
       ],
       "problemMatcher": []
     },

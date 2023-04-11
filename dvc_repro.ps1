@@ -24,7 +24,7 @@ else {
 
 # Install the package and all frozen requirements
 pip install --no-deps '.'
-pip install --requirement 'frozen_requirements.txt'
+pip install --requirement 'repro.txt'
 
 # Reproduce the results using DVC
 dvc repro
