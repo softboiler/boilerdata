@@ -88,7 +88,7 @@
       "label": "dvc: setup",
       "type": "process",
       "command": "pwsh",
-      "args": ["-Command", "python -m boilercv.stages.setup"],
+      "args": ["-Command", "python -m boilerdata.stages.setup"],
       "icon": { "id": "graph" },
       "problemMatcher": []
     },

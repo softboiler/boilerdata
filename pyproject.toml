@@ -4,16 +4,27 @@ build-backend = "flit_core.buildapi"
 
 [project]
 name = "boilerdata"
-requires-python = ">=3.10"
-dependencies = [ "dill>=0.3.6", "dvc[gs]>=2.53.0", "matplotlib>=3.7.1", "pandas>=1.5.3", "pandera>=0.14.5", "papermill>=2.4.0", "propshop>=0.1.1", "pyarrow>=11.0.0", "pydantic>=1.10.7", "pyjanitor>=0.24.0", "pyXSteam>=0.4.9", "pyyaml>=6.0", "ruamel.yaml>=0.17.21", "seaborn>=0.12.2", "scipy>=1.10.1", "sympy>=1.11.1", "uncertainties>=3.1.7", "jupyter-client<8",]
+version = "0.0.0"
+description = "Data processing pipeline for a nucleate pool boiling apparatus"
 readme = "README.md"
-dynamic = [ "version", "description",]
+requires-python = ">=3.10"
+classifiers = [ "License :: OSI Approved :: MIT License",]
+dependencies = [ "dill>=0.3.6", "dvc[gs]>=2.53.0", "matplotlib>=3.7.1", "pandas>=1.5.3", "pandera>=0.14.5", "papermill>=2.4.0", "propshop>=0.1.1", "pyarrow>=11.0.0", "pydantic>=1.10.7", "pyjanitor>=0.24.0", "pyXSteam>=0.4.9", "pyyaml>=6.0", "ruamel.yaml>=0.17.21", "seaborn>=0.12.2", "scipy>=1.10.1", "sympy>=1.11.1", "uncertainties>=3.1.7", "jupyter-client<8",]
 [[project.authors]]
 name = "Blake Naccarato"
 email = "blake.naccarato+boilerdata@gmail.com"
 
+[[project.authors]]
+name = "Kwang Jin Kim"
+
+[project.license]
+file = "LICENSE"
+
 [project.urls]
-Home = "https://github.com/blakeNaccarato/boilerdata"
+changes = "https://blakenaccarato.github.io/boilerdata/changelog.html"
+docs = "https://blakenaccarato.github.io/boilerdata/"
+repo = "https://github.com/blakeNaccarato/boilerdata"
+tracker = "https://github.com/blakeNaccarato/boilerdata/issues"
 
 [tool.ruff]
 fix = true
@@ -21,7 +32,7 @@ select = [ "ALL",]
 src = [ "src", "tests",]
 target-version = "py311"
 extend-exclude = [ "template", "typings", ".github", ".tools", ".venv",]
-ignore = [ "ANN", "ARG005", "C408", "COM", "D10", "D20", "D213", "D402", "DTZ", "E501", "EM", "ERA", "FBT", "F841", "G0", "INP001", "ISC", "PD013", "PD901", "PD011", "PGH003", "PLR0913", "PLW2901", "RET", "S301", "TCH", "TRY003", "W2", "B018", "F821", "S101", "T201",]
+ignore = [ "ANN", "ARG005", "C408", "COM", "D10", "D20", "D213", "D402", "DTZ", "E501", "EM", "ERA", "FBT", "F841", "G0", "INP001", "ISC", "PD013", "PD901", "PD011", "PGH003", "PLR0913", "PLR2004", "PLW2901", "RET", "S301", "TCH", "TRY003", "W2", "B018", "F821", "S101", "T201",]
 unfixable = [ "F601",]
 
 [tool.ruff.pydocstyle]
