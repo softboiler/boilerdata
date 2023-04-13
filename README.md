@@ -1,5 +1,7 @@
 # boilerdata
 
+[![DOI](https://zenodo.org/badge/454192899.svg)](https://zenodo.org/badge/latestdoi/454192899)
+
 Data processing pipeline for a nucleate pool boiling apparatus.
 
 ## Overview
