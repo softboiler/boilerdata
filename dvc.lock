@@ -230,8 +230,8 @@ stages:
       size: 27127
       nfiles: 1
     - path: data/plotter
-      md5: 400e6a969a57ebd125b135c6e0e0aa51.dir
-      size: 514691
+      md5: cab930b83a8ca1def3d7498d36611e0e.dir
+      size: 507329
       nfiles: 1
     - path: data/results
       md5: 8fd9233cf5fe53e15ff6dfb3d076eaff.dir
