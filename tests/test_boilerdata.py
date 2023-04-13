@@ -1,5 +1,4 @@
 import re
-from subprocess import run
 
 import pytest
 import yaml
@@ -42,10 +41,6 @@ SCHEMA_JSON = """\
 }
 \
 """
-
-
-def test_repro():
-    run(["dvc", "repro", "metrics", "--pull"])
 
 
 @pytest.mark.parametrize(

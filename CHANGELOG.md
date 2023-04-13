@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-- Generalize `expanduser2`
-- Implement basic CLI
-- Implement basic configs
+- Nothing yet
+
+## [0.0.0]
+
+- Freeze requirements used for pipeline reproduction in `repro.txt` for this release
+
+[Unreleased]: https://github.com/blakeNaccarato/boilerdata/compare/0.0.0...HEAD
+[0.0.0]: https://github.com/blakeNaccarato/boilerdata/releases/tag/0.0.0

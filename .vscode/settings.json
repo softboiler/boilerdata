@@ -32,10 +32,8 @@
     "source.unusedImports"
   ],
   "python.analysis.completeFunctionParens": false, // Buggy
-  "python.analysis.refactoring.allowMovingSymbols": true,
   //? Auto imports
   "python.analysis.importFormat": "absolute",
-  "python.analysis.autoImportUserSymbols": true,
   "python.analysis.autoImportCompletions": true,
   "python.analysis.extraCommitChars": true,
   "python.analysis.addImport.exactMatchOnly": false,
@@ -46,9 +44,6 @@
   "python.analysis.inlayHints.pytestParameters": true,
   //? See "include" and "extrapaths" in pyrightconfig.json
   "python.analysis.autoSearchPaths": false,
-  //? See "useLibraryCodeForTypes" in pyrightconfig.json
-  "python.analysis.typeCheckingMode": "off",
-  "python.analysis.completeFunctionParens": false, // Buggy for now
 
   //! Lint, test, format
   //* pytest
@@ -101,13 +96,13 @@
     "*.tsx": "${capture}.ts",
     "tsconfig.json": "tsconfig.*.json",
     "package.json": "package-lock.json, yarn.lock, pnpm-lock.yaml",
-    ".nest_tools_config": "coverage.xml, setup.ps1, update.ps1, *.code-workspace, *.prof, .copier-answers.yml, .coverage, .coveragerc, .env, .gitattributes, .gitmodules, .markdownlint.yaml, .pre-commit-config.yaml, .pytest_cache, .sourcery.yaml, codecov.yml, pyrightconfig.json, pytest.ini, pythonrc.py, renovate.json",
-    ".nest_md": "*.md, LICENSE"
+    ".nest_tools_config": "coverage.xml, setup.ps1, update.ps1, *.code-workspace, *.prof, .copier-answers.yml, .coverage, .coveragerc, .env, .gitattributes, .gitmodules, .markdownlint.yaml, .pre-commit-config.yaml, .pytest_cache, .sourcery.yaml, codecov.yml, pyproject.toml, pyrightconfig.json, pytest.ini, pythonrc.py, renovate.json",
+    ".nest_md": "*.md, CITATION.cff, LICENSE"
   },
   //* File associations
   "files.associations": {
     ".coveragerc": "ini",
-    ".env": "dotenv",
+    "*.env": "dotenv",
     ".pylintrc": "ini",
     "pyrightconfig.json": "jsonc",
     "*requirements*.txt": "pip-requirements",
