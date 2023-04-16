@@ -9,7 +9,7 @@ description = "Data processing pipeline for a nucleate pool boiling apparatus"
 readme = "README.md"
 requires-python = ">=3.10"
 classifiers = [ "License :: OSI Approved :: MIT License",]
-dependencies = [ "dill>=0.3.6", "dvc[gs]>=2.54.0", "matplotlib>=3.7.1", "pandas>=1.5.3", "pandera>=0.14.5", "papermill>=2.4.0", "propshop>=0.1.1", "pyarrow>=11.0.0", "pydantic>=1.10.7", "pyjanitor>=0.24.0", "pyXSteam>=0.4.9", "pyyaml>=6.0", "ruamel.yaml>=0.17.21", "seaborn>=0.12.2", "scipy>=1.10.1", "sympy>=1.11.1", "uncertainties>=3.1.7", "jupyter-client<8",]
+dependencies = [ "dill>=0.3.6", "dvc[gs]>=2.54.0", "matplotlib>=3.7.1", "pandas>=2.0.0", "pandera>=0.14.5", "papermill>=2.4.0", "propshop>=0.1.1", "pyarrow>=11.0.0", "pydantic>=1.10.7", "pyjanitor>=0.24.0", "pyXSteam>=0.4.9", "pyyaml>=6.0", "ruamel.yaml>=0.17.21", "seaborn>=0.12.2", "scipy>=1.10.1", "sympy>=1.11.1", "uncertainties>=3.1.7", "jupyter-client<8",]
 [[project.authors]]
 name = "Blake Naccarato"
 email = "blake.naccarato+boilerdata@gmail.com"
