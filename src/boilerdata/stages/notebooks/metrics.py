@@ -67,7 +67,7 @@ def add_units(
     units = cols.get_level_values("units")
 
     old = (col.name for col in proj.axes.cols)
-    new = (add_unit(q, u) for q, u in zip(quantity, units, strict=True))  # type: ignore  # pyright 1.1.309
+    new = (add_unit(q, u) for q, u in zip(quantity, units, strict=True))
     mapper = dict(zip(old, new, strict=True))
     return df.rename(axis="columns", mapper=mapper), mapper
 
