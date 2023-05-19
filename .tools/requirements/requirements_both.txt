@@ -12,7 +12,7 @@ toml==0.10.2
 flit==3.8.0
 
 # Type checking
-pyright==1.1.303
+pyright==1.1.309
 
 # Pre-commit common requirements
 black==23.3.0
