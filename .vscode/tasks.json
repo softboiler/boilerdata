@@ -12,37 +12,132 @@
       "default": "",
       "options": [
         "",
-        "-f",
-        "axes",
         "schema",
-        "modelfun",
-        "runs",
-        "parse_benchmarks",
-        "pipeline",
-        "metrics",
-        "literature",
-        "originlab"
+        "update_binarized_preview",
+        "contours",
+        "fill",
+        "update_filled_preview"
       ]
+    },
+    {
+      "id": "preview",
+      "type": "pickString",
+      "description": "preview",
+      "default": "",
+      "options": ["gray", "binarized", "filled", "composite"]
+    },
+    {
+      "id": "version",
+      "type": "promptString",
+      "description": "version",
+      "default": "0.0.1"
     }
   ],
   "tasks": [
     // * -------------------------------------------------------------------------- * //
     // * Changes below should persist in significant template updates.
     {
-      "label": "proj: Profile the pipeline",
+      "label": "proj: Run file PREVIEW/WRITE",
       "type": "process",
       "command": "pwsh",
-      "args": [
-        "-Command",
-        "python -m cProfile -o .prof -m boilerdata.stages.pipeline"
-      ],
+      "args": ["-Command", "python ${file}"],
+      "icon": { "id": "repo" },
+      "problemMatcher": [],
+      "options": {
+        "env": {
+          "BOILERCV_PREVIEW": "True",
+          "BOILERCV_WRITE": "True"
+        }
+      }
+    },
+    {
+      "label": "proj: Run file DEBUG/PREVIEW/WRITE",
+      "type": "process",
+      "command": "pwsh",
+      "args": ["-Command", "python ${file}"],
+      "icon": { "id": "repo" },
+      "problemMatcher": [],
+      "options": {
+        "env": {
+          "BOILERCV_DEBUG": "True",
+          "BOILERCV_PREVIEW": "True",
+          "BOILERCV_WRITE": "True"
+        }
+      }
+    },
+    {
+      "label": "proj: Run file PREVIEW",
+      "type": "process",
+      "command": "pwsh",
+      "args": ["-Command", "python ${file}"],
+      "icon": { "id": "repo" },
+      "problemMatcher": [],
+      "options": {
+        "env": { "BOILERCV_PREVIEW": "True" }
+      }
+    },
+    {
+      "label": "proj: Run file WRITE",
+      "type": "process",
+      "command": "pwsh",
+      "args": ["-Command", "python ${file}"],
+      "icon": { "id": "repo" },
+      "problemMatcher": [],
+      "options": {
+        "env": { "BOILERCV_WRITE": "True" }
+      }
+    },
+    {
+      "label": "proj: preview",
+      "type": "process",
+      "command": "pwsh",
+      "args": ["-Command", "python -m boilercv.previews.${input:preview}"],
+      "icon": { "id": "graph" },
+      "options": {
+        "env": { "BOILERCV_PREVIEW": "True" }
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "dvc: repro force downstream (debug)",
+      "dependsOrder": "sequence",
+      "dependsOn": ["dvc: synchronize paths"],
+      "type": "process",
+      "command": "pwsh",
+      "args": ["-Command", "dvc repro --force --downstream ${input:stage}"],
+      "icon": { "id": "graph" },
+      "options": {
+        "env": { "BOILERCV_DEBUG": "True" }
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "dvc: repro (debug)",
+      "dependsOrder": "sequence",
+      "dependsOn": ["dvc: synchronize paths"],
+      "type": "process",
+      "command": "pwsh",
+      "args": ["-Command", "dvc repro ${input:stage}"],
+      "icon": { "id": "graph" },
+      "options": {
+        "env": { "BOILERCV_DEBUG": "True" }
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "dvc: repro force downstream",
+      "dependsOrder": "sequence",
+      "dependsOn": ["dvc: synchronize paths"],
+      "type": "process",
+      "command": "pwsh",
+      "args": ["-Command", "dvc repro --force --downstream ${input:stage}"],
       "icon": { "id": "graph" },
       "problemMatcher": []
     },
     {
       "label": "dvc: repro",
       "dependsOrder": "sequence",
-      "dependsOn": ["dvc: setup"],
+      "dependsOn": ["dvc: synchronize paths"],
       "type": "process",
       "command": "pwsh",
       "args": ["-Command", "dvc repro ${input:stage}"],
@@ -50,10 +145,19 @@
       "problemMatcher": []
     },
     {
-      "label": "dvc: repro",
+      "label": "dvc: repro force all",
+      "dependsOrder": "sequence",
+      "dependsOn": [
+        "setup: Update project",
+        "dvc: synchronize paths",
+        "dvc: freeze",
+        "git: Stage all files",
+        "pre-commit",
+        "git: Stage all files"
+      ],
       "type": "process",
       "command": "pwsh",
-      "args": ["-Command", "dvc repro ${input:stage}"],
+      "args": ["-Command", "dvc repro --force"],
       "icon": { "id": "graph" },
       "problemMatcher": []
     },
@@ -62,8 +166,8 @@
       "dependsOrder": "sequence",
       "dependsOn": [
         "setup: Update project",
+        "dvc: synchronize paths",
         "dvc: freeze",
-        "dvc: setup",
         "git: Stage all files",
         "pre-commit",
         "git: Stage all files"
@@ -75,27 +179,9 @@
       "problemMatcher": []
     },
     {
-      "label": "dvc: freeze",
-      "type": "process",
-      "command": "pwsh",
-      "args": [
-        "-Command",
-        "pip freeze --requirement requirements.txt --local --exclude-editable > repro.txt"
-      ],
-      "problemMatcher": []
-    },
-    {
-      "label": "dvc: setup",
-      "type": "process",
-      "command": "pwsh",
-      "args": ["-Command", "python -m boilerdata.stages.setup"],
-      "icon": { "id": "graph" },
-      "problemMatcher": []
-    },
-    // * -------------------------------------------------------------------------- * //
-    // * DVC DAG * //
-    {
       "label": "dvc: dag",
+      "dependsOrder": "sequence",
+      "dependsOn": ["dvc: synchronize paths"],
       "type": "process",
       "command": "pwsh",
       "args": [
@@ -103,6 +189,43 @@
         "(dvc dag --md) -Replace 'mermaid', '{mermaid}' > docs/dag.md && . '~/.local/nodeenvs/markdownlint/Scripts/Activate.ps1' && markdownlint --fix docs/dag.md"
       ],
       "icon": { "id": "graph" },
+      "problemMatcher": []
+    },
+    {
+      "label": "dvc: synchronize paths",
+      "type": "process",
+      "command": "pwsh",
+      "args": ["-Command", "python -m boilercv.models.paths"],
+      "icon": { "id": "graph" },
+      "problemMatcher": []
+    },
+    {
+      "label": "dvc: freeze",
+      "type": "process",
+      "command": "pwsh",
+      "args": [
+        "-Command",
+        "pip freeze --requirement requirements.txt --local --exclude-editable > repro.txt"
+      ],
+      "icon": { "id": "graph" },
+      "problemMatcher": []
+    },
+    // * -------------------------------------------------------------------------- * //
+    // * WSL-SPECIFIC * //
+    {
+      "label": "wsl: Copy PID of Python Debugger",
+      "type": "shell",
+      "command": "ps aux | grep python | grep --max-count 1 -- --adapter-access-token | grep --only-matching --perl-regexp 'user\\s+\\d+' | grep --only-matching --perl-regexp '\\d+' | clip.exe",
+      "group": {
+        "kind": "test",
+        "isDefault": true
+      },
+      "presentation": {
+        "close": false,
+        "focus": true,
+        "reveal": "always"
+      },
+      "icon": { "id": "terminal-linux" },
       "problemMatcher": []
     },
 
@@ -155,7 +278,7 @@
       "problemMatcher": []
     },
     {
-      "label": "task: Remove *.rej",
+      "label": "setup: Remove *.rej",
       "type": "process",
       "command": "pwsh",
       "args": [
@@ -209,6 +332,27 @@
       "problemMatcher": []
     },
     {
+      "label": "git: Push with tags",
+      "type": "process",
+      "command": "pwsh",
+      "args": ["-Command", "git push; git push --tags"],
+      "icon": { "id": "git-branch" },
+      "problemMatcher": []
+    },
+    {
+      "label": "git: Prepare to release new version",
+      "dependsOrder": "sequence",
+      "dependsOn": ["setup: Compose pyproject.toml", "git: Stage all files"],
+      "type": "process",
+      "command": "pwsh",
+      "args": [
+        "-Command",
+        "git commit -m 'Release ${input:version}'; git tag ${input:version}"
+      ],
+      "icon": { "id": "git-branch" },
+      "problemMatcher": []
+    },
+    {
       "label": "git: Rebase back to fork",
       "type": "process",
       "command": "pwsh",
@@ -228,7 +372,7 @@
     // * -------------------------------------------------------------------------- * //
     // * BLACK * //
     {
-      "label": "task: black: Ignore magic comma in this file",
+      "label": "black: Ignore magic comma in this file",
       "type": "process",
       "command": "pwsh",
       "args": ["-Command", "black -C ${file}"],
@@ -236,7 +380,7 @@
       "problemMatcher": []
     },
     {
-      "label": "task: black: Ignore magic comma in all project files",
+      "label": "black: Ignore magic comma in all project files",
       "type": "process",
       "command": "pwsh",
       "args": ["-Command", "black -C src tests"],
@@ -246,6 +390,14 @@
 
     // * -------------------------------------------------------------------------- * //
     // * OTHER TASKS * //
+    {
+      "label": "task: Invoke pyright",
+      "type": "process",
+      "command": "pwsh",
+      "args": [".tools/scripts/Invoke-Pyright.ps1"],
+      "icon": { "id": "type-hierarchy-sub" },
+      "problemMatcher": []
+    },
     {
       "label": "task: sphinx-autobuild docs (preview)",
       "type": "process",
@@ -282,14 +434,6 @@
         "autoflake -i --remove-all-unused-imports --ignore-init-module-imports ${file}"
       ],
       "icon": { "id": "code" },
-      "problemMatcher": []
-    },
-    {
-      "label": "task: pytest-cov: Generate coverage",
-      "type": "process",
-      "command": "pwsh",
-      "args": ["-Command", "pytest --cov --cov-report xml"],
-      "icon": { "id": "beaker" },
       "problemMatcher": []
     }
   ]

@@ -67,7 +67,7 @@ repos:
       - id: "pyright"
         name: "pyright"
         language: "system"
-        entry: "pwsh -Command pyright"
+        entry: "pwsh .tools/scripts/Invoke-Pyright.ps1"
         pass_filenames: false
         files: |
           (?x)^(

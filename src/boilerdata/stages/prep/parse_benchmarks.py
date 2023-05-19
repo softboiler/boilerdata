@@ -37,7 +37,7 @@ def parse_benchmark(df: pd.DataFrame, proj: Project) -> pd.DataFrame:
     end = base.tail(10).mean()
     base_normalized = (base - start) / (end - start)
     time_of_90_rise = (base_normalized > threshold).idxmax()
-    return df.loc[[time_of_90_rise], :]
+    return df.loc[[time_of_90_rise], :]  # type: ignore  # pyright 1.1.309
 
 
 # * -------------------------------------------------------------------------------- * #
