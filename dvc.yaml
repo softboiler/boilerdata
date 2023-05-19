@@ -3,7 +3,6 @@ stages:
     cmd: "python -m boilerdata.stages.axes"
     deps:
       - "${dirs.stage_axes}"
-      - "${dirs.stage_setup}"
       - "${dirs.requirements}"
       - "${dirs.dev_requirements}"
       - "${dirs.config}/axes.yaml"
