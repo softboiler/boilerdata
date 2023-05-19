@@ -188,6 +188,27 @@
     // * -------------------------------------------------------------------------- * //
     // * GIT * //
     {
+      "label": "git: Push with tags",
+      "type": "process",
+      "command": "pwsh",
+      "args": ["-Command", "git push; git push --tags"],
+      "icon": { "id": "git-branch" },
+      "problemMatcher": []
+    },
+    {
+      "label": "git: Prepare to release new version",
+      "dependsOrder": "sequence",
+      "dependsOn": ["setup: Compose pyproject.toml", "git: Stage all files"],
+      "type": "process",
+      "command": "pwsh",
+      "args": [
+        "-Command",
+        "git commit -m 'Release ${input:version}'; git tag ${input:version}"
+      ],
+      "icon": { "id": "git-branch" },
+      "problemMatcher": []
+    },
+    {
       "label": "git: Rebase back to fork",
       "type": "process",
       "command": "pwsh",
@@ -199,7 +220,7 @@
       "label": "git: Stage all files",
       "type": "process",
       "command": "pwsh",
-      "args": ["-Command", "git add -A"],
+      "args": ["-Command", "git add --all"],
       "icon": { "id": "git-branch" },
       "problemMatcher": []
     },
@@ -229,7 +250,10 @@
       "label": "task: sphinx-autobuild docs (preview)",
       "type": "process",
       "command": "pwsh",
-      "args": ["-Command", "sphinx-autobuild docs _site"],
+      "args": [
+        "-Command",
+        "sphinx-autobuild docs _site --watch README.md --watch CHANGELOG.md"
+      ],
       "icon": { "id": "book" },
       "problemMatcher": []
     },

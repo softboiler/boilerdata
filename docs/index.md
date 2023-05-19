@@ -9,3 +9,8 @@
 :alt: dag
 :align: center
 ```
+
+```{toctree}
+:hidden:
+changelog
+```

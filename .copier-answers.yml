@@ -1,9 +1,10 @@
 # Changes here will be overwritten by Copier; NEVER EDIT MANUALLY
-_commit: 1bbbc7c
+_commit: 5b00e5c
 _src_path: gh:blakeNaccarato/copier-python
 actions_runner: ubuntu-latest
 github_repo_name: boilerdata
-project_email: blake.naccarato+boilerdata@gmail.com
+project_description: Data processing pipeline for a nucleate pool boiling apparatus.
+project_email: blake.naccarato@gmail.com
 project_name: boilerdata
 project_owner_github_username: blakeNaccarato
 project_owner_name: Blake Naccarato

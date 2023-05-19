@@ -1,8 +1,8 @@
 ci:
   skip:
+    - "compose-pyproject"
     - "pytest"
     - "pyright"
-    - "dvc-pre-commit"
     - "dvc-post-checkout"
     - "dvc-pre-push"
   autoupdate_schedule: "quarterly"
@@ -12,9 +12,8 @@ repos:
   # * Changes below should persist in significant template updates.
 
   - repo: "https://github.com/iterative/dvc"
-    rev: "2.54.0"
+    rev: "2.57.1"
     hooks:
-      - id: "dvc-pre-commit"
       - id: "dvc-post-checkout"
       - id: "dvc-pre-push"
         additional_dependencies: ["dvc[gs]"]
@@ -22,25 +21,72 @@ repos:
   # * ------------------------------------------------------------------------------ * #
   # * Changes below may be lost in significant template updates.
 
-  - repo: local
+  - repo: "meta"
     hooks:
-      - id: pytest
-        name: pytest
-        language: system
-        entry: pwsh -Command pytest
+      - id: "check-hooks-apply"
+      - id: "check-useless-excludes"
+  - repo: "local"
+    hooks:
+      - id: "compose-pyproject"
+        name: "compose-pyproject"
+        language: "system"
+        entry: "pwsh -Command python .tools/scripts/compose_pyproject.py"
+        files: |
+          (?x)^(
+            pyproject.toml
+            |requirements.txt
+            |.tools/pyproject.toml
+          )$
         pass_filenames: false
-        always_run: true
-      - id: pyright
-        name: pyright
-        language: system
-        entry: pwsh -Command pyright
+      - id: "pytest"
+        name: "pytest"
+        language: "system"
+        entry: "pwsh -Command pytest --run_skips false"
+        pass_filenames: false
+        verbose: true
+        files: |
+          (?x)^(
+            src/.*
+            |tests/.*
+          )$
+      - id: "pytest-slow"
+        name: "pytest-slow"
+        language: "system"
+        entry: "pwsh -Command pytest"
+        pass_filenames: false
+        verbose: true
+        files: |
+          (?x)^(
+            pyproject.toml
+            |requirements.txt
+            |.tools/(
+              pyproject.toml
+              |requirements/.*
+            )
+          )$
+      - id: "pyright"
+        name: "pyright"
+        language: "system"
+        entry: "pwsh -Command pyright"
+        pass_filenames: false
+        files: |
+          (?x)^(
+            src/.*
+            |tests/.*
+            |pyproject.toml
+            |requirements.txt
+            |.tools/(
+              pyproject.toml
+              |requirements/.*
+            )
+          )$
   - repo: "https://github.com/pre-commit/pre-commit-hooks"
     rev: "v4.4.0"
     hooks:
       - id: "end-of-file-fixer"
       - id: "trailing-whitespace"
   - repo: "https://github.com/DavidAnson/markdownlint-cli2"
-    rev: "v0.6.0"
+    rev: "v0.7.1"
     hooks:
       - id: "markdownlint-cli2-fix"
   - repo: "https://github.com/psf/black"
@@ -48,7 +94,7 @@ repos:
     hooks:
       - id: "black"
   - repo: "https://github.com/charliermarsh/ruff-pre-commit"
-    rev: "v0.0.260"
+    rev: "v0.0.263"
     hooks:
       - id: "ruff"
   - repo: "https://github.com/srstevenson/nb-clean"
@@ -73,4 +119,4 @@ repos:
       - id: "nbqa-black"
         additional_dependencies: ["black==23.3.0"]
       - id: "nbqa-ruff"
-        additional_dependencies: ["ruff==0.0.260"]
+        additional_dependencies: ["ruff==0.0.263"]
