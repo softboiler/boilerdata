@@ -12,105 +12,21 @@
       "default": "",
       "options": [
         "",
+        "axes",
         "schema",
-        "update_binarized_preview",
-        "contours",
-        "fill",
-        "update_filled_preview"
+        "modelfun",
+        "runs",
+        "parse_benchmarks",
+        "pipeline",
+        "metrics",
+        "literature",
+        "originlab"
       ]
-    },
-    {
-      "id": "preview",
-      "type": "pickString",
-      "description": "preview",
-      "default": "",
-      "options": ["gray", "binarized", "filled", "composite"]
-    },
-    {
-      "id": "version",
-      "type": "promptString",
-      "description": "version",
-      "default": "0.0.1"
     }
   ],
   "tasks": [
     // * -------------------------------------------------------------------------- * //
     // * Changes below should persist in significant template updates.
-    {
-      "label": "proj: Run file PREVIEW/WRITE",
-      "type": "process",
-      "command": "pwsh",
-      "args": ["-Command", "python ${file}"],
-      "icon": { "id": "repo" },
-      "problemMatcher": [],
-      "options": {
-        "env": {
-          "BOILERCV_PREVIEW": "True",
-          "BOILERCV_WRITE": "True"
-        }
-      }
-    },
-    {
-      "label": "proj: Run file DEBUG/PREVIEW/WRITE",
-      "type": "process",
-      "command": "pwsh",
-      "args": ["-Command", "python ${file}"],
-      "icon": { "id": "repo" },
-      "problemMatcher": [],
-      "options": {
-        "env": {
-          "BOILERCV_DEBUG": "True",
-          "BOILERCV_PREVIEW": "True",
-          "BOILERCV_WRITE": "True"
-        }
-      }
-    },
-    {
-      "label": "proj: Run file PREVIEW",
-      "type": "process",
-      "command": "pwsh",
-      "args": ["-Command", "python ${file}"],
-      "icon": { "id": "repo" },
-      "problemMatcher": [],
-      "options": {
-        "env": { "BOILERCV_PREVIEW": "True" }
-      }
-    },
-    {
-      "label": "proj: Run file WRITE",
-      "type": "process",
-      "command": "pwsh",
-      "args": ["-Command", "python ${file}"],
-      "icon": { "id": "repo" },
-      "problemMatcher": [],
-      "options": {
-        "env": { "BOILERCV_WRITE": "True" }
-      }
-    },
-    {
-      "label": "proj: preview",
-      "type": "process",
-      "command": "pwsh",
-      "args": ["-Command", "python -m boilercv.previews.${input:preview}"],
-      "icon": { "id": "graph" },
-      "options": {
-        "env": { "BOILERCV_PREVIEW": "True" }
-      },
-      "problemMatcher": []
-    },
-    {
-      "label": "dvc: repro force downstream (debug)",
-      "dependsOrder": "sequence",
-      "dependsOn": ["dvc: synchronize paths"],
-      "type": "process",
-      "command": "pwsh",
-      "args": ["-Command", "dvc repro --force --downstream ${input:stage}"],
-      "icon": { "id": "graph" },
-      "options": {
-        "env": { "BOILERCV_DEBUG": "True" }
-      },
-      "problemMatcher": []
-    },
     {
       "label": "dvc: repro (debug)",
       "dependsOrder": "sequence",
@@ -195,7 +111,7 @@
       "label": "dvc: synchronize paths",
       "type": "process",
       "command": "pwsh",
-      "args": ["-Command", "python -m boilercv.models.paths"],
+      "args": ["-Command", "python -m boilerdata.models.dirs"],
       "icon": { "id": "graph" },
       "problemMatcher": []
     },

@@ -4,8 +4,26 @@ from pathlib import Path
 from typing import Any
 
 from pydantic import DirectoryPath, Field, FilePath, validator
+from ruamel.yaml import YAML
 
+from boilerdata import BASE, PARAMS_FILE
 from boilerdata.models.common import MyBaseModel, StrPath
+
+
+def init():
+    yaml = YAML()
+    yaml.indent(offset=2)
+    dirs = Dirs()
+    proj = yaml.load(PARAMS_FILE)
+    dirs_dict = dirs.dict(exclude_none=True)
+    proj["dirs"] = repl_path(dirs_dict)
+    proj["dirs"]["originlab_plot_files"] = repl_path(dirs_dict["originlab_plot_files"])
+    yaml.dump(proj, PARAMS_FILE)
+
+
+def repl_path(dirs_dict: dict[str, Path]):
+    """Replace Windows path separator with POSIX separator."""
+    return {k: str(v).replace("\\", "/") for k, v in dirs_dict.items()}
 
 
 class Dirs(MyBaseModel):
@@ -24,7 +42,7 @@ class Dirs(MyBaseModel):
     per_trial: Path | None = None
 
     # ! BASE DIRECTORY
-    base: DirectoryPath = Path(".")
+    base: DirectoryPath = BASE
 
     # ! PROJECT FILE
     file_proj: FilePath = base / "params.yaml"
@@ -141,7 +159,6 @@ class Dirs(MyBaseModel):
     file_pipeline_metrics: Path = tables / "pipeline_metrics.json"
 
     # ! STAGES
-    stage_setup: FilePath = stages / "setup.py"
     stage_axes: FilePath = stages / "axes.py"
     stage_parse_benchmarks: FilePath = prep / "parse_benchmarks.py"
     stage_literature: FilePath = stages / "literature.py"
@@ -176,3 +193,6 @@ class Dirs(MyBaseModel):
         directory = Path(directory)
         directory.mkdir(parents=True, exist_ok=True)
         return directory
+
+
+init()

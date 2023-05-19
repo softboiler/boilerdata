@@ -90,7 +90,6 @@ dirs:
     low: data/metrics/originlab_plots/low.png
   tables: data/metrics/tables
   file_pipeline_metrics: data/metrics/tables/pipeline_metrics.json
-  stage_setup: src/boilerdata/stages/setup.py
   stage_axes: src/boilerdata/stages/axes.py
   stage_parse_benchmarks: src/boilerdata/stages/prep/parse_benchmarks.py
   stage_literature: src/boilerdata/stages/literature.py

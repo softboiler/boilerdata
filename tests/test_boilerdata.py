@@ -1,106 +1,109 @@
-import re
+"""Test the pipeline."""
 
+from dataclasses import InitVar, dataclass, field
+from pathlib import Path
+from shutil import copytree
+from types import ModuleType
+
+import pandas as pd
 import pytest
-import yaml
-from pydantic import BaseModel
+import xarray as xr
 
-from boilerdata.models.common import dump_model, load_config, write_schema
-
-
-class UserModel(BaseModel):
-    test: str
-    other: str
+TEST_ROOT = Path("tests/test_root")
 
 
-USER_MODEL_INSTANCE = UserModel(test="hello", other="world")
+@pytest.mark.slow()
+def test_pipeline(check, monkeypatch, tmp_path):
+    """Test the pipeline."""
 
-USER_MODEL_YAML = "test: hello\nother: world\n"
+    def main():
+        copytree(TEST_ROOT, tmp_path, dirs_exist_ok=True)
+        stages = get_stages()
+        for stage in stages:
+            skip_asserts = ("schema",)
+            if stage.name in skip_asserts:
+                continue
+            for result, expected in stage.expectations.items():
+                with check:
+                    assert_stage_result(result, expected)
 
-USER_MODEL_MISSING_KEY_YAML = "test: hello\n"
+    def get_stages():
+        """Test the pipeline by patching constants before importing stages."""
 
-USER_MODEL_CONTAINS_NULL_YAML = "test: hello\nother: null\n"
+        import boilerdata
 
-SCHEMA_JSON = """\
-{
-  "title": "UserModel",
-  "type": "object",
-  "properties": {
-    "test": {
-      "title": "Test",
-      "type": "string"
-    },
-    "other": {
-      "title": "Other",
-      "type": "string"
-    }
-  },
-  "required": [
-    "test",
-    "other"
-  ]
-}
-\
-"""
+        monkeypatch.setattr(boilerdata, "BASE", tmp_path)
+        monkeypatch.setattr(boilerdata, "PARAMS_FILE", tmp_path / "params.yaml")
 
+        from boilerdata.models.project import Project
 
-@pytest.mark.parametrize(
-    ("test_id", "file"), [("does_not_exist", "file"), ("not_a_file", "")]
-)
-def test_load_config_raises(test_id, file, tmp_path):
-    with pytest.raises(FileNotFoundError):
-        load_config(tmp_path / file, UserModel)
+        proj = Project.get_project()
 
+        from boilerdata.stages import schema
 
-def test_load_config_raises_not_yaml(tmp_path):
-    file = tmp_path / "test.not_yaml"
-    file.touch()
-    with pytest.raises(ValueError, match=re.compile("yaml file", re.IGNORECASE)):
-        load_config(file, UserModel)
+        @dataclass
+        class Stage:
+            """Results of running a pipeline stage.
 
+            Args:
+                module: The module corresponding to this pipeline stage.
+                result_paths: The directories or a single file produced by the stage.
+                tmp_path: The results directory.
 
-def test_load_config_raises_value_error(tmp_path):
-    user_model_path = tmp_path / "test.yaml"
-    user_model_path.write_text("\n", encoding="utf-8")
-    with pytest.raises(ValueError, match=re.compile("file is empty", re.IGNORECASE)):
-        load_config(user_model_path, UserModel)
+            Attributes:
+                name: The name of the pipeline stage.
+                expectations: A mapping from resulting to expected files.
+            """
 
+            module: InitVar[ModuleType]
+            result_paths: InitVar[tuple[Path, ...]]
+            tmp_path: InitVar[Path]
 
-@pytest.mark.parametrize(
-    ("test_id", "model", "match"),
-    [
-        ("contains_null", USER_MODEL_CONTAINS_NULL_YAML, "none is not an allowed"),
-        ("missing_key", USER_MODEL_MISSING_KEY_YAML, "may be undefined"),
-    ],
-)
-def test_load_config_raises_validation(test_id, model, match, tmp_path):
-    user_model_path = tmp_path / "test.yaml"
-    user_model_path.write_text(model, encoding="utf-8")
-    # Can't check for ValidationError directly for some reason
-    with pytest.raises(Exception, match=re.compile(match, re.IGNORECASE)):
-        load_config(user_model_path, UserModel)
+            name: str = field(init=False)
+            expectations: dict[Path, Path] = field(init=False)
 
+            def __post_init__(
+                self, module: ModuleType, result_paths: tuple[Path, ...], tmp_path: Path
+            ):
+                self.name = module.__name__.removeprefix(f"{module.__package__}.")
+                module.main(proj)
+                results: list[Path] = []
+                expectations: list[Path] = []
+                for path in result_paths:
+                    expected = TEST_ROOT / path.relative_to(tmp_path)
+                    if expected.is_dir():
+                        results.extend(sorted(path.iterdir()))
+                        expectations.extend(sorted(expected.iterdir()))
+                    else:
+                        results.append(path)
+                        expectations.append(expected)
+                self.expectations = dict(zip(results, expectations, strict=True))
 
-def test_load_config(tmp_path):
-    user_model_path = tmp_path / "user_model.yaml"
-    user_model_path.write_text(USER_MODEL_YAML, encoding="utf-8")
-    config = load_config(user_model_path, UserModel)
-    assert yaml.safe_load(user_model_path.read_text(encoding="utf-8")) == config.dict()
+        return [
+            Stage(module, result_paths, tmp_path)
+            for module, result_paths in {
+                schema: (proj.dirs.project_schema,),
+            }.items()
+        ]
 
-
-def test_dump_model(tmp_path):
-    user_model_path = tmp_path / "test.yaml"
-    dump_model(user_model_path, USER_MODEL_INSTANCE)
-    assert user_model_path.read_text(encoding="utf-8") == USER_MODEL_YAML
+    main()
 
 
-def test_write_schema_raises_not_json(tmp_path):
-    file = tmp_path / "test.not_json"
-    with pytest.raises(ValueError):  # noqa: PT011  # Broad due to pydantic
-        write_schema(file, UserModel)
+def assert_stage_result(result_file: Path, expected_file: Path):
+    """Assert that the result of a stage is as expected.
 
+    Args:
+        result_file: The file produced by the stage.
+        expected_file: The file that the stage should produce.
 
-def test_write_schema(tmp_path):
-    """Ensure the schema can be written and is up to date."""
-    schema_path = tmp_path / "test.json"
-    write_schema(schema_path, UserModel)
-    assert schema_path.read_text(encoding="utf-8") == SCHEMA_JSON
+    Raises:
+        AssertionError: If the result is not as expected.
+    """
+    if expected_file.suffix == ".nc":
+        assert xr.open_dataset(result_file).identical(xr.open_dataset(expected_file))
+    elif expected_file.suffix == ".h5":
+        result_df = pd.read_hdf(result_file)
+        expected_df = pd.read_hdf(expected_file)
+        pd.testing.assert_index_equal(result_df.index, expected_df.index)
+    else:
+        assert result_file.read_bytes() == expected_file.read_bytes()
