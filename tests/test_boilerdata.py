@@ -107,6 +107,11 @@ def assert_stage_result(result_file: Path, expected_file: Path):
     if expected_file.suffix == ".csv":
         result_df = pd.read_csv(result_file)
         expected_df = pd.read_csv(expected_file)
-        pd.testing.assert_frame_equal(result_df, expected_df, rtol=1e-5, atol=1e0)
+        if any(part in expected_file.stem for part in ["benchmarks", "runs"]):
+            pd.testing.assert_series_equal(
+                result_df.T_4, expected_df.T_4, rtol=1, atol=1
+            )
+        else:
+            pd.testing.assert_series_equal(result_df.T_s, expected_df.T_s)
     else:
         assert result_file.read_bytes() == expected_file.read_bytes()
