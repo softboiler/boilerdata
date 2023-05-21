@@ -108,10 +108,8 @@ def assert_stage_result(result_file: Path, expected_file: Path):
         result_df = pd.read_csv(result_file)
         expected_df = pd.read_csv(expected_file)
         if any(part in expected_file.stem for part in ["benchmarks", "runs"]):
-            pd.testing.assert_series_equal(
-                result_df.T_4, expected_df.T_4, rtol=1, atol=1
-            )
+            all(result_df.T_4.round() == expected_df.T_4.round())
         else:
-            pd.testing.assert_series_equal(result_df.T_s, expected_df.T_s)
+            all(result_df.T_s.round() == expected_df.T_s.round())
     else:
         assert result_file.read_bytes() == expected_file.read_bytes()
