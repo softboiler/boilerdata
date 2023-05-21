@@ -29,6 +29,8 @@ def test_pipeline(check, monkeypatch, tmp_path):
     def get_stages():
         """Test the pipeline by patching constants before importing stages."""
 
+        monkeypatch.setenv("DYNACONF_APP_FOLDER", "tests/.propshop")
+
         import boilerdata
 
         monkeypatch.setattr(boilerdata, "DVC_BASE", tmp_path)
