@@ -1,0 +1,14 @@
+figure.autolayout: True
+
+#* Legend format
+legend.framealpha: None
+
+#* Saving figures
+#? Fix the whitespace around axes
+savefig.bbox: tight
+savefig.pad_inches: 0.2
+#? Somehow, both of these are necessary to get a white background
+savefig.transparent: False
+savefig.facecolor: white
+#?
+savefig.dpi: 300

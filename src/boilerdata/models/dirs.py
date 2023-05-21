@@ -6,7 +6,7 @@ from typing import Any
 from pydantic import DirectoryPath, Field, FilePath, validator
 from ruamel.yaml import YAML
 
-from boilerdata import BASE, PARAMS_FILE
+from boilerdata import DVC_BASE, GIT_BASE, PARAMS_FILE
 from boilerdata.models.common import MyBaseModel, StrPath
 
 
@@ -41,35 +41,30 @@ class Dirs(MyBaseModel):
     # Don't validate this here. Handle when initializing Project.
     per_trial: Path | None = None
 
-    # ! BASE DIRECTORY
-    base: DirectoryPath = BASE
-
     # ! PROJECT FILE
-    file_proj: FilePath = base / "params.yaml"
+    file_proj: FilePath = PARAMS_FILE
 
     # ! REQUIREMENTS
-    requirements: FilePath = base / "requirements.txt"
-    dev_requirements: DirectoryPath = base / ".tools/requirements"
+    requirements: FilePath = GIT_BASE / "requirements.txt"
+    dev_requirements: DirectoryPath = GIT_BASE / ".tools/requirements"
 
     # ! CONFIG
     # Careful, "Config" is a special member of BaseClass
-    config: DirectoryPath = base / "config"
+    config: DirectoryPath = DVC_BASE / "config"
 
     # ! PACKAGE
-    package: DirectoryPath = base / "src/boilerdata"
+    package: DirectoryPath = GIT_BASE / "src/boilerdata"
     stages: DirectoryPath = package / "stages"
     prep: DirectoryPath = stages / "prep"
     notebooks: DirectoryPath = stages / "notebooks"
     models: DirectoryPath = package / "models"
     validation: FilePath = package / "validation.py"
-    file_axes_enum: FilePath = package / "axes_enum.py"
 
     # ! DATA
-    data: DirectoryPath = base / "data"
+    data: DirectoryPath = DVC_BASE / "data"
 
     # ! AXES
     axes: DirectoryPath = data / "axes"
-    file_axes_enum_copy = axes / "axes_enum.py"
     file_originlab_coldes: Path = axes / "originlab_coldes.txt"
 
     # ! SCHEMA
@@ -176,11 +171,13 @@ class Dirs(MyBaseModel):
         "benchmarks_parsed",
         "benchmarks",
         "literature_results",
+        "literature",
         "metrics",
         "modelfun",
         "originlab_plots",
         "originlab_results",
         "plots",
+        "plotter",
         "project_schema",
         "results",
         "runs",

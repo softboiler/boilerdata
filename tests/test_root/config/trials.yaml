@@ -1,0 +1,9 @@
+trials:
+  - date: "2022-09-14"
+    group: "control"
+    rod: "R"
+    coupon: "A0"
+    joint: "none"
+    comment: "RTV has been applied on the cylindrical sidewall of the copper post."
+    good: false
+    new: true

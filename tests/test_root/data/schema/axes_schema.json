@@ -1,0 +1,151 @@
+{
+  "title": "Axes",
+  "description": "Columns in the dataframe.",
+  "type": "object",
+  "properties": {
+    "all": {
+      "title": "All",
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/Axis"
+      }
+    }
+  },
+  "required": [
+    "all"
+  ],
+  "additionalProperties": false,
+  "definitions": {
+    "PandasDtype": {
+      "title": "PandasDtype",
+      "description": "Valid data types for Pandas objects.\n\nSee also: https://pandas.pydata.org/docs/user_guide/basics.html#dtypes",
+      "enum": [
+        "object",
+        "float",
+        "int",
+        "bool",
+        "timedelta64[ns]",
+        "datetime64[ns]",
+        "string[pyarrow]",
+        "boolean",
+        "category",
+        "Sparse",
+        "interval",
+        "Int8",
+        "Int16",
+        "Int32",
+        "Int64",
+        "UInt8",
+        "UInt16",
+        "Uint32",
+        "UInt64"
+      ]
+    },
+    "PandasAggfun": {
+      "title": "PandasAggfun",
+      "description": "Valid built-in aggregation functions in Pandas.\n\nSee also: https://pandas.pydata.org/pandas-docs/stable/user_guide/groupby.html#aggregation",
+      "enum": [
+        "mean",
+        "sum",
+        "size",
+        "count",
+        "std",
+        "var",
+        "sem",
+        "describe",
+        "first",
+        "last",
+        "nth",
+        "min",
+        "max"
+      ]
+    },
+    "OriginLabColdes": {
+      "title": "OriginLabColdes",
+      "description": "Valid column designations for plotting in OriginLab.\n\nDesignations:\n    X: x-axis\n    Y: y-axis\n    Z: z-axis\n    M: x-axis error\n    E: y-axis error\n    L: Label\n    G: Group\n    S: Subject\n    N: None (Disregard)\n    Q: Omit (If this column isn't in the output at all)",
+      "enum": [
+        "X",
+        "Y",
+        "Z",
+        "M",
+        "E",
+        "L",
+        "G",
+        "S",
+        "N",
+        "Q"
+      ]
+    },
+    "Axis": {
+      "title": "Axis",
+      "description": "Metadata for a column in the dataframe.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "title": "Name",
+          "description": "The name of the column.",
+          "type": "string"
+        },
+        "dtype": {
+          "description": "The Pandas data type to be used to represent this column.",
+          "default": "float",
+          "allOf": [
+            {
+              "$ref": "#/definitions/PandasDtype"
+            }
+          ]
+        },
+        "units": {
+          "title": "Units",
+          "description": "The units for this column's values.",
+          "default": "",
+          "type": "string"
+        },
+        "agg": {
+          "description": "The aggregation method to use for this column.",
+          "default": "mean",
+          "allOf": [
+            {
+              "$ref": "#/definitions/PandasAggfun"
+            }
+          ]
+        },
+        "source": {
+          "title": "Source",
+          "description": "The name of the input column that this column is based off of.",
+          "type": "string"
+        },
+        "index": {
+          "title": "Index",
+          "description": "Whether this column is to be the index.",
+          "default": false,
+          "type": "boolean"
+        },
+        "meta": {
+          "title": "Meta",
+          "description": "Whether this column is informed by the trials config.",
+          "default": false,
+          "type": "boolean"
+        },
+        "originlab_coldes": {
+          "description": "The column designation for plotting in OriginLab.",
+          "default": "N",
+          "allOf": [
+            {
+              "$ref": "#/definitions/OriginLabColdes"
+            }
+          ]
+        },
+        "pretty_name": {
+          "title": "Pretty Name",
+          "description": "The pretty version of the column name.",
+          "type": "string"
+        }
+      },
+      "required": [
+        "name"
+      ],
+      "additionalProperties": false
+    }
+  }
+}

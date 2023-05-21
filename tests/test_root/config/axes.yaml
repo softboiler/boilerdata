@@ -1,0 +1,155 @@
+all:
+  - name: "trial"
+    dtype: "datetime64[ns]"
+    index: true
+
+  - name: "run"
+    dtype: "datetime64[ns]"
+    index: true
+
+  - name: "time"
+    dtype: "datetime64[ns]"
+    source: "time"
+    index: true
+    originlab_coldes: Q # Dropped after averaging
+
+  - name: "group"
+    dtype: "category"
+    meta: true
+
+  - name: "rod"
+    dtype: "category"
+    meta: true
+
+  - name: "coupon"
+    dtype: "category"
+    meta: true
+
+  - name: "sample"
+    dtype: "category"
+    meta: true
+
+  - name: "joint"
+    dtype: "category"
+    meta: true
+
+  - name: "good"
+    dtype: "boolean"
+    meta: true
+
+  - name: "new"
+    dtype: "boolean"
+    meta: true
+
+  - name: "V"
+    units: "V"
+    source: "V"
+
+  - name: "I"
+    units: "A"
+    source: "I"
+
+  - name: "T_0"
+    units: "C"
+    source: "T0cal"
+
+  - name: "T_1"
+    units: "C"
+    source: "T1cal"
+
+  - name: "T_1_err"
+    units: "C"
+
+  - name: "T_2"
+    units: "C"
+    source: "T2cal"
+
+  - name: "T_2_err"
+    units: "C"
+
+  - name: "T_3"
+    units: "C"
+    source: "T3cal"
+
+  - name: "T_3_err"
+    units: "C"
+
+  - name: "T_4"
+    units: "C"
+    source: "T4cal"
+
+  - name: "T_4_err"
+    units: "C"
+
+  - name: "T_5"
+    units: "C"
+    source: "T5cal"
+
+  - name: "T_5_err"
+    units: "C"
+
+  - name: "T_w1"
+    units: "C"
+    source: "Tw1cal"
+
+  - name: "T_w2"
+    units: "C"
+    source: "Tw2cal"
+
+  - name: "T_w3"
+    units: "C"
+    source: "Tw3cal"
+
+  - name: "P"
+    units: "psi"
+    source: "Pcal"
+
+  - name: "T_w"
+    units: "C"
+
+  - name: "T_w_diff"
+    units: "C"
+
+  - name: "T_s"
+    units: "C"
+
+  - name: "T_s_err"
+    units: "C"
+
+  - name: "q_s"
+    pretty_name: "q''_s"
+    units: "W/cm^2"
+    originlab_coldes: "Y"
+
+  - name: "q_s_err"
+    pretty_name: "q''s_err"
+    units: "W/cm^2"
+    originlab_coldes: "E"
+
+  - name: "k"
+    units: "W/m-K"
+
+  - name: "k_err"
+    units: "W/m-K"
+
+  - name: "h_w"
+    units: "W/m^2-K"
+
+  - name: "h_w_err"
+    units: "W/m^2-K"
+
+  - name: "h_a"
+    units: "W/m^2-K"
+
+  - name: "h_a_err"
+    units: "W/m^2-K"
+
+  - name: "DT"
+    pretty_name: "∆T"
+    units: "K"
+    originlab_coldes: "X"
+
+  - name: "DT_err"
+    pretty_name: "∆T_err"
+    units: "K"
+    originlab_coldes: "M"

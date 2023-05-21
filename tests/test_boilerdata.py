@@ -7,7 +7,6 @@ from types import ModuleType
 
 import pandas as pd
 import pytest
-import xarray as xr
 
 TEST_ROOT = Path("tests/test_root")
 
@@ -32,14 +31,15 @@ def test_pipeline(check, monkeypatch, tmp_path):
 
         import boilerdata
 
-        monkeypatch.setattr(boilerdata, "BASE", tmp_path)
+        monkeypatch.setattr(boilerdata, "DVC_BASE", tmp_path)
         monkeypatch.setattr(boilerdata, "PARAMS_FILE", tmp_path / "params.yaml")
 
         from boilerdata.models.project import Project
 
         proj = Project.get_project()
 
-        from boilerdata.stages import schema
+        from boilerdata.stages import pipeline, schema
+        from boilerdata.stages.prep import parse_benchmarks, runs
 
         @dataclass
         class Stage:
@@ -83,6 +83,9 @@ def test_pipeline(check, monkeypatch, tmp_path):
             Stage(module, result_paths, tmp_path)
             for module, result_paths in {
                 schema: (proj.dirs.project_schema,),
+                runs: (proj.dirs.runs,),
+                parse_benchmarks: (proj.dirs.benchmarks_parsed,),
+                pipeline: (proj.dirs.results,),
             }.items()
         ]
 
@@ -99,11 +102,9 @@ def assert_stage_result(result_file: Path, expected_file: Path):
     Raises:
         AssertionError: If the result is not as expected.
     """
-    if expected_file.suffix == ".nc":
-        assert xr.open_dataset(result_file).identical(xr.open_dataset(expected_file))
-    elif expected_file.suffix == ".h5":
-        result_df = pd.read_hdf(result_file)
-        expected_df = pd.read_hdf(expected_file)
-        pd.testing.assert_index_equal(result_df.index, expected_df.index)
+    if expected_file.suffix == ".csv":
+        result_df = pd.read_csv(result_file)
+        expected_df = pd.read_csv(expected_file)
+        pd.testing.assert_frame_equal(result_df, expected_df)
     else:
         assert result_file.read_bytes() == expected_file.read_bytes()

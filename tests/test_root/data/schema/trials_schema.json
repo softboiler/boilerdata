@@ -1,0 +1,164 @@
+{
+  "title": "Trials",
+  "description": "The trials.",
+  "type": "object",
+  "properties": {
+    "trials": {
+      "title": "Trials",
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/Trial"
+      }
+    }
+  },
+  "required": [
+    "trials"
+  ],
+  "additionalProperties": false,
+  "definitions": {
+    "Group": {
+      "title": "Group",
+      "description": "The group that this sample belongs to.",
+      "enum": [
+        "control",
+        "porous",
+        "hybrid"
+      ]
+    },
+    "Rod": {
+      "title": "Rod",
+      "description": "The rod used in this trial.",
+      "enum": [
+        "W",
+        "X",
+        "Y",
+        "R"
+      ]
+    },
+    "Coupon": {
+      "title": "Coupon",
+      "description": "The coupon attached to the rod for this trial.",
+      "enum": [
+        "A0",
+        "A1",
+        "A2",
+        "A3",
+        "A4",
+        "A5",
+        "A6",
+        "A7",
+        "A8",
+        "A9"
+      ]
+    },
+    "Sample": {
+      "title": "Sample",
+      "description": "The sample attached to the coupon in this trial.",
+      "enum": [
+        "B3"
+      ]
+    },
+    "Joint": {
+      "title": "Joint",
+      "description": "The method used to join parts of the sample in this trial.",
+      "enum": [
+        "paste",
+        "epoxy",
+        "solder",
+        "none"
+      ]
+    },
+    "Trial": {
+      "title": "Trial",
+      "description": "A trial.",
+      "type": "object",
+      "properties": {
+        "date": {
+          "title": "Date",
+          "description": "The date of the trial.",
+          "type": "string",
+          "format": "date"
+        },
+        "group": {
+          "$ref": "#/definitions/Group"
+        },
+        "rod": {
+          "$ref": "#/definitions/Rod"
+        },
+        "coupon": {
+          "$ref": "#/definitions/Coupon"
+        },
+        "sample": {
+          "$ref": "#/definitions/Sample"
+        },
+        "joint": {
+          "$ref": "#/definitions/Joint"
+        },
+        "good": {
+          "title": "Good",
+          "description": "Whether the boiling curve is good.",
+          "default": true,
+          "type": "boolean"
+        },
+        "new": {
+          "title": "New",
+          "description": "Whether this is newly-collected data.",
+          "default": false,
+          "type": "boolean"
+        },
+        "comment": {
+          "title": "Comment",
+          "default": "",
+          "type": "string"
+        },
+        "path": {
+          "title": "Path",
+          "format": "directory-path",
+          "type": "string"
+        },
+        "run_files": {
+          "title": "Run Files",
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "file-path"
+          }
+        },
+        "run_index": {
+          "title": "Run Index",
+          "type": "array",
+          "items": {
+            "type": "array",
+            "minItems": 2,
+            "maxItems": 2,
+            "items": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "string",
+                "format": "date-time"
+              }
+            ]
+          }
+        },
+        "thermocouple_pos": {
+          "title": "Thermocouple Pos",
+          "type": "object",
+          "additionalProperties": {
+            "type": "number"
+          }
+        }
+      },
+      "required": [
+        "date",
+        "group",
+        "rod",
+        "coupon",
+        "joint"
+      ],
+      "additionalProperties": false
+    }
+  }
+}

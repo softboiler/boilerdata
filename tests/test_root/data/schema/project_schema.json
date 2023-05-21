@@ -1,0 +1,662 @@
+{
+  "title": "Project",
+  "description": "The global project configuration.",
+  "type": "object",
+  "properties": {
+    "geometry": {
+      "$ref": "#/definitions/Geometry"
+    },
+    "params": {
+      "$ref": "#/definitions/Params"
+    },
+    "dirs": {
+      "$ref": "#/definitions/Dirs"
+    }
+  },
+  "additionalProperties": false,
+  "definitions": {
+    "Geometry": {
+      "title": "Geometry",
+      "description": "The fixed geometry for the problem.",
+      "type": "object",
+      "properties": {
+        "diameter": {
+          "title": "Diameter",
+          "description": "The common diameter of all rods.",
+          "default": 0.375,
+          "type": "number"
+        },
+        "rods": {
+          "title": "Rods",
+          "description": "Distance of each thermocouple from the cool side of the rod, starting with TC1. Fifth thermocouple may be omitted. Input: inch. Output: meter.",
+          "default": {
+            "X": [
+              3.5253,
+              3.05,
+              2.5756,
+              2.1006,
+              0.3754
+            ],
+            "Y": [
+              3.525,
+              3.0504,
+              2.5752,
+              2.1008,
+              0.3752
+            ],
+            "R": [
+              4.1,
+              3.625,
+              3.15,
+              2.675,
+              0.95
+            ],
+            "W": [
+              3.525,
+              3.05,
+              2.575,
+              2.1,
+              0.375
+            ]
+          },
+          "type": "object",
+          "additionalProperties": {
+            "allOf": [
+              {
+                "type": "array",
+                "items": [
+                  {},
+                  {}
+                ]
+              }
+            ]
+          }
+        },
+        "coupons": {
+          "title": "Coupons",
+          "description": "Length of the coupon. Input: inch. Output: meter.",
+          "default": {
+            "A0": 0.0,
+            "A1": 0.766,
+            "A2": 0.77,
+            "A3": 0.769,
+            "A4": 0.746,
+            "A5": 0.734,
+            "A6": 0.75,
+            "A7": 0.753,
+            "A8": 0.753,
+            "A9": 0.553
+          },
+          "type": "object",
+          "additionalProperties": {
+            "type": "number"
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "FitMethod": {
+      "title": "FitMethod",
+      "description": "Valid methods for curve fitting.",
+      "enum": [
+        "lm",
+        "trf",
+        "dogbox"
+      ]
+    },
+    "AxesEnum": {
+      "title": "AxesEnum",
+      "description": "An enumeration.",
+      "enum": [
+        "trial",
+        "run",
+        "time",
+        "group",
+        "rod",
+        "coupon",
+        "sample",
+        "joint",
+        "good",
+        "new",
+        "V",
+        "I",
+        "T_0",
+        "T_1",
+        "T_1_err",
+        "T_2",
+        "T_2_err",
+        "T_3",
+        "T_3_err",
+        "T_4",
+        "T_4_err",
+        "T_5",
+        "T_5_err",
+        "T_w1",
+        "T_w2",
+        "T_w3",
+        "P",
+        "T_w",
+        "T_w_diff",
+        "T_s",
+        "T_s_err",
+        "q_s",
+        "q_s_err",
+        "k",
+        "k_err",
+        "h_w",
+        "h_w_err",
+        "h_a",
+        "h_a_err",
+        "DT",
+        "DT_err"
+      ]
+    },
+    "Params": {
+      "title": "Params",
+      "description": "Parameters that can vary.",
+      "type": "object",
+      "properties": {
+        "records_to_average": {
+          "title": "Records To Average",
+          "description": "The number of records over which to average in a given trial.",
+          "type": "integer"
+        },
+        "fit_method": {
+          "$ref": "#/definitions/FitMethod"
+        },
+        "model_params": {
+          "description": "Parameters that can vary in the model. Some will be fixed.",
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/AxesEnum"
+          }
+        },
+        "model_inputs": {
+          "title": "Model Inputs",
+          "description": "Inputs to the symbolic model float evaluation stage.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "number"
+          }
+        },
+        "model_bounds": {
+          "title": "Model Bounds",
+          "description": "Bounds for the model parameters. Not used if parameter is fixed.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "array",
+            "minItems": 2,
+            "maxItems": 2,
+            "items": [
+              {
+                "anyOf": [
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "enum": [
+                      "-inf",
+                      "inf"
+                    ],
+                    "type": "string"
+                  }
+                ]
+              },
+              {
+                "anyOf": [
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "enum": [
+                      "-inf",
+                      "inf"
+                    ],
+                    "type": "string"
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        "fixed_params": {
+          "description": "Parameters to fix. Evaluated before fitting, overridable in code.",
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/AxesEnum"
+          }
+        },
+        "initial_values": {
+          "title": "Initial Values",
+          "description": "Initial guess for free parameters, constant value otherwise.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "number"
+          }
+        },
+        "copper_temps": {
+          "description": "Copper temperature measurements.",
+          "default": [
+            "T_1",
+            "T_2",
+            "T_3",
+            "T_4",
+            "T_5"
+          ],
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/AxesEnum"
+          }
+        },
+        "water_temps": {
+          "description": "Water temperature measurements.",
+          "default": [
+            "T_w1",
+            "T_w2",
+            "T_w3"
+          ],
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/AxesEnum"
+          }
+        },
+        "do_plot": {
+          "title": "Do Plot",
+          "description": "Whether to plot the fits of the individual runs.",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "records_to_average",
+        "fit_method",
+        "model_params",
+        "model_inputs",
+        "model_bounds",
+        "fixed_params",
+        "initial_values",
+        "do_plot"
+      ],
+      "additionalProperties": false
+    },
+    "Dirs": {
+      "title": "Dirs",
+      "description": "Directories relevant to the project.",
+      "type": "object",
+      "properties": {
+        "per_trial": {
+          "title": "Per Trial",
+          "type": "string",
+          "format": "path"
+        },
+        "base": {
+          "title": "Base",
+          "default": ".",
+          "format": "directory-path",
+          "type": "string"
+        },
+        "file_proj": {
+          "title": "File Proj",
+          "default": "params.yaml",
+          "format": "file-path",
+          "type": "string"
+        },
+        "requirements": {
+          "title": "Requirements",
+          "default": "requirements.txt",
+          "format": "file-path",
+          "type": "string"
+        },
+        "dev_requirements": {
+          "title": "Dev Requirements",
+          "default": ".tools/requirements",
+          "format": "directory-path",
+          "type": "string"
+        },
+        "config": {
+          "title": "Config",
+          "default": "config",
+          "format": "directory-path",
+          "type": "string"
+        },
+        "package": {
+          "title": "Package",
+          "default": "src/boilerdata",
+          "format": "directory-path",
+          "type": "string"
+        },
+        "stages": {
+          "title": "Stages",
+          "default": "src/boilerdata/stages",
+          "format": "directory-path",
+          "type": "string"
+        },
+        "prep": {
+          "title": "Prep",
+          "default": "src/boilerdata/stages/prep",
+          "format": "directory-path",
+          "type": "string"
+        },
+        "notebooks": {
+          "title": "Notebooks",
+          "default": "src/boilerdata/stages/notebooks",
+          "format": "directory-path",
+          "type": "string"
+        },
+        "models": {
+          "title": "Models",
+          "default": "src/boilerdata/models",
+          "format": "directory-path",
+          "type": "string"
+        },
+        "validation": {
+          "title": "Validation",
+          "default": "src/boilerdata/validation.py",
+          "format": "file-path",
+          "type": "string"
+        },
+        "file_axes_enum": {
+          "title": "File Axes Enum",
+          "default": "src/boilerdata/axes_enum.py",
+          "format": "file-path",
+          "type": "string"
+        },
+        "data": {
+          "title": "Data",
+          "default": "data",
+          "format": "directory-path",
+          "type": "string"
+        },
+        "axes": {
+          "title": "Axes",
+          "default": "data/axes",
+          "format": "directory-path",
+          "type": "string"
+        },
+        "file_originlab_coldes": {
+          "title": "File Originlab Coldes",
+          "default": "data/axes/originlab_coldes.txt",
+          "type": "string",
+          "format": "path"
+        },
+        "project_schema": {
+          "title": "Project Schema",
+          "default": "data/schema",
+          "format": "directory-path",
+          "type": "string"
+        },
+        "literature": {
+          "title": "Literature",
+          "default": "data/literature",
+          "format": "directory-path",
+          "type": "string"
+        },
+        "literature_results": {
+          "title": "Literature Results",
+          "default": "data/literature_results",
+          "format": "directory-path",
+          "type": "string"
+        },
+        "file_literature_results": {
+          "title": "File Literature Results",
+          "default": "data/literature_results/lit.csv",
+          "type": "string",
+          "format": "path"
+        },
+        "modelfun": {
+          "title": "Modelfun",
+          "default": "data/modelfun",
+          "format": "directory-path",
+          "type": "string"
+        },
+        "file_model": {
+          "title": "File Model",
+          "default": "data/modelfun/model.dillpickle",
+          "type": "string",
+          "format": "path"
+        },
+        "trials": {
+          "title": "Trials",
+          "default": "data/curves",
+          "format": "directory-path",
+          "type": "string"
+        },
+        "benchmarks": {
+          "title": "Benchmarks",
+          "default": "data/benchmarks",
+          "format": "directory-path",
+          "type": "string"
+        },
+        "runs": {
+          "title": "Runs",
+          "default": "data/runs",
+          "format": "directory-path",
+          "type": "string"
+        },
+        "file_runs": {
+          "title": "File Runs",
+          "default": "data/runs/runs.csv",
+          "type": "string",
+          "format": "path"
+        },
+        "benchmarks_parsed": {
+          "title": "Benchmarks Parsed",
+          "default": "data/benchmarks_parsed",
+          "format": "directory-path",
+          "type": "string"
+        },
+        "file_benchmarks_parsed": {
+          "title": "File Benchmarks Parsed",
+          "default": "data/benchmarks_parsed/benchmarks_parsed.csv",
+          "type": "string",
+          "format": "path"
+        },
+        "results": {
+          "title": "Results",
+          "default": "data/results",
+          "format": "directory-path",
+          "type": "string"
+        },
+        "file_results": {
+          "title": "File Results",
+          "default": "data/results/results.csv",
+          "type": "string",
+          "format": "path"
+        },
+        "plotter": {
+          "title": "Plotter",
+          "default": "data/plotter",
+          "format": "directory-path",
+          "type": "string"
+        },
+        "file_plotter": {
+          "title": "File Plotter",
+          "default": "data/plotter/results.opju",
+          "format": "file-path",
+          "type": "string"
+        },
+        "originlab_results": {
+          "title": "Originlab Results",
+          "default": "data/originlab_results",
+          "format": "directory-path",
+          "type": "string"
+        },
+        "file_originlab_results": {
+          "title": "File Originlab Results",
+          "default": "data/originlab_results/originlab_results.csv",
+          "type": "string",
+          "format": "path"
+        },
+        "plot_config": {
+          "title": "Plot Config",
+          "default": "config/plotting",
+          "format": "directory-path",
+          "type": "string"
+        },
+        "mpl_base": {
+          "title": "Mpl Base",
+          "default": "config/plotting/base.mplstyle",
+          "format": "file-path",
+          "type": "string"
+        },
+        "mpl_hide_title": {
+          "title": "Mpl Hide Title",
+          "default": "config/plotting/hide_title.mplstyle",
+          "format": "file-path",
+          "type": "string"
+        },
+        "metrics": {
+          "title": "Metrics",
+          "default": "data/metrics",
+          "format": "directory-path",
+          "type": "string"
+        },
+        "plots": {
+          "title": "Plots",
+          "default": "data/metrics/plots",
+          "format": "directory-path",
+          "type": "string"
+        },
+        "plot_new_fit_0": {
+          "title": "Plot New Fit 0",
+          "default": "data/metrics/plots/new_fit_0.png",
+          "type": "string",
+          "format": "path"
+        },
+        "plot_new_fit_1": {
+          "title": "Plot New Fit 1",
+          "default": "data/metrics/plots/new_fit_1.png",
+          "type": "string",
+          "format": "path"
+        },
+        "plot_new_fit_2": {
+          "title": "Plot New Fit 2",
+          "default": "data/metrics/plots/new_fit_2.png",
+          "type": "string",
+          "format": "path"
+        },
+        "plot_error_T_s": {
+          "title": "Plot Error T S",
+          "default": "data/metrics/plots/error_T_s.png",
+          "type": "string",
+          "format": "path"
+        },
+        "plot_error_q_s": {
+          "title": "Plot Error Q S",
+          "default": "data/metrics/plots/error_q_s.png",
+          "type": "string",
+          "format": "path"
+        },
+        "plot_error_h_a": {
+          "title": "Plot Error H A",
+          "default": "data/metrics/plots/error_h_a.png",
+          "type": "string",
+          "format": "path"
+        },
+        "originlab_plots": {
+          "title": "Originlab Plots",
+          "default": "data/metrics/originlab_plots",
+          "format": "directory-path",
+          "type": "string"
+        },
+        "originlab_plot_shortnames": {
+          "title": "Originlab Plot Shortnames",
+          "default": [
+            "lit",
+            "low"
+          ],
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "originlab_plot_files": {
+          "title": "Originlab Plot Files",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string",
+            "format": "path"
+          }
+        },
+        "tables": {
+          "title": "Tables",
+          "default": "data/metrics/tables",
+          "format": "directory-path",
+          "type": "string"
+        },
+        "file_pipeline_metrics": {
+          "title": "File Pipeline Metrics",
+          "default": "data/metrics/tables/pipeline_metrics.json",
+          "type": "string",
+          "format": "path"
+        },
+        "stage_setup": {
+          "title": "Stage Setup",
+          "default": "src/boilerdata/stages/setup.py",
+          "format": "file-path",
+          "type": "string"
+        },
+        "stage_axes": {
+          "title": "Stage Axes",
+          "default": "src/boilerdata/stages/axes.py",
+          "format": "file-path",
+          "type": "string"
+        },
+        "stage_parse_benchmarks": {
+          "title": "Stage Parse Benchmarks",
+          "default": "src/boilerdata/stages/prep/parse_benchmarks.py",
+          "format": "file-path",
+          "type": "string"
+        },
+        "stage_literature": {
+          "title": "Stage Literature",
+          "default": "src/boilerdata/stages/literature.py",
+          "format": "file-path",
+          "type": "string"
+        },
+        "stage_metrics": {
+          "title": "Stage Metrics",
+          "default": "src/boilerdata/stages/notebooks/metrics.ipynb",
+          "format": "file-path",
+          "type": "string"
+        },
+        "stage_modelfun": {
+          "title": "Stage Modelfun",
+          "default": "src/boilerdata/stages/notebooks/modelfun.ipynb",
+          "format": "file-path",
+          "type": "string"
+        },
+        "stage_originlab": {
+          "title": "Stage Originlab",
+          "default": "src/boilerdata/stages/originlab.py",
+          "format": "file-path",
+          "type": "string"
+        },
+        "stage_pipeline": {
+          "title": "Stage Pipeline",
+          "default": "src/boilerdata/stages/pipeline.py",
+          "format": "file-path",
+          "type": "string"
+        },
+        "stage_runs": {
+          "title": "Stage Runs",
+          "default": "src/boilerdata/stages/prep/runs.py",
+          "format": "file-path",
+          "type": "string"
+        },
+        "stage_schema": {
+          "title": "Stage Schema",
+          "default": "src/boilerdata/stages/schema.py",
+          "format": "file-path",
+          "type": "string"
+        },
+        "file_axes_enum_copy": {
+          "title": "File Axes Enum Copy",
+          "default": "data/axes/axes_enum.py",
+          "type": "string",
+          "format": "path"
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}

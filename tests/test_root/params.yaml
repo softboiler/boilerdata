@@ -40,6 +40,7 @@ params:
       - -inf
       - inf
 dirs:
+  base: .
   file_proj: params.yaml
   requirements: requirements.txt
   dev_requirements: .tools/requirements
@@ -50,6 +51,7 @@ dirs:
   notebooks: src/boilerdata/stages/notebooks
   models: src/boilerdata/models
   validation: src/boilerdata/validation.py
+  file_axes_enum: src/boilerdata/axes_enum.py
   data: data
   axes: data/axes
   file_originlab_coldes: data/axes/originlab_coldes.txt
@@ -97,3 +99,4 @@ dirs:
   stage_pipeline: src/boilerdata/stages/pipeline.py
   stage_runs: src/boilerdata/stages/prep/runs.py
   stage_schema: src/boilerdata/stages/schema.py
+  file_axes_enum_copy: data/axes/axes_enum.py
