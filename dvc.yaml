@@ -2,31 +2,31 @@ stages:
   axes:
     cmd: "python -m boilerdata.stages.axes"
     deps:
-      - "${dirs.stage_axes}"
-      - "${dirs.requirements}"
-      - "${dirs.dev_requirements}"
-      - "${dirs.config}/axes.yaml"
-      - "${dirs.models}/axes.py"
-      - "${dirs.models}/dirs.py"
+      - "${project_paths.stage_axes}"
+      - "${project_paths.requirements}"
+      - "${project_paths.dev_requirements}"
+      - "${project_paths.config}/axes.yaml"
+      - "${project_paths.models}/axes.py"
+      - "${project_paths.models}/dirs.py"
     outs:
       - "${dirs.axes}"
 
   schema:
     cmd: "python -m boilerdata.stages.schema"
     deps:
-      - "${dirs.stage_schema}"
+      - "${project_paths.stage_schema}"
       - "${dirs.axes}"
-      - "${dirs.models}"
+      - "${project_paths.models}"
     outs:
       - "${dirs.project_schema}"
 
   modelfun:
-    cmd: "papermill ${dirs.stage_modelfun} NUL"
+    cmd: "papermill ${project_paths.stage_modelfun} NUL"
     deps:
-      - "${dirs.stage_modelfun}"
+      - "${project_paths.stage_modelfun}"
       - "${dirs.axes}"
-      - "${dirs.models}/dirs.py"
-      - "${dirs.models}/project.py"
+      - "${project_paths.models}/dirs.py"
+      - "${project_paths.models}/project.py"
     outs:
       - "${dirs.modelfun}"
     params:
@@ -37,12 +37,12 @@ stages:
   runs:
     cmd: "python -m boilerdata.stages.prep.runs"
     deps:
-      - "${dirs.stage_runs}"
+      - "${project_paths.stage_runs}"
       - "${dirs.axes}"
       - "${dirs.trials}"
-      - "${dirs.models}/axes.py"
-      - "${dirs.models}/dirs.py"
-      - "${dirs.models}/trials.py"
+      - "${project_paths.models}/axes.py"
+      - "${project_paths.models}/dirs.py"
+      - "${project_paths.models}/trials.py"
     outs:
       - "${dirs.runs}"
     params:
@@ -51,7 +51,7 @@ stages:
   parse_benchmarks:
     cmd: "python -m boilerdata.stages.prep.parse_benchmarks"
     deps:
-      - "${dirs.stage_parse_benchmarks}"
+      - "${project_paths.stage_parse_benchmarks}"
       - "${dirs.axes}"
       - "${dirs.benchmarks}"
     outs:
@@ -60,11 +60,11 @@ stages:
   pipeline:
     cmd: "python -m boilerdata.stages.pipeline"
     deps:
-      - "${dirs.stage_pipeline}"
+      - "${project_paths.stage_pipeline}"
       - "${dirs.modelfun}"
       - "${dirs.runs}"
       - "${dirs.benchmarks_parsed}"
-      - "${dirs.validation}"
+      - "${project_paths.validation}"
     outs:
       - "${dirs.results}"
     params:
@@ -73,9 +73,9 @@ stages:
       - "params.model_bounds"
 
   metrics:
-    cmd: "papermill ${dirs.stage_metrics} NUL"
+    cmd: "papermill ${project_paths.stage_metrics} NUL"
     deps:
-      - "${dirs.stage_metrics}"
+      - "${project_paths.stage_metrics}"
       - "${dirs.results}"
     metrics:
       - "${dirs.file_pipeline_metrics}"
@@ -92,16 +92,16 @@ stages:
   literature:
     cmd: "python -m boilerdata.stages.literature"
     deps:
-      - "${dirs.stage_literature}"
+      - "${project_paths.stage_literature}"
       - "${dirs.literature}"
-      - "${dirs.models}/dirs.py"
+      - "${project_paths.models}/dirs.py"
     outs:
       - "${dirs.literature_results}"
 
   originlab:
     cmd: "python -m boilerdata.stages.originlab"
     deps:
-      - "${dirs.stage_originlab}"
+      - "${project_paths.stage_originlab}"
       - "${dirs.results}"
       - "${dirs.literature_results}"
       - "${dirs.plotter}"

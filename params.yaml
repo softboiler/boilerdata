@@ -41,15 +41,6 @@ params:
     - inf
 dirs:
   file_proj: params.yaml
-  requirements: requirements.txt
-  dev_requirements: .tools/requirements
-  config: config
-  package: src/boilerdata
-  stages: src/boilerdata/stages
-  prep: src/boilerdata/stages/prep
-  notebooks: src/boilerdata/stages/notebooks
-  models: src/boilerdata/models
-  validation: src/boilerdata/validation.py
   data: data
   axes: data/axes
   file_originlab_coldes: data/axes/originlab_coldes.txt
@@ -71,9 +62,6 @@ dirs:
   file_plotter: data/plotter/results.opju
   originlab_results: data/originlab_results
   file_originlab_results: data/originlab_results/originlab_results.csv
-  plot_config: config/plotting
-  mpl_base: config/plotting/base.mplstyle
-  mpl_hide_title: config/plotting/hide_title.mplstyle
   metrics: data/metrics
   plots: data/metrics/plots
   plot_new_fit_0: data/metrics/plots/new_fit_0.png
@@ -88,6 +76,19 @@ dirs:
     low: data/metrics/originlab_plots/low.png
   tables: data/metrics/tables
   file_pipeline_metrics: data/metrics/tables/pipeline_metrics.json
+project_paths:
+  requirements: requirements.txt
+  dev_requirements: .tools/requirements
+  config: config
+  package: src/boilerdata
+  stages: src/boilerdata/stages
+  prep: src/boilerdata/stages/prep
+  notebooks: src/boilerdata/stages/notebooks
+  models: src/boilerdata/models
+  validation: src/boilerdata/validation.py
+  plot_config: config/plotting
+  mpl_base: config/plotting/base.mplstyle
+  mpl_hide_title: config/plotting/hide_title.mplstyle
   stage_axes: src/boilerdata/stages/axes.py
   stage_parse_benchmarks: src/boilerdata/stages/prep/parse_benchmarks.py
   stage_literature: src/boilerdata/stages/literature.py

@@ -9,6 +9,9 @@
     "params": {
       "$ref": "#/definitions/Params"
     },
+    "project_paths": {
+      "$ref": "#/definitions/ProjectPaths"
+    },
     "dirs": {
       "$ref": "#/definitions/Dirs"
     }
@@ -277,17 +280,11 @@
       ],
       "additionalProperties": false
     },
-    "Dirs": {
-      "title": "Dirs",
+    "ProjectPaths": {
+      "title": "ProjectPaths",
       "description": "Directories relevant to the project.",
       "type": "object",
       "properties": {
-        "file_proj": {
-          "title": "File Proj",
-          "default": "params.yaml",
-          "format": "file-path",
-          "type": "string"
-        },
         "requirements": {
           "title": "Requirements",
           "default": "requirements.txt",
@@ -339,6 +336,92 @@
         "validation": {
           "title": "Validation",
           "default": "src/boilerdata/validation.py",
+          "format": "file-path",
+          "type": "string"
+        },
+        "plot_config": {
+          "title": "Plot Config",
+          "default": "config/plotting",
+          "format": "directory-path",
+          "type": "string"
+        },
+        "mpl_base": {
+          "title": "Mpl Base",
+          "default": "config/plotting/base.mplstyle",
+          "format": "file-path",
+          "type": "string"
+        },
+        "mpl_hide_title": {
+          "title": "Mpl Hide Title",
+          "default": "config/plotting/hide_title.mplstyle",
+          "format": "file-path",
+          "type": "string"
+        },
+        "stage_axes": {
+          "title": "Stage Axes",
+          "default": "src/boilerdata/stages/axes.py",
+          "format": "file-path",
+          "type": "string"
+        },
+        "stage_parse_benchmarks": {
+          "title": "Stage Parse Benchmarks",
+          "default": "src/boilerdata/stages/prep/parse_benchmarks.py",
+          "format": "file-path",
+          "type": "string"
+        },
+        "stage_literature": {
+          "title": "Stage Literature",
+          "default": "src/boilerdata/stages/literature.py",
+          "format": "file-path",
+          "type": "string"
+        },
+        "stage_metrics": {
+          "title": "Stage Metrics",
+          "default": "src/boilerdata/stages/notebooks/metrics.ipynb",
+          "format": "file-path",
+          "type": "string"
+        },
+        "stage_modelfun": {
+          "title": "Stage Modelfun",
+          "default": "src/boilerdata/stages/notebooks/modelfun.ipynb",
+          "format": "file-path",
+          "type": "string"
+        },
+        "stage_originlab": {
+          "title": "Stage Originlab",
+          "default": "src/boilerdata/stages/originlab.py",
+          "format": "file-path",
+          "type": "string"
+        },
+        "stage_pipeline": {
+          "title": "Stage Pipeline",
+          "default": "src/boilerdata/stages/pipeline.py",
+          "format": "file-path",
+          "type": "string"
+        },
+        "stage_runs": {
+          "title": "Stage Runs",
+          "default": "src/boilerdata/stages/prep/runs.py",
+          "format": "file-path",
+          "type": "string"
+        },
+        "stage_schema": {
+          "title": "Stage Schema",
+          "default": "src/boilerdata/stages/schema.py",
+          "format": "file-path",
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "Dirs": {
+      "title": "Dirs",
+      "description": "Directories relevant to the project.",
+      "type": "object",
+      "properties": {
+        "file_proj": {
+          "title": "File Proj",
+          "default": "params.yaml",
           "format": "file-path",
           "type": "string"
         },
@@ -468,24 +551,6 @@
           "type": "string",
           "format": "path"
         },
-        "plot_config": {
-          "title": "Plot Config",
-          "default": "config/plotting",
-          "format": "directory-path",
-          "type": "string"
-        },
-        "mpl_base": {
-          "title": "Mpl Base",
-          "default": "config/plotting/base.mplstyle",
-          "format": "file-path",
-          "type": "string"
-        },
-        "mpl_hide_title": {
-          "title": "Mpl Hide Title",
-          "default": "config/plotting/hide_title.mplstyle",
-          "format": "file-path",
-          "type": "string"
-        },
         "metrics": {
           "title": "Metrics",
           "default": "data/metrics",
@@ -563,60 +628,6 @@
           "default": "data/metrics/tables/pipeline_metrics.json",
           "type": "string",
           "format": "path"
-        },
-        "stage_axes": {
-          "title": "Stage Axes",
-          "default": "src/boilerdata/stages/axes.py",
-          "format": "file-path",
-          "type": "string"
-        },
-        "stage_parse_benchmarks": {
-          "title": "Stage Parse Benchmarks",
-          "default": "src/boilerdata/stages/prep/parse_benchmarks.py",
-          "format": "file-path",
-          "type": "string"
-        },
-        "stage_literature": {
-          "title": "Stage Literature",
-          "default": "src/boilerdata/stages/literature.py",
-          "format": "file-path",
-          "type": "string"
-        },
-        "stage_metrics": {
-          "title": "Stage Metrics",
-          "default": "src/boilerdata/stages/notebooks/metrics.ipynb",
-          "format": "file-path",
-          "type": "string"
-        },
-        "stage_modelfun": {
-          "title": "Stage Modelfun",
-          "default": "src/boilerdata/stages/notebooks/modelfun.ipynb",
-          "format": "file-path",
-          "type": "string"
-        },
-        "stage_originlab": {
-          "title": "Stage Originlab",
-          "default": "src/boilerdata/stages/originlab.py",
-          "format": "file-path",
-          "type": "string"
-        },
-        "stage_pipeline": {
-          "title": "Stage Pipeline",
-          "default": "src/boilerdata/stages/pipeline.py",
-          "format": "file-path",
-          "type": "string"
-        },
-        "stage_runs": {
-          "title": "Stage Runs",
-          "default": "src/boilerdata/stages/prep/runs.py",
-          "format": "file-path",
-          "type": "string"
-        },
-        "stage_schema": {
-          "title": "Stage Schema",
-          "default": "src/boilerdata/stages/schema.py",
-          "format": "file-path",
-          "type": "string"
         }
       },
       "additionalProperties": false
