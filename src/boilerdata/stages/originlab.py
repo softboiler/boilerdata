@@ -10,23 +10,23 @@ import originpro as op  # pyright: ignore[reportMissingImports]
 import pandas as pd
 
 from boilerdata.axes_enum import AxesEnum as A  # noqa: N814
-from boilerdata.models.project import Project
+from boilerdata.models.project import PROJ, Project
 
 
-def main(proj: Project):
+def main():
     (
         pd.read_csv(
-            proj.dirs.file_results,
+            PROJ.dirs.file_results,
             index_col=(index := [A.trial, A.run]),
             parse_dates=index,
-            dtype={col.name: col.dtype for col in proj.axes.cols},
+            dtype={col.name: col.dtype for col in PROJ.axes.cols},
         )
-        .pipe(transform_for_originlab, proj)
-        .to_csv(proj.dirs.file_originlab_results, index=False, encoding="utf-8")
+        .pipe(transform_for_originlab, PROJ)
+        .to_csv(PROJ.dirs.file_originlab_results, index=False, encoding="utf-8")
     )
 
-    with open_originlab(proj.dirs.file_plotter):
-        for shortname, file in proj.dirs.originlab_plot_files.items():
+    with open_originlab(PROJ.dirs.file_plotter):
+        for shortname, file in PROJ.dirs.originlab_plot_files.items():
             gp = op.find_graph(shortname)
             fig = gp.save_fig(get_path(file), type="png")
             if not fig:
@@ -85,4 +85,4 @@ def get_path(file, mkdirs=False):
 
 
 if __name__ == "__main__":
-    main(Project.get_project())
+    main()

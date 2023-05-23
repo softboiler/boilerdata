@@ -6,7 +6,7 @@ from datetime import datetime
 
 import pandas as pd
 
-from boilerdata.models.project import Project
+from boilerdata.models.project import PROJ, Project
 from boilerdata.stages.common import set_dtypes
 from boilerdata.stages.prep.common import get_run
 
@@ -14,11 +14,11 @@ from boilerdata.stages.prep.common import get_run
 # * MAIN
 
 
-def main(proj: Project):
+def main():
     (
         pd.DataFrame(
-            columns=[ax.name for ax in proj.axes.cols], data=get_runs(proj)
-        ).to_csv(proj.dirs.file_runs, encoding="utf-8")
+            columns=[ax.name for ax in PROJ.axes.cols], data=get_runs(PROJ)
+        ).to_csv(PROJ.dirs.file_runs, encoding="utf-8")
     )
 
 
@@ -55,4 +55,4 @@ def get_runs(proj: Project) -> pd.DataFrame:
 # * -------------------------------------------------------------------------------- * #
 
 if __name__ == "__main__":
-    main(Project.get_project())
+    main()

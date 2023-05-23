@@ -83,7 +83,7 @@ class Trial(MyBaseModel):
     def set_paths(self, dirs: Dirs):
         """Get the path to the data for this trial. Called during project setup."""
         trial_base = dirs.trials / self.date.isoformat()
-        self.path = trial_base / dirs.per_trial if dirs.per_trial else trial_base
+        self.path = trial_base
         self.run_files = sorted(self.path.glob("*.csv"))
         if not self.run_files:
             raise FileNotFoundError(f"No runs found in {self.path}.")

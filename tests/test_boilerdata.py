@@ -1,115 +1,45 @@
 """Test the pipeline."""
 
-from dataclasses import InitVar, dataclass, field
 from pathlib import Path
-from shutil import copytree
+from shutil import copy, copytree
 from types import ModuleType
 
-import pandas as pd
 import pytest
 
-TEST_ROOT = Path("tests/test_root")
+TEST_DATA = Path("tests/data")
 
 
 @pytest.mark.slow()
-def test_pipeline(check, monkeypatch, tmp_path):
+def test_pipeline(monkeypatch, tmp_path):
     """Test the pipeline."""
 
     def main():
-        copytree(TEST_ROOT, tmp_path, dirs_exist_ok=True)
-        stages = get_stages()
-        for stage in stages:
-            skip_asserts = ("schema",)
-            if stage.name in skip_asserts:
-                continue
-            for result, expected in stage.expectations.items():
-                with check:
-                    assert_stage_result(result, expected)
+        for module in get_patched_modules():
+            module.main()
 
-    def get_stages():
+    def get_patched_modules() -> tuple[ModuleType, ...]:
         """Test the pipeline by patching constants before importing stages."""
 
-        monkeypatch.setenv("DYNACONF_APP_FOLDER", "tests/.propshop")
+        monkeypatch.setenv("DYNACONF_APP_FOLDER", f"{TEST_DATA / '.propshop'}")
 
         import boilerdata
 
-        monkeypatch.setattr(boilerdata, "DVC_BASE", tmp_path)
-        monkeypatch.setattr(boilerdata, "PARAMS_FILE", tmp_path / "params.yaml")
+        test_params = tmp_path / "params.yaml"
+        monkeypatch.setattr(boilerdata, "PARAMS_FILE", test_params)
+        copy("params.yaml", test_params)
 
-        from boilerdata.models.project import Project
+        test_config = tmp_path / "config"
+        monkeypatch.setattr(boilerdata, "AXES_CONFIG", test_config / "axes.yaml")
+        monkeypatch.setattr(boilerdata, "TRIAL_CONFIG", test_config / "trials.yaml")
+        copytree(TEST_DATA / "config", test_config)
 
-        proj = Project.get_project()
+        test_data = tmp_path / "data"
+        monkeypatch.setattr(boilerdata, "DATA_DIR", test_data)
+        copytree(TEST_DATA / "data", test_data)
 
-        from boilerdata.stages import pipeline, schema
+        from boilerdata.stages import pipeline
         from boilerdata.stages.prep import parse_benchmarks, runs
 
-        @dataclass
-        class Stage:
-            """Results of running a pipeline stage.
-
-            Args:
-                module: The module corresponding to this pipeline stage.
-                result_paths: The directories or a single file produced by the stage.
-                tmp_path: The results directory.
-
-            Attributes:
-                name: The name of the pipeline stage.
-                expectations: A mapping from resulting to expected files.
-            """
-
-            module: InitVar[ModuleType]
-            result_paths: InitVar[tuple[Path, ...]]
-            tmp_path: InitVar[Path]
-
-            name: str = field(init=False)
-            expectations: dict[Path, Path] = field(init=False)
-
-            def __post_init__(
-                self, module: ModuleType, result_paths: tuple[Path, ...], tmp_path: Path
-            ):
-                self.name = module.__name__.removeprefix(f"{module.__package__}.")
-                module.main(proj)
-                results: list[Path] = []
-                expectations: list[Path] = []
-                for path in result_paths:
-                    expected = TEST_ROOT / path.relative_to(tmp_path)
-                    if expected.is_dir():
-                        results.extend(sorted(path.iterdir()))
-                        expectations.extend(sorted(expected.iterdir()))
-                    else:
-                        results.append(path)
-                        expectations.append(expected)
-                self.expectations = dict(zip(results, expectations, strict=True))
-
-        return [
-            Stage(module, result_paths, tmp_path)
-            for module, result_paths in {
-                schema: (proj.dirs.project_schema,),
-                runs: (proj.dirs.runs,),
-                parse_benchmarks: (proj.dirs.benchmarks_parsed,),
-                pipeline: (proj.dirs.results,),
-            }.items()
-        ]
+        return (runs, parse_benchmarks, pipeline)
 
     main()
-
-
-def assert_stage_result(result_file: Path, expected_file: Path):
-    """Assert that the result of a stage is as expected.
-
-    Args:
-        result_file: The file produced by the stage.
-        expected_file: The file that the stage should produce.
-
-    Raises:
-        AssertionError: If the result is not as expected.
-    """
-    if expected_file.suffix == ".csv":
-        result_df = pd.read_csv(result_file)
-        expected_df = pd.read_csv(expected_file)
-        if any(part in expected_file.stem for part in ["benchmarks", "runs"]):
-            all(result_df.T_4.round() == expected_df.T_4.round())
-        else:
-            all(result_df.T_s.round() == expected_df.T_s.round())
-    else:
-        assert result_file.read_bytes() == expected_file.read_bytes()

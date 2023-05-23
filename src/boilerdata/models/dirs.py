@@ -1,67 +1,55 @@
-from __future__ import annotations
-
 from pathlib import Path
-from typing import Any
 
-from pydantic import DirectoryPath, Field, FilePath, validator
-from ruamel.yaml import YAML
+from pydantic import DirectoryPath, FilePath
 
-from boilerdata import DVC_BASE, GIT_BASE, PARAMS_FILE
-from boilerdata.models.common import MyBaseModel, StrPath
+from boilerdata import DATA_DIR, PARAMS_FILE, PROJECT_CONFIG, PROJECT_DIR
+from boilerdata.models import CreatePathsModel
 
 
-def init():
-    yaml = YAML()
-    yaml.indent(offset=2)
-    dirs = Dirs()
-    proj = yaml.load(PARAMS_FILE)
-    dirs_dict = dirs.dict(exclude_none=True)
-    proj["dirs"] = repl_path(dirs_dict)
-    proj["dirs"]["originlab_plot_files"] = repl_path(dirs_dict["originlab_plot_files"])
-    yaml.dump(proj, PARAMS_FILE)
-
-
-def repl_path(dirs_dict: dict[str, Path]):
-    """Replace Windows path separator with POSIX separator."""
-    return {k: str(v).replace("\\", "/") for k, v in dirs_dict.items()}
-
-
-class Dirs(MyBaseModel):
+class ProjectPaths(CreatePathsModel):
     """Directories relevant to the project."""
 
-    class Config(MyBaseModel.Config):
-        @staticmethod
-        def schema_extra(schema: dict[str, Any]):
-            for prop in schema.get("properties", {}).values():
-                default = prop.get("default")
-                if isinstance(default, str):
-                    prop["default"] = default.replace("\\", "/")
-
-    # ! DIRECTORY PER TRIAL
-    # Don't validate this here. Handle when initializing Project.
-    per_trial: Path | None = None
-
-    # ! PROJECT FILE
-    file_proj: FilePath = PARAMS_FILE
-
     # ! REQUIREMENTS
-    requirements: FilePath = GIT_BASE / "requirements.txt"
-    dev_requirements: DirectoryPath = GIT_BASE / ".tools/requirements"
+    requirements: FilePath = PROJECT_DIR / "requirements.txt"
+    dev_requirements: DirectoryPath = PROJECT_DIR / ".tools/requirements"
 
     # ! CONFIG
     # Careful, "Config" is a special member of BaseClass
-    config: DirectoryPath = DVC_BASE / "config"
+    config: DirectoryPath = PROJECT_CONFIG
 
     # ! PACKAGE
-    package: DirectoryPath = GIT_BASE / "src/boilerdata"
+    package: DirectoryPath = PROJECT_DIR / "src/boilerdata"
     stages: DirectoryPath = package / "stages"
     prep: DirectoryPath = stages / "prep"
     notebooks: DirectoryPath = stages / "notebooks"
     models: DirectoryPath = package / "models"
     validation: FilePath = package / "validation.py"
 
+    # ! PLOT CONFIG
+    plot_config: DirectoryPath = config / "plotting"
+    mpl_base: FilePath = plot_config / "base.mplstyle"
+    mpl_hide_title: FilePath = plot_config / "hide_title.mplstyle"
+
+    # ! STAGES
+    stage_axes: FilePath = stages / "axes.py"
+    stage_parse_benchmarks: FilePath = prep / "parse_benchmarks.py"
+    stage_literature: FilePath = stages / "literature.py"
+    stage_metrics: FilePath = notebooks / "metrics.ipynb"
+    stage_modelfun: FilePath = notebooks / "modelfun.ipynb"
+    stage_originlab: FilePath = stages / "originlab.py"
+    stage_pipeline: FilePath = stages / "pipeline.py"
+    stage_runs: FilePath = prep / "runs.py"
+    stage_schema: FilePath = stages / "schema.py"
+
+
+class Dirs(CreatePathsModel):
+    """Directories relevant to the project."""
+
+    # ! PROJECT FILE
+    file_proj: FilePath = PARAMS_FILE
+
     # ! DATA
-    data: DirectoryPath = DVC_BASE / "data"
+    data: DirectoryPath = DATA_DIR
 
     # ! AXES
     axes: DirectoryPath = data / "axes"
@@ -108,11 +96,6 @@ class Dirs(MyBaseModel):
     originlab_results: DirectoryPath = data / "originlab_results"
     file_originlab_results: Path = originlab_results / "originlab_results.csv"
 
-    # ! PLOT CONFIG
-    plot_config: DirectoryPath = config / "plotting"
-    mpl_base: FilePath = plot_config / "base.mplstyle"
-    mpl_hide_title: FilePath = plot_config / "hide_title.mplstyle"
-
     # ! TOP-LEVEL METRICS DIR
     metrics: DirectoryPath = data / "metrics"
 
@@ -127,69 +110,13 @@ class Dirs(MyBaseModel):
 
     # ! ORIGINLAB PLOTS
     originlab_plots: DirectoryPath = metrics / "originlab_plots"
-    originlab_plot_shortnames: list[str] = Field(
-        default=[
-            "lit",
-            "low",
-        ],
-        exclude=True,
-    )
-    originlab_plot_files: dict[str, Path] = Field(default=None)
-
-    @validator("originlab_plot_files", always=True, pre=True)
-    def validate_originlab_plot_files(cls, _, values) -> dict[str, Path]:
-        """Produce plot filenames based on shortnames.
-
-        Can't do it in __init__ because
-        lots of other logic would have to change in param file generation and schema
-        generation.
-        """
-        return {
-            shortname: values["originlab_plots"] / f"{shortname}.png"
-            for shortname in values["originlab_plot_shortnames"]
+    originlab_plot_files: dict[str, Path] = (  # noqa: PLC3002  # need lambda *shrug*
+        lambda originlab_plots: {
+            shortname: originlab_plots / f"{shortname}.png"
+            for shortname in ["lit", "low"]
         }
+    )(originlab_plots)
 
     # ! TABLES
     tables: DirectoryPath = metrics / "tables"
     file_pipeline_metrics: Path = tables / "pipeline_metrics.json"
-
-    # ! STAGES
-    stage_axes: FilePath = stages / "axes.py"
-    stage_parse_benchmarks: FilePath = prep / "parse_benchmarks.py"
-    stage_literature: FilePath = stages / "literature.py"
-    stage_metrics: FilePath = notebooks / "metrics.ipynb"
-    stage_modelfun: FilePath = notebooks / "modelfun.ipynb"
-    stage_originlab: FilePath = stages / "originlab.py"
-    stage_pipeline: FilePath = stages / "pipeline.py"
-    stage_runs: FilePath = prep / "runs.py"
-    stage_schema: FilePath = stages / "schema.py"
-
-    # "always" so it'll run even if not in YAML
-    # "pre" because dir must exist pre-validation
-    @validator(
-        "axes",
-        "benchmarks_parsed",
-        "benchmarks",
-        "literature_results",
-        "literature",
-        "metrics",
-        "modelfun",
-        "originlab_plots",
-        "originlab_results",
-        "plots",
-        "plotter",
-        "project_schema",
-        "results",
-        "runs",
-        "tables",
-        always=True,
-        pre=True,
-    )
-    def validate_output_directories(cls, directory: StrPath):
-        """Re-create designated output directories each run, for reproducibility."""
-        directory = Path(directory)
-        directory.mkdir(parents=True, exist_ok=True)
-        return directory
-
-
-init()

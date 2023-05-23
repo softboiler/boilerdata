@@ -1,8 +1,9 @@
 ci:
   skip:
+    - "synchronize-params"
     - "compose-pyproject"
-    - "pytest"
-    - "pytest-slow"
+    - "pytest-fast-only"
+    - "pytest-slow-only"
     - "pyright"
     - "dvc-post-checkout"
     - "dvc-pre-push"
@@ -28,6 +29,15 @@ repos:
       - id: "check-useless-excludes"
   - repo: "local"
     hooks:
+      - id: "synchronize-params"
+        name: "synchronize-params"
+        language: "system"
+        entry: "pwsh -Command python -m boilerdata.models.params"
+        files: |
+          (?x)^(
+            src/boilerdata/models/.*
+            |params.yaml
+          )$
       - id: "compose-pyproject"
         name: "compose-pyproject"
         language: "system"
@@ -39,21 +49,11 @@ repos:
             |.tools/pyproject.toml
           )$
         pass_filenames: false
-      - id: "pytest"
-        name: "pytest"
+      - id: "pytest-fast-only"
+        name: "pytest-fast-only"
         language: "system"
-        entry: "pwsh -Command pytest --run_skips false"
-        pass_filenames: false
-        verbose: true
-        files: |
-          (?x)^(
-            src/.*
-            |tests/.*
-          )$
-      - id: "pytest-slow"
-        name: "pytest-slow"
-        language: "system"
-        entry: "pwsh -Command pytest"
+        entry: |
+          pwsh -Command "pytest -m 'not slow' --suppress-no-test-exit-code"
         pass_filenames: false
         verbose: true
         files: |
@@ -64,6 +64,17 @@ repos:
               pyproject.toml
               |requirements/.*
             )
+          )$
+      - id: "pytest-slow-only"
+        name: "pytest-slow-only"
+        language: "system"
+        entry: "pwsh -Command pytest -m slow"
+        pass_filenames: false
+        verbose: true
+        files: |
+          (?x)^(
+            src/.*
+            |tests/.*
           )$
       - id: "pyright"
         name: "pyright"

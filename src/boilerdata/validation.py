@@ -3,15 +3,14 @@ from pandera import Check, Column, DataFrameSchema, Index, MultiIndex
 from pandera.errors import SchemaError
 
 from boilerdata.axes_enum import AxesEnum as A  # noqa: N814
-from boilerdata.models.project import Project
+from boilerdata.models.project import PROJ
 
-proj = Project.get_project()
-c = {ax.name: ax for ax in proj.axes.all}
+c = {ax.name: ax for ax in PROJ.axes.all}
 
 # * -------------------------------------------------------------------------------- * #
 # * HANDLING AND CHECKS
 
-columns_to_automatically_handle = [*proj.params.water_temps, A.P]
+columns_to_automatically_handle = [*PROJ.params.water_temps, A.P]
 water_tc_in_range = Check.in_range(95, 101)  # (C)
 pressure_in_range = Check.in_range(12, 15)  # (psi)
 water_temps_agree = Check.less_than(1.6)  # (C)
@@ -59,7 +58,7 @@ runs_cols = {
 # Model fits are nullable because they may not converge. Nullability propagates to other
 # columns downstream.
 model_cols = {
-    col: Column(c[col].dtype, nullable=True) for col in proj.params.params_and_errors  # type: ignore  # pydantic: use_enum_values
+    col: Column(c[col].dtype, nullable=True) for col in PROJ.params.params_and_errors  # type: ignore  # pydantic: use_enum_values
 }
 
 computed_cols = {

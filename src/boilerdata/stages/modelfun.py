@@ -7,7 +7,7 @@ from typing import Any
 import dill
 import numpy as np
 
-from boilerdata.models.project import Project
+from boilerdata.models.project import PROJ
 
 
 def fix_model(f) -> Callable[..., Any]:
@@ -31,7 +31,7 @@ def fix_model(f) -> Callable[..., Any]:
     return wrapper
 
 
-model_file = Project.get_project().dirs.file_model
+model_file = PROJ.dirs.file_model
 file_bytes = Path(model_file).read_bytes()
 with warnings.catch_warnings():
     warnings.simplefilter("ignore", dill.UnpicklingWarning)

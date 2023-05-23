@@ -5,13 +5,13 @@ from pathlib import Path
 import pandas as pd
 
 from boilerdata.axes_enum import AxesEnum as A  # noqa: N814
-from boilerdata.models.project import Project
+from boilerdata.models.project import PROJ, Project
 from boilerdata.stages.prep.common import get_run
 
 
-def main(proj: Project):
-    pd.DataFrame(data=get_benchmarks(proj)).to_csv(
-        proj.dirs.file_benchmarks_parsed, encoding="utf-8"
+def main():
+    pd.DataFrame(data=get_benchmarks(PROJ)).to_csv(
+        PROJ.dirs.file_benchmarks_parsed, encoding="utf-8"
     )
 
 
@@ -44,4 +44,4 @@ def parse_benchmark(df: pd.DataFrame, proj: Project) -> pd.DataFrame:
 
 
 if __name__ == "__main__":
-    main(Project.get_project())
+    main()

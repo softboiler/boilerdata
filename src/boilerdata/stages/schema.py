@@ -4,15 +4,15 @@ import re
 
 from boilerdata.models.axes import Axes
 from boilerdata.models.common import write_schema
-from boilerdata.models.project import Project
+from boilerdata.models.project import PROJ, Project
 from boilerdata.models.trials import Trials
 
 
-def main(proj: Project):
+def main():
     models = [Project, Trials, Axes]
     for model in models:
         write_schema(
-            proj.dirs.project_schema / f"{to_snake_case(model.__name__)}_schema.json",
+            PROJ.dirs.project_schema / f"{to_snake_case(model.__name__)}_schema.json",
             model,
         )
 
@@ -26,4 +26,4 @@ def to_snake_case(v: str) -> str:
 
 
 if __name__ == "__main__":
-    main(Project.get_project())
+    main()

@@ -14,7 +14,7 @@ from scipy.optimize import curve_fit
 from scipy.stats import t
 
 from boilerdata.axes_enum import AxesEnum as A  # noqa: N814
-from boilerdata.models.project import Project
+from boilerdata.models.project import PROJ, Project
 from boilerdata.models.trials import Trial
 from boilerdata.stages.common import get_tcs, get_trial, per_run, per_trial
 from boilerdata.stages.modelfun import model
@@ -28,24 +28,24 @@ from boilerdata.validation import (
 # * MAIN
 
 
-def main(proj: Project):
-    confidence_interval_95 = t.interval(0.95, proj.params.records_to_average)[1]
+def main():
+    confidence_interval_95 = t.interval(0.95, PROJ.params.records_to_average)[1]
 
     (
         pd.read_csv(
-            proj.dirs.file_runs,
+            PROJ.dirs.file_runs,
             index_col=(index_col := [A.trial, A.run, A.time]),
             parse_dates=index_col,
-            dtype={col.name: col.dtype for col in proj.axes.cols},
+            dtype={col.name: col.dtype for col in PROJ.axes.cols},
         )
         .pipe(handle_invalid_data, validate_initial_df)
-        .pipe(get_properties, proj)
-        .pipe(per_run, fit, proj, model, confidence_interval_95)
-        .pipe(per_trial, agg_over_runs, proj, confidence_interval_95)  # TCs may vary
-        .pipe(per_trial, get_superheat, proj)  # Water temp varies across trials
-        .pipe(per_trial, assign_metadata, proj)  # Metadata is distinct per trial
+        .pipe(get_properties, PROJ)
+        .pipe(per_run, fit, PROJ, model, confidence_interval_95)
+        .pipe(per_trial, agg_over_runs, PROJ, confidence_interval_95)  # TCs may vary
+        .pipe(per_trial, get_superheat, PROJ)  # Water temp varies across trials
+        .pipe(per_trial, assign_metadata, PROJ)  # Metadata is distinct per trial
         .pipe(validate_final_df)
-        .to_csv(proj.dirs.file_results, encoding="utf-8")
+        .to_csv(PROJ.dirs.file_results, encoding="utf-8")
     )
 
 
@@ -260,4 +260,4 @@ def assign_metadata(grp: pd.DataFrame, proj: Project) -> pd.DataFrame:
 # * -------------------------------------------------------------------------------- * #
 
 if __name__ == "__main__":
-    main(Project.get_project())
+    main()
