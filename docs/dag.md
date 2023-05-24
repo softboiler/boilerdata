@@ -12,11 +12,9 @@ flowchart TD
  node10["parse_benchmarks"]
  node11["pipeline"]
  node12["runs"]
- node13["schema"]
  node1-->node8
  node1-->node10
  node1-->node12
- node1-->node13
  node2-->node10
  node3-->node12
  node4-->node6

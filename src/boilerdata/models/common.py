@@ -11,22 +11,6 @@ NpNDArray = np.ndarray[Any, Any]
 NpFloating = np.floating[Any]
 
 
-class MyBaseModel(BaseModel):
-    """Base model for all Pydantic models used in this project."""
-
-    class Config:
-        """Model configuration.
-
-        Accessing enums yields their values, and allowing arbitrary types enables
-        using Numpy types in fields.
-        """
-
-        # Don't specify as class kwargs for easier overriding, and "extra" acted weird.
-        use_enum_values = True  # To use enums in schema, but not in code
-        arbitrary_types_allowed = True  # To use Numpy types
-        extra = Extra.forbid  # To forbid extra fields
-
-
 @contextmanager
 def allow_extra(model: BaseModel):
     """Temporarily allow extra properties to be set on a Pydantic model.

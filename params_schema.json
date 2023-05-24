@@ -16,6 +16,7 @@
       "$ref": "#/definitions/Dirs"
     }
   },
+  "additionalProperties": false,
   "definitions": {
     "Geometry": {
       "title": "Geometry",

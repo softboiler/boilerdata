@@ -1,11 +1,12 @@
 import numpy as np
 from pydantic import Field, validator
 
-from boilerdata.models.common import MyBaseModel, NpNDArray
+from boilerdata.models import ProjectModel
+from boilerdata.models.common import NpNDArray
 from boilerdata.models.enums import Coupon, Rod
 
 
-class Geometry(MyBaseModel):
+class Geometry(ProjectModel):
     """The fixed geometry for the problem."""
 
     # Prefix with underscore to exclude from schema

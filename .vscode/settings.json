@@ -4,9 +4,9 @@
 
   //! Schema
   "yaml.schemas": {
-    "data/schema/axes_schema.json": "axes.yaml",
+    "config/axes_schema.json": "axes.yaml",
     "params_schema.json": "params.yaml",
-    "data/schema/trials_schema.json": "trials.yaml"
+    "config/trials_schema.json": "trials.yaml"
   },
 
   //! DVC

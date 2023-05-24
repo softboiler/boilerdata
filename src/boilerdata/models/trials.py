@@ -1,17 +1,18 @@
 import datetime
 import re
+from pathlib import Path
 
 import pandas as pd
 from pydantic import DirectoryPath, Field, FilePath, validator
 
 from boilerdata.axes_enum import AxesEnum as A  # noqa: N814
-from boilerdata.models.common import MyBaseModel
+from boilerdata.models import ProjectModel, YamlModel
 from boilerdata.models.dirs import Dirs
 from boilerdata.models.enums import Coupon, Group, Joint, Rod, Sample
 from boilerdata.models.geometry import Geometry
 
 
-class Trial(MyBaseModel):
+class Trial(ProjectModel):
     """A trial."""
 
     # ! META FIELDS ADDED TO DATAFRAME
@@ -111,11 +112,14 @@ class Trial(MyBaseModel):
 
     def set_geometry(self, geometry: Geometry, copper_temps: list[A]):
         """Get relevant geometry for the trial."""
-        thermocouple_pos = geometry.rods[self.rod] + geometry.coupons[self.coupon]  # type: ignore  # pydantic: use_enum_values
-        self.thermocouple_pos = dict(zip(copper_temps, thermocouple_pos, strict=True))  # type: ignore  # pydantic: use_enum_values
+        thermocouple_pos = geometry.rods[self.rod] + geometry.coupons[self.coupon]
+        self.thermocouple_pos = dict(zip(copper_temps, thermocouple_pos, strict=True))
 
 
-class Trials(MyBaseModel):
+class Trials(YamlModel):
     """The trials."""
 
     trials: list[Trial]
+
+    def __init__(self, data_file: Path):
+        super().__init__(data_file)

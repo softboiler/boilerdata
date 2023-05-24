@@ -9,7 +9,48 @@ from ruamel.yaml import YAML
 YAML_INDENT = 2
 
 
-class SynchronizedPathsYamlModel(BaseModel):
+class ProjectModel(BaseModel):
+    """Model configuration for this project."""
+
+    class Config:
+        use_enum_values = True
+        arbitrary_types_allowed = True
+        extra = Extra.forbid
+
+
+class YamlModel(BaseModel):
+    """Model of a YAML file with automatic schema generation.
+
+    Updates a JSON schema next to the YAML file with each initialization.
+    """
+
+    class Config:
+        extra = Extra.forbid
+
+    def __init__(self, data_file: Path):
+        """Initialize and update the schema."""
+        params = self.get_params(data_file)
+        self.update_schema(data_file)
+        super().__init__(**params)
+
+    def get_params(self, data_file: Path) -> dict[str, Any]:
+        """Get parameters from file."""
+        yaml = YAML()
+        yaml.indent(YAML_INDENT)
+        return (
+            yaml.load(data_file)
+            if data_file.exists() and data_file.read_text(encoding="utf-8")
+            else {}
+        )
+
+    def update_schema(self, data_file: Path):
+        schema_file = data_file.with_name(f"{data_file.stem}_schema.json")
+        schema_file.write_text(
+            encoding="utf-8", data=f"{self.schema_json(indent=YAML_INDENT)}\n"
+        )
+
+
+class SynchronizedPathsYamlModel(YamlModel):
     """Model of a YAML file that synchronizes paths back to the file.
 
     For example, synchronize complex path structures back to `params.yaml` DVC files for
@@ -17,34 +58,28 @@ class SynchronizedPathsYamlModel(BaseModel):
     """
 
     def __init__(self, data_file: Path):
-        """Initialize, propagate paths to the file, and update the schema."""
-        params = self.synchronize_paths(data_file)
-        schema_file = data_file.with_name(f"{data_file.stem}_schema.json")
-        schema_file.write_text(
-            encoding="utf-8", data=f"{self.schema_json(indent=YAML_INDENT)}\n"
-        )
-        super().__init__(**params)
+        """Initialize, update the schema, and synchronize paths in the file."""
+        super().__init__(data_file)
 
-    @classmethod
-    def synchronize_paths(cls, data_file: Path) -> dict[str, Any]:
+    def get_params(self, data_file: Path) -> dict[str, Any]:
         """Get parameters from file, synchronizing paths in the file."""
         yaml = YAML()
         yaml.indent(YAML_INDENT)
-        if data_file.exists() and data_file.read_text(encoding="utf-8"):
-            params = yaml.load(data_file)
-        else:
-            params = {}
-        params |= cls.get_paths()
+        params = (
+            yaml.load(data_file)
+            if data_file.exists() and data_file.read_text(encoding="utf-8")
+            else {}
+        )
+        params |= self.get_paths()
         yaml.dump(params, data_file)
         return params
 
-    @classmethod
-    def get_paths(cls) -> dict[str, dict[str, str]]:
+    def get_paths(self) -> dict[str, dict[str, str]]:
         """Get all paths specified in paths-type models."""
-        maybe_excludes = cls.__exclude_fields__
+        maybe_excludes = self.__exclude_fields__
         excludes = set(maybe_excludes.keys()) if maybe_excludes else set()
         defaults: dict[str, dict[str, str]] = {}
-        for key, field in cls.__fields__.items():
+        for key, field in self.__fields__.items():
             type_ = field.type_
             if issubclass(type_, DefaultPathsModel) and key not in excludes:
                 defaults[key] = type_.get_paths()

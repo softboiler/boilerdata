@@ -13,7 +13,6 @@
       "options": [
         "",
         "axes",
-        "schema",
         "modelfun",
         "runs",
         "parse_benchmarks",
@@ -27,19 +26,6 @@
   "tasks": [
     // * -------------------------------------------------------------------------- * //
     // * Changes below should persist in significant template updates.
-    {
-      "label": "dvc: repro (debug)",
-      "dependsOrder": "sequence",
-      "dependsOn": ["dvc: synchronize paths"],
-      "type": "process",
-      "command": "pwsh",
-      "args": ["-Command", "dvc repro ${input:stage}"],
-      "icon": { "id": "graph" },
-      "options": {
-        "env": { "BOILERCV_DEBUG": "True" }
-      },
-      "problemMatcher": []
-    },
     {
       "label": "dvc: repro force downstream",
       "dependsOrder": "sequence",
@@ -111,7 +97,7 @@
       "label": "dvc: synchronize paths",
       "type": "process",
       "command": "pwsh",
-      "args": ["-Command", "python -m boilerdata.models.dirs"],
+      "args": ["-Command", "python -m boilerdata.models.project"],
       "icon": { "id": "graph" },
       "problemMatcher": []
     },

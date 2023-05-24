@@ -1,8 +1,6 @@
-# # * There are minor "type: ignore" differences between local and CI in this file.
-# pyright: reportUnnecessaryTypeIgnoreComment=none
-
-from IPython.core.display import Math  # pyright: ignore [reportMissingImports]
-from IPython.display import display  # pyright: ignore [reportMissingImports]
+# pyright 1.1.308, local/CI difference
+from IPython.core.display import Math  # type: ignore
+from IPython.display import display  # type: ignore
 from sympy import FiniteSet
 from sympy.printing.latex import latex
 

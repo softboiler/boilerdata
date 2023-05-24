@@ -6,27 +6,15 @@ stages:
       - "${project_paths.requirements}"
       - "${project_paths.dev_requirements}"
       - "${project_paths.config}/axes.yaml"
-      - "${project_paths.models}/axes.py"
-      - "${project_paths.models}/dirs.py"
-    outs:
-      - "${dirs.axes}"
-
-  schema:
-    cmd: "python -m boilerdata.stages.schema"
-    deps:
-      - "${project_paths.stage_schema}"
-      - "${dirs.axes}"
       - "${project_paths.models}"
     outs:
-      - "${dirs.project_schema}"
+      - "${dirs.axes}"
 
   modelfun:
     cmd: "papermill ${project_paths.stage_modelfun} NUL"
     deps:
       - "${project_paths.stage_modelfun}"
       - "${dirs.axes}"
-      - "${project_paths.models}/dirs.py"
-      - "${project_paths.models}/project.py"
     outs:
       - "${dirs.modelfun}"
     params:
@@ -40,9 +28,6 @@ stages:
       - "${project_paths.stage_runs}"
       - "${dirs.axes}"
       - "${dirs.trials}"
-      - "${project_paths.models}/axes.py"
-      - "${project_paths.models}/dirs.py"
-      - "${project_paths.models}/trials.py"
     outs:
       - "${dirs.runs}"
     params:
@@ -94,7 +79,7 @@ stages:
     deps:
       - "${project_paths.stage_literature}"
       - "${dirs.literature}"
-      - "${project_paths.models}/dirs.py"
+      - "${project_paths.models}"
     outs:
       - "${dirs.literature_results}"
 

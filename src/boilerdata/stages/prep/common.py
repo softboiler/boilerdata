@@ -22,7 +22,7 @@ def get_run(proj: Project, run: Path) -> pd.DataFrame:
             usecols=lambda col: col in [index, *source_col_names],
             index_col=index,
             parse_dates=[index],  # type: ignore  # pandas
-            dtype=source_dtypes,  # type: ignore  # pandas
+            dtype=source_dtypes,
             encoding="utf-8",
         )
         # Rarely a run has an all NA record at the end

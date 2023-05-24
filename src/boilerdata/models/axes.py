@@ -1,11 +1,13 @@
+from pathlib import Path
+
 import pandas as pd
 from pydantic import Field, validator
 
-from boilerdata.models.common import MyBaseModel
+from boilerdata.models import ProjectModel, YamlModel
 from boilerdata.models.enums import OriginLabColdes, PandasAggfun, PandasDtype
 
 
-class Axis(MyBaseModel):
+class Axis(ProjectModel):
     """Metadata for a column in the dataframe."""
 
     # ! COMMON FIELDS
@@ -86,7 +88,7 @@ class Axis(MyBaseModel):
         return self.pretty_name_ or self.name
 
 
-class Axes(MyBaseModel):
+class Axes(YamlModel):
     """Columns in the dataframe."""
 
     all: list[Axis]  # noqa: A003
@@ -150,3 +152,6 @@ class Axes(MyBaseModel):
         return "".join(
             [ax.originlab_coldes for ax in self.all if ax.originlab_coldes != "Q"]
         )
+
+    def __init__(self, data_file: Path):
+        super().__init__(data_file)

@@ -26,11 +26,10 @@ class Project(SynchronizedPathsYamlModel):
     def __init__(self):
         super().__init__(PARAMS_FILE)
         with allow_extra(self):
-            self.axes = Axes(**yaml.load(AXES_CONFIG))
-            trials = Trials(**yaml.load(TRIAL_CONFIG)).trials
-            for trial in trials:
-                trial.setup(self.dirs, self.geometry, self.params.copper_temps)
-            self.trials = trials
+            self.axes = Axes(AXES_CONFIG)
+            self.trials = Trials(TRIAL_CONFIG).trials
+        for trial in self.trials:
+            trial.setup(self.dirs, self.geometry, self.params.copper_temps)
 
     # ! METHODS
 

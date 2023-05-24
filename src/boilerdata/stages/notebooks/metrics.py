@@ -1,6 +1,3 @@
-# # * There are minor "type: ignore" differences between local and CI in this file.
-# pyright: reportUnnecessaryTypeIgnoreComment=none
-
 from collections import deque
 from collections.abc import Mapping
 from contextlib import contextmanager
@@ -9,8 +6,10 @@ from typing import Any
 import matplotlib as mpl
 import numpy as np
 import pandas as pd
-from IPython.core.display import Markdown  # pyright: ignore [reportMissingImports]
-from IPython.display import display  # pyright: ignore [reportMissingImports]
+
+# pyright 1.1.308, local/CI difference
+from IPython.core.display import Markdown  # type: ignore
+from IPython.display import display  # type: ignore
 from matplotlib import pyplot as plt
 from uncertainties import ufloat
 
@@ -239,6 +238,6 @@ def model_with_error(model, x, u_params):
     u_x = [ufloat(v, 0, "x") for v in x]
     u_y = model(u_x, **u_params)
     y = np.array([v.nominal_value for v in u_y])
-    y_min = y - [v.std_dev for v in u_y]  # type: ignore  # Only locally, not in CI
+    y_min = y - [v.std_dev for v in u_y]  # type: ignore # pyright 1.1.308, local/CI difference
     y_max = y + [v.std_dev for v in u_y]
     return y, y_min, y_max

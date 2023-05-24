@@ -7,7 +7,8 @@ import numpy as np
 from pydantic import Field, validator
 
 from boilerdata.axes_enum import AxesEnum as A  # noqa: N814
-from boilerdata.models.common import MyBaseModel, allow_extra
+from boilerdata.models import ProjectModel
+from boilerdata.models.common import allow_extra
 from boilerdata.models.enums import FitMethod
 
 bound: TypeAlias = float | Literal["-inf", "inf"]
@@ -24,7 +25,7 @@ def default_opt(default: T, optional: bool = False) -> EllipsisType | T:
     return default if optional else ...
 
 
-class Params(MyBaseModel):
+class Params(ProjectModel):
     """Parameters that can vary."""
 
     records_to_average: int = Field(
@@ -34,7 +35,6 @@ class Params(MyBaseModel):
 
     fit_method: FitMethod = Field(default=default_opt(FitMethod.trf, optional=False))
 
-    # Reason: pydantic: use_enum_values
     model_params: list[A] = Field(
         default=default_opt([A.T_s, A.q_s, A.k, A.h_a, A.h_w]),
         description="Parameters that can vary in the model. Some will be fixed.",
@@ -55,7 +55,6 @@ class Params(MyBaseModel):
 
     # ! MODEL BOUNDS
 
-    # Reason: pydantic: use_enum_values
     model_bounds: dict[A, tuple[bound, bound]] = Field(
         default=default_opt(
             {
@@ -136,7 +135,7 @@ class Params(MyBaseModel):
         exclude=True,
     )
 
-    # !
+    # ! PLOTTING
 
     do_plot: bool = Field(
         default=default_opt(False),

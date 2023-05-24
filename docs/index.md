@@ -5,9 +5,7 @@
 
 ## Data process graph
 
-```{image} _static/dag.png
-:alt: dag
-:align: center
+```{include} dag.md
 ```
 
 ```{toctree}

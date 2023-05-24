@@ -1,12 +1,9 @@
-# # * There are minor "type: ignore" differences between local and CI in this file.
-# pyright: reportUnnecessaryTypeIgnoreComment=none
-
 import re
 from contextlib import contextmanager
 from pathlib import Path
 from time import sleep
 
-import originpro as op  # pyright: ignore[reportMissingImports]
+import originpro as op  # type: ignore  # pyright 1.1.308, local/CI difference
 import pandas as pd
 
 from boilerdata.axes_enum import AxesEnum as A  # noqa: N814
