@@ -4,12 +4,18 @@ from types import EllipsisType
 from typing import Literal, TypeAlias, TypeVar
 
 import numpy as np
+import pandas as pd
 from pydantic import Field, validator
 
+from boilerdata import AXES_CONFIG, PARAMS_FILE, TRIAL_CONFIG
 from boilerdata.axes_enum import AxesEnum as A  # noqa: N814
-from boilerdata.models import ProjectModel
+from boilerdata.models import ProjectModel, SynchronizedPathsYamlModel
+from boilerdata.models.axes import Axes
 from boilerdata.models.common import allow_extra
 from boilerdata.models.enums import FitMethod
+from boilerdata.models.geometry import Geometry
+from boilerdata.models.paths import Paths, ProjectPaths
+from boilerdata.models.trials import Trial, Trials
 
 bound: TypeAlias = float | Literal["-inf", "inf"]
 T = TypeVar("T")
@@ -25,8 +31,10 @@ def default_opt(default: T, optional: bool = False) -> EllipsisType | T:
     return default if optional else ...
 
 
-class Params(ProjectModel):
-    """Parameters that can vary."""
+class Params(SynchronizedPathsYamlModel):
+    """The global project configuration."""
+
+    Config = ProjectModel.Config  # type: ignore
 
     records_to_average: int = Field(
         default=default_opt(5),
@@ -142,9 +150,15 @@ class Params(ProjectModel):
         description="Whether to plot the fits of the individual runs.",
     )
 
-    def __init__(self, **data):
-        super().__init__(**data)
+    geometry: Geometry = Field(default_factory=Geometry)
+    project_paths: ProjectPaths = Field(default_factory=Paths)
+    paths: Paths = Field(default_factory=Paths)
+
+    def __init__(self):
+        super().__init__(PARAMS_FILE)
         with allow_extra(self):
+            self.axes = Axes(AXES_CONFIG)
+            self.trials = Trials(TRIAL_CONFIG).trials
             self.free_params = [
                 p for p in self.model_params if p not in self.fixed_params
             ]
@@ -155,6 +169,22 @@ class Params(ProjectModel):
             self.fixed_values = {
                 k: v for k, v in self.initial_values.items() if k in self.fixed_params
             }
+        for trial in self.trials:
+            trial.setup(self.paths, self.geometry, self.copper_temps)
 
-    def get_model_errors(self, model_params) -> list[str]:
-        return [f"{param}_err" for param in model_params]
+    # ! METHODS
+
+    def get_trial(self, timestamp: pd.Timestamp) -> Trial:
+        """Get a trial by its timestamp."""
+        for trial in self.trials:
+            if trial.timestamp == timestamp:
+                return trial
+        raise ValueError(f"Trial '{timestamp.date()}' not found.")
+
+    def get_model_errors(self, params) -> list[str]:
+        return [f"{param}_err" for param in params]
+
+
+PARAMS = Params()
+"""All project parameters, including paths."""
+...

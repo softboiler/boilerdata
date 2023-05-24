@@ -97,7 +97,7 @@
       "label": "dvc: synchronize paths",
       "type": "process",
       "command": "pwsh",
-      "args": ["-Command", "python -m boilerdata.models.project"],
+      "args": ["-Command", "python -m boilerdata.models.params"],
       "icon": { "id": "graph" },
       "problemMatcher": []
     },

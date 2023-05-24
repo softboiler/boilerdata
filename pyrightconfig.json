@@ -48,7 +48,7 @@
 
   // These diagnostics are "none" by default in strict mode
   "reportImplicitStringConcatenation": "none",
-  "reportMissingSuperCall": "error",
+  "reportMissingSuperCall": "none",
   "reportUnnecessaryTypeIgnoreComment": "none",
   "reportUnusedCallResult": "none"
 }

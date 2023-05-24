@@ -7,9 +7,9 @@ from pydantic import DirectoryPath, Field, FilePath, validator
 
 from boilerdata.axes_enum import AxesEnum as A  # noqa: N814
 from boilerdata.models import ProjectModel, YamlModel
-from boilerdata.models.dirs import Dirs
 from boilerdata.models.enums import Coupon, Group, Joint, Rod, Sample
 from boilerdata.models.geometry import Geometry
+from boilerdata.models.paths import Paths
 
 
 class Trial(ProjectModel):
@@ -77,13 +77,13 @@ class Trial(ProjectModel):
         exclude=True,
     )
 
-    def setup(self, dirs: Dirs, geometry: Geometry, copper_temps: list[A]):
-        self.set_paths(dirs)
+    def setup(self, paths: Paths, geometry: Geometry, copper_temps: list[A]):
+        self.set_paths(paths)
         self.set_geometry(geometry, copper_temps)
 
-    def set_paths(self, dirs: Dirs):
+    def set_paths(self, paths: Paths):
         """Get the path to the data for this trial. Called during project setup."""
-        trial_base = dirs.trials / self.date.isoformat()
+        trial_base = paths.trials / self.date.isoformat()
         self.path = trial_base
         self.run_files = sorted(self.path.glob("*.csv"))
         if not self.run_files:

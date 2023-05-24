@@ -42,7 +42,7 @@ class ProjectPaths(CreatePathsModel):
     stage_schema: FilePath = stages / "schema.py"
 
 
-class Dirs(CreatePathsModel):
+class Paths(CreatePathsModel):
     """Directories relevant to the project."""
 
     # ! PROJECT FILE

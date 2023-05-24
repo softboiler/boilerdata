@@ -7,30 +7,30 @@ import originpro as op  # type: ignore  # pyright 1.1.308, local/CI difference
 import pandas as pd
 
 from boilerdata.axes_enum import AxesEnum as A  # noqa: N814
-from boilerdata.models.project import PROJ, Project
+from boilerdata.models.params import PARAMS, Params
 
 
 def main():
     (
         pd.read_csv(
-            PROJ.dirs.file_results,
+            PARAMS.paths.file_results,
             index_col=(index := [A.trial, A.run]),
             parse_dates=index,
-            dtype={col.name: col.dtype for col in PROJ.axes.cols},
+            dtype={col.name: col.dtype for col in PARAMS.axes.cols},
         )
-        .pipe(transform_for_originlab, PROJ)
-        .to_csv(PROJ.dirs.file_originlab_results, index=False, encoding="utf-8")
+        .pipe(transform_for_originlab, PARAMS)
+        .to_csv(PARAMS.paths.file_originlab_results, index=False, encoding="utf-8")
     )
 
-    with open_originlab(PROJ.dirs.file_plotter):
-        for shortname, file in PROJ.dirs.originlab_plot_files.items():
+    with open_originlab(PARAMS.paths.file_plotter):
+        for shortname, file in PARAMS.paths.originlab_plot_files.items():
             gp = op.find_graph(shortname)
             fig = gp.save_fig(get_path(file), type="png")
             if not fig:
                 raise RuntimeError("Failed to save figure.")
 
 
-def transform_for_originlab(df: pd.DataFrame, proj: Project) -> pd.DataFrame:
+def transform_for_originlab(df: pd.DataFrame, params: Params) -> pd.DataFrame:
     """Move units out of column labels and into a row just below the column labels.
 
     Explicitly set all dtypes to string to avoid data rendering issues, especially with
@@ -45,9 +45,9 @@ def transform_for_originlab(df: pd.DataFrame, proj: Project) -> pd.DataFrame:
     subscript = re.compile(r"\_(.*)")
     subscript_repl = r"\-(\1)"
 
-    cols = proj.axes.get_col_index()
+    cols = params.axes.get_col_index()
     quantity = cols.get_level_values("quantity").map(
-        {col.name: col.pretty_name for col in proj.axes.all}
+        {col.name: col.pretty_name for col in params.axes.all}
     )
     units = cols.get_level_values("units")
     indices = [

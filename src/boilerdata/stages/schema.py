@@ -4,15 +4,16 @@ import re
 
 from boilerdata.models.axes import Axes
 from boilerdata.models.common import write_schema
-from boilerdata.models.project import PROJ, Project
+from boilerdata.models.params import PARAMS, Params
 from boilerdata.models.trials import Trials
 
 
 def main():
-    models = [Project, Trials, Axes]
+    models = [Params, Trials, Axes]
     for model in models:
         write_schema(
-            PROJ.dirs.project_schema / f"{to_snake_case(model.__name__)}_schema.json",
+            PARAMS.paths.project_schema
+            / f"{to_snake_case(model.__name__)}_schema.json",
             model,
         )
 

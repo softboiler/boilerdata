@@ -2,16 +2,16 @@ from pathlib import Path
 
 import pandas as pd
 
-from boilerdata.models.project import Project
+from boilerdata.models.params import Params
 
 
-def get_run(proj: Project, run: Path) -> pd.DataFrame:
+def get_run(params: Params, run: Path) -> pd.DataFrame:
     """Get data for a single run."""
 
     # Get source columns
-    index = proj.axes.index[-1].source  # Get the last index, associated with source
-    source_col_names = [col.source for col in proj.axes.source_cols]
-    source_dtypes = {col.source: col.dtype for col in proj.axes.source_cols}
+    index = params.axes.index[-1].source  # Get the last index, associated with source
+    source_col_names = [col.source for col in params.axes.source_cols]
+    source_dtypes = {col.source: col.dtype for col in params.axes.source_cols}
 
     # Assign columns from CSV and metadata to the structured dataframe. Get the tail.
     df = pd.DataFrame(
@@ -31,10 +31,12 @@ def get_run(proj: Project, run: Path) -> pd.DataFrame:
     # Need "df" defined so we can call "df.index.dropna()". Repeat `dropna` because a
     # run can have an NA index at the end and a CSV can have an all NA record at the end
     return (
-        df.reindex(index=df.index.dropna()).dropna(how="all").pipe(rename_columns, proj)
+        df.reindex(index=df.index.dropna())
+        .dropna(how="all")
+        .pipe(rename_columns, params)
     )
 
 
-def rename_columns(df: pd.DataFrame, proj: Project) -> pd.DataFrame:
+def rename_columns(df: pd.DataFrame, params: Params) -> pd.DataFrame:
     """Rename source columns."""
-    return df.rename(columns={col.source: col.name for col in proj.axes.cols})
+    return df.rename(columns={col.source: col.name for col in params.axes.cols})

@@ -7,6 +7,9 @@ from pydantic import BaseModel, Extra, validator
 from ruamel.yaml import YAML
 
 YAML_INDENT = 2
+yaml = YAML()
+yaml.indent(mapping=YAML_INDENT, sequence=YAML_INDENT, offset=YAML_INDENT)
+yaml.preserve_quotes = True  # type: ignore
 
 
 class ProjectModel(BaseModel):
@@ -35,8 +38,6 @@ class YamlModel(BaseModel):
 
     def get_params(self, data_file: Path) -> dict[str, Any]:
         """Get parameters from file."""
-        yaml = YAML()
-        yaml.indent(YAML_INDENT)
         return (
             yaml.load(data_file)
             if data_file.exists() and data_file.read_text(encoding="utf-8")
@@ -63,8 +64,6 @@ class SynchronizedPathsYamlModel(YamlModel):
 
     def get_params(self, data_file: Path) -> dict[str, Any]:
         """Get parameters from file, synchronizing paths in the file."""
-        yaml = YAML()
-        yaml.indent(YAML_INDENT)
         params = (
             yaml.load(data_file)
             if data_file.exists() and data_file.read_text(encoding="utf-8")
@@ -81,7 +80,11 @@ class SynchronizedPathsYamlModel(YamlModel):
         defaults: dict[str, dict[str, str]] = {}
         for key, field in self.__fields__.items():
             type_ = field.type_
-            if issubclass(type_, DefaultPathsModel) and key not in excludes:
+            try:
+                is_paths_model = issubclass(type_, DefaultPathsModel)
+            except TypeError:
+                is_paths_model = False
+            if is_paths_model and key not in excludes:
                 defaults[key] = type_.get_paths()
         return defaults
 

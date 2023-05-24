@@ -14,7 +14,7 @@ from scipy.optimize import curve_fit
 from scipy.stats import t
 
 from boilerdata.axes_enum import AxesEnum as A  # noqa: N814
-from boilerdata.models.project import PROJ, Project
+from boilerdata.models.params import PARAMS, Params
 from boilerdata.models.trials import Trial
 from boilerdata.stages.common import get_tcs, get_trial, per_run, per_trial
 from boilerdata.stages.modelfun import model
@@ -29,23 +29,23 @@ from boilerdata.validation import (
 
 
 def main():
-    confidence_interval_95 = t.interval(0.95, PROJ.params.records_to_average)[1]
+    confidence_interval_95 = t.interval(0.95, PARAMS.records_to_average)[1]
 
     (
         pd.read_csv(
-            PROJ.dirs.file_runs,
+            PARAMS.paths.file_runs,
             index_col=(index_col := [A.trial, A.run, A.time]),
             parse_dates=index_col,
-            dtype={col.name: col.dtype for col in PROJ.axes.cols},
+            dtype={col.name: col.dtype for col in PARAMS.axes.cols},
         )
         .pipe(handle_invalid_data, validate_initial_df)
-        .pipe(get_properties, PROJ)
-        .pipe(per_run, fit, PROJ, model, confidence_interval_95)
-        .pipe(per_trial, agg_over_runs, PROJ, confidence_interval_95)  # TCs may vary
-        .pipe(per_trial, get_superheat, PROJ)  # Water temp varies across trials
-        .pipe(per_trial, assign_metadata, PROJ)  # Metadata is distinct per trial
+        .pipe(get_properties, PARAMS)
+        .pipe(per_run, fit, PARAMS, model, confidence_interval_95)
+        .pipe(per_trial, agg_over_runs, PARAMS, confidence_interval_95)  # TCs may vary
+        .pipe(per_trial, get_superheat, PARAMS)  # Water temp varies across trials
+        .pipe(per_trial, assign_metadata, PARAMS)  # Metadata is distinct per trial
         .pipe(validate_final_df)
-        .to_csv(PROJ.dirs.file_results, encoding="utf-8")
+        .to_csv(PARAMS.paths.file_results, encoding="utf-8")
     )
 
 
@@ -53,7 +53,7 @@ def main():
 # * STAGES
 
 
-def get_properties(df: pd.DataFrame, proj: Project) -> pd.DataFrame:
+def get_properties(df: pd.DataFrame, params: Params) -> pd.DataFrame:
     """Get properties."""
 
     get_saturation_temp = XSteam(XSteam.UNIT_SYSTEM_FLS).tsat_p  # A lookup function
@@ -74,20 +74,20 @@ def get_properties(df: pd.DataFrame, proj: Project) -> pd.DataFrame:
                 A.T_w: lambda df: (T_w_avg + T_w_p) / 2,
                 A.T_w_diff: lambda df: abs(T_w_avg - T_w_p),
             }
-            | {k: 0 for k in proj.params.fixed_errors}  # Zero error for fixed params
+            | {k: 0 for k in params.fixed_errors}  # Zero error for fixed params
         )
     )
 
 
 def fit(
     grp: pd.DataFrame,
-    proj: Project,
+    params: Params,
     model,
     confidence_interval_95: float,
 ) -> pd.DataFrame:
     """Fit the data to a model function."""
 
-    trial = get_trial(grp, proj)
+    trial = get_trial(grp, params)
 
     # Assign thermocouple errors trial-by-trial (since they can vary)
     _, tc_errors = get_tcs(trial)
@@ -102,19 +102,19 @@ def fit(
     )
 
     # Prepare for fitting
-    x, y, y_errors = fit_setup(grp, proj, trial)
+    x, y, y_errors = fit_setup(grp, params, trial)
 
     # Get fixed values
-    fixed_values: dict[str, float] = proj.params.fixed_values  # type: ignore
+    fixed_values: dict[str, float] = params.fixed_values  # type: ignore
     for key in fixed_values:
         if not all(grp[key].isna()):
             fixed_values[key] = grp[key].mean()
 
     # Get bounds/guesses and override some. Can't do it earlier because of the override.
-    model_bounds = proj.params.model_bounds
-    initial_values = proj.params.initial_values
+    model_bounds = params.model_bounds
+    initial_values = params.initial_values
     (bounds, guesses) = get_free_bounds_and_guesses(
-        proj,
+        params,
         model_bounds,  # type: ignore  # pydantic: Type coerced in validation
         initial_values,
     )
@@ -135,10 +135,10 @@ def fit(
                 bounds=tuple(
                     zip(*bounds, strict=True)
                 ),  # Expects ([L1, L2, L3], [H1, H2, H3])
-                method=proj.params.fit_method,
+                method=params.fit_method,
             )
         except (RuntimeError, OptimizeWarning):
-            dim = len(proj.params.free_params)
+            dim = len(params.free_params)
             fitted_params = np.full(dim, np.nan)
             pcov = np.full((dim, dim), np.nan)
 
@@ -154,17 +154,17 @@ def fit(
         **{key: fixed_values[key] for key in fixed_values if all(grp[key].isna())},
         **pd.Series(
             np.concatenate([fitted_params, errors]),
-            index=proj.params.free_params + proj.params.free_errors,
+            index=params.free_params + params.free_errors,
         ),
     )
     return grp
 
 
-def fit_setup(grp: pd.DataFrame, proj: Project, trial: Trial):
+def fit_setup(grp: pd.DataFrame, params: Params, trial: Trial):
     """Reshape vectors to be passed to the curve fit."""
     tcs, tc_errors = get_tcs(trial)
     x_unique = list(trial.thermocouple_pos.values())
-    x = np.tile(x_unique, proj.params.records_to_average)
+    x = np.tile(x_unique, params.records_to_average)
     y = grp[tcs].stack()
     y_errors = grp[tc_errors].stack()
     return x, y, y_errors
@@ -175,7 +175,7 @@ guess_T = TypeVar("guess_T", bound=float)  # noqa: N816  # TypeVar
 
 
 def get_free_bounds_and_guesses(
-    proj: Project,
+    params: Params,
     model_bounds: Mapping[A, bound_T],
     initial_values: Mapping[A, guess_T],
 ) -> tuple[Sequence[bound_T], Sequence[guess_T]]:
@@ -185,14 +185,10 @@ def get_free_bounds_and_guesses(
     `curve_fit`.
     """
     bounds = tuple(
-        bound
-        for param, bound in model_bounds.items()
-        if param in proj.params.free_params
+        bound for param, bound in model_bounds.items() if param in params.free_params
     )
     guesses = tuple(
-        guess
-        for param, guess in initial_values.items()
-        if param in proj.params.free_params
+        guess for param, guess in initial_values.items() if param in params.free_params
     )
 
     return bounds, guesses
@@ -200,22 +196,22 @@ def get_free_bounds_and_guesses(
 
 def agg_over_runs(
     grp: pd.DataFrame,
-    proj: Project,
+    params: Params,
     confidence_interval_95: float,
 ) -> pd.DataFrame:
     """Aggregate properties over each run. Runs per trial because TCs can vary."""
-    trial = get_trial(grp, proj)
+    trial = get_trial(grp, params)
     _, tc_errors = get_tcs(trial)
     grp = (
         grp.groupby(level=[A.trial, A.run], dropna=False)  # type: ignore  # pandas
         .agg(
             **(
                 # Take the default agg for all cols
-                proj.axes.aggs
+                params.axes.aggs
                 # Override the agg for cols with duplicates in a run to take the first
                 | {
                     col: pd.NamedAgg(column=col, aggfunc="first")  # type: ignore  # pydantic: use_enum_values
-                    for col in (tc_errors + proj.params.params_and_errors)
+                    for col in (tc_errors + params.params_and_errors)
                 }
             )
         )
@@ -223,7 +219,7 @@ def agg_over_runs(
             **{
                 tc_error: lambda df: df[tc_error]  # noqa: B023  # False positive
                 * confidence_interval_95
-                / np.sqrt(proj.params.records_to_average)
+                / np.sqrt(params.records_to_average)
                 for tc_error in tc_errors
             }
         )
@@ -231,10 +227,10 @@ def agg_over_runs(
     return grp
 
 
-def get_superheat(df: pd.DataFrame, proj: Project) -> pd.DataFrame:
+def get_superheat(df: pd.DataFrame, params: Params) -> pd.DataFrame:
     """Calculate heat transfer and superheat based on one-dimensional approximation."""
     # Explicitly index the trial to catch improper application of the mean
-    trial = get_trial(df, proj)
+    trial = get_trial(df, params)
     return df.assign(
         **{
             A.DT: lambda df: (df[A.T_s] - df.loc[trial.date.isoformat(), A.T_w].mean()),
@@ -243,15 +239,15 @@ def get_superheat(df: pd.DataFrame, proj: Project) -> pd.DataFrame:
     )
 
 
-def assign_metadata(grp: pd.DataFrame, proj: Project) -> pd.DataFrame:
+def assign_metadata(grp: pd.DataFrame, params: Params) -> pd.DataFrame:
     """Assign metadata columns to the dataframe."""
-    trial = get_trial(grp, proj)
+    trial = get_trial(grp, params)
     # Need to re-apply categorical dtypes
     grp = grp.assign(
         **{
             field: value
             for field, value in trial.dict().items()  # Dict call avoids excluded properties
-            if field not in [idx.name for idx in proj.axes.index]
+            if field not in [idx.name for idx in params.axes.index]
         }
     )
     return grp

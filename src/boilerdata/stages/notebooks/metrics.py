@@ -14,7 +14,7 @@ from matplotlib import pyplot as plt
 from uncertainties import ufloat
 
 from boilerdata.axes_enum import AxesEnum as A  # noqa: N814
-from boilerdata.models.project import Project
+from boilerdata.models.params import Params
 from boilerdata.stages.common import get_tcs, get_trial
 
 # * -------------------------------------------------------------------------------- * #
@@ -58,14 +58,14 @@ def tex_wrap(df: pd.DataFrame) -> tuple[pd.DataFrame, Mapping[str, str]]:
 
 
 def add_units(
-    df: pd.DataFrame, proj: Project
+    df: pd.DataFrame, params: Params
 ) -> tuple[pd.DataFrame, Mapping[str, str]]:
     """Make the columns a multi-index representing units."""
-    cols = proj.axes.get_col_index()
+    cols = params.axes.get_col_index()
     quantity = cols.get_level_values("quantity")
     units = cols.get_level_values("units")
 
-    old = (col.name for col in proj.axes.cols)
+    old = (col.name for col in params.axes.cols)
     new = (add_unit(q, u) for q, u in zip(quantity, units, strict=True))
     mapper = dict(zip(old, new, strict=True))
     return df.rename(axis="columns", mapper=mapper), mapper
@@ -102,10 +102,10 @@ def sep_unit(val: str) -> tuple[str, str]:
 # * MODEL FITS
 
 
-def plot_new_fits(grp: pd.DataFrame, proj: Project, model):
+def plot_new_fits(grp: pd.DataFrame, params: Params, model):
     """Plot model fits for trials marked as new."""
 
-    trial = get_trial(grp, proj)
+    trial = get_trial(grp, params)
     if not trial.new:
         return grp
 
@@ -116,9 +116,9 @@ def plot_new_fits(grp: pd.DataFrame, proj: Project, model):
     ]
     figs_dst = deque(
         [
-            proj.dirs.plot_new_fit_0,
-            proj.dirs.plot_new_fit_1,
-            proj.dirs.plot_new_fit_2,
+            params.paths.plot_new_fit_0,
+            params.paths.plot_new_fit_1,
+            params.paths.plot_new_fit_2,
         ]
     )
     tcs, tc_errors = get_tcs(trial)
@@ -142,7 +142,7 @@ def plot_new_fits(grp: pd.DataFrame, proj: Project, model):
 
         # Initial plot boundaries
         x_bounds = np.array([0, trial.thermocouple_pos[A.T_1]])
-        y_bounds = model(x_bounds, **get_params_mapping(ser, proj.params.model_params))
+        y_bounds = model(x_bounds, **get_params_mapping(ser, params.model_params))
         ax.plot(
             x_bounds,
             y_bounds,
@@ -173,7 +173,7 @@ def plot_new_fits(grp: pd.DataFrame, proj: Project, model):
         x_padded = np.linspace(xlim_min - pad, xlim_max + pad, 200)
 
         y_padded, y_padded_min, y_padded_max = model_with_error(
-            model, x_padded, get_params_mapping_with_uncertainties(ser, proj)
+            model, x_padded, get_params_mapping_with_uncertainties(ser, params)
         )
         ax.plot(
             x_padded,
@@ -212,31 +212,33 @@ def plot_new_fits(grp: pd.DataFrame, proj: Project, model):
 
 
 def get_params_mapping(
-    grp: pd.Series | pd.DataFrame, params: list[Any]  # type: ignore  # pandas
+    grp: pd.Series | pd.DataFrame, model_params: list[Any]  # type: ignore  # pandas
 ) -> dict[str, Any]:
     """Get a mapping of parameter names to values."""
     # Reason: pydantic: use_enum_values
-    return dict(zip(params, grp[params], strict=True))
+    return dict(zip(model_params, grp[model_params], strict=True))
 
 
 def get_params_mapping_with_uncertainties(
-    grp: pd.Series | pd.DataFrame, proj: Project  # type: ignore  # pandas
+    grp: pd.Series | pd.DataFrame, params: Params  # type: ignore  # pandas
 ) -> dict[str, Any]:
     """Get a mapping of parameter names to values with uncertainty."""
     # Reason: pydantic: use_enum_values
-    params: list[str] = proj.params.model_params  # type: ignore
-    param_errors: list[str] = proj.params.model_errors
-    u_params = [
-        ufloat(param, err, tag)
-        for param, err, tag in zip(grp[params], grp[param_errors], params, strict=True)
+    model_params: list[str] = params.model_params  # type: ignore
+    param_errors: list[str] = params.model_errors  # type: ignore
+    model_param_uncertainties = [
+        ufloat(model_param, model_error, tag)
+        for model_param, model_error, tag in zip(
+            grp[model_params], grp[param_errors], model_params, strict=True
+        )
     ]
-    return dict(zip(params, u_params, strict=True))
+    return dict(zip(model_params, model_param_uncertainties, strict=True))
 
 
-def model_with_error(model, x, u_params):
+def model_with_error(model, x, model_param_uncertainties):
     """Evaluate the model for x and return y with errors."""
     u_x = [ufloat(v, 0, "x") for v in x]
-    u_y = model(u_x, **u_params)
+    u_y = model(u_x, **model_param_uncertainties)
     y = np.array([v.nominal_value for v in u_y])
     y_min = y - [v.std_dev for v in u_y]  # type: ignore # pyright 1.1.308, local/CI difference
     y_max = y + [v.std_dev for v in u_y]

@@ -14,6 +14,7 @@
   "required": [
     "trials"
   ],
+  "additionalProperties": false,
   "definitions": {
     "Group": {
       "title": "Group",
@@ -156,8 +157,7 @@
         "rod",
         "coupon",
         "joint"
-      ],
-      "additionalProperties": false
+      ]
     }
   }
 }

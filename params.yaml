@@ -1,45 +1,66 @@
-params:
-  do_plot: true
-  records_to_average: 9
-  fit_method: trf
-  model_inputs:
-    r: 0.0047625
-    T_infa: 25
-    T_infw: 100
-    x_s: 0
-    x_wa: 0.0381
-  model_params:
+do_plot: true
+records_to_average: 9
+fit_method: trf
+model_inputs:
+  r: 0.0047625
+  T_infa: 25
+  T_infw: 100
+  x_s: 0
+  x_wa: 0.0381
+model_params:
   - T_s
   - q_s
   - k
   - h_a
   - h_w
-  fixed_params:
+fixed_params:
   - k
   - h_w
-  initial_values:
-    T_s: 95
-    q_s: 0
-    k: 400
-    h_a: 0
-    h_w: 0
-  model_bounds:
-    T_s:
+initial_values:
+  T_s: 95
+  q_s: 0
+  k: 400
+  h_a: 0
+  h_w: 0
+model_bounds:
+  T_s:
     - -inf
     - inf
-    q_s:
+  q_s:
     - -inf
     - inf
-    k:
+  k:
     - 350
     - 450
-    h_a:
+  h_a:
     - -inf
     - inf
-    h_w:
+  h_w:
     - -inf
     - inf
-dirs:
+project_paths:
+  requirements: requirements.txt
+  dev_requirements: .tools/requirements
+  config: config
+  package: src/boilerdata
+  stages: src/boilerdata/stages
+  prep: src/boilerdata/stages/prep
+  notebooks: src/boilerdata/stages/notebooks
+  models: src/boilerdata/models
+  validation: src/boilerdata/validation.py
+  plot_config: config/plotting
+  mpl_base: config/plotting/base.mplstyle
+  mpl_hide_title: config/plotting/hide_title.mplstyle
+  stage_axes: src/boilerdata/stages/axes.py
+  stage_parse_benchmarks: src/boilerdata/stages/prep/parse_benchmarks.py
+  stage_literature: src/boilerdata/stages/literature.py
+  stage_metrics: src/boilerdata/stages/notebooks/metrics.ipynb
+  stage_modelfun: src/boilerdata/stages/notebooks/modelfun.ipynb
+  stage_originlab: src/boilerdata/stages/originlab.py
+  stage_pipeline: src/boilerdata/stages/pipeline.py
+  stage_runs: src/boilerdata/stages/prep/runs.py
+  stage_schema: src/boilerdata/stages/schema.py
+paths:
   file_proj: params.yaml
   data: data
   axes: data/axes
@@ -76,25 +97,3 @@ dirs:
     low: data/metrics/originlab_plots/low.png
   tables: data/metrics/tables
   file_pipeline_metrics: data/metrics/tables/pipeline_metrics.json
-project_paths:
-  requirements: requirements.txt
-  dev_requirements: .tools/requirements
-  config: config
-  package: src/boilerdata
-  stages: src/boilerdata/stages
-  prep: src/boilerdata/stages/prep
-  notebooks: src/boilerdata/stages/notebooks
-  models: src/boilerdata/models
-  validation: src/boilerdata/validation.py
-  plot_config: config/plotting
-  mpl_base: config/plotting/base.mplstyle
-  mpl_hide_title: config/plotting/hide_title.mplstyle
-  stage_axes: src/boilerdata/stages/axes.py
-  stage_parse_benchmarks: src/boilerdata/stages/prep/parse_benchmarks.py
-  stage_literature: src/boilerdata/stages/literature.py
-  stage_metrics: src/boilerdata/stages/notebooks/metrics.ipynb
-  stage_modelfun: src/boilerdata/stages/notebooks/modelfun.ipynb
-  stage_originlab: src/boilerdata/stages/originlab.py
-  stage_pipeline: src/boilerdata/stages/pipeline.py
-  stage_runs: src/boilerdata/stages/prep/runs.py
-  stage_schema: src/boilerdata/stages/schema.py

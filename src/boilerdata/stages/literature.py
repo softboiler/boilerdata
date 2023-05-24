@@ -20,7 +20,7 @@ import numpy as np
 import pandas as pd
 import toml
 
-from boilerdata.models.project import PROJ
+from boilerdata.models.params import PARAMS
 
 
 def main():
@@ -29,7 +29,7 @@ def main():
     )
     dfs: list[pd.DataFrame] = []
 
-    for paper in get_dirs_sorted(PROJ.dirs.literature):
+    for paper in get_dirs_sorted(PARAMS.paths.literature):
         paper_meta = toml.loads((paper / "paper.toml").read_text(encoding="utf-8"))
 
         for fig in get_dirs_sorted(paper):
@@ -43,7 +43,7 @@ def main():
             dfs.append(fig_df)
 
     df = pd.concat(dfs)
-    df.to_csv(PROJ.dirs.file_literature_results, index=False)
+    df.to_csv(PARAMS.paths.file_literature_results, index=False)
 
 
 # * -------------------------------------------------------------------------------- * #

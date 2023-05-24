@@ -6,7 +6,7 @@ from datetime import datetime
 
 import pandas as pd
 
-from boilerdata.models.project import PROJ, Project
+from boilerdata.models.params import PARAMS, Params
 from boilerdata.stages.common import set_dtypes
 from boilerdata.stages.prep.common import get_run
 
@@ -17,8 +17,8 @@ from boilerdata.stages.prep.common import get_run
 def main():
     (
         pd.DataFrame(
-            columns=[ax.name for ax in PROJ.axes.cols], data=get_runs(PROJ)
-        ).to_csv(PROJ.dirs.file_runs, encoding="utf-8")
+            columns=[ax.name for ax in PARAMS.axes.cols], data=get_runs(PARAMS)
+        ).to_csv(PARAMS.paths.file_runs, encoding="utf-8")
     )
 
 
@@ -26,16 +26,16 @@ def main():
 # * STAGES
 
 
-def get_runs(proj: Project) -> pd.DataFrame:
+def get_runs(params: Params) -> pd.DataFrame:
     """Get runs from all trials."""
 
     # Get runs and multiindex
-    dtypes = {col.name: col.dtype for col in proj.axes.source if not col.index}
+    dtypes = {col.name: col.dtype for col in params.axes.source if not col.index}
     runs: list[pd.DataFrame] = []
     multiindex: list[tuple[datetime, datetime, datetime]] = []
-    for trial in proj.trials:
+    for trial in params.trials:
         for file, run_index in zip(trial.run_files, trial.run_index, strict=True):
-            run = get_run(proj, file).tail(proj.params.records_to_average)
+            run = get_run(params, file).tail(params.records_to_average)
             runs.append(run)
             multiindex.extend(
                 tuple((*run_index, record_time) for record_time in run.index)
@@ -45,7 +45,7 @@ def get_runs(proj: Project) -> pd.DataFrame:
         pd.concat(runs)
         .set_index(
             pd.MultiIndex.from_tuples(
-                multiindex, names=[idx.name for idx in proj.axes.index]
+                multiindex, names=[idx.name for idx in params.axes.index]
             )
         )
         .pipe(set_dtypes, dtypes)

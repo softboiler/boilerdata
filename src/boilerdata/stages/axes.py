@@ -5,14 +5,14 @@ from shutil import copy
 from textwrap import dedent
 
 from boilerdata import AXES_ENUM_FILE
-from boilerdata.models.project import PROJ
+from boilerdata.models.params import PARAMS
 
 
 def main():
-    axes_enum_copy = PROJ.dirs.axes / AXES_ENUM_FILE.name
-    generate_axes_enum([ax.name for ax in PROJ.axes.all], axes_enum_copy)
+    axes_enum_copy = PARAMS.paths.axes / AXES_ENUM_FILE.name
+    generate_axes_enum([ax.name for ax in PARAMS.axes.all], axes_enum_copy)
     copy(axes_enum_copy, AXES_ENUM_FILE)
-    PROJ.dirs.file_originlab_coldes.write_text(PROJ.axes.get_originlab_coldes())
+    PARAMS.paths.file_originlab_coldes.write_text(PARAMS.axes.get_originlab_coldes())
 
 
 def generate_axes_enum(axes: list[str], path: Path) -> None:

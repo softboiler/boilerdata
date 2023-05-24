@@ -14,6 +14,7 @@
   "required": [
     "all"
   ],
+  "additionalProperties": false,
   "definitions": {
     "PandasDtype": {
       "title": "PandasDtype",
@@ -143,8 +144,7 @@
       },
       "required": [
         "name"
-      ],
-      "additionalProperties": false
+      ]
     }
   }
 }
