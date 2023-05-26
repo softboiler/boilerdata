@@ -28,10 +28,11 @@ def patched_modules(monkeypatch, tmp_path) -> dict[str, ModuleType]:
     monkeypatch.setattr(boilerdata, "DATA_DIR", test_data)
     copytree(TEST_DATA / "data", test_data)
 
+    from boilerdata.models.params import Params
     from boilerdata.stages import pipeline
     from boilerdata.stages.prep import parse_benchmarks, runs
 
-    return {
+    return Params, {
         module.__name__.removeprefix(f"{module.__package__}."): module
         for module in (
             parse_benchmarks,
