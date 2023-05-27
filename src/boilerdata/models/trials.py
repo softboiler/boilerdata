@@ -113,7 +113,7 @@ class Trial(ProjectModel):
     def set_geometry(self, geometry: Geometry, copper_temps: list[A]):
         """Get relevant geometry for the trial."""
         thermocouple_pos = geometry.rods[self.rod] + geometry.coupons[self.coupon]
-        self.thermocouple_pos = dict(zip(copper_temps, thermocouple_pos, strict=True))
+        self.thermocouple_pos = dict(zip(copper_temps, thermocouple_pos, strict=True))  # type: ignore  # pyright: 1.1.310, pydantic: use_enum_values
 
 
 class Trials(YamlModel):

@@ -123,7 +123,7 @@ class Params(SynchronizedPathsYamlModel):
     def validate_initial_values(cls, model_inputs) -> dict[str, float]:
         """Avoid division by zero in select parameters."""
         eps = float(np.finfo(float).eps)
-        params_to_check = (A.h_a, A.h_w)
+        params_to_check = [A.h_a, A.h_w]
         return {
             param: eps if v == 0 and param in params_to_check else v
             for param, v in model_inputs.items()
@@ -132,13 +132,13 @@ class Params(SynchronizedPathsYamlModel):
     # ! EXCLUDED FROM PARAMS FILE
 
     copper_temps: list[A] = Field(
-        default=(A.T_1, A.T_2, A.T_3, A.T_4, A.T_5),
+        default=[A.T_1, A.T_2, A.T_3, A.T_4, A.T_5],
         description="Copper temperature measurements.",
         exclude=True,
     )
 
     water_temps: list[A] = Field(
-        default=(A.T_w1, A.T_w2, A.T_w3),
+        default=[A.T_w1, A.T_w2, A.T_w3],
         description="Water temperature measurements.",
         exclude=True,
     )
