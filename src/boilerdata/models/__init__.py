@@ -1,5 +1,7 @@
 """Parameter models for this project."""
 
+from __future__ import annotations
+
 from pathlib import Path
 from typing import Any
 
@@ -96,7 +98,7 @@ class DefaultPathsModel(BaseModel):
         extra = Extra.forbid
 
         @staticmethod
-        def schema_extra(schema: dict[str, Any], model):
+        def schema_extra(schema: dict[str, Any], model: type[DefaultPathsModel]):
             """Replace backslashes with forward slashes in paths."""
             if schema.get("required"):
                 raise TypeError(

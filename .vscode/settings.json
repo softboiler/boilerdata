@@ -115,6 +115,17 @@
     ".nest_tools_config": "plaintext",
     ".sourcery.yaml": "yaml"
   },
+  //* Exclude problematic files in Problems panel filter and elsewhere
+  "files.exclude": {
+    "**/.git": true,
+    "**/.svn": true,
+    "**/.hg": true,
+    "**/CVS": true,
+    "**/.DS_Store": true,
+    "**/Thumbs.db": true,
+    //? Pylance notebook cell temp files that get picked up in Problems pane before deletion
+    "**/*pylance-notebook-cell*": true
+  },
   //* File icon associations
   "workbench.iconTheme": "vscode-icons",
   "vsicons.presets.hideExplorerArrows": true,
