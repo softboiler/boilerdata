@@ -31,6 +31,7 @@ repos:
     hooks:
       - id: "synchronize-params"
         name: "synchronize-params"
+        fail_fast: true
         language: "system"
         entry: "pwsh -Command python -m boilerdata.models.params"
         files: |
@@ -40,6 +41,8 @@ repos:
           )$
       - id: "compose-pyproject"
         name: "compose-pyproject"
+        fail_fast: true
+        pass_filenames: false
         language: "system"
         entry: "pwsh -Command python .tools/scripts/compose_pyproject.py"
         files: |
@@ -48,14 +51,31 @@ repos:
             |requirements.txt
             |.tools/pyproject.toml
           )$
+      - id: "pyright"
+        name: "pyright"
+        fail_fast: true
         pass_filenames: false
+        language: "system"
+        entry: "pwsh .tools/scripts/Invoke-Pyright.ps1"
+        files: |
+          (?x)^(
+            src/.*
+            |tests/.*
+            |pyproject.toml
+            |requirements.txt
+            |.tools/(
+              pyproject.toml
+              |requirements/.*
+            )
+          )$
       - id: "pytest-fast-only"
         name: "pytest-fast-only"
+        fail_fast: true
+        verbose: true
+        pass_filenames: false
         language: "system"
         entry: |
           pwsh -Command "pytest -m 'not slow' --suppress-no-test-exit-code"
-        pass_filenames: false
-        verbose: true
         files: |
           (?x)^(
             pyproject.toml
@@ -67,30 +87,15 @@ repos:
           )$
       - id: "pytest-slow-only"
         name: "pytest-slow-only"
+        fail_fast: true
+        verbose: true
+        pass_filenames: false
         language: "system"
         entry: "pwsh -Command pytest -m slow"
-        pass_filenames: false
-        verbose: true
         files: |
           (?x)^(
             src/.*
             |tests/.*
-          )$
-      - id: "pyright"
-        name: "pyright"
-        language: "system"
-        entry: "pwsh .tools/scripts/Invoke-Pyright.ps1"
-        pass_filenames: false
-        files: |
-          (?x)^(
-            src/.*
-            |tests/.*
-            |pyproject.toml
-            |requirements.txt
-            |.tools/(
-              pyproject.toml
-              |requirements/.*
-            )
           )$
   - repo: "https://github.com/pre-commit/pre-commit-hooks"
     rev: "v4.4.0"

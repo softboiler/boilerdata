@@ -151,6 +151,7 @@
   "files.trimFinalNewlines": true,
   //* Periodically fetch changes to tracked repo. Don't confirm on push/pull.
   "git.autofetch": true,
+  "git.commandsToLog": ["commit", "push"],
   "git.confirmSync": false,
   "git.ignoredRepositories": ["template", "typings"],
   //* Markdown editor moves jarringly when this is "true"
@@ -230,5 +231,6 @@
   },
 
   //! Extension: Jupyter Notebooks
-  "jupyter.notebookFileRoot": "${workspaceFolder}"
+  "jupyter.notebookFileRoot": "${workspaceFolder}",
+  "jupyter.showVariableViewWhenDebugging": true
 }

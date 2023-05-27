@@ -16,7 +16,7 @@ from scipy.stats import t
 from boilerdata.axes_enum import AxesEnum as A  # noqa: N814
 from boilerdata.models.params import PARAMS, Params
 from boilerdata.models.trials import Trial
-from boilerdata.stages.common import get_tcs, get_trial, per_run, per_trial
+from boilerdata.stages import get_tcs, get_trial, per_run, per_trial
 from boilerdata.stages.modelfun import model
 from boilerdata.validation import (
     handle_invalid_data,

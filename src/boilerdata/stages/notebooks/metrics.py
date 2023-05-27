@@ -14,7 +14,7 @@ from uncertainties import ufloat
 
 from boilerdata.axes_enum import AxesEnum as A  # noqa: N814
 from boilerdata.models.params import Params
-from boilerdata.stages.common import get_tcs, get_trial
+from boilerdata.stages import get_tcs, get_trial
 
 # * -------------------------------------------------------------------------------- * #
 # * MODULE VARIABLES

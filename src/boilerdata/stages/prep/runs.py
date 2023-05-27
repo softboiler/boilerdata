@@ -7,7 +7,7 @@ from datetime import datetime
 import pandas as pd
 
 from boilerdata.models.params import PARAMS, Params
-from boilerdata.stages.common import set_dtypes
+from boilerdata.stages import set_dtypes
 from boilerdata.stages.prep.common import get_run
 
 # * -------------------------------------------------------------------------------- * #
