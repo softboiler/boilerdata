@@ -3,7 +3,7 @@ dill==0.3.6
 dvc[gs]==2.57.1
 matplotlib==3.7.1
 numpy==1.24.3
-pandas==1.5.3
+pandas==2.0.1
 pandera==0.14.5
 papermill==2.4.0
 propshop==0.1.1
