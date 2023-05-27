@@ -1,4 +1,3 @@
-from collections import deque
 from collections.abc import Mapping
 from contextlib import contextmanager
 from typing import Any
@@ -109,27 +108,27 @@ def plot_new_fits(grp: pd.DataFrame, params: Params, model):
     if not trial.new:
         return grp
 
-    runs_to_plot = [
-        0,
-        (len(grp) // 2) - 1,
-        len(grp) - 1,
-    ]
-    figs_dst = deque(
-        [
-            params.paths.plot_new_fit_0,
-            params.paths.plot_new_fit_1,
-            params.paths.plot_new_fit_2,
-        ]
-    )
     tcs, tc_errors = get_tcs(trial)
     x_unique = list(trial.thermocouple_pos.values())
+    figs = dict(
+        zip(
+            [
+                params.paths.plot_new_fit_0,
+                params.paths.plot_new_fit_1,
+                params.paths.plot_new_fit_2,
+            ],
+            grp.iloc[
+                [
+                    0,
+                    (len(grp) // 2) - 1,
+                    len(grp) - 1,
+                ]
+            ].iterrows(),
+            strict=True,
+        )
+    )
 
-    for i, (ser_name, ser) in enumerate(grp.iterrows()):
-        if i in runs_to_plot:
-            fig_dst = figs_dst.popleft()
-        else:
-            continue
-
+    for fig_dst, (ser_name, ser) in figs.items():
         y_unique = ser[tcs]
 
         # Plot setup

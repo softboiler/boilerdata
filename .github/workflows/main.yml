@@ -26,7 +26,7 @@ jobs:
       - uses: "blakeNaccarato/copier-python-workflow-setup@v0.0.12"
         with:
           python-version: "3.10"
-      - run: "pytest"
+      - run: "pytest --cov"
       - uses: "codecov/codecov-action@v3.1.3"
   bump_project:
     needs: ["pyright", "ruff", "pytest"]

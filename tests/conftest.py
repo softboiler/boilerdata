@@ -1,18 +1,21 @@
+"""Test configuration."""
+
 from pathlib import Path
 from shutil import copy, copytree
-from types import ModuleType
+from sys import path
 
 import pytest
+
+from tests import get_nb_content
 
 TEST_DATA = Path("tests/data")
 
 
 @pytest.fixture()
-def patched_modules(monkeypatch, tmp_path) -> dict[str, ModuleType]:
-    """Test the pipeline by patching constants before importing stages."""
+def tmp_project(monkeypatch, tmp_path) -> Path:
+    """Produce a temporary project directory."""
 
     monkeypatch.setenv("DYNACONF_APP_FOLDER", f"{TEST_DATA / '.propshop'}")
-
     import boilerdata
 
     test_params = tmp_path / "params.yaml"
@@ -28,15 +31,15 @@ def patched_modules(monkeypatch, tmp_path) -> dict[str, ModuleType]:
     monkeypatch.setattr(boilerdata, "DATA_DIR", test_data)
     copytree(TEST_DATA / "data", test_data)
 
-    from boilerdata.models.params import Params
-    from boilerdata.stages import pipeline
-    from boilerdata.stages.prep import parse_benchmarks, runs
+    return tmp_path
 
-    return Params, {
-        module.__name__.removeprefix(f"{module.__package__}."): module
-        for module in (
-            parse_benchmarks,
-            pipeline,
-            runs,
+
+@pytest.fixture()
+def _nb_stages(tmp_project):
+    """Enable importing of notebook stages like `importlib.import_module("stage")`."""
+    path.insert(0, str(tmp_project))  # For importing tmp_project stages in tests
+    nbs = list(Path("src/boilerdata/stages/notebooks").glob("*.ipynb"))
+    for nb in nbs:
+        (tmp_project / nb.with_suffix(".py").name).write_text(
+            encoding="utf-8", data=get_nb_content(nb)
         )
-    }

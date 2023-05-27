@@ -293,6 +293,36 @@
     // * -------------------------------------------------------------------------- * //
     // * OTHER TASKS * //
     {
+      "label": "task: format notebook, clear outputs",
+      "dependsOrder": "sequence",
+      "dependsOn": ["task: format notebook"],
+      "type": "shell",
+      "options": {
+        "shell": { "executable": "pwsh", "args": ["-Command"] }
+      },
+      "command": "nb-clean clean --remove-empty-cells --preserve-cell-metadata tags slideshow special -- ${file}",
+      "icon": { "id": "notebook" },
+      "problemMatcher": []
+    },
+    {
+      "label": "task: format notebook",
+      "type": "shell",
+      "options": {
+        "shell": { "executable": "pwsh", "args": ["-Command"] }
+      },
+      "command": "nbqa black ${file}; nbqa ruff --fix-only ${file}; nb-clean clean --remove-empty-cells --preserve-cell-outputs --preserve-cell-metadata tags slideshow special -- ${file}",
+      "icon": { "id": "notebook" },
+      "problemMatcher": []
+    },
+    {
+      "label": "task: Run pytest with coverage",
+      "type": "process",
+      "command": "pwsh",
+      "args": ["-Command", "pytest --cov --cov-report xml"],
+      "icon": { "id": "type-hierarchy-sub" },
+      "problemMatcher": []
+    },
+    {
       "label": "task: Invoke pyright",
       "type": "process",
       "command": "pwsh",

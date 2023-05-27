@@ -1,43 +1,73 @@
-"""Test the pipeline."""
+"""Test the data process."""
 
-from dataclasses import dataclass
-import platform
+import importlib
 from pathlib import Path
-from unittest.mock import PropertyMock
 
 import pytest
-from testbook import testbook
-
-if platform.system() == "Windows":
-    import asyncio
-
-    asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
-
-TEST_DATA = Path("tests/data")
 
 
-def test_pest(patched_modules):
-    ...
+@pytest.mark.usefixtures("tmp_project")
+@pytest.mark.parametrize(
+    "group_name",
+    [
+        "params",
+        "inputs",
+        "intermediate_vars",
+        "functions",
+    ],
+)
+def test_syms(group_name):
+    """Test that declared symbolic variables are assigned to the correct symbols."""
+    from boilerdata.stages.notebooks import syms
+
+    module_vars = vars(syms)
+    sym_group = module_vars[group_name]
+    symvars = {
+        var: sym
+        for var, sym in module_vars.items()
+        if var in [group_sym.name for group_sym in sym_group]
+    }
+    assert all(var == sym.name for var, sym in symvars.items())
 
 
 @pytest.mark.slow()
+@pytest.mark.usefixtures("tmp_project")
 @pytest.mark.parametrize(
-    "module",
+    "stage",
+    [
+        stage.stem
+        for stage in Path("src/boilerdata/stages").glob("[!__]*.py")
+        if stage.stem not in {"common", "literature", "modelfun", "originlab"}
+    ],
+)
+def test_stages(stage):
+    """Test that stages can run."""
+    importlib.import_module(f"boilerdata.stages.{stage}").main()
+
+
+@pytest.mark.slow()
+@pytest.mark.usefixtures("tmp_project")
+@pytest.mark.parametrize(
+    "stage",
     [
         "parse_benchmarks",
-        "pipeline",
         "runs",
     ],
 )
-def test_boilerdata(module, patched_modules):
-    patched_modules(1)[module].main()
+def test_prep_stages(stage):
+    """Test that preparatory pipeline stages can run."""
+    importlib.import_module(f"boilerdata.stages.prep.{stage}").main()
 
 
-def test_book(patched_modules):
-    Params = patched_modules[0]
-
-    with testbook("pest.ipynb") as tb:  # noqa: SIM117
-        tb.execute_cell(0)
-        with tb.patch("__main__.Params", create=Params, spec=Params):
-            tb.execute_cell(1)
-            print(tb.ref("hello")())
+@pytest.mark.slow()
+@pytest.mark.usefixtures("_nb_stages")
+@pytest.mark.parametrize(
+    "stage",
+    [
+        stage.stem
+        for stage in Path("src/boilerdata/stages/notebooks").glob("[!__]*.ipynb")
+    ],
+)
+def test_nb_stages(stage):
+    """Test that notebook pipeline stages can run."""
+    importlib.import_module(stage)
