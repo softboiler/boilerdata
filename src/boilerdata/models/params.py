@@ -1,17 +1,17 @@
 from __future__ import annotations
 
+from contextlib import contextmanager
 from types import EllipsisType
 from typing import Literal, TypeAlias, TypeVar
 
 import numpy as np
 import pandas as pd
-from pydantic import Field, validator
+from pydantic import BaseModel, Extra, Field, validator
 
 from boilerdata import AXES_CONFIG, PARAMS_FILE, TRIAL_CONFIG
 from boilerdata.axes_enum import AxesEnum as A  # noqa: N814
 from boilerdata.models import ProjectModel, SynchronizedPathsYamlModel
 from boilerdata.models.axes import Axes
-from boilerdata.models.common import allow_extra
 from boilerdata.models.enums import FitMethod
 from boilerdata.models.geometry import Geometry
 from boilerdata.models.paths import Paths, ProjectPaths
@@ -185,6 +185,33 @@ class Params(SynchronizedPathsYamlModel):
         return [f"{param}_err" for param in params]
 
 
+@contextmanager
+def allow_extra(model: BaseModel):
+    """Temporarily allow extra properties to be set on a Pydantic model.
+    This is useful when writing a custom `__init__`, where not explicitly allowing extra
+    properties will result in errors, but you don't want to allow extra properties
+    forevermore.
+
+    Args:
+        model: The model to allow extras on.
+    """
+
+    # Store the current value of the attribute or note its absence
+    try:
+        original_config = model.Config.extra
+    except AttributeError:
+        original_config = None
+    model.Config.extra = Extra.allow
+
+    # Yield the temporarily changed config, resetting or deleting it when done
+    try:
+        yield
+    finally:
+        if original_config:
+            model.Config.extra = original_config
+        else:
+            del model.Config.extra
+
+
 PARAMS = Params()
 """All project parameters, including paths."""
-...

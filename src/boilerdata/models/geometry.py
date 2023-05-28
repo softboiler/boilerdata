@@ -1,8 +1,9 @@
+from typing import Any
+
 import numpy as np
 from pydantic import Field, validator
 
 from boilerdata.models import ProjectModel
-from boilerdata.models.common import NpNDArray
 from boilerdata.models.enums import Coupon, Rod
 
 
@@ -26,7 +27,7 @@ class Geometry(ProjectModel):
 
     # ! RODS
 
-    rods: dict[Rod, NpNDArray] = Field(
+    rods: dict[Rod, np.ndarray[Any, Any]] = Field(
         default={
             Rod.X: [3.5253, 3.0500, 2.5756, 2.1006, 0.3754],
             Rod.Y: [3.5250, 3.0504, 2.5752, 2.1008, 0.3752],
