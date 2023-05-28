@@ -305,18 +305,6 @@
           "format": "directory-path",
           "type": "string"
         },
-        "prep": {
-          "title": "Prep",
-          "default": "src/boilerdata/stages/prep",
-          "format": "directory-path",
-          "type": "string"
-        },
-        "notebooks": {
-          "title": "Notebooks",
-          "default": "src/boilerdata/stages/notebooks",
-          "format": "directory-path",
-          "type": "string"
-        },
         "models": {
           "title": "Models",
           "default": "src/boilerdata/models",
@@ -355,7 +343,7 @@
         },
         "stage_parse_benchmarks": {
           "title": "Stage Parse Benchmarks",
-          "default": "src/boilerdata/stages/prep/parse_benchmarks.py",
+          "default": "src/boilerdata/stages/parse_benchmarks.py",
           "format": "file-path",
           "type": "string"
         },
@@ -367,13 +355,13 @@
         },
         "stage_metrics": {
           "title": "Stage Metrics",
-          "default": "src/boilerdata/stages/notebooks/metrics.ipynb",
+          "default": "src/boilerdata/stages/metrics.ipynb",
           "format": "file-path",
           "type": "string"
         },
         "stage_modelfun": {
           "title": "Stage Modelfun",
-          "default": "src/boilerdata/stages/notebooks/modelfun.ipynb",
+          "default": "src/boilerdata/stages/modelfun.ipynb",
           "format": "file-path",
           "type": "string"
         },
@@ -391,7 +379,7 @@
         },
         "stage_runs": {
           "title": "Stage Runs",
-          "default": "src/boilerdata/stages/prep/runs.py",
+          "default": "src/boilerdata/stages/runs.py",
           "format": "file-path",
           "type": "string"
         },

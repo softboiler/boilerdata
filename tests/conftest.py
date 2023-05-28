@@ -6,7 +6,7 @@ from sys import path
 
 import pytest
 
-from tests import get_nb_content
+from tests import NOTEBOOK_STAGES, get_nb_content
 
 TEST_DATA = Path("tests/data")
 
@@ -38,8 +38,7 @@ def tmp_project(monkeypatch, tmp_path) -> Path:
 def _nb_stages(tmp_project):
     """Enable importing of notebook stages like `importlib.import_module("stage")`."""
     path.insert(0, str(tmp_project))  # For importing tmp_project stages in tests
-    nbs = list(Path("src/boilerdata/stages/notebooks").glob("*.ipynb"))
-    for nb in nbs:
+    for nb in NOTEBOOK_STAGES:
         (tmp_project / nb.with_suffix(".py").name).write_text(
             encoding="utf-8", data=get_nb_content(nb)
         )

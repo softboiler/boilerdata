@@ -4,7 +4,7 @@ import pandas as pd
 
 from boilerdata.axes_enum import AxesEnum as A  # noqa: N814
 from boilerdata.models.params import PARAMS, Params
-from boilerdata.stages.prep.common import get_run
+from boilerdata.stages import get_run
 
 
 def main():

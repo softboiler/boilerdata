@@ -5,6 +5,8 @@ from pathlib import Path
 
 import pytest
 
+from tests import NOTEBOOK_STAGES
+
 
 @pytest.mark.usefixtures("tmp_project")
 @pytest.mark.parametrize(
@@ -18,9 +20,9 @@ import pytest
 )
 def test_syms(group_name):
     """Test that declared symbolic variables are assigned to the correct symbols."""
-    from boilerdata.stages.notebooks import syms
+    from boilerdata import stages
 
-    module_vars = vars(syms)
+    module_vars = vars(stages)
     sym_group = module_vars[group_name]
     symvars = {
         var: sym
@@ -46,27 +48,10 @@ def test_stages(stage):
 
 
 @pytest.mark.slow()
-@pytest.mark.usefixtures("tmp_project")
-@pytest.mark.parametrize(
-    "stage",
-    [
-        "parse_benchmarks",
-        "runs",
-    ],
-)
-def test_prep_stages(stage):
-    """Test that preparatory pipeline stages can run."""
-    importlib.import_module(f"boilerdata.stages.prep.{stage}").main()
-
-
-@pytest.mark.slow()
 @pytest.mark.usefixtures("_nb_stages")
 @pytest.mark.parametrize(
     "stage",
-    [
-        stage.stem
-        for stage in Path("src/boilerdata/stages/notebooks").glob("[!__]*.ipynb")
-    ],
+    [stage.stem for stage in NOTEBOOK_STAGES],
 )
 def test_nb_stages(stage):
     """Test that notebook pipeline stages can run."""

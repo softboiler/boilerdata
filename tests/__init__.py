@@ -4,6 +4,8 @@ from pathlib import Path
 
 from nbqa.__main__ import _get_nb_to_tmp_mapping, _save_code_sources  # type: ignore
 
+NOTEBOOK_STAGES = list(Path("src/boilerdata/stages").glob("[!__]*.ipynb"))
+
 
 def get_nb_content(nb: Path) -> str:
     """Get the contents of a notebook."""

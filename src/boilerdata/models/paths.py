@@ -20,8 +20,6 @@ class ProjectPaths(CreatePathsModel):
     # ! PACKAGE
     package: DirectoryPath = PROJECT_DIR / "src/boilerdata"
     stages: DirectoryPath = package / "stages"
-    prep: DirectoryPath = stages / "prep"
-    notebooks: DirectoryPath = stages / "notebooks"
     models: DirectoryPath = package / "models"
     validation: FilePath = package / "validation.py"
 
@@ -32,13 +30,13 @@ class ProjectPaths(CreatePathsModel):
 
     # ! STAGES
     stage_axes: FilePath = stages / "axes.py"
-    stage_parse_benchmarks: FilePath = prep / "parse_benchmarks.py"
+    stage_parse_benchmarks: FilePath = stages / "parse_benchmarks.py"
     stage_literature: FilePath = stages / "literature.py"
-    stage_metrics: FilePath = notebooks / "metrics.ipynb"
-    stage_modelfun: FilePath = notebooks / "modelfun.ipynb"
+    stage_metrics: FilePath = stages / "metrics.ipynb"
+    stage_modelfun: FilePath = stages / "modelfun.ipynb"
     stage_originlab: FilePath = stages / "originlab.py"
     stage_pipeline: FilePath = stages / "pipeline.py"
-    stage_runs: FilePath = prep / "runs.py"
+    stage_runs: FilePath = stages / "runs.py"
     stage_schema: FilePath = stages / "schema.py"
 
 

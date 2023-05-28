@@ -44,21 +44,19 @@ project_paths:
   config: config
   package: src/boilerdata
   stages: src/boilerdata/stages
-  prep: src/boilerdata/stages/prep
-  notebooks: src/boilerdata/stages/notebooks
   models: src/boilerdata/models
   validation: src/boilerdata/validation.py
   plot_config: config/plotting
   mpl_base: config/plotting/base.mplstyle
   mpl_hide_title: config/plotting/hide_title.mplstyle
   stage_axes: src/boilerdata/stages/axes.py
-  stage_parse_benchmarks: src/boilerdata/stages/prep/parse_benchmarks.py
+  stage_parse_benchmarks: src/boilerdata/stages/parse_benchmarks.py
   stage_literature: src/boilerdata/stages/literature.py
-  stage_metrics: src/boilerdata/stages/notebooks/metrics.ipynb
-  stage_modelfun: src/boilerdata/stages/notebooks/modelfun.ipynb
+  stage_metrics: src/boilerdata/stages/metrics.ipynb
+  stage_modelfun: src/boilerdata/stages/modelfun.ipynb
   stage_originlab: src/boilerdata/stages/originlab.py
   stage_pipeline: src/boilerdata/stages/pipeline.py
-  stage_runs: src/boilerdata/stages/prep/runs.py
+  stage_runs: src/boilerdata/stages/runs.py
   stage_schema: src/boilerdata/stages/schema.py
 paths:
   file_proj: params.yaml
