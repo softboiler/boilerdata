@@ -2,8 +2,10 @@
 
 from __future__ import annotations
 
+from contextlib import contextmanager
 from pathlib import Path
-from typing import Any
+from types import EllipsisType
+from typing import Any, TypeVar
 
 from pydantic import BaseModel, Extra, validator
 from ruamel.yaml import YAML
@@ -12,6 +14,46 @@ YAML_INDENT = 2
 yaml = YAML()
 yaml.indent(mapping=YAML_INDENT, sequence=YAML_INDENT, offset=YAML_INDENT)
 yaml.preserve_quotes = True  # type: ignore
+
+
+@contextmanager
+def allow_extra(model: BaseModel):
+    """Temporarily allow extra properties to be set on a Pydantic model.
+    This is useful when writing a custom `__init__`, where not explicitly allowing extra
+    properties will result in errors, but you don't want to allow extra properties
+    forevermore.
+
+    Args:
+        model: The model to allow extras on.
+    """
+
+    # Store the current value of the attribute or note its absence
+    try:
+        original_config = model.Config.extra
+    except AttributeError:
+        original_config = None
+    model.Config.extra = Extra.allow
+
+    # Yield the temporarily changed config, resetting or deleting it when done
+    try:
+        yield
+    finally:
+        if original_config:
+            model.Config.extra = original_config
+        else:
+            del model.Config.extra
+
+
+T = TypeVar("T")
+
+
+def default_opt(default: T, optional: bool = False) -> EllipsisType | T:
+    """Has a default that will be passed to a Pydantic model if optional.
+    It is useful to set `optional` to `True` when actively developing a parameter, then
+    revert it to `False` when that parameter is going to always be coming from a
+    configuration file.
+    """
+    return default if optional else ...
 
 
 class ProjectModel(BaseModel):
