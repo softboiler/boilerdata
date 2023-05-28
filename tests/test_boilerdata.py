@@ -18,7 +18,7 @@ from tests import NOTEBOOK_STAGES
         "functions",
     ],
 )
-def test_syms(group_name):
+def test_syms(group_name: str):
     """Test that declared symbolic variables are assigned to the correct symbols."""
     from boilerdata import stages
 
@@ -32,7 +32,6 @@ def test_syms(group_name):
     assert all(var == sym.name for var, sym in symvars.items())
 
 
-@pytest.mark.slow()
 @pytest.mark.usefixtures("tmp_project")
 @pytest.mark.parametrize(
     "stage",
@@ -42,17 +41,17 @@ def test_syms(group_name):
         if stage.stem not in {"common", "literature", "modelfun", "originlab"}
     ],
 )
-def test_stages(stage):
+def test_stages(stage: str):
     """Test that stages can run."""
     importlib.import_module(f"boilerdata.stages.{stage}").main()
 
 
 @pytest.mark.slow()
-@pytest.mark.usefixtures("_nb_stages")
+@pytest.mark.usefixtures("_tmp_project_with_nb_stages")
 @pytest.mark.parametrize(
     "stage",
     [stage.stem for stage in NOTEBOOK_STAGES],
 )
-def test_nb_stages(stage):
+def test_nb_stages(stage: str):
     """Test that notebook pipeline stages can run."""
     importlib.import_module(stage)

@@ -17,7 +17,7 @@ from boilerdata.axes_enum import AxesEnum as A  # noqa: N814
 from boilerdata.models.params import PARAMS, Params
 from boilerdata.models.trials import Trial
 from boilerdata.stages import get_tcs, get_trial, per_run, per_trial
-from boilerdata.stages.modelfun import model
+from boilerdata.stages.modelfun import MODEL
 from boilerdata.validation import (
     handle_invalid_data,
     validate_final_df,
@@ -40,7 +40,7 @@ def main():
         )
         .pipe(handle_invalid_data, validate_initial_df)
         .pipe(get_properties, PARAMS)
-        .pipe(per_run, fit, PARAMS, model, confidence_interval_95)
+        .pipe(per_run, fit, PARAMS, MODEL, confidence_interval_95)
         .pipe(per_trial, agg_over_runs, PARAMS, confidence_interval_95)  # TCs may vary
         .pipe(per_trial, get_superheat, PARAMS)  # Water temp varies across trials
         .pipe(per_trial, assign_metadata, PARAMS)  # Metadata is distinct per trial

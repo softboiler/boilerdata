@@ -12,7 +12,7 @@ TEST_DATA = Path("tests/data")
 
 
 @pytest.fixture()
-def tmp_project(monkeypatch, tmp_path) -> Path:
+def tmp_project(monkeypatch, tmp_path: Path) -> Path:
     """Produce a temporary project directory."""
 
     monkeypatch.setenv("DYNACONF_APP_FOLDER", f"{TEST_DATA / '.propshop'}")
@@ -35,7 +35,7 @@ def tmp_project(monkeypatch, tmp_path) -> Path:
 
 
 @pytest.fixture()
-def _nb_stages(tmp_project):
+def _tmp_project_with_nb_stages(tmp_project: Path):
     """Enable importing of notebook stages like `importlib.import_module("stage")`."""
     path.insert(0, str(tmp_project))  # For importing tmp_project stages in tests
     for nb in NOTEBOOK_STAGES:

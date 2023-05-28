@@ -10,6 +10,16 @@ import numpy as np
 from boilerdata.models.params import PARAMS
 
 
+def get_model():
+    """Unpickle the model function for fitting data."""
+    model_file = PARAMS.paths.file_model
+    file_bytes = Path(model_file).read_bytes()
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore", dill.UnpicklingWarning)
+        unpickled_model = dill.loads(file_bytes)
+    return unpickled_model.basic, fix_model(unpickled_model.for_ufloat)
+
+
 def fix_model(f) -> Callable[..., Any]:
     """Fix edge-cases of lambdify where all inputs must be arrays.
 
@@ -31,10 +41,4 @@ def fix_model(f) -> Callable[..., Any]:
     return wrapper
 
 
-model_file = PARAMS.paths.file_model
-file_bytes = Path(model_file).read_bytes()
-with warnings.catch_warnings():
-    warnings.simplefilter("ignore", dill.UnpicklingWarning)
-    unpickled_model = dill.loads(file_bytes)
-model = unpickled_model.basic
-model_with_uncertainty = fix_model(unpickled_model.for_ufloat)
+MODEL, MODEL_WITH_UNCERTAINTY = get_model()
