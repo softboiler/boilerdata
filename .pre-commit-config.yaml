@@ -10,25 +10,15 @@ ci:
   autoupdate_schedule: "quarterly"
 
 repos:
-  # * ------------------------------------------------------------------------------ * #
-  # * Changes below should persist in significant template updates.
-
-  - repo: "https://github.com/iterative/dvc"
-    rev: "2.58.1"
-    hooks:
-      - id: "dvc-post-checkout"
-      - id: "dvc-pre-push"
-        additional_dependencies: ["dvc[gs]"]
-
-  # * ------------------------------------------------------------------------------ * #
-  # * Changes below may be lost in significant template updates.
-
   - repo: "meta"
     hooks:
       - id: "check-hooks-apply"
       - id: "check-useless-excludes"
   - repo: "local"
     hooks:
+      # * -------------------------------------------------------------------------- * #
+      # * Changes below should persist in significant template updates.
+
       - id: "synchronize-params"
         name: "synchronize-params"
         fail_fast: true
@@ -39,6 +29,10 @@ repos:
             src/boilerdata/models/.*
             |params.yaml
           )$
+
+      # * -------------------------------------------------------------------------- * #
+      # * Changes below may be lost in significant template updates.
+
       - id: "compose-pyproject"
         name: "compose-pyproject"
         fail_fast: true
@@ -97,6 +91,20 @@ repos:
             src/.*
             |tests/.*
           )$
+
+  # * ------------------------------------------------------------------------------ * #
+  # * Changes below should persist in significant template updates.
+
+  - repo: "https://github.com/iterative/dvc"
+    rev: "2.58.1"
+    hooks:
+      - id: "dvc-post-checkout"
+      - id: "dvc-pre-push"
+        additional_dependencies: ["dvc[gs]"]
+
+  # * ------------------------------------------------------------------------------ * #
+  # * Changes below may be lost in significant template updates.
+
   - repo: "https://github.com/pre-commit/pre-commit-hooks"
     rev: "v4.4.0"
     hooks:
