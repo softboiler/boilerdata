@@ -18,6 +18,4 @@ rule_settings:
   enable: ["default"]
   disable:
     - "move-assign" # False positives
-    - "no-conditionals-in-tests" # This is okay when using pytest-check plugin
-    - "no-loop-in-tests" # This is okay when using pytest-check plugin
     - "remove-redundant-constructor-in-dict-union" # Explicit dict(zip(...)) is better
