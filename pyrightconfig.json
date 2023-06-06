@@ -2,14 +2,14 @@
   // * ----------------------------------------------------------------------------- * #
   // * Changes below should persist in significant template updates.
 
+  // Type inference helps with untyped upstream, but can be unpredictable
+  "useLibraryCodeForTypes": true,
+
   // * ----------------------------------------------------------------------------- * #
   // * Changes below may be lost in significant template updates.
 
   // Paths
   "include": ["src", "tests"],
-
-  // Type inference helps with untyped upstream, but can be unpredictable
-  "useLibraryCodeForTypes": true,
 
   // Sets most checks to "error". See overrides below
   "typeCheckingMode": "strict",

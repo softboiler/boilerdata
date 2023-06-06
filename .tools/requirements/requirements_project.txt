@@ -1,2 +1,0 @@
-# Specify project-specific requirements here. Don't delete this file even if empty.
-sphinxcontrib-mermaid~=0.8.1

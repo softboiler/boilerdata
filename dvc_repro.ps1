@@ -14,8 +14,8 @@ catch [System.Management.Automation.CommandNotFoundException] {
 Invoke-Expression "$GLOBAL_PYTHON -m venv $FROZEN_VENV"
 
 # Activate environment
-$VENV_ACTIVATE_WINDOWS = '.venv/Scripts/activate'
-$VENV_ACTIVATE_UNIX = '.venv/bin/Activate.ps1'
+$VENV_ACTIVATE_WINDOWS = "$FROZEN_VENV/Scripts/activate"
+$VENV_ACTIVATE_UNIX = "$FROZEN_VENV/bin/Activate.ps1"
 if ( Test-Path $VENV_ACTIVATE_WINDOWS ) { . $VENV_ACTIVATE_WINDOWS }
 elseif ( Test-Path $VENV_ACTIVATE_UNIX ) { . $VENV_ACTIVATE_UNIX }
 else {
