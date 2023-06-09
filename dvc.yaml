@@ -23,7 +23,7 @@ stages:
       - "fixed_params"
 
   runs:
-    cmd: "python -m boilerdata.stages.prep.runs"
+    cmd: "python -m boilerdata.stages.runs"
     deps:
       - "${project_paths.stage_runs}"
       - "${paths.axes}"
@@ -34,7 +34,7 @@ stages:
       - "records_to_average"
 
   parse_benchmarks:
-    cmd: "python -m boilerdata.stages.prep.parse_benchmarks"
+    cmd: "python -m boilerdata.stages.parse_benchmarks"
     deps:
       - "${project_paths.stage_parse_benchmarks}"
       - "${paths.axes}"
