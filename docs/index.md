@@ -18,7 +18,7 @@ If you would like to adopt this approach to processing your own data, you may cl
 4. Activate the virtual environment (e.g. `.venv/scripts/activate` on Windows).
 5. Run `pip install --editable .` to install `boilerdata` package in an editable fashion. This step may take awhile.
 6. Delete the top-level `data` and `config` directories, then copy the `config` and `data` folders inside of `tests/data` to the root directory.
-7. Copy the `.propshop` folder in `tests/data/.propshop` to your user-folder (e.g. `C:/Users/\<you\>/.propshop` on Windows).
+7. Copy the `.propshop` folder in `tests/data/.propshop` to your user-folder (e.g. `C:/Users/<you>/.propshop` on Windows).
 8. Run `dvc repro metrics` to execute the data process up to that stage.
 
 The data process should run the following stages: `axes`, `modelfun`, `runs`, `parse_benchmarsk`, `pipeline`, and `metrics`. Some stages are skipped because we specified to run just the necessary stages up to `metrics` (the example data doesn't currently include the literature data). You may inspect the actual code that runs during these stages in `src/boilerdata/stages`, e.g. `pipeline.py` contains the logic for the `pipeline` stage. This example happens to use Python scripts, but you could define a stage in `dvc.yaml` that instead runs Matlab scripts, or any arbitrary action. This approach allows for the data process to be reliably reproduced over time, and for the process to be easily modified and extended in a collaborative effort.
