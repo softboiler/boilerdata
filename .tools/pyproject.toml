@@ -17,10 +17,8 @@ license = { file = "LICENSE" }
 requires-python = ">=3.10"
 classifiers = ["License :: OSI Approved :: MIT License"]
 [[project.authors]]
-name = "Blake Naccarato"
+name = "Blake Naccarato, Kwang Jin Kim"
 email = "blake.naccarato@gmail.com"
-[[project.authors]]
-name = "Kwang Jin Kim"
 
 [project.urls]
 Changes = "https://blakeNaccarato.github.io/boilerdata/changelog.html"
