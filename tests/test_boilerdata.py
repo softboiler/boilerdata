@@ -1,4 +1,4 @@
-"""Test the data process."""
+"""Tests."""
 
 import importlib
 from pathlib import Path
