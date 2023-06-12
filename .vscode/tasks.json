@@ -337,6 +337,16 @@
       "problemMatcher": []
     },
     {
+      "label": "task: check notebook",
+      "type": "shell",
+      "options": {
+        "shell": { "executable": "pwsh", "args": ["-Command"] }
+      },
+      "command": "nbqa ruff ${file}",
+      "icon": { "id": "notebook" },
+      "problemMatcher": []
+    },
+    {
       "label": "task: Run pytest with coverage",
       "type": "process",
       "command": "pwsh",
