@@ -1,9 +1,12 @@
 ci:
   skip:
+    - "synchronize-params"
     - "compose-pyproject"
     - "pytest-fast-only"
     - "pytest-slow-only"
     - "pyright"
+    - "dvc-post-checkout"
+    - "dvc-pre-push"
   autoupdate_schedule: "quarterly"
 
 repos:
