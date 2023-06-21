@@ -1,19 +1,16 @@
 ci:
   skip:
-    - "synchronize-params"
     - "compose-pyproject"
     - "pytest-fast-only"
     - "pytest-slow-only"
     - "pyright"
-    - "dvc-post-checkout"
-    - "dvc-pre-push"
   autoupdate_schedule: "quarterly"
 
 repos:
   - repo: "meta"
     hooks:
       # ? Enable this to ensure each hook runs against at least one file
-      - id: "check-hooks-apply"
+      # - id: "check-hooks-apply"
       - id: "check-useless-excludes"
   - repo: "local"
     hooks:
@@ -36,7 +33,6 @@ repos:
 
       - id: "compose-pyproject"
         name: "compose-pyproject"
-        fail_fast: true
         pass_filenames: false
         language: "system"
         entry: "pwsh -Command python .tools/scripts/compose_pyproject.py"
@@ -48,7 +44,6 @@ repos:
           )$
       - id: "pyright"
         name: "pyright"
-        fail_fast: true
         pass_filenames: false
         language: "system"
         entry: "pwsh .tools/scripts/Invoke-Pyright.ps1"
@@ -65,7 +60,6 @@ repos:
           )$
       - id: "pytest-fast-only"
         name: "pytest-fast-only"
-        fail_fast: true
         verbose: true
         pass_filenames: false
         language: "system"
@@ -82,11 +76,11 @@ repos:
           )$
       - id: "pytest-slow-only"
         name: "pytest-slow-only"
-        fail_fast: true
         verbose: true
         pass_filenames: false
         language: "system"
-        entry: "pwsh -Command pytest -m slow"
+        entry: |
+          pwsh -Command "pytest -m 'slow' --suppress-no-test-exit-code"
         files: |
           (?x)^(
             src/.*
@@ -130,10 +124,27 @@ repos:
         args:
           - "--remove-empty-cells"
           - "--preserve-cell-metadata"
-          - "tags"
-          - "slideshow"
           - "special"
+          - "tags"
           - "--"
+        files: |
+          (?x)^(
+            src/.*
+            |tests/.*
+          )$
+      - id: "nb-clean"
+        name: "nb-clean (keep docs outputs)"
+        args:
+          - "--remove-empty-cells"
+          - "--preserve-cell-outputs"
+          - "--preserve-cell-metadata"
+          - "special"
+          - "tags"
+          - "--"
+        files: |
+          (?x)^(
+            docs/.*
+          )$
   - repo: "https://github.com/asottile/blacken-docs"
     rev: "1.13.0"
     hooks:
