@@ -1,21 +1,21 @@
 # List project dependencies here. A workflow ports them to `pyproject.toml`. This is needed because Dependabot does not currently support `flit`-flavored `pyproject.toml`.
 dill==0.3.6
 dvc[gs]==2.58.2
-IPython[notebook]==8.13.1
+IPython[notebook]==8.14.0
 matplotlib==3.7.1
-numpy==1.24.3
+numpy==1.25.0
 pandas==2.0.2
 pandera==0.15.1
 papermill==2.4.0
 propshop==0.1.1
-pyarrow==12.0.0
-pydantic==1.10.8
+pyarrow==12.0.1
+pydantic==1.10.9
 pyjanitor==0.24.0
 pyXSteam==0.4.9
 pyyaml==6.0
-ruamel.yaml==0.17.31
+ruamel.yaml==0.17.32
 seaborn==0.12.2
-scipy==1.10.1
+scipy==1.11.0
 sympy==1.12
 uncertainties==3.1.7
 # https://github.com/nteract/papermill/issues/711
