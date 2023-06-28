@@ -22,6 +22,6 @@ uncertainties==3.1.7
 # ? Would need to `dvc gc --cloud ...` and dump everything prior to DVC 3.
 # ? This is because links cannot be made between the cache files so it is forcibly
 # ? duplicated.
-dvc[gs]==2.58.2
+dvc[gs]==3.2.2
 # ? https://github.com/nteract/papermill/issues/711
 jupyter-client==7.4.9
