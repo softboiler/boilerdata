@@ -19,9 +19,10 @@
   },
   "packageRules": [
     {
-      "description": "https://github.com/nteract/papermill/issues/711",
-      "matchPackageNames": ["jupyter-client"],
-      "allowedVersions": "<8"
+      "groupName": "dvc",
+      "groupSlug": "dvc",
+      "matchManagers": ["pip_requirements", "pre-commit"],
+      "matchPackageNames": ["dvc", "iterative/dvc"]
     },
     {
       "groupName": "pyright and type stubs",
@@ -34,7 +35,7 @@
       "groupSlug": "all-minor-patch",
       "matchPackagePatterns": ["*"],
       "matchUpdateTypes": ["minor", "patch"],
-      "excludeDepNames": ["pyright"]
+      "excludeDepNames": ["pyright", "dvc", "jupyter-client"]
     },
     {
       "description": "Ignore github-actions dependencies managed by the template.",

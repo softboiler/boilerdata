@@ -1,6 +1,5 @@
 # List project dependencies here. A workflow ports them to `pyproject.toml`. This is needed because Dependabot does not currently support `flit`-flavored `pyproject.toml`.
 dill==0.3.6
-dvc[gs]==2.58.2
 IPython[notebook]==8.14.0
 matplotlib==3.7.1
 numpy==1.25.0
@@ -18,5 +17,11 @@ seaborn==0.12.2
 scipy==1.11.0
 sympy==1.12
 uncertainties==3.1.7
-# https://github.com/nteract/papermill/issues/711
-jupyter-client<8
+
+# ? Issue upgrading to dvc>=3.
+# ? Would need to `dvc gc --cloud ...` and dump everything prior to DVC 3.
+# ? This is because links cannot be made between the cache files so it is forcibly
+# ? duplicated.
+dvc[gs]==2.58.2
+# ? https://github.com/nteract/papermill/issues/711
+jupyter-client==7.4.9
