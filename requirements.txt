@@ -24,4 +24,6 @@ uncertainties==3.1.7
 # ? duplicated.
 dvc[gs]==2.58.2
 # ? https://github.com/nteract/papermill/issues/711
+# ? When the below PR is merged, this should be fixed
+# ? https://github.com/nteract/papermill/pull/726
 jupyter-client==7.4.9
