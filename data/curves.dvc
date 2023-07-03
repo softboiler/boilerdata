@@ -1,0 +1,6 @@
+outs:
+- md5: c1db685849e8cc8179f06abf6cf24615.dir
+  size: 103226338
+  nfiles: 401
+  hash: md5
+  path: curves

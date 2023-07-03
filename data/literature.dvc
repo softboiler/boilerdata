@@ -1,0 +1,6 @@
+outs:
+- md5: 43f626cc6d7742550be7fe823f2ad45c.dir
+  size: 321985
+  nfiles: 9
+  hash: md5
+  path: literature

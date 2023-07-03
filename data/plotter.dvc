@@ -1,0 +1,6 @@
+outs:
+- md5: cab930b83a8ca1def3d7498d36611e0e.dir
+  size: 507329
+  nfiles: 1
+  hash: md5
+  path: plotter
