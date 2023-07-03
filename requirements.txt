@@ -22,7 +22,7 @@ uncertainties==3.1.7
 # ? Would need to `dvc gc --cloud ...` and dump everything prior to DVC 3.
 # ? This is because links cannot be made between the cache files so it is forcibly
 # ? duplicated.
-dvc[gs]==2.58.2
+dvc[gs]==3.2.4
 # ? https://github.com/nteract/papermill/issues/711
 # ? When the below PR is merged, this should be fixed
 # ? https://github.com/nteract/papermill/pull/726
