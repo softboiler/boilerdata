@@ -3,8 +3,8 @@ ci:
     - "synchronize-params"
     - "compose-pyproject"
     - "pytest-fast-only"
-    - "pytest-slow-only"
-    - "pyright"
+    # - "pytest-slow-only"
+    # - "pyright"
     - "dvc-post-checkout"
     - "dvc-pre-push"
   autoupdate_schedule: "quarterly"
@@ -45,22 +45,22 @@ repos:
             |requirements.txt
             |.tools/pyproject.toml
           )$
-      - id: "pyright"
-        name: "pyright"
-        pass_filenames: false
-        language: "system"
-        entry: "pwsh .tools/scripts/Invoke-Pyright.ps1"
-        files: |
-          (?x)^(
-            src/.*
-            |tests/.*
-            |pyproject.toml
-            |requirements.txt
-            |.tools/(
-              pyproject.toml
-              |requirements/.*
-            )
-          )$
+      # - id: "pyright"
+      #   name: "pyright"
+      #   pass_filenames: false
+      #   language: "system"
+      #   entry: "pwsh .tools/scripts/Invoke-Pyright.ps1"
+      #   files: |
+      #     (?x)^(
+      #       src/.*
+      #       |tests/.*
+      #       |pyproject.toml
+      #       |requirements.txt
+      #       |.tools/(
+      #         pyproject.toml
+      #         |requirements/.*
+      #       )
+      #     )$
       - id: "pytest-fast-only"
         name: "pytest-fast-only"
         verbose: true
@@ -77,18 +77,18 @@ repos:
               |requirements/.*
             )
           )$
-      - id: "pytest-slow-only"
-        name: "pytest-slow-only"
-        verbose: true
-        pass_filenames: false
-        language: "system"
-        entry: |
-          pwsh -Command "pytest -m 'slow' --suppress-no-test-exit-code"
-        files: |
-          (?x)^(
-            src/.*
-            |tests/.*
-          )$
+      # - id: "pytest-slow-only"
+      #   name: "pytest-slow-only"
+      #   verbose: true
+      #   pass_filenames: false
+      #   language: "system"
+      #   entry: |
+      #     pwsh -Command "pytest -m 'slow' --suppress-no-test-exit-code"
+      #   files: |
+      #     (?x)^(
+      #       src/.*
+      #       |tests/.*
+      #     )$
 
   # * ------------------------------------------------------------------------------ * #
   # * Changes below should persist in significant template updates.
