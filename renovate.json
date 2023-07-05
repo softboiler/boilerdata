@@ -19,12 +19,6 @@
   },
   "packageRules": [
     {
-      "groupName": "dvc",
-      "groupSlug": "dvc",
-      "matchManagers": ["pip_requirements", "pre-commit"],
-      "matchPackageNames": ["dvc", "iterative/dvc"]
-    },
-    {
       "groupName": "pyright and type stubs",
       "groupSlug": "pyright-and-type-stubs",
       "matchManagers": ["pip_requirements", "git-submodules"],
@@ -35,7 +29,7 @@
       "groupSlug": "all-minor-patch",
       "matchPackagePatterns": ["*"],
       "matchUpdateTypes": ["minor", "patch"],
-      "excludeDepNames": ["pyright", "dvc", "jupyter-client"]
+      "excludeDepNames": ["pyright", "jupyter-client"]
     },
     {
       "description": "Ignore github-actions dependencies managed by the template.",
