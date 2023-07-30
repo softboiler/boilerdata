@@ -97,6 +97,7 @@ repos:
     rev: "3.5.1"
     hooks:
       - id: "dvc-post-checkout"
+        additional_dependencies: ["dvc[gs]"]
       - id: "dvc-pre-push"
         additional_dependencies: ["dvc[gs]"]
 
