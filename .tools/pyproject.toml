@@ -14,12 +14,11 @@ version = "0.0.0"
 description = "Data processing pipeline for a nucleate pool boiling apparatus."
 readme = "README.md"
 license = { file = "LICENSE" }
-requires-python = ">=3.10"
+requires-python = ">=3.11"
 classifiers = ["License :: OSI Approved :: MIT License"]
 [[project.authors]]
-name = "Blake Naccarato, Kwang Jin Kim"
+name = "Blake Naccarato"
 email = "blake.naccarato@gmail.com"
-
 [project.urls]
 Changes = "https://blakeNaccarato.github.io/boilerdata/changelog.html"
 Docs = "https://blakeNaccarato.github.io/boilerdata"

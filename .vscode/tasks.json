@@ -110,7 +110,7 @@
       "label": "dvc: synchronize params",
       "type": "process",
       "command": "pwsh",
-      "args": ["-Command", "python -m notes.models.params"],
+      "args": ["-Command", "python -m boilerdata.models.params"],
       "icon": { "id": "graph" },
       "problemMatcher": []
     },

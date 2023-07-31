@@ -6,7 +6,7 @@ matplotlib==3.7.2
 numpy==1.25.1
 pandas==2.0.3
 pandera==0.16.1
-papermill==2.4.0
+ploomber-engine==0.0.30
 propshop==0.1.1
 pyarrow==12.0.1
 pydantic==1.10.11
@@ -18,6 +18,3 @@ scipy==1.11.1
 seaborn==0.12.2
 sympy==1.12
 uncertainties==3.1.7
-# ? Conflict with papermill
-# ? https://github.com/nteract/papermill/issues/711
-jupyter-client==7.4.9

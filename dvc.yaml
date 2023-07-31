@@ -11,7 +11,7 @@ stages:
       - "${paths.axes}"
 
   modelfun:
-    cmd: "papermill ${project_paths.stage_modelfun} NUL"
+    cmd: "ploomber-engine ${project_paths.stage_modelfun} NUL"
     deps:
       - "${project_paths.stage_modelfun}"
       - "${paths.axes}"
@@ -58,7 +58,7 @@ stages:
       - "model_bounds"
 
   metrics:
-    cmd: "papermill ${project_paths.stage_metrics} NUL"
+    cmd: "ploomber-engine ${project_paths.stage_metrics} NUL"
     deps:
       - "${project_paths.stage_metrics}"
       - "${paths.results}"
