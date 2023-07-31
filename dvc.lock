@@ -20,7 +20,7 @@ stages:
       size: 25922
       nfiles: 3
   modelfun:
-    cmd: papermill src/boilerdata/stages/modelfun.ipynb NUL
+    cmd: ploomber-engine src/boilerdata/stages/modelfun.ipynb NUL
     deps:
     - path: data/axes
       hash: md5
@@ -51,8 +51,8 @@ stages:
     outs:
     - path: data/modelfun
       hash: md5
-      md5: 0e07f226a42ebc78647ac83593d34874.dir
-      size: 46704
+      md5: fe0656588888ce19d4b3cabeeb66aa27.dir
+      size: 60136
       nfiles: 1
   runs:
     cmd: python -m boilerdata.stages.runs
@@ -90,8 +90,8 @@ stages:
       nfiles: 1
     - path: data/modelfun
       hash: md5
-      md5: 0e07f226a42ebc78647ac83593d34874.dir
-      size: 46704
+      md5: fe0656588888ce19d4b3cabeeb66aa27.dir
+      size: 60136
       nfiles: 1
     - path: data/runs
       hash: md5
@@ -134,16 +134,16 @@ stages:
     outs:
     - path: data/results
       hash: md5
-      md5: 8645a483c5bb8611bf3b865b487f96d5.dir
-      size: 235134
+      md5: d46e3b9c9a88cd4d01a464cc03ddd912.dir
+      size: 235130
       nfiles: 1
   metrics:
-    cmd: papermill src/boilerdata/stages/metrics.ipynb NUL
+    cmd: ploomber-engine src/boilerdata/stages/metrics.ipynb NUL
     deps:
     - path: data/results
       hash: md5
-      md5: 8645a483c5bb8611bf3b865b487f96d5.dir
-      size: 235134
+      md5: d46e3b9c9a88cd4d01a464cc03ddd912.dir
+      size: 235130
       nfiles: 1
     - path: src/boilerdata/stages/metrics.ipynb
       hash: md5
@@ -155,31 +155,31 @@ stages:
     outs:
     - path: data/metrics/plots/error_T_s.png
       hash: md5
-      md5: e745242430e51da1b4479153fa438ad2
-      size: 121862
+      md5: 770a235b7ffca10bc71d8fc5e5cfa7ca
+      size: 125605
     - path: data/metrics/plots/error_h_a.png
       hash: md5
-      md5: 7dfd1ea18b02db4e5ef4679e85d58f41
-      size: 204867
+      md5: ae889a01f63fb2f2fcb47f7245607315
+      size: 206579
     - path: data/metrics/plots/error_q_s.png
       hash: md5
-      md5: 56ef3482ca5bfd6373631223dc35abfe
-      size: 175177
+      md5: 68bc0e1b108f183129bbedb0cb416d69
+      size: 175942
     - path: data/metrics/plots/new_fit_0.png
       hash: md5
-      md5: 65c33ce980ed22f49f95aa9a93282769
+      md5: 5e6067f396efc35e7fd7ca22b484f108
       size: 119322
     - path: data/metrics/plots/new_fit_1.png
       hash: md5
-      md5: 8c1c2334b11e1c969c385b3394a9838f
-      size: 113613
+      md5: e9698e1483bc90f56ed69fc4b5498fc0
+      size: 113970
     - path: data/metrics/plots/new_fit_2.png
       hash: md5
-      md5: 2e92472cbf2b6cbc5b7d202448958802
-      size: 145431
+      md5: af49877b1a50b9b89c7e73fcada72684
+      size: 125344
     - path: data/metrics/tables/pipeline_metrics.json
       hash: md5
-      md5: 78255ff52f10a50b73b656ce80f57305
+      md5: 1aa224e207ef9602b1fa51fe360d52c2
       size: 207
   literature:
     cmd: python -m boilerdata.stages.literature
@@ -209,8 +209,8 @@ stages:
     deps:
     - path: .tools/requirements
       hash: md5
-      md5: 8f62ed006770f097d73b665d6580183b.dir
-      size: 1894
+      md5: 837cdbaa59c3b9a5b1e17a8d34a0ed16.dir
+      size: 1893
       nfiles: 4
     - path: config/axes.yaml
       hash: md5
@@ -218,8 +218,8 @@ stages:
       size: 2320
     - path: requirements.txt
       hash: md5
-      md5: 6338afdfb6b174f6c40e48342d699dac
-      size: 896
+      md5: c3d5e7eee07c3c2eced5512b0a4bf7fa
+      size: 563
     - path: src/boilerdata/models
       hash: md5
       md5: 83b50eb5fbb0d13e1346788de460fd62.dir
@@ -250,8 +250,8 @@ stages:
       nfiles: 1
     - path: data/results
       hash: md5
-      md5: 8645a483c5bb8611bf3b865b487f96d5.dir
-      size: 235134
+      md5: d46e3b9c9a88cd4d01a464cc03ddd912.dir
+      size: 235130
       nfiles: 1
     - path: src/boilerdata/stages/originlab.py
       hash: md5
@@ -260,16 +260,16 @@ stages:
     outs:
     - path: data/metrics/originlab_plots/lit.png
       hash: md5
-      md5: 786305b4e72cfd78c399be7f72e5f24c
-      size: 153491
+      md5: 487df03639fc59a54a7bd29e851235f3
+      size: 141883
     - path: data/metrics/originlab_plots/low.png
       hash: md5
-      md5: 3547bb00de5cacbbb146f968773fd2c1
-      size: 144691
+      md5: 87f40284c072756439ab8b0d4a57a373
+      size: 131899
     - path: data/originlab_results
       hash: md5
-      md5: f92609d23d5f2a629a5a600cc688e0df.dir
-      size: 234140
+      md5: ca5a97872cd09378adec6bd730af2756.dir
+      size: 234129
       nfiles: 1
   dirs:
     cmd: python -m boilerdata.stages.dirs

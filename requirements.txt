@@ -18,6 +18,3 @@ scipy==1.11.1
 seaborn==0.12.2
 sympy==1.12
 uncertainties==3.1.7
-# ? Conflict with papermill
-# ? https://github.com/nteract/papermill/issues/711
-jupyter-client==7.4.9
