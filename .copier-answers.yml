@@ -1,5 +1,5 @@
 # Changes here will be overwritten by Copier; NEVER EDIT MANUALLY
-_commit: fb54a95
+_commit: d0b0e62
 _src_path: gh:blakeNaccarato/copier-python
 actions_runner: ubuntu-latest
 active: true
@@ -10,5 +10,5 @@ project_name: boilerdata
 project_owner_github_username: blakeNaccarato
 project_owner_name: Blake Naccarato
 project_version: 0.0.0
-python_version: '3.10'
+python_version: '3.11'
 year_of_project_creation: 2022
