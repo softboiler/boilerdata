@@ -1,18 +1,18 @@
 # List project dependencies here. A workflow ports them to `pyproject.toml`. This is needed because Dependabot does not currently support `flit`-flavored `pyproject.toml`.
-dill==0.3.6
-dvc[gs]==3.5.1
+dill==0.3.7
+dvc[gs]==3.10.1
 IPython[notebook]==8.14.0
 matplotlib==3.7.2
-numpy==1.25.1
+numpy==1.25.2
 pandas==2.0.3
 pandera==0.16.1
 ploomber-engine==0.0.30
 propshop==0.1.1
 pyarrow==12.0.1
-pydantic==1.10.11
-pyjanitor==0.24.0
+pydantic==1.10.12
+pyjanitor==0.25.0
 pyXSteam==0.4.9
-pyyaml==6.0
+pyyaml==6.0.1
 ruamel.yaml==0.17.32
 scipy==1.11.1
 seaborn==0.12.2

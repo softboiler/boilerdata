@@ -7,7 +7,7 @@ originpro==1.1.7
 # * Changes below may be lost in significant template updates.
 
 # Introspection
-fawltydeps==0.12.0
+fawltydeps==0.12.1
 
 # Experiment
 jupyter==1.0.0
