@@ -10,7 +10,7 @@ from propshop import get_prop
 from propshop.library import Mat, Prop
 from pyXSteam.XSteam import XSteam
 from scipy.constants import convert_temperature
-from scipy.optimize import curve_fit
+from scipy.optimize import OptimizeWarning, curve_fit
 from scipy.stats import t
 
 from boilerdata.axes_enum import AxesEnum as A  # noqa: N814
@@ -118,8 +118,6 @@ def fit(
         model_bounds,  # type: ignore  # pydantic: Type coerced in validation
         initial_values,
     )
-
-    from scipy.optimize import OptimizeWarning
 
     # Perform fit, filling "nan" on failure or when covariance computation fails
     with catch_warnings():
