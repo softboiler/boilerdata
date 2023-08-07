@@ -1,7 +1,9 @@
 ci:
   skip:
     - "synchronize-params"
-    - "compose-pyproject"
+    # - "hide-notebook-inputs"
+    - "update-warning-filters"
+    # - "pyright"
     - "pytest-fast-only"
     # - "pytest-slow-only"
     # - "pyright"
@@ -34,16 +36,15 @@ repos:
       # * -------------------------------------------------------------------------- * #
       # * Changes below may be lost in significant template updates.
 
-      - id: "compose-pyproject"
-        name: "compose-pyproject"
+      - id: "update-warning-filters"
+        name: "update-warning-filters"
+        verbose: true
         pass_filenames: false
         language: "system"
-        entry: "pwsh -Command python .tools/scripts/compose_pyproject.py"
+        entry: "pwsh -Command python warning_filters.py"
         files: |
           (?x)^(
-            pyproject.toml
-            |requirements.txt
-            |.tools/pyproject.toml
+            warning_filters.py
           )$
       # - id: "pyright"
       #   name: "pyright"
@@ -55,7 +56,6 @@ repos:
       #       src/.*
       #       |tests/.*
       #       |pyproject.toml
-      #       |requirements.txt
       #       |.tools/(
       #         pyproject.toml
       #         |requirements/.*
@@ -71,7 +71,11 @@ repos:
         files: |
           (?x)^(
             pyproject.toml
-            |requirements.txt
+
+            # exclude these if running pytest-slow-only again below
+            src/.*
+            |tests/.*
+
             |.tools/(
               pyproject.toml
               |requirements/.*

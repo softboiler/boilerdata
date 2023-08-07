@@ -10,7 +10,6 @@ class ProjectPaths(CreatePathsModel):
     """Directories relevant to the project."""
 
     # ! REQUIREMENTS
-    requirements: FilePath = PROJECT_DIR / "requirements.txt"
     dev_requirements: DirectoryPath = PROJECT_DIR / ".tools/requirements"
 
     # ! CONFIG

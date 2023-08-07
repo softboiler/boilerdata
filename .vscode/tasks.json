@@ -116,12 +116,9 @@
     },
     {
       "label": "dvc: freeze",
-      "type": "process",
-      "command": "pwsh",
-      "args": [
-        "-Command",
-        "pip freeze --requirement requirements.txt --local --exclude-editable > repro.txt"
-      ],
+      "type": "shell",
+      "options": { "shell": { "executable": "pwsh", "args": ["-Command"] } },
+      "command": "pip freeze --requirement .tools/requirements/requirements.txt --local --exclude-editable > repro.txt",
       "icon": { "id": "graph" },
       "problemMatcher": []
     },
@@ -150,14 +147,6 @@
     // * -------------------------------------------------------------------------- * //
     // * PROJECT SETUP * //
     {
-      "label": "setup: Compose pyproject.toml",
-      "type": "shell",
-      "options": { "shell": { "executable": "pwsh", "args": ["-Command"] } },
-      "command": "python .tools/scripts/compose_pyproject.py",
-      "icon": { "id": "file-symlink-directory" },
-      "problemMatcher": []
-    },
-    {
       "label": "setup: Copy template",
       "type": "shell",
       "options": { "shell": { "executable": "pwsh", "args": ["-Command"] } },
@@ -168,7 +157,7 @@
     {
       "label": "setup: Setup project",
       "type": "shell",
-      "options": { "shell": { "executable": "pwsh", "args": ["-Command"] } },
+      "options": { "shell": { "executable": "pwsh" } },
       "command": "setup.ps1",
       "icon": { "id": "file-symlink-directory" },
       "problemMatcher": []
@@ -176,7 +165,7 @@
     {
       "label": "setup: Update project",
       "type": "shell",
-      "options": { "shell": { "executable": "pwsh", "args": ["-Command"] } },
+      "options": { "shell": { "executable": "pwsh" } },
       "command": "update.ps1",
       "icon": { "id": "file-symlink-directory" },
       // "runOptions": {
@@ -187,7 +176,7 @@
     {
       "label": "setup: Perform first-time setup",
       "type": "shell",
-      "options": { "shell": { "executable": "pwsh", "args": ["-Command"] } },
+      "options": { "shell": { "executable": "pwsh" } },
       "command": "first_time_setup.ps1",
       "icon": { "id": "file-symlink-directory" },
       "problemMatcher": []
@@ -343,7 +332,7 @@
     {
       "label": "task: Invoke pyright",
       "type": "shell",
-      "options": { "shell": { "executable": "pwsh", "args": ["-Command"] } },
+      "options": { "shell": { "executable": "pwsh" } },
       "command": ".tools/scripts/Invoke-Pyright.ps1",
       "icon": { "id": "type-hierarchy-sub" },
       "problemMatcher": []

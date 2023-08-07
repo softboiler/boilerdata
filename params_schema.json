@@ -275,12 +275,6 @@
       "description": "Directories relevant to the project.",
       "type": "object",
       "properties": {
-        "requirements": {
-          "title": "Requirements",
-          "default": "requirements.txt",
-          "format": "file-path",
-          "type": "string"
-        },
         "dev_requirements": {
           "title": "Dev Requirements",
           "default": ".tools/requirements",

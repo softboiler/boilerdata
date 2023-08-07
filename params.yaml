@@ -39,7 +39,6 @@ model_bounds:
     - -inf
     - inf
 project_paths:
-  requirements: requirements.txt
   dev_requirements: .tools/requirements
   config: config
   package: src/boilerdata
