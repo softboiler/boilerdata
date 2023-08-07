@@ -13,12 +13,12 @@ Reference: <https://gist.github.com/caiofcm/1088c9b62f0968b665a91f15ff23d447>
 """
 
 import json
+import tomllib
 from pathlib import Path
 from typing import Any
 
 import numpy as np
 import pandas as pd
-import toml
 
 from boilerdata.models.params import PARAMS
 
@@ -30,10 +30,10 @@ def main():
     dfs: list[pd.DataFrame] = []
 
     for paper in get_dirs_sorted(PARAMS.paths.literature):
-        paper_meta = toml.loads((paper / "paper.toml").read_text(encoding="utf-8"))
+        paper_meta = tomllib.loads((paper / "paper.toml").read_text(encoding="utf-8"))
 
         for fig in get_dirs_sorted(paper):
-            fig_meta = toml.loads((fig / "fig.toml").read_text(encoding="utf-8"))
+            fig_meta = tomllib.loads((fig / "fig.toml").read_text(encoding="utf-8"))
             data = (
                 get_data(fig / "wpd_project.json")
                 .rename(columns=dict(x="ΔT", y="q''", name="dataset"))

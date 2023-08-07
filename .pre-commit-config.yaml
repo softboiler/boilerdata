@@ -6,7 +6,7 @@ ci:
     # - "pyright"
     - "pytest-fast-only"
     # - "pytest-slow-only"
-    # - "pyright"
+    - "fawltydeps"
     - "dvc-post-checkout"
     - "dvc-pre-push"
   autoupdate_schedule: "quarterly"
@@ -93,6 +93,12 @@ repos:
       #       src/.*
       #       |tests/.*
       #     )$
+      - id: "fawltydeps"
+        name: "fawltydeps"
+        pass_filenames: false
+        language: "system"
+        entry: "pwsh -Command fawltydeps"
+        always_run: true
 
   # * ------------------------------------------------------------------------------ * #
   # * Changes below should persist in significant template updates.

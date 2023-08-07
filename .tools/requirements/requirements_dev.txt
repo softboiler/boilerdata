@@ -1,6 +1,9 @@
 # * -------------------------------------------------------------------------------- * #
 # * Changes below should persist in significant template updates.
 
+# For DVC repro of OriginPro steps on dev machine
+originpro==1.1.7
+
 # * -------------------------------------------------------------------------------- * #
 # * Changes below may be lost in significant template updates.
 
