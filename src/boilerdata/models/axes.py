@@ -94,7 +94,7 @@ class Axes(YamlModel):
     all: list[Axis]  # noqa: A003
 
     def __getitem__(self, key):
-        return [axis for axis in self.all if axis.name == key][0]
+        return next(axis for axis in self.all if axis.name == key)
 
     @property
     def index(self) -> list[Axis]:

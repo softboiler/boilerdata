@@ -21,7 +21,7 @@ def get_nb_content(nb: Path) -> str:
         False,
         "abc",
     )
-    script = [Path(script) for script in list(newlinesbefore.keys())][0]
+    script = next(Path(script) for script in list(newlinesbefore.keys()))
     contents = script.read_text(encoding="utf-8")
     script.unlink()
     return contents

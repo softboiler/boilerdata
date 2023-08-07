@@ -2,7 +2,7 @@
 from pathlib import Path
 
 # Monkeypatch these when testing.
-PROJECT_DIR = Path(".")
+PROJECT_DIR = Path()
 """Base directory for the project."""
 PARAMS_FILE = PROJECT_DIR / "params.yaml"
 """Path to the project parameters file."""
