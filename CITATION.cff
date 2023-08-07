@@ -8,7 +8,6 @@ authors:
     given-names: "Kwang"
     orcid: "https://orcid.org/0000-0003-2134-4964"
 title: "boilerdata"
-version: "0.0.0"
-doi: "10.5281/zenodo.7826605"
+doi: "10.5281/zenodo.7826604"
 date-released: 2023-04-13
 url: "https://github.com/blakeNaccarato/boilerdata"
