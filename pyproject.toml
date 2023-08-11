@@ -10,7 +10,7 @@ build-backend = "flit_core.buildapi"
 
 [project]
 name = "boilerdata"
-version = "0.0.0"
+version = "0.0.1"
 description = "Data processing pipeline for a nucleate pool boiling apparatus."
 readme = "README.md"
 license = { file = "LICENSE" }
@@ -23,7 +23,7 @@ dependencies = [
     "matplotlib>=3.7.2",
     "nbqa>=1.7.0",
     "pandas[hdf5,performance]>=2.0.2",
-    "pandas-stubs~=2.0.2",
+    "pandas-stubs>=2.0.2",
     "pandera>=0.16.1",
     "ploomber-engine>=0.0.30",
     "propshop>=0.1.1",
@@ -64,6 +64,7 @@ ignore_undeclared = [
     "graphviz",  # .tools/requirements/requirements_docs.txt
     "originpro", # .tools/requirements/requirements_dev.txt
     "pytest",
+    "rich",      # .tools/requirements/requirements_dev.txt
 ]
 
 [tool.ruff]

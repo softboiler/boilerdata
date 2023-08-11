@@ -40,16 +40,6 @@
     // * -------------------------------------------------------------------------- * //
     // * Changes below should persist in significant template updates.
     {
-      "label": "dvc: repro force downstream",
-      "dependsOrder": "sequence",
-      "dependsOn": ["dvc: synchronize params"],
-      "type": "process",
-      "command": "pwsh",
-      "args": ["-Command", "dvc repro --force --downstream ${input:stage}"],
-      "icon": { "id": "graph" },
-      "problemMatcher": []
-    },
-    {
       "label": "dvc: repro",
       "dependsOrder": "sequence",
       "dependsOn": ["dvc: synchronize params"],
@@ -60,39 +50,26 @@
       "problemMatcher": []
     },
     {
-      "label": "dvc: repro force all",
+      "label": "dvc: repro force downstream",
       "dependsOrder": "sequence",
-      "dependsOn": [
-        "setup: Update project",
-        "dvc: synchronize params",
-        "dvc: freeze",
-        "git: Stage all files",
-        "pre-commit",
-        "git: Stage all files"
-      ],
+      "dependsOn": ["dvc: synchronize params"],
       "type": "process",
       "command": "pwsh",
-      "args": ["-Command", "dvc repro --force"],
+      "args": ["-Command", "dvc repro --force-downstream ${input:stage}"],
       "icon": { "id": "graph" },
       "problemMatcher": []
     },
     {
-      "label": "dvc: repro all",
+      "label": "dvc: repro force",
       "dependsOrder": "sequence",
-      "dependsOn": [
-        "setup: Update project",
-        "dvc: synchronize params",
-        "dvc: freeze",
-        "git: Stage all files",
-        "pre-commit",
-        "git: Stage all files"
-      ],
+      "dependsOn": ["dvc: synchronize params"],
       "type": "process",
       "command": "pwsh",
-      "args": ["-Command", "dvc repro"],
+      "args": ["-Command", "dvc repro --force ${input:stage}"],
       "icon": { "id": "graph" },
       "problemMatcher": []
     },
+
     {
       "label": "dvc: dag",
       "dependsOrder": "sequence",
@@ -111,14 +88,6 @@
       "type": "process",
       "command": "pwsh",
       "args": ["-Command", "python -m boilerdata.models.params"],
-      "icon": { "id": "graph" },
-      "problemMatcher": []
-    },
-    {
-      "label": "dvc: freeze",
-      "type": "shell",
-      "options": { "shell": { "executable": "pwsh", "args": ["-Command"] } },
-      "command": "pip freeze --requirement .tools/requirements/requirements.txt --local --exclude-editable > repro.txt",
       "icon": { "id": "graph" },
       "problemMatcher": []
     },
