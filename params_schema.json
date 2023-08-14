@@ -9,7 +9,13 @@
       "type": "integer"
     },
     "fit_method": {
-      "$ref": "#/definitions/FitMethod"
+      "title": "Fit Method",
+      "enum": [
+        "lm",
+        "trf",
+        "dogbox"
+      ],
+      "type": "string"
     },
     "model_params": {
       "description": "Parameters that can vary in the model. Some will be fixed.",
@@ -134,15 +140,6 @@
   ],
   "additionalProperties": false,
   "definitions": {
-    "FitMethod": {
-      "title": "FitMethod",
-      "description": "Valid methods for curve fitting.",
-      "enum": [
-        "lm",
-        "trf",
-        "dogbox"
-      ]
-    },
     "AxesEnum": {
       "title": "AxesEnum",
       "description": "An enumeration.",

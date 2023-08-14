@@ -15,10 +15,10 @@ from boilerdata.models import (
     default_opt,
 )
 from boilerdata.models.axes import Axes
-from boilerdata.models.enums import FitMethod
 from boilerdata.models.geometry import Geometry
 from boilerdata.models.paths import Paths, ProjectPaths
 from boilerdata.models.trials import Trial, Trials
+from boilerdata.types import FitMethod
 
 bound: TypeAlias = float | Literal["-inf", "inf"]
 
@@ -33,7 +33,7 @@ class Params(SynchronizedPathsYamlModel):
         description="The number of records over which to average in a given trial.",
     )
 
-    fit_method: FitMethod = Field(default=default_opt(FitMethod.trf, optional=False))
+    fit_method: FitMethod = Field(default=default_opt("trf", optional=False))
 
     model_params: list[A] = Field(
         default=default_opt([A.T_s, A.q_s, A.k, A.h_a, A.h_w]),

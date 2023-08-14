@@ -1,19 +1,13 @@
-import warnings
-from collections.abc import Mapping, Sequence
-from functools import partial
-from typing import TypeVar
-from warnings import catch_warnings
-
 import numpy as np
 import pandas as pd
 from propshop import get_prop
 from propshop.library import Mat, Prop
 from pyXSteam.XSteam import XSteam
 from scipy.constants import convert_temperature
-from scipy.optimize import OptimizeWarning, curve_fit
 from scipy.stats import t
 
 from boilerdata.axes_enum import AxesEnum as A  # noqa: N814
+from boilerdata.fits import fit_to_model
 from boilerdata.models.params import PARAMS, Params
 from boilerdata.models.trials import Trial
 from boilerdata.stages import get_tcs, get_trial, per_run, per_trial
@@ -111,42 +105,18 @@ def fit(
             fixed_values[key] = grp[key].mean()
 
     # Get bounds/guesses and override some. Can't do it earlier because of the override.
-    model_bounds = params.model_bounds
-    initial_values = params.initial_values
-    (bounds, guesses) = get_free_bounds_and_guesses(
-        params,
-        model_bounds,  # type: ignore  # pydantic: Type coerced in validation
-        initial_values,
+    fitted_params, errors = fit_to_model(
+        params.model_bounds,  # type: ignore  # pydantic: use_enum_values
+        params.initial_values,  # type: ignore  # pydantic: use_enum_values
+        params.free_params,  # type: ignore  # pydantic: use_enum_values
+        params.fit_method,  # type: ignore  # pydantic: use_enum_values
+        model,
+        confidence_interval_95,
+        x,
+        y,
+        y_errors,
+        fixed_values,
     )
-
-    # Perform fit, filling "nan" on failure or when covariance computation fails
-    with catch_warnings():
-        warnings.simplefilter("error", category=OptimizeWarning)
-        try:
-            fitted_params, pcov = curve_fit(
-                partial(model, **fixed_values),
-                x,
-                y,
-                sigma=y_errors,
-                absolute_sigma=True,
-                p0=guesses,
-                bounds=tuple(
-                    zip(*bounds, strict=True)
-                ),  # Expects ([L1, L2, L3], [H1, H2, H3])
-                method=params.fit_method,
-            )
-        except (RuntimeError, OptimizeWarning):
-            dim = len(params.free_params)
-            fitted_params = np.full(dim, np.nan)
-            pcov = np.full((dim, dim), np.nan)
-
-    # Compute confidence interval
-    standard_errors = np.sqrt(np.diagonal(pcov))
-    errors = standard_errors * confidence_interval_95
-
-    # Catching `OptimizeWarning` should be enough, but let's explicitly check for inf
-    fitted_params = np.where(np.isinf(errors), np.nan, fitted_params)
-    errors = np.where(np.isinf(errors), np.nan, errors)
 
     grp = grp.assign(
         **{key: fixed_values[key] for key in fixed_values if all(grp[key].isna())},
@@ -166,30 +136,6 @@ def fit_setup(grp: pd.DataFrame, params: Params, trial: Trial):
     y = grp[tcs].stack()
     y_errors = grp[tc_errors].stack()
     return x, y, y_errors
-
-
-bound_T = TypeVar("bound_T", bound=tuple[float, float])  # noqa: N816  # TypeVar
-guess_T = TypeVar("guess_T", bound=float)  # noqa: N816  # TypeVar
-
-
-def get_free_bounds_and_guesses(
-    params: Params,
-    model_bounds: Mapping[A, bound_T],
-    initial_values: Mapping[A, guess_T],
-) -> tuple[Sequence[bound_T], Sequence[guess_T]]:
-    """Given model bounds and initial values, return just the free parameter values.
-
-    Returns a tuple of sequences of bounds and guesses required by the interface of
-    `curve_fit`.
-    """
-    bounds = tuple(
-        bound for param, bound in model_bounds.items() if param in params.free_params
-    )
-    guesses = tuple(
-        guess for param, guess in initial_values.items() if param in params.free_params
-    )
-
-    return bounds, guesses
 
 
 def agg_over_runs(
