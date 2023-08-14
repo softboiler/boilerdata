@@ -36,7 +36,6 @@ class ProjectPaths(CreatePathsModel):
     stage_originlab: FilePath = stages / "originlab.py"
     stage_pipeline: FilePath = stages / "pipeline.py"
     stage_runs: FilePath = stages / "runs.py"
-    stage_schema: FilePath = stages / "schema.py"
 
 
 class Paths(CreatePathsModel):

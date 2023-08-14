@@ -376,12 +376,6 @@
           "default": "src/boilerdata/stages/runs.py",
           "format": "file-path",
           "type": "string"
-        },
-        "stage_schema": {
-          "title": "Stage Schema",
-          "default": "src/boilerdata/stages/schema.py",
-          "format": "file-path",
-          "type": "string"
         }
       },
       "additionalProperties": false

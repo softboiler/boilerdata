@@ -56,7 +56,6 @@ project_paths:
   stage_originlab: src/boilerdata/stages/originlab.py
   stage_pipeline: src/boilerdata/stages/pipeline.py
   stage_runs: src/boilerdata/stages/runs.py
-  stage_schema: src/boilerdata/stages/schema.py
 paths:
   file_proj: params.yaml
   data: data
