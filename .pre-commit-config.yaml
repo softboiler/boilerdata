@@ -98,6 +98,8 @@ repos:
         pass_filenames: false
         language: "system"
         entry: "pwsh -Command fawltydeps"
+        files: |
+          .*
 
   # * ------------------------------------------------------------------------------ * #
   # * Changes below should persist in significant template updates.
