@@ -1,1 +1,10 @@
+# * -------------------------------------------------------------------------------- * #
+# * Changes below should persist in significant template updates.
+
+# ? Commit message: Add common model handling
+boilercore@git+https://github.com/blakeNaccarato/boilercore@8229c65f8e31aa22fe3316cd07a394c036d2dcc9
+
+# * -------------------------------------------------------------------------------- * #
+# * Changes below may be lost in significant template updates.
+
 -r requirements_both.txt

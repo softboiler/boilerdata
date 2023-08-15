@@ -4,9 +4,9 @@ from pathlib import Path
 
 import numpy as np
 import pandas as pd
+from boilercore.models import YamlModel
 from pydantic import BaseModel, DirectoryPath, Field, FilePath, validator
 
-from boilerdata.models import YamlModel
 from boilerdata.models.geometry import Geometry
 from boilerdata.models.paths import Paths
 from boilerdata.types import Coupon, Group, Joint, Rod, Sample

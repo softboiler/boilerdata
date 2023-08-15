@@ -1,9 +1,9 @@
 from pathlib import Path
 
 import pandas as pd
+from boilercore.models import YamlModel
 from pydantic import BaseModel, Field, validator
 
-from boilerdata.models import YamlModel
 from boilerdata.types import OriginLabColdes, PandasAggfun, PandasDtype
 
 

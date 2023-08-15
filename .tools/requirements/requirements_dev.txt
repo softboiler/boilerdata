@@ -1,7 +1,8 @@
 # * -------------------------------------------------------------------------------- * #
 # * Changes below should persist in significant template updates.
 
-# For DVC repro of OriginPro steps on dev machine
+-e ../boilercore
+# ? For DVC repro of OriginPro steps on dev machine only
 originpro==1.1.7
 
 # * -------------------------------------------------------------------------------- * #

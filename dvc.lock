@@ -29,8 +29,8 @@ stages:
       nfiles: 2
     - path: src/boilerdata/stages/modelfun.ipynb
       hash: md5
-      md5: 9afb2b774be28c5a49924b919ba3b49e
-      size: 11137
+      md5: 2a39b931abd86df5e726c67df65a3471
+      size: 11087
     params:
       params.yaml:
         fixed_params:
@@ -51,8 +51,8 @@ stages:
     outs:
     - path: data/modelfun
       hash: md5
-      md5: 0bca910877e3b8387ba1311ada4832c2.dir
-      size: 60067
+      md5: 3089db5210c4b50a0170e4f4a984aa1a.dir
+      size: 60115
       nfiles: 1
   runs:
     cmd: python -m boilerdata.stages.runs
@@ -90,8 +90,8 @@ stages:
       nfiles: 1
     - path: data/modelfun
       hash: md5
-      md5: 0bca910877e3b8387ba1311ada4832c2.dir
-      size: 60067
+      md5: 3089db5210c4b50a0170e4f4a984aa1a.dir
+      size: 60115
       nfiles: 1
     - path: data/runs
       hash: md5
@@ -100,12 +100,12 @@ stages:
       nfiles: 1
     - path: src/boilerdata/stages/pipeline.py
       hash: md5
-      md5: 71728116e120fb597e375e12e256f717
-      size: 8905
+      md5: 424226bee7ef4d3698416b6888687e3d
+      size: 6744
     - path: src/boilerdata/validation.py
       hash: md5
-      md5: 3bf12c7498eae3ab299f2776be0ce064
-      size: 4378
+      md5: 7a3f3a96cd21288bc6ed6332765244de
+      size: 4333
     params:
       params.yaml:
         fit_method: trf
@@ -209,17 +209,17 @@ stages:
     deps:
     - path: .tools/requirements
       hash: md5
-      md5: 71b80ef4e21a86f12ab66ab0003930ea.dir
-      size: 2459
+      md5: 54d3f2f409be2f6280713e9f4e7d4b73.dir
+      size: 3056
       nfiles: 6
     - path: config/axes.yaml
       hash: md5
-      md5: 5f95c2418c2d82618d10d711a50c0f2f
-      size: 2320
+      md5: efacd631554ec35115676fc39e0da8dd
+      size: 2322
     - path: src/boilerdata/models
       hash: md5
-      md5: cceed6391a3abc02e8ce0952565ec8a3.dir
-      size: 31190
+      md5: ea34974456493ea8fab34bb9f3ed55ef.dir
+      size: 21575
       nfiles: 7
     - path: src/boilerdata/stages/axes.py
       hash: md5
@@ -312,8 +312,8 @@ stages:
       nfiles: 2
     - path: src/boilerdata/stages/parse_benchmarks.py
       hash: md5
-      md5: c33336d59bfd24d53eeefe97dc30d654
-      size: 1427
+      md5: 747bdfd4683140f929b8c409596fecba
+      size: 1357
     outs:
     - path: data/benchmarks_parsed
       hash: md5

@@ -2,11 +2,12 @@ from typing import Literal, TypeAlias
 
 import numpy as np
 import pandas as pd
+from boilercore.models import SynchronizedPathsYamlModel
 from pydantic import Extra, Field, validator
 
 from boilerdata import AXES_CONFIG, PARAMS_FILE, TRIAL_CONFIG
 from boilerdata.axes_enum import AxesEnum as A  # noqa: N814
-from boilerdata.models import SynchronizedPathsYamlModel, default_opt
+from boilerdata.models import default_opt
 from boilerdata.models.axes import Axes
 from boilerdata.models.geometry import Geometry
 from boilerdata.models.paths import Paths, ProjectPaths

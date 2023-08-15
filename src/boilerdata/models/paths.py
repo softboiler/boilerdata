@@ -1,9 +1,9 @@
 from pathlib import Path
 
+from boilercore.models import CreatePathsModel
 from pydantic import DirectoryPath, FilePath
 
 from boilerdata import DATA_DIR, PARAMS_FILE, PROJECT_CONFIG, PROJECT_DIR
-from boilerdata.models import CreatePathsModel
 
 
 class ProjectPaths(CreatePathsModel):
