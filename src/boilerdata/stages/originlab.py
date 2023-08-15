@@ -3,7 +3,7 @@ from contextlib import contextmanager
 from pathlib import Path
 from time import sleep
 
-import originpro as op
+import originpro as op  # type: ignore  # Not installed in CI
 import pandas as pd
 
 from boilerdata.axes_enum import AxesEnum as A  # noqa: N814

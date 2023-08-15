@@ -1,4 +1,3 @@
-# type: ignore pyright 1.1.308, local/CI differences, below
 from collections.abc import Mapping
 from contextlib import contextmanager
 from pathlib import Path
