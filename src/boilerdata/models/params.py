@@ -4,16 +4,11 @@ from typing import Literal, TypeAlias
 
 import numpy as np
 import pandas as pd
-from pydantic import Field, validator
+from pydantic import Extra, Field, validator
 
 from boilerdata import AXES_CONFIG, PARAMS_FILE, TRIAL_CONFIG
 from boilerdata.axes_enum import AxesEnum as A  # noqa: N814
-from boilerdata.models import (
-    ProjectModel,
-    SynchronizedPathsYamlModel,
-    allow_extra,
-    default_opt,
-)
+from boilerdata.models import SynchronizedPathsYamlModel, default_opt
 from boilerdata.models.axes import Axes
 from boilerdata.models.geometry import Geometry
 from boilerdata.models.paths import Paths, ProjectPaths
@@ -23,10 +18,8 @@ from boilerdata.types import FitMethod
 bound: TypeAlias = float | Literal["-inf", "inf"]
 
 
-class Params(SynchronizedPathsYamlModel):
+class Params(SynchronizedPathsYamlModel, extra=Extra.allow):
     """The global project configuration."""
-
-    Config = ProjectModel.Config  # type: ignore
 
     records_to_average: int = Field(
         default=default_opt(5),
@@ -143,19 +136,16 @@ class Params(SynchronizedPathsYamlModel):
 
     def __init__(self):
         super().__init__(PARAMS_FILE)
-        with allow_extra(self):
-            self.axes = Axes(AXES_CONFIG)
-            self.trials = Trials(TRIAL_CONFIG).trials
-            self.free_params = [
-                p for p in self.model_params if p not in self.fixed_params
-            ]
-            self.free_errors = self.get_model_errors(self.free_params)
-            self.model_errors = self.get_model_errors(self.model_params)
-            self.fixed_errors = self.get_model_errors(self.fixed_params)
-            self.params_and_errors = self.model_params + self.model_errors
-            self.fixed_values = {
-                k: v for k, v in self.initial_values.items() if k in self.fixed_params
-            }
+        self.axes = Axes(AXES_CONFIG)
+        self.trials = Trials(TRIAL_CONFIG).trials
+        self.free_params = [p for p in self.model_params if p not in self.fixed_params]
+        self.free_errors = self.get_model_errors(self.free_params)
+        self.model_errors = self.get_model_errors(self.model_params)
+        self.fixed_errors = self.get_model_errors(self.fixed_params)
+        self.params_and_errors = self.model_params + self.model_errors
+        self.fixed_values = {
+            k: v for k, v in self.initial_values.items() if k in self.fixed_params
+        }
         for trial in self.trials:
             trial.setup(self.paths, self.geometry, self.copper_temps)
 

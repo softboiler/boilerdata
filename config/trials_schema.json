@@ -14,7 +14,6 @@
   "required": [
     "trials"
   ],
-  "additionalProperties": false,
   "definitions": {
     "Trial": {
       "title": "Trial",

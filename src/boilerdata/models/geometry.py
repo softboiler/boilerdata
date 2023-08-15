@@ -1,13 +1,10 @@
-from typing import Any
-
 import numpy as np
-from pydantic import Field, validator
+from pydantic import BaseModel, Field, validator
 
-from boilerdata.models import ProjectModel
 from boilerdata.types import Coupon, Rod
 
 
-class Geometry(ProjectModel):
+class Geometry(BaseModel):
     """The fixed geometry for the problem."""
 
     # Prefix with underscore to exclude from schema
@@ -27,7 +24,7 @@ class Geometry(ProjectModel):
 
     # ! RODS
 
-    rods: dict[Rod, np.ndarray[Any, Any]] = Field(
+    rods: dict[Rod, list[float]] = Field(
         default={
             "X": [3.5253, 3.0500, 2.5756, 2.1006, 0.3754],
             "Y": [3.5250, 3.0504, 2.5752, 2.1008, 0.3752],
@@ -40,7 +37,9 @@ class Geometry(ProjectModel):
     @validator("rods", pre=True, always=True)
     def validate_rods(cls, rods):
         """Convert from inches to meters."""
-        return {rod: np.array(values) / cls._in_p_m for rod, values in rods.items()}
+        return {
+            rod: list(np.array(values) / cls._in_p_m) for rod, values in rods.items()
+        }
 
     # ! COUPONS
 

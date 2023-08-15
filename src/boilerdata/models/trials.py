@@ -2,16 +2,17 @@ import datetime
 import re
 from pathlib import Path
 
+import numpy as np
 import pandas as pd
-from pydantic import DirectoryPath, Field, FilePath, validator
+from pydantic import BaseModel, DirectoryPath, Field, FilePath, validator
 
-from boilerdata.models import ProjectModel, YamlModel
+from boilerdata.models import YamlModel
 from boilerdata.models.geometry import Geometry
 from boilerdata.models.paths import Paths
 from boilerdata.types import Coupon, Group, Joint, Rod, Sample
 
 
-class Trial(ProjectModel):
+class Trial(BaseModel):
     """A trial."""
 
     # ! META FIELDS ADDED TO DATAFRAME
@@ -111,7 +112,9 @@ class Trial(ProjectModel):
 
     def set_geometry(self, geometry: Geometry, copper_temps: list[str]):
         """Get relevant geometry for the trial."""
-        thermocouple_pos = geometry.rods[self.rod] + geometry.coupons[self.coupon]
+        thermocouple_pos = list(
+            np.array(geometry.rods[self.rod]) + np.array(geometry.coupons[self.coupon])
+        )
         self.thermocouple_pos = dict(zip(copper_temps, thermocouple_pos, strict=True))
 
 

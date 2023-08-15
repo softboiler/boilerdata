@@ -1,13 +1,13 @@
 from pathlib import Path
 
 import pandas as pd
-from pydantic import Field, validator
+from pydantic import BaseModel, Field, validator
 
-from boilerdata.models import ProjectModel, YamlModel
+from boilerdata.models import YamlModel
 from boilerdata.types import OriginLabColdes, PandasAggfun, PandasDtype
 
 
-class Axis(ProjectModel):
+class Axis(BaseModel):
     """Metadata for a column in the dataframe."""
 
     # ! COMMON FIELDS
