@@ -22,9 +22,7 @@ def fit_to_model(
     fixed_values,
 ):
     (bounds, guesses) = get_free_bounds_and_guesses(
-        free_params,
-        model_bounds,  # type: ignore  # pydantic: Type coerced in validation
-        initial_values,
+        free_params, model_bounds, initial_values
     )
 
     # Perform fit, filling "nan" on failure or when covariance computation fails

@@ -7,8 +7,8 @@ from typing import Any
 import matplotlib as mpl
 import numpy as np
 import pandas as pd
-from IPython.core.display import Markdown, Math  # type: ignore
-from IPython.display import display  # type: ignore
+from IPython.core.display import Markdown, Math
+from IPython.display import display
 from matplotlib import pyplot as plt
 from sympy import FiniteSet, Function, symbols
 from sympy.printing.latex import latex
@@ -192,7 +192,7 @@ def add_units(
     units = cols.get_level_values("units")
 
     old = (col.name for col in params.axes.cols)
-    new = (add_unit(q, u) for q, u in zip(quantity, units, strict=True))  # type: ignore  # pyright 1.1.310, pandas
+    new = (add_unit(q, u) for q, u in zip(quantity, units, strict=True))
     mapper = dict(zip(old, new, strict=True))
     return df.rename(axis="columns", mapper=mapper), mapper
 
@@ -338,7 +338,7 @@ def plot_new_fits(grp: pd.DataFrame, params: Params, model):
         ax.fill_between(
             x=x_padded,
             y1=y_padded_min,
-            y2=y_padded_max,  # type: ignore  # matplotlib
+            y2=y_padded_max,
             color=[0.8, 0.8, 0.8],
             edgecolor=[1, 1, 1],
             label="95% CI",
@@ -420,7 +420,7 @@ def get_model_with_error(model, x, model_param_uncertainties):
     u_x = [ufloat(v, 0, "x") for v in x]
     u_y = model(u_x, **model_param_uncertainties)
     y = np.array([v.nominal_value for v in u_y])
-    y_min = y - [v.std_dev for v in u_y]  # type: ignore # pyright 1.1.308, local/CI difference
+    y_min = y - [v.std_dev for v in u_y]
     y_max = y + [v.std_dev for v in u_y]
     return y, y_min, y_max
 

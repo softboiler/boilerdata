@@ -3,7 +3,7 @@ from contextlib import contextmanager
 from pathlib import Path
 from time import sleep
 
-import originpro as op  # type: ignore  # pyright 1.1.308, local/CI difference
+import originpro as op
 import pandas as pd
 
 from boilerdata.axes_enum import AxesEnum as A  # noqa: N814

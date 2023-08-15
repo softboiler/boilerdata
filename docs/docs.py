@@ -1,6 +1,6 @@
 from pathlib import Path
 
-import graphviz  # type: ignore  # pyright 1.1.317
+import graphviz
 
 
 def main():

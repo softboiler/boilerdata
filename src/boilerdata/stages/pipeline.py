@@ -99,7 +99,7 @@ def fit(
     x, y, y_errors = fit_setup(grp, params, trial)
 
     # Get fixed values
-    fixed_values: dict[str, float] = params.fixed_values  # type: ignore
+    fixed_values: dict[str, float] = params.fixed_values
     for key in fixed_values:
         if not all(grp[key].isna()):
             fixed_values[key] = grp[key].mean()
