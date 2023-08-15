@@ -1,4 +1,7 @@
-from typing import Literal
+from typing import Literal, TypeVar
+
+Bound = TypeVar("Bound", bound=tuple[float | str, float | str])
+Guess = TypeVar("Guess", bound=float)
 
 Coupon = Literal["A0", "A1", "A2", "A3", "A4", "A5", "A6", "A7", "A8", "A9"]
 """The coupon attached to the rod for this trial."""

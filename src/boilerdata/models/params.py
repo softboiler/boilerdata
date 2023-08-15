@@ -35,7 +35,7 @@ class Params(SynchronizedPathsYamlModel):
 
     fit_method: FitMethod = Field(default=default_opt("trf", optional=False))
 
-    model_params: list[A] = Field(
+    model_params: list[str] = Field(
         default=default_opt([A.T_s, A.q_s, A.k, A.h_a, A.h_w]),
         description="Parameters that can vary in the model. Some will be fixed.",
     )
@@ -55,7 +55,7 @@ class Params(SynchronizedPathsYamlModel):
 
     # ! MODEL BOUNDS
 
-    model_bounds: dict[A, tuple[bound, bound]] = Field(
+    model_bounds: dict[str, tuple[bound, bound]] = Field(
         default=default_opt(
             {
                 A.T_s: (95, "inf"),  # (C) T_s
@@ -69,7 +69,7 @@ class Params(SynchronizedPathsYamlModel):
     )
 
     @validator("model_bounds", always=True)
-    def validate_model_bounds(cls, model_bounds) -> dict[A, tuple[float, float]]:
+    def validate_model_bounds(cls, model_bounds) -> dict[str, tuple[float, float]]:
         """Substitute inf for np.inf."""
         for param, b in model_bounds.items():
             b0 = -np.inf if isinstance(b[0], str) and "-inf" in b[0] else b[0]
@@ -79,13 +79,8 @@ class Params(SynchronizedPathsYamlModel):
 
     # ! FIXED PARAMS
 
-    fixed_params: list[A] = Field(
-        default=default_opt(
-            [
-                A.k,
-                A.h_w,
-            ]
-        ),
+    fixed_params: list[str] = Field(
+        default=default_opt([A.k, A.h_w]),
         description="Parameters to fix. Evaluated before fitting, overridable in code.",
     )
 
@@ -98,7 +93,7 @@ class Params(SynchronizedPathsYamlModel):
 
     # ! INITIAL VALUES
 
-    initial_values: dict[A, float] = Field(
+    initial_values: dict[str, float] = Field(
         default=default_opt(
             {
                 A.T_s: 95,  # (C) T_s
@@ -123,13 +118,13 @@ class Params(SynchronizedPathsYamlModel):
 
     # ! EXCLUDED FROM PARAMS FILE
 
-    copper_temps: list[A] = Field(
+    copper_temps: list[str] = Field(
         default=[A.T_1, A.T_2, A.T_3, A.T_4, A.T_5],
         description="Copper temperature measurements.",
         exclude=True,
     )
 
-    water_temps: list[A] = Field(
+    water_temps: list[str] = Field(
         default=[A.T_w1, A.T_w2, A.T_w3],
         description="Water temperature measurements.",
         exclude=True,

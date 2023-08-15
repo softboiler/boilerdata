@@ -60,7 +60,6 @@ class ProjectModel(BaseModel):
     """Model configuration for this project."""
 
     class Config:
-        use_enum_values = True
         arbitrary_types_allowed = True
         extra = Extra.forbid
 

@@ -1,21 +1,17 @@
 import warnings
 from collections.abc import Mapping, Sequence
 from functools import partial
-from typing import TypeVar
 from warnings import catch_warnings
 
 import numpy as np
 from scipy.optimize import OptimizeWarning, curve_fit
 
-from boilerdata.types import FitMethod
-
-bound_T = TypeVar("bound_T", bound=tuple[float, float])  # noqa: N816  # TypeVar
-guess_T = TypeVar("guess_T", bound=float)  # noqa: N816  # TypeVar
+from boilerdata.types import Bound, FitMethod, Guess
 
 
 def fit_to_model(
-    model_bounds: Mapping[str, bound_T],
-    initial_values: Mapping[str, guess_T],
+    model_bounds: Mapping[str, Bound],
+    initial_values: Mapping[str, Guess],
     free_params: list[str],
     fit_method: FitMethod,
     model,
@@ -64,9 +60,9 @@ def fit_to_model(
 
 def get_free_bounds_and_guesses(
     free_params: list[str],
-    model_bounds: Mapping[str, bound_T],
-    initial_values: Mapping[str, guess_T],
-) -> tuple[Sequence[bound_T], Sequence[guess_T]]:
+    model_bounds: Mapping[str, Bound],
+    initial_values: Mapping[str, Guess],
+) -> tuple[Sequence[Bound], Sequence[Guess]]:
     """Given model bounds and initial values, return just the free parameter values.
 
     Returns a tuple of sequences of bounds and guesses required by the interface of

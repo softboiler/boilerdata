@@ -337,7 +337,7 @@ def plot_new_fits(grp: pd.DataFrame, params: Params, model):
         )
         ax.fill_between(
             x=x_padded,
-            y1=y_padded_min,  # type: ignore  # pydantic: use_enum_values # Only in CI
+            y1=y_padded_min,
             y2=y_padded_max,  # type: ignore  # matplotlib
             color=[0.8, 0.8, 0.8],
             edgecolor=[1, 1, 1],
@@ -397,7 +397,6 @@ def get_params_mapping(
     grp: pd.Series | pd.DataFrame, model_params: list[Any]  # type: ignore  # pandas
 ) -> dict[str, Any]:
     """Get a mapping of parameter names to values."""
-    # Reason: pydantic: use_enum_values
     return dict(zip(model_params, grp[model_params], strict=True))
 
 
@@ -405,9 +404,8 @@ def get_params_mapping_with_uncertainties(
     grp: pd.Series | pd.DataFrame, params: Params  # type: ignore  # pandas
 ) -> dict[str, Any]:
     """Get a mapping of parameter names to values with uncertainty."""
-    # Reason: pydantic: use_enum_values
-    model_params: list[str] = params.model_params  # type: ignore
-    param_errors: list[str] = params.model_errors  # type: ignore
+    model_params = params.model_params
+    param_errors = params.model_errors
     model_param_uncertainties = [
         ufloat(model_param, model_error, tag)
         for model_param, model_error, tag in zip(

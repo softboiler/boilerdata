@@ -18,10 +18,11 @@
       "type": "string"
     },
     "model_params": {
+      "title": "Model Params",
       "description": "Parameters that can vary in the model. Some will be fixed.",
       "type": "array",
       "items": {
-        "$ref": "#/definitions/AxesEnum"
+        "type": "string"
       }
     },
     "model_inputs": {
@@ -73,10 +74,11 @@
       }
     },
     "fixed_params": {
+      "title": "Fixed Params",
       "description": "Parameters to fix. Evaluated before fitting, overridable in code.",
       "type": "array",
       "items": {
-        "$ref": "#/definitions/AxesEnum"
+        "type": "string"
       }
     },
     "initial_values": {
@@ -88,6 +90,7 @@
       }
     },
     "copper_temps": {
+      "title": "Copper Temps",
       "description": "Copper temperature measurements.",
       "default": [
         "T_1",
@@ -98,10 +101,11 @@
       ],
       "type": "array",
       "items": {
-        "$ref": "#/definitions/AxesEnum"
+        "type": "string"
       }
     },
     "water_temps": {
+      "title": "Water Temps",
       "description": "Water temperature measurements.",
       "default": [
         "T_w1",
@@ -110,7 +114,7 @@
       ],
       "type": "array",
       "items": {
-        "$ref": "#/definitions/AxesEnum"
+        "type": "string"
       }
     },
     "do_plot": {
@@ -140,53 +144,6 @@
   ],
   "additionalProperties": false,
   "definitions": {
-    "AxesEnum": {
-      "title": "AxesEnum",
-      "description": "An enumeration.",
-      "enum": [
-        "trial",
-        "run",
-        "time",
-        "group",
-        "rod",
-        "coupon",
-        "sample",
-        "joint",
-        "good",
-        "new",
-        "V",
-        "I",
-        "T_0",
-        "T_1",
-        "T_1_err",
-        "T_2",
-        "T_2_err",
-        "T_3",
-        "T_3_err",
-        "T_4",
-        "T_4_err",
-        "T_5",
-        "T_5_err",
-        "T_w1",
-        "T_w2",
-        "T_w3",
-        "P",
-        "T_w",
-        "T_w_diff",
-        "T_s",
-        "T_s_err",
-        "q_s",
-        "q_s_err",
-        "k",
-        "k_err",
-        "h_w",
-        "h_w_err",
-        "h_a",
-        "h_a_err",
-        "DT",
-        "DT_err"
-      ]
-    },
     "Geometry": {
       "title": "Geometry",
       "description": "The fixed geometry for the problem.",

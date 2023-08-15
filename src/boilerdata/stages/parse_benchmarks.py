@@ -29,7 +29,7 @@ def get_benchmarks(params: Params) -> pd.DataFrame:
 def parse_benchmark(df: pd.DataFrame, params: Params) -> pd.DataFrame:
     """Get all temperatures when base temperature has risen 90% of its total change."""
     threshold = 0.9
-    df = df[[A.T_0, *params.copper_temps]]  # type: ignore  # use_enum_values
+    df = df[[A.T_0, *params.copper_temps]]
     base = df[A.T_0]
     start = base.head(10).mean()
     end = base.tail(10).mean()

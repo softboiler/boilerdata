@@ -5,7 +5,6 @@ from pathlib import Path
 import pandas as pd
 from pydantic import DirectoryPath, Field, FilePath, validator
 
-from boilerdata.axes_enum import AxesEnum as A  # noqa: N814
 from boilerdata.models import ProjectModel, YamlModel
 from boilerdata.models.geometry import Geometry
 from boilerdata.models.paths import Paths
@@ -77,7 +76,7 @@ class Trial(ProjectModel):
         exclude=True,
     )
 
-    def setup(self, paths: Paths, geometry: Geometry, copper_temps: list[A]):
+    def setup(self, paths: Paths, geometry: Geometry, copper_temps: list[str]):
         self.set_paths(paths)
         self.set_geometry(geometry, copper_temps)
 
@@ -110,10 +109,10 @@ class Trial(ProjectModel):
             )
         self.run_index = run_index
 
-    def set_geometry(self, geometry: Geometry, copper_temps: list[A]):
+    def set_geometry(self, geometry: Geometry, copper_temps: list[str]):
         """Get relevant geometry for the trial."""
-        thermocouple_pos = geometry.rods[self.rod] + geometry.coupons[self.coupon]  # type: ignore  # pyright: 1.1.318, pydantic: use_enum_values
-        self.thermocouple_pos = dict(zip(copper_temps, thermocouple_pos, strict=True))  # type: ignore  # pyright: 1.1.310, pydantic: use_enum_values
+        thermocouple_pos = geometry.rods[self.rod] + geometry.coupons[self.coupon]
+        self.thermocouple_pos = dict(zip(copper_temps, thermocouple_pos, strict=True))
 
 
 class Trials(YamlModel):

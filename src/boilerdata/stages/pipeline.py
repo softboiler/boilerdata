@@ -106,10 +106,10 @@ def fit(
 
     # Get bounds/guesses and override some. Can't do it earlier because of the override.
     fitted_params, errors = fit_to_model(
-        params.model_bounds,  # type: ignore  # pydantic: use_enum_values
-        params.initial_values,  # type: ignore  # pydantic: use_enum_values
-        params.free_params,  # type: ignore  # pydantic: use_enum_values
-        params.fit_method,  # type: ignore  # pydantic: use_enum_values
+        params.model_bounds,
+        params.initial_values,
+        params.free_params,
+        params.fit_method,
         model,
         confidence_interval_95,
         x,
@@ -149,12 +149,12 @@ def agg_over_runs(
     grp = (
         grp.groupby(level=[A.trial, A.run], dropna=False)  # type: ignore  # pandas
         .agg(
-            **(
+            **(  # type: ignore  # pandas-stubs 2.0.2
                 # Take the default agg for all cols
                 params.axes.aggs
                 # Override the agg for cols with duplicates in a run to take the first
                 | {
-                    col: pd.NamedAgg(column=col, aggfunc="first")  # type: ignore  # pydantic: use_enum_values
+                    col: pd.NamedAgg(column=col, aggfunc="first")
                     for col in (tc_errors + params.params_and_errors)
                 }
             )
