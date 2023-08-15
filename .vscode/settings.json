@@ -21,7 +21,7 @@
 
   //! Pylance
   "python.languageServer": "Pylance",
-  "python.analysis.diagnosticMode": "workspace",
+  "python.analysis.diagnosticMode": "openFilesOnly",
   "python.analysis.indexing": true,
   //? These are safer defaults which are overridden in `pyrightconfig.json`.
   "python.analysis.typeCheckingMode": "off",

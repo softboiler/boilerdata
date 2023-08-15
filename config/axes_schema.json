@@ -16,66 +16,6 @@
   ],
   "additionalProperties": false,
   "definitions": {
-    "PandasDtype": {
-      "title": "PandasDtype",
-      "description": "Valid data types for Pandas objects.\n\nSee also: https://pandas.pydata.org/docs/user_guide/basics.html#dtypes",
-      "enum": [
-        "object",
-        "float",
-        "int",
-        "bool",
-        "timedelta64[ns]",
-        "datetime64[ns]",
-        "string[pyarrow]",
-        "boolean",
-        "category",
-        "Sparse",
-        "interval",
-        "Int8",
-        "Int16",
-        "Int32",
-        "Int64",
-        "UInt8",
-        "UInt16",
-        "Uint32",
-        "UInt64"
-      ]
-    },
-    "PandasAggfun": {
-      "title": "PandasAggfun",
-      "description": "Valid built-in aggregation functions in Pandas.\n\nSee also: https://pandas.pydata.org/pandas-docs/stable/user_guide/groupby.html#aggregation",
-      "enum": [
-        "mean",
-        "sum",
-        "size",
-        "count",
-        "std",
-        "var",
-        "sem",
-        "describe",
-        "first",
-        "last",
-        "nth",
-        "min",
-        "max"
-      ]
-    },
-    "OriginLabColdes": {
-      "title": "OriginLabColdes",
-      "description": "Valid column designations for plotting in OriginLab.\n\nDesignations:\n    X: x-axis\n    Y: y-axis\n    Z: z-axis\n    M: x-axis error\n    E: y-axis error\n    L: Label\n    G: Group\n    S: Subject\n    N: None (Disregard)\n    Q: Omit (If this column isn't in the output at all)",
-      "enum": [
-        "X",
-        "Y",
-        "Z",
-        "M",
-        "E",
-        "L",
-        "G",
-        "S",
-        "N",
-        "Q"
-      ]
-    },
     "Axis": {
       "title": "Axis",
       "description": "Metadata for a column in the dataframe.",
@@ -87,13 +27,31 @@
           "type": "string"
         },
         "dtype": {
+          "title": "Dtype",
           "description": "The Pandas data type to be used to represent this column.",
           "default": "float",
-          "allOf": [
-            {
-              "$ref": "#/definitions/PandasDtype"
-            }
-          ]
+          "enum": [
+            "object",
+            "float",
+            "int",
+            "bool",
+            "timedelta64[ns]",
+            "datetime64[ns]",
+            "string[pyarrow]",
+            "boolean",
+            "category",
+            "Sparse",
+            "interval",
+            "Int8",
+            "Int16",
+            "Int32",
+            "Int64",
+            "UInt8",
+            "UInt16",
+            "Uint32",
+            "UInt64"
+          ],
+          "type": "string"
         },
         "units": {
           "title": "Units",
@@ -102,13 +60,25 @@
           "type": "string"
         },
         "agg": {
+          "title": "Agg",
           "description": "The aggregation method to use for this column.",
           "default": "mean",
-          "allOf": [
-            {
-              "$ref": "#/definitions/PandasAggfun"
-            }
-          ]
+          "enum": [
+            "mean",
+            "sum",
+            "size",
+            "count",
+            "std",
+            "var",
+            "sem",
+            "describe",
+            "first",
+            "last",
+            "nth",
+            "min",
+            "max"
+          ],
+          "type": "string"
         },
         "source": {
           "title": "Source",
@@ -128,13 +98,22 @@
           "type": "boolean"
         },
         "originlab_coldes": {
+          "title": "Originlab Coldes",
           "description": "The column designation for plotting in OriginLab.",
           "default": "N",
-          "allOf": [
-            {
-              "$ref": "#/definitions/OriginLabColdes"
-            }
-          ]
+          "enum": [
+            "X",
+            "Y",
+            "Z",
+            "M",
+            "E",
+            "L",
+            "G",
+            "S",
+            "N",
+            "Q"
+          ],
+          "type": "string"
         },
         "pretty_name": {
           "title": "Pretty Name",

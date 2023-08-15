@@ -4,7 +4,7 @@ import pandas as pd
 from pydantic import Field, validator
 
 from boilerdata.models import ProjectModel, YamlModel
-from boilerdata.models.enums import OriginLabColdes, PandasAggfun, PandasDtype
+from boilerdata.types import OriginLabColdes, PandasAggfun, PandasDtype
 
 
 class Axis(ProjectModel):
@@ -18,7 +18,7 @@ class Axis(ProjectModel):
     )
 
     dtype: PandasDtype = Field(
-        default=PandasDtype.float,
+        default="float",
         description="The Pandas data type to be used to represent this column.",
     )
 
@@ -30,13 +30,12 @@ class Axis(ProjectModel):
     # ! AGGREGATION
 
     agg: PandasAggfun = Field(
-        default=PandasAggfun.mean,
-        description="The aggregation method to use for this column.",
+        default="mean", description="The aggregation method to use for this column."
     )
 
     @validator("agg", always=True)
     def validate_agg(cls, agg, values):
-        return (lambda ser: ser[0]) if values["dtype"] == PandasDtype.category else agg
+        return (lambda ser: ser[0]) if values["dtype"] == "category" else agg
 
     # ! COLUMNS IN SOURCE DATA
 
@@ -136,12 +135,12 @@ class Axes(YamlModel):
         quantity = pd.DataFrame(
             [ax.name for ax in self.cols],
             index=[ax.name for ax in self.cols],
-            dtype=PandasDtype.string,
+            dtype="string[pyarrow]",
         ).rename(axis="columns", mapper={0: "quantity"})
 
         units = pd.DataFrame(
             {col.name: pd.Series(col.units, index=["units"]) for col in self.cols},
-            dtype=PandasDtype.string,
+            dtype="string[pyarrow]",
         ).T
 
         return pd.MultiIndex.from_frame(

@@ -7,9 +7,9 @@ from pydantic import DirectoryPath, Field, FilePath, validator
 
 from boilerdata.axes_enum import AxesEnum as A  # noqa: N814
 from boilerdata.models import ProjectModel, YamlModel
-from boilerdata.models.enums import Coupon, Group, Joint, Rod, Sample
 from boilerdata.models.geometry import Geometry
 from boilerdata.models.paths import Paths
+from boilerdata.types import Coupon, Group, Joint, Rod, Sample
 
 
 class Trial(ProjectModel):
