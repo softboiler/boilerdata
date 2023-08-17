@@ -14,7 +14,7 @@ from boilerdata.models.paths import Paths, ProjectPaths
 from boilerdata.models.trials import Trial, Trials
 from boilerdata.types import FitMethod
 
-bound: TypeAlias = float | Literal["-inf", "inf"]
+Bound: TypeAlias = float | Literal["-inf", "inf"]
 
 
 class Params(SynchronizedPathsYamlModel, extra=Extra.allow):
@@ -47,7 +47,7 @@ class Params(SynchronizedPathsYamlModel, extra=Extra.allow):
 
     # ! MODEL BOUNDS
 
-    model_bounds: dict[str, tuple[bound, bound]] = Field(
+    model_bounds: dict[str, tuple[Bound, Bound]] = Field(
         default=default_opt(
             {
                 A.T_s: (95, "inf"),  # (C) T_s
