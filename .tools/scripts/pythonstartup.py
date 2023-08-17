@@ -3,9 +3,17 @@
 Avoid activating Rich features that break functionality outside of the REPL.
 """
 
+from warnings import resetwarnings
 
-def main():
+from warning_filters import filter_warnings_and_update_dotenv
+
+
+def init():
     from rich import inspect, traceback  # noqa: F401
+
+    # Reset warnings coming from `.env` since those in `warning_filters.py` are smarter
+    resetwarnings()
+    filter_warnings_and_update_dotenv()
 
     traceback.install()
 
@@ -25,4 +33,4 @@ def is_notebook_or_ipython() -> bool:
         return shell == "TerminalInteractiveShell"
 
 
-main()
+init()

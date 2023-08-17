@@ -1,7 +1,7 @@
 """Warning filters and `.env` updater."""
 
 from pathlib import Path
-from warnings import filterwarnings, resetwarnings
+from warnings import filterwarnings
 
 
 def filter_warnings_and_update_dotenv():
@@ -230,6 +230,11 @@ FILTERS = (
                     "So, you probably shouldn't use subpackages with this lazy feature."
                 ),
                 RuntimeWarning,
+            ),
+            (
+                "invalid escape sequence",
+                DeprecationWarning,
+                "sparklines.sparklines",
             ),
         )
     ),
