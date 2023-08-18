@@ -6,6 +6,8 @@
 -e ../boilercore
 # ? For DVC repro of OriginPro steps on dev machine only
 originpro==1.1.7
+# ? https://github.com/pydata/numexpr/issues/442#issuecomment-1684551982
+numexpr==2.8.4
 
 # * -------------------------------------------------------------------------------- * #
 # * Changes below may be lost in significant template updates.
