@@ -1,5 +1,6 @@
 ci:
   skip:
+    - "local-pyproject"
     - "synchronize-params"
     - "update-warning-filters"
     - "pytest-fast-only"
@@ -19,9 +20,17 @@ repos:
       # * -------------------------------------------------------------------------- * #
       # * Changes below should persist in significant template updates.
 
+      - id: "local-pyrightconfig"
+        name: "local-pyrightconfig"
+        language: "system"
+        entry: "pwsh -Command python .tools/scripts/local_pyrightconfig.py"
+        files: |
+          (?x)^(
+            pyproject.toml
+            .tools/scripts/local_pyrightconfig.py
+          )$
       - id: "synchronize-params"
         name: "synchronize-params"
-        fail_fast: true
         language: "system"
         entry: "pwsh -Command python -m boilerdata.models.params"
         files: |
@@ -38,10 +47,10 @@ repos:
         verbose: true
         pass_filenames: false
         language: "system"
-        entry: "pwsh -Command python warning_filters.py"
+        entry: "pwsh -Command python .tools/scripts/warning_filters.py"
         files: |
           (?x)^(
-            warning_filters.py
+            .tools/scripts/warning_filters.py
           )$
       - id: "pytest-fast-only"
         name: "pytest-fast-only"

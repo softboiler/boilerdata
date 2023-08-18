@@ -1,6 +1,9 @@
 # * -------------------------------------------------------------------------------- * #
 # * Changes below should persist in significant template updates.
 
+# Maintain a local variation derived from `pyproject.toml`
+pyrightconfig.json
+
 # * -------------------------------------------------------------------------------- * #
 # * Changes below may be lost in significant template updates.
 
