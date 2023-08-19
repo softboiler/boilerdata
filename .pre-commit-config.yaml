@@ -1,6 +1,6 @@
 ci:
   skip:
-    - "local-pyproject"
+    - "local-pyrightconfig"
     - "synchronize-params"
     - "update-warning-filters"
     - "pytest-fast-only"
