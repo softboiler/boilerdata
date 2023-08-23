@@ -1,5 +1,6 @@
 import numpy as np
 import pandas as pd
+from boilercore.fits import fit_to_model
 from propshop import get_prop
 from propshop.library import Mat, Prop
 from pyXSteam.XSteam import XSteam
@@ -7,7 +8,6 @@ from scipy.constants import convert_temperature
 from scipy.stats import t
 
 from boilerdata.axes_enum import AxesEnum as A  # noqa: N814
-from boilerdata.fits import fit_to_model
 from boilerdata.models.params import PARAMS, Params
 from boilerdata.models.trials import Trial
 from boilerdata.stages import get_tcs, get_trial, per_run, per_trial
