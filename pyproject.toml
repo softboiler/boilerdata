@@ -64,11 +64,12 @@ ignore_unused = [
     "pyarrow",         # boilerdata.init: pd.set_option( <...> "pyarrow")
 ]
 ignore_undeclared = [
-    "boilercore", # Not picked up by fawltydeps
-    "graphviz",   # .tools/requirements/requirements_docs.txt
-    "originpro",  # .tools/requirements/requirements_dev.txt
+    "copier_python", # Used by the project template
+    "boilercore",    # Not picked up by fawltydeps
+    "graphviz",      # .tools/requirements/requirements_docs.txt
+    "originpro",     # .tools/requirements/requirements_dev.txt
     "pytest",
-    "rich",       # .tools/requirements/requirements_dev.txt
+    "rich",          # .tools/requirements/requirements_dev.txt
 ]
 [tool.fawltydeps.custom_mapping]
 ipykernel = ["IPython"]
