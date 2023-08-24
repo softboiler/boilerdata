@@ -54,6 +54,7 @@ Tracker = "https://github.com/blakeNaccarato/boilerdata/issues"
 
 [tool.fawltydeps]
 ignore_unused = [
+    "copier_python",   # Used by the project template
     "boilercore",      # Not picked up by fawltydeps
     "dvc",             # For experiment orchestration
     "ploomber-engine", # For experiment orchestration

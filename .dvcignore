@@ -1,3 +1,12 @@
+# * -------------------------------------------------------------------------------- * #
+# * Project-specific .dvcignore
+
+*.tmp
+~$*
+
+# * -------------------------------------------------------------------------------- * #
+# * Project-specific ignores common to .gitignore
+
 # To avoid committing profiler results
 *.prof
 # To avoid committing rejected changes upon bumping template
