@@ -8,14 +8,14 @@ model_inputs:
   x_s: 0
   x_wa: 0.0381
 model_params:
-- T_s
-- q_s
-- k
-- h_a
-- h_w
+  - T_s
+  - q_s
+  - k
+  - h_a
+  - h_w
 fixed_params:
-- k
-- h_w
+  - k
+  - h_w
 initial_values:
   T_s: 95
   q_s: 0
@@ -24,20 +24,20 @@ initial_values:
   h_w: 0
 model_bounds:
   T_s:
-  - -inf
-  - inf
+    - -inf
+    - inf
   q_s:
-  - -inf
-  - inf
+    - -inf
+    - inf
   k:
-  - 350
-  - 450
+    - 350
+    - 450
   h_a:
-  - -inf
-  - inf
+    - -inf
+    - inf
   h_w:
-  - -inf
-  - inf
+    - -inf
+    - inf
 project_paths:
   dev_requirements: .tools/requirements
   config: config
