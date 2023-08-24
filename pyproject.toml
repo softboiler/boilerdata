@@ -33,7 +33,6 @@ dependencies = [
     "pydantic>=1.10.12,<2",
     "pyjanitor>=0.25.0",
     "pyXSteam>=0.4.9",
-    "ruamel.yaml>=0.17.32",
     "scipy>=1.11.1",
     "seaborn>=0.12.2",
     "sympy>=1.12",
