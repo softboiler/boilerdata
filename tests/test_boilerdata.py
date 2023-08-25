@@ -1,11 +1,10 @@
 """Tests."""
 
-import importlib
-from pathlib import Path
+from importlib import import_module
 
 import pytest
 
-from tests import NOTEBOOK_STAGES
+from tests import NOTEBOOK_STAGES, STAGES
 
 
 @pytest.mark.usefixtures("tmp_project")
@@ -33,17 +32,10 @@ def test_syms(group_name: str):
 
 
 @pytest.mark.usefixtures("tmp_project")
-@pytest.mark.parametrize(
-    "stage",
-    [
-        stage.stem
-        for stage in Path("src/boilerdata/stages").glob("[!__]*.py")
-        if stage.stem not in {"common", "literature", "modelfun", "originlab"}
-    ],
-)
+@pytest.mark.parametrize("stage", STAGES)
 def test_stages(stage: str):
     """Test that stages can run."""
-    importlib.import_module(f"boilerdata.stages.{stage}").main()
+    import_module(stage).main()
 
 
 @pytest.mark.slow()
@@ -54,4 +46,4 @@ def test_stages(stage: str):
 )
 def test_nb_stages(stage: str):
     """Test that notebook pipeline stages can run."""
-    importlib.import_module(stage)
+    import_module(stage)

@@ -1,12 +1,14 @@
 """Test configuration."""
 
+# pyright: reportPrivateUsage=false
+
 from pathlib import Path
 from shutil import copy, copytree
-from sys import path
 
 import pytest
+from boilercore.testing import make_tmp_project_with_nb_stages
 
-from tests import NOTEBOOK_STAGES, get_nb_content
+from tests import NOTEBOOK_STAGES
 
 TEST_DATA = Path("tests/data")
 
@@ -34,11 +36,6 @@ def tmp_project(monkeypatch, tmp_path: Path) -> Path:
     return tmp_path
 
 
-@pytest.fixture()
-def _tmp_project_with_nb_stages(tmp_project: Path):
-    """Enable importing of notebook stages like `importlib.import_module("stage")`."""
-    path.insert(0, str(tmp_project))  # For importing tmp_project stages in tests
-    for nb in NOTEBOOK_STAGES:
-        (tmp_project / nb.with_suffix(".py").name).write_text(
-            encoding="utf-8", data=get_nb_content(nb)
-        )
+_tmp_project_with_nb_stages = pytest.fixture(
+    make_tmp_project_with_nb_stages(NOTEBOOK_STAGES)
+)
