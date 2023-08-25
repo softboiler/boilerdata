@@ -59,6 +59,7 @@ ignore_unused = [
     "dvc",             # For experiment orchestration
     "ploomber-engine", # For experiment orchestration
     "pyjanitor",       # May use in experiments
+    "nbqa",            # Will eventually use in reproducing notebooks
     "numba",           # Pin numba until it supports numpy>=1.25
     "pandas-stubs",    # Provides stubs for pandas
     "pyarrow",         # boilerdata.init: pd.set_option( <...> "pyarrow")
