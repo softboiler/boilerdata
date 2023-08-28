@@ -222,6 +222,12 @@
       "description": "Directories relevant to the project.",
       "type": "object",
       "properties": {
+        "project": {
+          "title": "Project",
+          "default": ".",
+          "format": "directory-path",
+          "type": "string"
+        },
         "dev_requirements": {
           "title": "Dev Requirements",
           "default": ".tools/requirements",
@@ -232,6 +238,18 @@
           "title": "Config",
           "default": "config",
           "format": "directory-path",
+          "type": "string"
+        },
+        "axes_config": {
+          "title": "Axes Config",
+          "default": "config/axes.yaml",
+          "format": "file-path",
+          "type": "string"
+        },
+        "trials_config": {
+          "title": "Trials Config",
+          "default": "config/trials.yaml",
+          "format": "file-path",
           "type": "string"
         },
         "package": {
@@ -331,6 +349,18 @@
       "description": "Directories relevant to the project.",
       "type": "object",
       "properties": {
+        "project": {
+          "title": "Project",
+          "default": ".",
+          "format": "directory-path",
+          "type": "string"
+        },
+        "package": {
+          "title": "Package",
+          "default": "src/boilerdata",
+          "format": "directory-path",
+          "type": "string"
+        },
         "file_proj": {
           "title": "File Proj",
           "default": "params.yaml",
@@ -348,6 +378,18 @@
           "default": "data/axes",
           "format": "directory-path",
           "type": "string"
+        },
+        "axes_enum": {
+          "title": "Axes Enum",
+          "default": "src/boilerdata/axes_enum.py",
+          "type": "string",
+          "format": "path"
+        },
+        "axes_enum_copy": {
+          "title": "Axes Enum Copy",
+          "default": "data/axes/axes_enum.py",
+          "type": "string",
+          "format": "path"
         },
         "file_originlab_coldes": {
           "title": "File Originlab Coldes",

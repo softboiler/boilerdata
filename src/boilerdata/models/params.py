@@ -1,3 +1,5 @@
+"""Project parameters."""
+
 from typing import Literal, TypeAlias
 
 import numpy as np
@@ -6,12 +8,11 @@ from boilercore.models import SynchronizedPathsYamlModel
 from boilercore.types import FitMethod
 from pydantic import Extra, Field, validator
 
-from boilerdata import AXES_CONFIG, PARAMS_FILE, TRIAL_CONFIG
 from boilerdata.axes_enum import AxesEnum as A  # noqa: N814
 from boilerdata.models import default_opt
 from boilerdata.models.axes import Axes
 from boilerdata.models.geometry import Geometry
-from boilerdata.models.paths import Paths, ProjectPaths
+from boilerdata.models.paths import PARAMS_FILE, Paths, ProjectPaths
 from boilerdata.models.trials import Trial, Trials
 
 Bound: TypeAlias = float | Literal["-inf", "inf"]
@@ -135,8 +136,8 @@ class Params(SynchronizedPathsYamlModel, extra=Extra.allow):
 
     def __init__(self):
         super().__init__(PARAMS_FILE)
-        self.axes = Axes(AXES_CONFIG)
-        self.trials = Trials(TRIAL_CONFIG).trials
+        self.axes = Axes(self.project_paths.axes_config)
+        self.trials = Trials(self.project_paths.trials_config).trials
         self.free_params = [p for p in self.model_params if p not in self.fixed_params]
         self.free_errors = self.get_model_errors(self.free_params)
         self.model_errors = self.get_model_errors(self.model_params)

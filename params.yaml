@@ -39,8 +39,11 @@ model_bounds:
     - -inf
     - inf
 project_paths:
+  project: .
   dev_requirements: .tools/requirements
   config: config
+  axes_config: config/axes.yaml
+  trials_config: config/trials.yaml
   package: src/boilerdata
   stages: src/boilerdata/stages
   models: src/boilerdata/models
@@ -57,9 +60,13 @@ project_paths:
   stage_pipeline: src/boilerdata/stages/pipeline.py
   stage_runs: src/boilerdata/stages/runs.py
 paths:
+  project: .
+  package: src/boilerdata
   file_proj: params.yaml
   data: data
   axes: data/axes
+  axes_enum: src/boilerdata/axes_enum.py
+  axes_enum_copy: data/axes/axes_enum.py
   file_originlab_coldes: data/axes/originlab_coldes.txt
   project_schema: data/schema
   literature: data/literature

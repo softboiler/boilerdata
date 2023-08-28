@@ -1,23 +1,35 @@
+"""Project paths."""
+
 from pathlib import Path
 
 from boilercore.models import CreatePathsModel
 from pydantic import DirectoryPath, FilePath
 
-from boilerdata import DATA_DIR, PARAMS_FILE, PROJECT_CONFIG, PROJECT_DIR
+from boilerdata import PACKAGE_DIR
+
+PROJECT_DIR = Path.cwd()
+"""Base directory for the project."""
+PARAMS_FILE = PROJECT_DIR / "params.yaml"
+"""Path to the project parameters file."""
 
 
 class ProjectPaths(CreatePathsModel):
     """Directories relevant to the project."""
 
+    # ! PROJECT
+    project: DirectoryPath = PROJECT_DIR
+
     # ! REQUIREMENTS
-    dev_requirements: DirectoryPath = PROJECT_DIR / ".tools/requirements"
+    dev_requirements: DirectoryPath = project / ".tools/requirements"
 
     # ! CONFIG
     # Careful, "Config" is a special member of BaseClass
-    config: DirectoryPath = PROJECT_CONFIG
+    config: DirectoryPath = project / "config"
+    axes_config: FilePath = config / "axes.yaml"
+    trials_config: FilePath = config / "trials.yaml"
 
     # ! PACKAGE
-    package: DirectoryPath = PROJECT_DIR / "src/boilerdata"
+    package: DirectoryPath = PACKAGE_DIR
     stages: DirectoryPath = package / "stages"
     models: DirectoryPath = package / "models"
     validation: FilePath = package / "validation.py"
@@ -41,14 +53,22 @@ class ProjectPaths(CreatePathsModel):
 class Paths(CreatePathsModel):
     """Directories relevant to the project."""
 
+    # ! PROJECT
+    project: DirectoryPath = PROJECT_DIR
+
+    # ! PACKAGE
+    package: DirectoryPath = PACKAGE_DIR
+
     # ! PROJECT FILE
     file_proj: FilePath = PARAMS_FILE
 
     # ! DATA
-    data: DirectoryPath = DATA_DIR
+    data: DirectoryPath = project / "data"
 
     # ! AXES
     axes: DirectoryPath = data / "axes"
+    axes_enum: Path = package / "axes_enum.py"
+    axes_enum_copy: Path = axes / "axes_enum.py"
     file_originlab_coldes: Path = axes / "originlab_coldes.txt"
 
     # ! SCHEMA

@@ -1,0 +1,6 @@
+{
+  "T_s_err": { "med": 0.0, "max": 0.0 },
+  "q_s_err": { "med": 0.0, "max": 0.0 },
+  "h_a_err": { "med": 0.0, "max": 0.0 },
+  "fit_failure_rate": 0.0
+}

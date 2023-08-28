@@ -7,7 +7,6 @@ import pytest
 from tests import NOTEBOOK_STAGES, STAGES
 
 
-@pytest.mark.usefixtures("tmp_project")
 @pytest.mark.parametrize(
     "group_name",
     [
@@ -31,15 +30,13 @@ def test_syms(group_name: str):
     assert all(var == sym.name for var, sym in symvars.items())
 
 
-@pytest.mark.usefixtures("tmp_project")
 @pytest.mark.parametrize("stage", STAGES)
-def test_stages(stage: str):
+def test_stages(stage: str, monkeypatch: pytest.MonkeyPatch):
     """Test that stages can run."""
     import_module(stage).main()
 
 
 @pytest.mark.slow()
-@pytest.mark.usefixtures("_tmp_project_with_nb_stages")
 @pytest.mark.parametrize(
     "stage",
     [stage.stem for stage in NOTEBOOK_STAGES],
