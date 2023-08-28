@@ -1,7 +1,5 @@
 """Test configuration."""
 
-# pyright: reportPrivateUsage=false
-
 from pathlib import Path
 from shutil import copy, copytree
 
