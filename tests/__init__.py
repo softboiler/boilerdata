@@ -1,11 +1,10 @@
 """Helper functions for tests."""
 
-
 from pathlib import Path
 from typing import Any
 
 import pytest
-from boilercore.testing import get_module_rel, walk_module_paths, walk_modules
+from boilercore.paths import get_module_rel, walk_module_paths, walk_modules
 
 BOILERDATA = Path("src") / "boilerdata"
 STAGES_DIR = BOILERDATA / "stages"
@@ -17,7 +16,7 @@ for module in walk_modules(STAGES_DIR, BOILERDATA):
             module, id=rel, marks=[pytest.mark.skip] if rel in {"originlab"} else []
         )
     )
-NOTEBOOK_STAGES: list[Any] = [
+NOTEBOOK_STAGES = [
     pytest.param(path, id=str(path.relative_to(STAGES_DIR)))
     for path in walk_module_paths(STAGES_DIR, BOILERDATA, suffix=".ipynb")
 ]

@@ -13,7 +13,7 @@ from boilerdata.axes_enum import AxesEnum as A  # noqa: N814
 from boilerdata.models import CWD
 from boilerdata.models.axes import Axes
 from boilerdata.models.geometry import Geometry
-from boilerdata.models.paths import Paths, ProjectPaths
+from boilerdata.models.paths import Paths
 from boilerdata.models.trials import Trial, Trials
 
 Bound: TypeAlias = float | Literal["-inf", "inf"]
@@ -125,13 +125,12 @@ class Params(SynchronizedPathsYamlModel, extra=Extra.allow):
     )
 
     geometry: Geometry = Field(default_factory=Geometry)
-    project_paths: ProjectPaths = Field(default_factory=ProjectPaths)
     paths: Paths = Field(default_factory=Paths)
 
     def __init__(self, data_file: Path = CWD / "params.yaml", **kwargs):
         super().__init__(data_file, **kwargs)
-        self.axes = Axes(self.project_paths.axes_config)
-        self.trials = Trials(self.project_paths.trials_config).trials
+        self.axes = Axes(self.paths.axes_config)
+        self.trials = Trials(self.paths.trials_config).trials
         self.free_params = [p for p in self.model_params if p not in self.fixed_params]
         self.free_errors = self.get_model_errors(self.free_params)
         self.model_errors = self.get_model_errors(self.model_params)

@@ -38,51 +38,47 @@ model_bounds:
   h_w:
     - -inf
     - inf
-project_paths:
+paths:
   project: .
   package: src/boilerdata
-  stages: src/boilerdata/stages
+  axes_enum: src/boilerdata/axes_enum.py
   models: src/boilerdata/models
+  stages:
+    axes: src/boilerdata/stages/axes.py
+    literature: src/boilerdata/stages/literature.py
+    metrics: src/boilerdata/stages/metrics.ipynb
+    modelfun: src/boilerdata/stages/modelfun.ipynb
+    originlab: src/boilerdata/stages/originlab.py
+    parse_benchmarks: src/boilerdata/stages/parse_benchmarks.py
+    pipeline: src/boilerdata/stages/pipeline.py
+    runs: src/boilerdata/stages/runs.py
   validation: src/boilerdata/validation.py
   data: data
-  propshop: data/propshop
   config: data/config
   axes_config: data/config/axes.yaml
   trials_config: data/config/trials.yaml
   plot_config: data/config/plotting
   mpl_base: data/config/plotting/base.mplstyle
   mpl_hide_title: data/config/plotting/hide_title.mplstyle
-  stage_axes: src/boilerdata/stages/axes.py
-  stage_parse_benchmarks: src/boilerdata/stages/parse_benchmarks.py
-  stage_literature: src/boilerdata/stages/literature.py
-  stage_metrics: src/boilerdata/stages/metrics.ipynb
-  stage_modelfun: src/boilerdata/stages/modelfun.ipynb
-  stage_originlab: src/boilerdata/stages/originlab.py
-  stage_pipeline: src/boilerdata/stages/pipeline.py
-  stage_runs: src/boilerdata/stages/runs.py
-paths:
-  project: .
-  package: src/boilerdata
-  data: data
+  propshop: data/propshop
+  benchmarks: data/benchmarks
+  plotter: data/plotter
+  file_plotter: data/plotter/results.opju
   axes: data/axes
-  axes_enum: src/boilerdata/axes_enum.py
   axes_enum_copy: data/axes/axes_enum.py
   file_originlab_coldes: data/axes/originlab_coldes.txt
+  trials: data/curves
   literature: data/literature
+  benchmarks_parsed: data/benchmarks_parsed
+  file_benchmarks_parsed: data/benchmarks_parsed/benchmarks_parsed.csv
   literature_results: data/literature_results
   file_literature_results: data/literature_results/lit.csv
   modelfun: data/modelfun
   file_model: data/modelfun/model.dillpickle
-  trials: data/curves
-  benchmarks: data/benchmarks
-  runs: data/runs
-  file_runs: data/runs/runs.csv
-  benchmarks_parsed: data/benchmarks_parsed
-  file_benchmarks_parsed: data/benchmarks_parsed/benchmarks_parsed.csv
-  results: data/results
-  file_results: data/results/results.csv
-  plotter: data/plotter
-  file_plotter: data/plotter/results.opju
+  originlab_plots: data/originlab_plots
+  originlab_plot_files:
+    lit: data/originlab_plots/lit.png
+    low: data/originlab_plots/low.png
   originlab_results: data/originlab_results
   file_originlab_results: data/originlab_results/originlab_results.csv
   plots: data/plots
@@ -92,9 +88,9 @@ paths:
   plot_error_T_s: data/plots/error_T_s.png
   plot_error_q_s: data/plots/error_q_s.png
   plot_error_h_a: data/plots/error_h_a.png
-  originlab_plots: data/originlab_plots
-  originlab_plot_files:
-    lit: data/originlab_plots/lit.png
-    low: data/originlab_plots/low.png
+  results: data/results
+  file_results: data/results/results.csv
+  runs: data/runs
+  file_runs: data/runs/runs.csv
   tables: data/tables
   file_pipeline_metrics: data/tables/pipeline_metrics.json

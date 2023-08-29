@@ -29,8 +29,8 @@ stages:
       nfiles: 2
     - path: src/boilerdata/stages/modelfun.ipynb
       hash: md5
-      md5: 2a39b931abd86df5e726c67df65a3471
-      size: 11087
+      md5: 3b2c10cf686689053bd0dd9c9fd10e6c
+      size: 10706
     params:
       params.yaml:
         fixed_params:
@@ -51,11 +51,11 @@ stages:
     outs:
     - path: data/modelfun
       hash: md5
-      md5: 18065495146bb11cf390b0b8c3592d05.dir
+      md5: 7ed14993cc6cdc547e780457cafe5d6b.dir
       size: 60115
       nfiles: 1
   runs:
-    cmd: python -m boilerdata.stages.runs
+    cmd: python src/boilerdata/stages/runs.py
     deps:
     - path: data/axes
       hash: md5
@@ -69,8 +69,8 @@ stages:
       nfiles: 401
     - path: src/boilerdata/stages/runs.py
       hash: md5
-      md5: c3ab17de53ba5f4a371487215b2ffe57
-      size: 1701
+      md5: d544e5f5ab234390942e6c11568a8056
+      size: 1328
     params:
       params.yaml:
         records_to_average: 9
@@ -81,7 +81,7 @@ stages:
       size: 1002736
       nfiles: 1
   pipeline:
-    cmd: python -m boilerdata.stages.pipeline
+    cmd: python src/boilerdata/stages/pipeline.py
     deps:
     - path: data/benchmarks_parsed
       hash: md5
@@ -90,7 +90,7 @@ stages:
       nfiles: 1
     - path: data/modelfun
       hash: md5
-      md5: 18065495146bb11cf390b0b8c3592d05.dir
+      md5: 7ed14993cc6cdc547e780457cafe5d6b.dir
       size: 60115
       nfiles: 1
     - path: data/runs
@@ -100,8 +100,8 @@ stages:
       nfiles: 1
     - path: src/boilerdata/stages/pipeline.py
       hash: md5
-      md5: 424226bee7ef4d3698416b6888687e3d
-      size: 6744
+      md5: a085216ae5038ebaab83a5131b8715b5
+      size: 6405
     - path: src/boilerdata/validation.py
       hash: md5
       md5: 7a3f3a96cd21288bc6ed6332765244de
@@ -147,42 +147,42 @@ stages:
       nfiles: 1
     - path: src/boilerdata/stages/metrics.ipynb
       hash: md5
-      md5: cdfac0be8e69ebd6b3f3373bac728212
-      size: 7504
+      md5: bc9716548c5bfd9e21e506451b916a95
+      size: 7291
     params:
       params.yaml:
         do_plot: true
     outs:
-    - path: data/metrics/plots/error_T_s.png
+    - path: data/plots/error_T_s.png
       hash: md5
       md5: 770a235b7ffca10bc71d8fc5e5cfa7ca
       size: 125605
-    - path: data/metrics/plots/error_h_a.png
+    - path: data/plots/error_h_a.png
       hash: md5
       md5: ae889a01f63fb2f2fcb47f7245607315
       size: 206579
-    - path: data/metrics/plots/error_q_s.png
+    - path: data/plots/error_q_s.png
       hash: md5
       md5: 68bc0e1b108f183129bbedb0cb416d69
       size: 175942
-    - path: data/metrics/plots/new_fit_0.png
+    - path: data/plots/new_fit_0.png
       hash: md5
       md5: 5e6067f396efc35e7fd7ca22b484f108
       size: 119322
-    - path: data/metrics/plots/new_fit_1.png
+    - path: data/plots/new_fit_1.png
       hash: md5
       md5: e9698e1483bc90f56ed69fc4b5498fc0
       size: 113970
-    - path: data/metrics/plots/new_fit_2.png
+    - path: data/plots/new_fit_2.png
       hash: md5
       md5: af49877b1a50b9b89c7e73fcada72684
       size: 125344
-    - path: data/metrics/tables/pipeline_metrics.json
+    - path: data/tables/pipeline_metrics.json
       hash: md5
       md5: 1aa224e207ef9602b1fa51fe360d52c2
       size: 207
   literature:
-    cmd: python -m boilerdata.stages.literature
+    cmd: python src/boilerdata/stages/literature.py
     deps:
     - path: data/literature
       hash: md5
@@ -191,13 +191,13 @@ stages:
       nfiles: 9
     - path: src/boilerdata/models
       hash: md5
-      md5: e3d177072869b98f2b3c2ace54dde501.dir
-      size: 21575
+      md5: c789083f957f9a61aea557b13b911767.dir
+      size: 20248
       nfiles: 7
     - path: src/boilerdata/stages/literature.py
       hash: md5
-      md5: 4ccb001a11f740873988f6333f90976d
-      size: 3322
+      md5: 86e4b73c519cc31d29abf070c4a8515f
+      size: 3007
     outs:
     - path: data/literature_results
       hash: md5
@@ -205,26 +205,21 @@ stages:
       size: 27127
       nfiles: 1
   axes:
-    cmd: python -m boilerdata.stages.axes
+    cmd: python src/boilerdata/stages/axes.py
     deps:
-    - path: .tools/requirements
-      hash: md5
-      md5: ac786a895338948652f68140d7c13530.dir
-      size: 4095
-      nfiles: 7
-    - path: config/axes.yaml
+    - path: data/config/axes.yaml
       hash: md5
       md5: efacd631554ec35115676fc39e0da8dd
       size: 2322
     - path: src/boilerdata/models
       hash: md5
-      md5: e3d177072869b98f2b3c2ace54dde501.dir
-      size: 21575
+      md5: c789083f957f9a61aea557b13b911767.dir
+      size: 20248
       nfiles: 7
     - path: src/boilerdata/stages/axes.py
       hash: md5
-      md5: bb1a658ca0dc7b80fc69f4f5097b6e1e
-      size: 1003
+      md5: d2f49bc8e2f79e4c19713374a941110c
+      size: 936
     outs:
     - path: data/axes
       hash: md5
@@ -232,7 +227,7 @@ stages:
       size: 958
       nfiles: 2
   originlab:
-    cmd: python -m boilerdata.stages.originlab
+    cmd: python src/boilerdata/stages/originlab.py
     deps:
     - path: data/literature_results
       hash: md5
@@ -251,16 +246,16 @@ stages:
       nfiles: 1
     - path: src/boilerdata/stages/originlab.py
       hash: md5
-      md5: e78471d154eebcb9f00cf138ba23fcab
-      size: 2953
+      md5: c72b2603b1eca321c2116845861a67b2
+      size: 2987
     outs:
-    - path: data/metrics/originlab_plots/lit.png
+    - path: data/originlab_plots/lit.png
       hash: md5
-      md5: 3d6712a24f2265cdd1268449161809c4
+      md5: d89f59a83a3aa4090922a02992e4cef5
       size: 141883
-    - path: data/metrics/originlab_plots/low.png
+    - path: data/originlab_plots/low.png
       hash: md5
-      md5: e087f473f10f126d23536baa60b9e99d
+      md5: e34e2937e52ac4f00fe96896ef2b7fd0
       size: 131899
     - path: data/originlab_results
       hash: md5
@@ -298,7 +293,7 @@ stages:
       size: 1009565
       nfiles: 1
   parse_benchmarks:
-    cmd: python -m boilerdata.stages.parse_benchmarks
+    cmd: python src/boilerdata/stages/parse_benchmarks.py
     deps:
     - path: data/axes
       hash: md5
@@ -312,8 +307,8 @@ stages:
       nfiles: 2
     - path: src/boilerdata/stages/parse_benchmarks.py
       hash: md5
-      md5: 747bdfd4683140f929b8c409596fecba
-      size: 1357
+      md5: 9b66987bcdd6ad6cfa4cba4737cb9166
+      size: 1188
     outs:
     - path: data/benchmarks_parsed
       hash: md5

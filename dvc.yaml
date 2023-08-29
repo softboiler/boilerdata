@@ -1,17 +1,17 @@
 stages:
   axes:
-    cmd: "python -m boilerdata.stages.axes"
+    cmd: "python ${paths.stages.axes}"
     deps:
-      - "${project_paths.stage_axes}"
-      - "${project_paths.config}/axes.yaml"
-      - "${project_paths.models}"
+      - "${paths.stages.axes}"
+      - "${paths.config}/axes.yaml"
+      - "${paths.models}"
     outs:
       - "${paths.axes}"
 
   modelfun:
-    cmd: "ploomber-engine ${project_paths.stage_modelfun} NUL"
+    cmd: "ploomber-engine ${paths.stages.modelfun} NUL"
     deps:
-      - "${project_paths.stage_modelfun}"
+      - "${paths.stages.modelfun}"
       - "${paths.axes}"
     outs:
       - "${paths.modelfun}"
@@ -21,9 +21,9 @@ stages:
       - "fixed_params"
 
   runs:
-    cmd: "python -m boilerdata.stages.runs"
+    cmd: "python ${paths.stages.runs}"
     deps:
-      - "${project_paths.stage_runs}"
+      - "${paths.stages.runs}"
       - "${paths.axes}"
       - "${paths.trials}"
     outs:
@@ -32,22 +32,22 @@ stages:
       - "records_to_average"
 
   parse_benchmarks:
-    cmd: "python -m boilerdata.stages.parse_benchmarks"
+    cmd: "python ${paths.stages.parse_benchmarks}"
     deps:
-      - "${project_paths.stage_parse_benchmarks}"
+      - "${paths.stages.parse_benchmarks}"
       - "${paths.axes}"
       - "${paths.benchmarks}"
     outs:
       - "${paths.benchmarks_parsed}"
 
   pipeline:
-    cmd: "python -m boilerdata.stages.pipeline"
+    cmd: "python ${paths.stages.pipeline}"
     deps:
-      - "${project_paths.stage_pipeline}"
+      - "${paths.stages.pipeline}"
       - "${paths.modelfun}"
       - "${paths.runs}"
       - "${paths.benchmarks_parsed}"
-      - "${project_paths.validation}"
+      - "${paths.validation}"
     outs:
       - "${paths.results}"
     params:
@@ -56,9 +56,9 @@ stages:
       - "model_bounds"
 
   metrics:
-    cmd: "ploomber-engine ${project_paths.stage_metrics} NUL"
+    cmd: "ploomber-engine ${paths.stages.metrics} NUL"
     deps:
-      - "${project_paths.stage_metrics}"
+      - "${paths.stages.metrics}"
       - "${paths.results}"
     metrics:
       - "${paths.file_pipeline_metrics}"
@@ -73,18 +73,18 @@ stages:
       - "do_plot"
 
   literature:
-    cmd: "python -m boilerdata.stages.literature"
+    cmd: "python ${paths.stages.literature}"
     deps:
-      - "${project_paths.stage_literature}"
+      - "${paths.stages.literature}"
       - "${paths.literature}"
-      - "${project_paths.models}"
+      - "${paths.models}"
     outs:
       - "${paths.literature_results}"
 
   originlab:
-    cmd: "python -m boilerdata.stages.originlab"
+    cmd: "python ${paths.stages.originlab}"
     deps:
-      - "${project_paths.stage_originlab}"
+      - "${paths.stages.originlab}"
       - "${paths.results}"
       - "${paths.literature_results}"
       - "${paths.plotter}"
