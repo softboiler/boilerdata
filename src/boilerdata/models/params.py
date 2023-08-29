@@ -1,5 +1,6 @@
 """Project parameters."""
 
+from pathlib import Path
 from typing import Literal, TypeAlias
 
 import numpy as np
@@ -9,10 +10,10 @@ from boilercore.types import FitMethod
 from pydantic import Extra, Field, validator
 
 from boilerdata.axes_enum import AxesEnum as A  # noqa: N814
-from boilerdata.models import default_opt
+from boilerdata.models import CWD
 from boilerdata.models.axes import Axes
 from boilerdata.models.geometry import Geometry
-from boilerdata.models.paths import PARAMS_FILE, Paths, ProjectPaths
+from boilerdata.models.paths import Paths, ProjectPaths
 from boilerdata.models.trials import Trial, Trials
 
 Bound: TypeAlias = float | Literal["-inf", "inf"]
@@ -22,26 +23,24 @@ class Params(SynchronizedPathsYamlModel, extra=Extra.allow):
     """The global project configuration."""
 
     records_to_average: int = Field(
-        default=default_opt(5),
+        default=5,
         description="The number of records over which to average in a given trial.",
     )
 
-    fit_method: FitMethod = Field(default=default_opt("trf", optional=False))
+    fit_method: FitMethod = Field(default="trf")
 
     model_params: list[str] = Field(
-        default=default_opt([A.T_s, A.q_s, A.k, A.h_a, A.h_w]),
+        default=[A.T_s, A.q_s, A.k, A.h_a, A.h_w],
         description="Parameters that can vary in the model. Some will be fixed.",
     )
 
     model_inputs: dict[str, float] = Field(
-        default=default_opt(
-            dict(
-                r=0.0047625,  # (m)
-                T_infa=25.0,  # (C)
-                T_infw=100.0,  # (C)
-                x_s=0,  # (m)
-                x_wa=0.0381,  # (m)
-            )
+        default=dict(
+            r=0.0047625,  # (m)
+            T_infa=25.0,  # (C)
+            T_infw=100.0,  # (C)
+            x_s=0,  # (m)
+            x_wa=0.0381,  # (m)
         ),
         description="Inputs to the symbolic model float evaluation stage.",
     )
@@ -49,15 +48,13 @@ class Params(SynchronizedPathsYamlModel, extra=Extra.allow):
     # ! MODEL BOUNDS
 
     model_bounds: dict[str, tuple[Bound, Bound]] = Field(
-        default=default_opt(
-            {
-                A.T_s: (95, "inf"),  # (C) T_s
-                A.q_s: (0, "inf"),  # (W/m^2) q_s
-                A.k: (350, 450),  # (W/m-K) k
-                A.h_a: (0, "inf"),  # (W/m^2-K) h_a
-                A.h_w: (0, "inf"),  # (W/m^2-K) h_w
-            }
-        ),
+        default={
+            A.T_s: (95, "inf"),  # (C) T_s
+            A.q_s: (0, "inf"),  # (W/m^2) q_s
+            A.k: (350, 450),  # (W/m-K) k
+            A.h_a: (0, "inf"),  # (W/m^2-K) h_a
+            A.h_w: (0, "inf"),  # (W/m^2-K) h_w
+        },
         description="Bounds for the model parameters. Not used if parameter is fixed.",
     )
 
@@ -73,7 +70,7 @@ class Params(SynchronizedPathsYamlModel, extra=Extra.allow):
     # ! FIXED PARAMS
 
     fixed_params: list[str] = Field(
-        default=default_opt([A.k, A.h_w]),
+        default=[A.k, A.h_w],
         description="Parameters to fix. Evaluated before fitting, overridable in code.",
     )
 
@@ -87,15 +84,13 @@ class Params(SynchronizedPathsYamlModel, extra=Extra.allow):
     # ! INITIAL VALUES
 
     initial_values: dict[str, float] = Field(
-        default=default_opt(
-            {
-                A.T_s: 95,  # (C) T_s
-                A.q_s: 0,  # (W/m^2) q_s
-                A.k: 400,  # (W/m-K) k
-                A.h_a: 0,  # (W/m^2-K) h_a
-                A.h_w: 0,  # (W/m^2-K) h_w
-            }
-        ),
+        default={
+            A.T_s: 95,  # (C) T_s
+            A.q_s: 0,  # (W/m^2) q_s
+            A.k: 400,  # (W/m-K) k
+            A.h_a: 0,  # (W/m^2-K) h_a
+            A.h_w: 0,  # (W/m^2-K) h_w
+        },
         description="Initial guess for free parameters, constant value otherwise.",
     )
 
@@ -124,18 +119,17 @@ class Params(SynchronizedPathsYamlModel, extra=Extra.allow):
     )
 
     # ! PLOTTING
-
     do_plot: bool = Field(
-        default=default_opt(False),
+        default=False,
         description="Whether to plot the fits of the individual runs.",
     )
 
     geometry: Geometry = Field(default_factory=Geometry)
-    project_paths: ProjectPaths = Field(default_factory=Paths)
+    project_paths: ProjectPaths = Field(default_factory=ProjectPaths)
     paths: Paths = Field(default_factory=Paths)
 
-    def __init__(self):
-        super().__init__(PARAMS_FILE)
+    def __init__(self, data_file: Path = CWD / "params.yaml", **kwargs):
+        super().__init__(data_file, **kwargs)
         self.axes = Axes(self.project_paths.axes_config)
         self.trials = Trials(self.project_paths.trials_config).trials
         self.free_params = [p for p in self.model_params if p not in self.fixed_params]
@@ -163,4 +157,3 @@ class Params(SynchronizedPathsYamlModel, extra=Extra.allow):
 
 
 PARAMS = Params()
-"""All project parameters, including paths."""

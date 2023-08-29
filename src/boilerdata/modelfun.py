@@ -7,13 +7,10 @@ from typing import Any
 import dill
 import numpy as np
 
-from boilerdata.models.params import PARAMS
 
-
-def get_model():
+def get_model(model: Path):
     """Unpickle the model function for fitting data."""
-    model_file = PARAMS.paths.file_model
-    file_bytes = Path(model_file).read_bytes()
+    file_bytes = Path(model).read_bytes()
     with warnings.catch_warnings():
         warnings.simplefilter("ignore", dill.UnpicklingWarning)
         unpickled_model = dill.loads(file_bytes)
@@ -39,6 +36,3 @@ def fix_model(f) -> Callable[..., Any]:
         return result if result.size > 1 else result.item()
 
     return wrapper
-
-
-MODEL, MODEL_WITH_UNCERTAINTY = get_model()

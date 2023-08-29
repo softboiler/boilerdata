@@ -46,20 +46,12 @@ def main():
     df.to_csv(PARAMS.paths.file_literature_results, index=False)
 
 
-# * -------------------------------------------------------------------------------- * #
-# * UTILS
-
-
 def get_dirs_sorted(path: Path) -> list[Path]:
     return [
         path
         for path in sorted(path.iterdir())
         if path.is_dir() and "." not in path.name
     ]
-
-
-# * -------------------------------------------------------------------------------- * #
-# * WEB PLOT DIGITIZER
 
 
 def get_data(file: str | Path) -> pd.DataFrame:
@@ -91,8 +83,6 @@ def get_df(data: dict[str, Any]) -> pd.DataFrame:
         list_of_dfs += [df]
     return pd.concat(list_of_dfs, ignore_index=True)
 
-
-# * -------------------------------------------------------------------------------- * #
 
 if __name__ == "__main__":
     main()

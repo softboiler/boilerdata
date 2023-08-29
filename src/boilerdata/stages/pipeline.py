@@ -10,16 +10,12 @@ from scipy.stats import t
 from boilerdata.axes_enum import AxesEnum as A  # noqa: N814
 from boilerdata.models.params import PARAMS, Params
 from boilerdata.models.trials import Trial
-from boilerdata.stages import get_tcs, get_trial, per_run, per_trial
-from boilerdata.stages.modelfun import MODEL
+from boilerdata.stages import MODEL, get_tcs, get_trial, per_run, per_trial
 from boilerdata.validation import (
     handle_invalid_data,
     validate_final_df,
     validate_initial_df,
 )
-
-# * -------------------------------------------------------------------------------- * #
-# * MAIN
 
 
 def main():
@@ -41,10 +37,6 @@ def main():
         .pipe(validate_final_df)
         .to_csv(PARAMS.paths.file_results, encoding="utf-8")
     )
-
-
-# * -------------------------------------------------------------------------------- * #
-# * STAGES
 
 
 def get_properties(df: pd.DataFrame, params: Params) -> pd.DataFrame:
@@ -196,8 +188,6 @@ def assign_metadata(grp: pd.DataFrame, params: Params) -> pd.DataFrame:
     )
     return grp
 
-
-# * -------------------------------------------------------------------------------- * #
 
 if __name__ == "__main__":
     main()

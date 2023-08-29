@@ -3,3 +3,4 @@
 !.gitignore
 !.dvcignore
 !*.dvc
+!config

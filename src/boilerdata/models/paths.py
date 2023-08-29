@@ -5,34 +5,33 @@ from pathlib import Path
 from boilercore.models import CreatePathsModel
 from pydantic import DirectoryPath, FilePath
 
-from boilerdata import PACKAGE_DIR
-
-PROJECT_DIR = Path.cwd()
-"""Base directory for the project."""
-PARAMS_FILE = PROJECT_DIR / "params.yaml"
-"""Path to the project parameters file."""
+import boilerdata
+from boilerdata.models import CWD
 
 
 class ProjectPaths(CreatePathsModel):
     """Directories relevant to the project."""
 
     # ! PROJECT
-    project: DirectoryPath = PROJECT_DIR
-
-    # ! REQUIREMENTS
-    dev_requirements: DirectoryPath = project / ".tools/requirements"
-
-    # ! CONFIG
-    # Careful, "Config" is a special member of BaseClass
-    config: DirectoryPath = project / "config"
-    axes_config: FilePath = config / "axes.yaml"
-    trials_config: FilePath = config / "trials.yaml"
+    project: DirectoryPath = CWD
 
     # ! PACKAGE
-    package: DirectoryPath = PACKAGE_DIR
+    package: DirectoryPath = Path(next(iter(boilerdata.__path__)))
     stages: DirectoryPath = package / "stages"
     models: DirectoryPath = package / "models"
     validation: FilePath = package / "validation.py"
+
+    # ! DATA
+    data: DirectoryPath = project / "data"
+
+    # ! PROPERTIES
+    propshop: DirectoryPath = data / "propshop"
+
+    # ! CONFIG
+    # Careful, "Config" is a special member of BaseClass
+    config: DirectoryPath = data / "config"
+    axes_config: FilePath = config / "axes.yaml"
+    trials_config: FilePath = config / "trials.yaml"
 
     # ! PLOT CONFIG
     plot_config: DirectoryPath = config / "plotting"
@@ -54,13 +53,10 @@ class Paths(CreatePathsModel):
     """Directories relevant to the project."""
 
     # ! PROJECT
-    project: DirectoryPath = PROJECT_DIR
+    project: DirectoryPath = CWD
 
     # ! PACKAGE
-    package: DirectoryPath = PACKAGE_DIR
-
-    # ! PROJECT FILE
-    file_proj: FilePath = PARAMS_FILE
+    package: DirectoryPath = Path(next(iter(boilerdata.__path__)))
 
     # ! DATA
     data: DirectoryPath = project / "data"
@@ -70,10 +66,6 @@ class Paths(CreatePathsModel):
     axes_enum: Path = package / "axes_enum.py"
     axes_enum_copy: Path = axes / "axes_enum.py"
     file_originlab_coldes: Path = axes / "originlab_coldes.txt"
-
-    # ! SCHEMA
-    # Can't be "schema", which is a special member of BaseClass
-    project_schema: DirectoryPath = data / "schema"
 
     # ! LITERATURE
     literature: DirectoryPath = data / "literature"
@@ -112,11 +104,8 @@ class Paths(CreatePathsModel):
     originlab_results: DirectoryPath = data / "originlab_results"
     file_originlab_results: Path = originlab_results / "originlab_results.csv"
 
-    # ! TOP-LEVEL METRICS DIR
-    metrics: DirectoryPath = data / "metrics"
-
     # ! PLOTS
-    plots: DirectoryPath = metrics / "plots"
+    plots: DirectoryPath = data / "plots"
     plot_new_fit_0: Path = plots / "new_fit_0.png"
     plot_new_fit_1: Path = plots / "new_fit_1.png"
     plot_new_fit_2: Path = plots / "new_fit_2.png"
@@ -125,7 +114,7 @@ class Paths(CreatePathsModel):
     plot_error_h_a: Path = plots / "error_h_a.png"
 
     # ! ORIGINLAB PLOTS
-    originlab_plots: DirectoryPath = metrics / "originlab_plots"
+    originlab_plots: DirectoryPath = data / "originlab_plots"
     originlab_plot_files: dict[str, Path] = (  # noqa: PLC3002  # need lambda *shrug*
         lambda originlab_plots: {
             shortname: originlab_plots / f"{shortname}.png"
@@ -134,5 +123,5 @@ class Paths(CreatePathsModel):
     )(originlab_plots)
 
     # ! TABLES
-    tables: DirectoryPath = metrics / "tables"
+    tables: DirectoryPath = data / "tables"
     file_pipeline_metrics: Path = tables / "pipeline_metrics.json"

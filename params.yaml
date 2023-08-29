@@ -40,17 +40,18 @@ model_bounds:
     - inf
 project_paths:
   project: .
-  dev_requirements: .tools/requirements
-  config: config
-  axes_config: config/axes.yaml
-  trials_config: config/trials.yaml
   package: src/boilerdata
   stages: src/boilerdata/stages
   models: src/boilerdata/models
   validation: src/boilerdata/validation.py
-  plot_config: config/plotting
-  mpl_base: config/plotting/base.mplstyle
-  mpl_hide_title: config/plotting/hide_title.mplstyle
+  data: data
+  propshop: data/propshop
+  config: data/config
+  axes_config: data/config/axes.yaml
+  trials_config: data/config/trials.yaml
+  plot_config: data/config/plotting
+  mpl_base: data/config/plotting/base.mplstyle
+  mpl_hide_title: data/config/plotting/hide_title.mplstyle
   stage_axes: src/boilerdata/stages/axes.py
   stage_parse_benchmarks: src/boilerdata/stages/parse_benchmarks.py
   stage_literature: src/boilerdata/stages/literature.py
@@ -62,13 +63,11 @@ project_paths:
 paths:
   project: .
   package: src/boilerdata
-  file_proj: params.yaml
   data: data
   axes: data/axes
   axes_enum: src/boilerdata/axes_enum.py
   axes_enum_copy: data/axes/axes_enum.py
   file_originlab_coldes: data/axes/originlab_coldes.txt
-  project_schema: data/schema
   literature: data/literature
   literature_results: data/literature_results
   file_literature_results: data/literature_results/lit.csv
@@ -86,17 +85,16 @@ paths:
   file_plotter: data/plotter/results.opju
   originlab_results: data/originlab_results
   file_originlab_results: data/originlab_results/originlab_results.csv
-  metrics: data/metrics
-  plots: data/metrics/plots
-  plot_new_fit_0: data/metrics/plots/new_fit_0.png
-  plot_new_fit_1: data/metrics/plots/new_fit_1.png
-  plot_new_fit_2: data/metrics/plots/new_fit_2.png
-  plot_error_T_s: data/metrics/plots/error_T_s.png
-  plot_error_q_s: data/metrics/plots/error_q_s.png
-  plot_error_h_a: data/metrics/plots/error_h_a.png
-  originlab_plots: data/metrics/originlab_plots
+  plots: data/plots
+  plot_new_fit_0: data/plots/new_fit_0.png
+  plot_new_fit_1: data/plots/new_fit_1.png
+  plot_new_fit_2: data/plots/new_fit_2.png
+  plot_error_T_s: data/plots/error_T_s.png
+  plot_error_q_s: data/plots/error_q_s.png
+  plot_error_h_a: data/plots/error_h_a.png
+  originlab_plots: data/originlab_plots
   originlab_plot_files:
-    lit: data/metrics/originlab_plots/lit.png
-    low: data/metrics/originlab_plots/low.png
-  tables: data/metrics/tables
-  file_pipeline_metrics: data/metrics/tables/pipeline_metrics.json
+    lit: data/originlab_plots/lit.png
+    low: data/originlab_plots/low.png
+  tables: data/tables
+  file_pipeline_metrics: data/tables/pipeline_metrics.json

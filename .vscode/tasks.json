@@ -41,6 +41,14 @@
     // * Changes below should persist in significant template updates.
 
     {
+      "label": "proj: set symlink propshop",
+      "type": "shell",
+      "options": { "shell": { "executable": "pwsh" } },
+      "command": ".tools/scripts/Set-SymlinkPropshop.ps1",
+      "icon": { "id": "graph" },
+      "problemMatcher": []
+    },
+    {
       "label": "proj: update boilercore",
       "type": "shell",
       "options": { "shell": { "executable": "pwsh" } },

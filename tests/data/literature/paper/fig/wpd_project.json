@@ -1,0 +1,17 @@
+{
+  "datasetColl": [
+    {
+      "name": "name",
+      "axesName": "XY",
+      "colorRGB": [0, 0, 0, 0],
+      "metadataKeys": [],
+      "data": [
+        {
+          "x": 0,
+          "y": 0,
+          "value": [0, 0]
+        }
+      ]
+    }
+  ]
+}

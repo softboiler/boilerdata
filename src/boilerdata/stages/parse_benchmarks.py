@@ -1,3 +1,5 @@
+"""Parse benchmark runs."""
+
 from pathlib import Path
 
 import pandas as pd
@@ -11,10 +13,6 @@ def main():
     pd.DataFrame(data=get_benchmarks(PARAMS)).to_csv(
         PARAMS.paths.file_benchmarks_parsed, encoding="utf-8"
     )
-
-
-# * -------------------------------------------------------------------------------- * #
-# * STAGES
 
 
 def get_benchmarks(params: Params) -> pd.DataFrame:
@@ -36,9 +34,6 @@ def parse_benchmark(df: pd.DataFrame, params: Params) -> pd.DataFrame:
     base_normalized = (base - start) / (end - start)
     time_of_90_rise = (base_normalized > threshold).idxmax()
     return df.loc[[time_of_90_rise], :]
-
-
-# * -------------------------------------------------------------------------------- * #
 
 
 if __name__ == "__main__":

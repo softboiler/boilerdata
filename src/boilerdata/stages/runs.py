@@ -1,6 +1,4 @@
-# * -------------------------------------------------------------------------------- * #
-# * GET RUNS
-
+"""Get runs from all trials."""
 
 from datetime import datetime
 
@@ -9,9 +7,6 @@ import pandas as pd
 from boilerdata.models.params import PARAMS, Params
 from boilerdata.stages import get_run, set_dtypes
 
-# * -------------------------------------------------------------------------------- * #
-# * MAIN
-
 
 def main():
     (
@@ -19,10 +14,6 @@ def main():
             columns=[ax.name for ax in PARAMS.axes.cols], data=get_runs(PARAMS)
         ).to_csv(PARAMS.paths.file_runs, encoding="utf-8")
     )
-
-
-# * -------------------------------------------------------------------------------- * #
-# * STAGES
 
 
 def get_runs(params: Params) -> pd.DataFrame:
@@ -50,8 +41,6 @@ def get_runs(params: Params) -> pd.DataFrame:
         .pipe(set_dtypes, dtypes)
     )
 
-
-# * -------------------------------------------------------------------------------- * #
 
 if __name__ == "__main__":
     main()

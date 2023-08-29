@@ -1,5 +1,6 @@
 from collections.abc import Mapping
 from contextlib import contextmanager
+from os import environ
 from pathlib import Path
 from typing import Any
 
@@ -9,76 +10,20 @@ import pandas as pd
 from IPython.core.display import Markdown, Math
 from IPython.display import display
 from matplotlib import pyplot as plt
-from sympy import FiniteSet, Function, symbols
+from sympy import FiniteSet
 from sympy.printing.latex import latex
 from uncertainties import ufloat
 
 from boilerdata.axes_enum import AxesEnum as A  # noqa: N814
+from boilerdata.modelfun import get_model
 from boilerdata.models.params import PARAMS, Params
 from boilerdata.models.trials import Trial
 
 idxs = pd.IndexSlice
 """Use to slice pd.MultiIndex indices."""
+environ["DYNACONF_APP_FOLDER"] = str(PARAMS.project_paths.propshop)
 
-# * -------------------------------------------------------------------------------- * #
-# * SYMBOLIC PARAMETER GROUPS
-
-params = symbols(["x", *PARAMS.free_params, *PARAMS.fixed_params])
-(
-    x,
-    T_s,
-    q_s,
-    h_a,
-    k,
-    h_w,
-) = params
-
-inputs = symbols(list(PARAMS.model_inputs.keys()))
-(
-    r,
-    T_infa,
-    T_infw,
-    x_s,
-    x_wa,
-) = inputs
-
-intermediate_vars = symbols(
-    """
-    h,
-    q_0,
-    q_wa,
-    T_0,
-    T_inf,
-    T_wa,
-    x_0,
-    """
-)
-(
-    h,  # (W/m^2-K) Convection heat transfer coefficient
-    q_0,  # (W/m^2) q at x_0, the LHS of a general domain
-    q_wa,  # (W/m^2) q at the domain interface
-    T_0,  # (C) T at x_0, the LHS of a general domain
-    T_inf,  # (C) Ambient temperature
-    T_wa,  # (C) T at the domain interface
-    x_0,  # (m) x at the LHS of a general domain
-) = intermediate_vars
-
-functions = symbols(
-    """
-    T*,
-    T_a,
-    T_w,
-    T,
-    """,
-    cls=Function,  # type: ignore  # sympy
-)
-(
-    T_int,  # (T*, C) The general solution to the ODE
-    T_a,  # (C) Solution in air
-    T_w,  # (C) Solution in water
-    T,  # (C) The piecewise combination of the two above solutions
-) = functions
-
+MODEL, MODEL_WITH_UNCERTAINTY = get_model(PARAMS.paths.file_model)
 
 # * -------------------------------------------------------------------------------- * #
 # * DATA MANIPULATION
