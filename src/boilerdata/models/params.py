@@ -156,3 +156,4 @@ class Params(SynchronizedPathsYamlModel, extra=Extra.allow):
 
 
 PARAMS = Params()
+"""All project parameters, including paths."""
