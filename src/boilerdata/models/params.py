@@ -1,5 +1,9 @@
 """Project parameters."""
 
+from __future__ import annotations
+
+from collections.abc import Callable
+from os import environ
 from pathlib import Path
 from typing import Literal, TypeAlias
 
@@ -7,6 +11,8 @@ import numpy as np
 import pandas as pd
 from boilercore.models import SynchronizedPathsYamlModel
 from boilercore.types import FitMethod
+from numpy.typing import ArrayLike
+from propshop.library import Mat, Prop
 from pydantic import Extra, Field, validator
 
 from boilerdata.axes_enum import AxesEnum as A  # noqa: N814
@@ -15,6 +21,28 @@ from boilerdata.models.axes import Axes
 from boilerdata.models.geometry import Geometry
 from boilerdata.models.paths import Paths
 from boilerdata.models.trials import Trial, Trials
+
+
+def init() -> (
+    tuple[
+        Params,
+        Callable[
+            [Mat, Prop, ArrayLike],
+            Callable[[ArrayLike], ArrayLike],
+        ],
+    ]
+):
+    """Parameters and associated project setup.
+
+    Assigned to module constants at the end of this module."""
+    params = Params()
+
+    # Override the default app folder
+    environ["DYNACONF_APP_FOLDER"] = str(params.paths.propshop)
+    from propshop import get_prop
+
+    return params, get_prop
+
 
 Bound: TypeAlias = float | Literal["-inf", "inf"]
 
@@ -155,5 +183,5 @@ class Params(SynchronizedPathsYamlModel, extra=Extra.allow):
         return [f"{param}_err" for param in params]
 
 
-PARAMS = Params()
+PARAMS, get_prop = init()
 """All project parameters, including paths."""

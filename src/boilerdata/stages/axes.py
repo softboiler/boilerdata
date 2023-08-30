@@ -10,7 +10,9 @@ from boilerdata.models.params import PARAMS
 def main():
     generate_axes_enum([ax.name for ax in PARAMS.axes.all], PARAMS.paths.axes_enum_copy)
     copy(PARAMS.paths.axes_enum_copy, PARAMS.paths.axes_enum)
-    PARAMS.paths.file_originlab_coldes.write_text(PARAMS.axes.get_originlab_coldes())
+    PARAMS.paths.file_originlab_coldes.write_text(
+        encoding="utf-8", data=PARAMS.axes.get_originlab_coldes()
+    )
 
 
 def generate_axes_enum(axes: list[str], path: Path) -> None:

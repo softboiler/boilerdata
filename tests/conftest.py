@@ -3,10 +3,20 @@
 from pathlib import Path
 
 import pytest
-from boilercore.testing import get_nb_client, tmp_workdir
-from ploomber_engine.ipython import PloomberClient
+from boilercore import catch_certain_warnings
 
 from tests import NOTEBOOK_STAGES
+
+with catch_certain_warnings():
+    from boilercore.testing import get_nb_client, tmp_workdir
+    from ploomber_engine.ipython import PloomberClient
+
+
+@pytest.fixture(autouse=True)
+def _catch_certain_warnings():
+    """Filter certain warnings."""
+    with catch_certain_warnings():
+        yield
 
 
 @pytest.fixture()
