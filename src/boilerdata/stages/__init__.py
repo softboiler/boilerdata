@@ -1,3 +1,5 @@
+"""Stages."""
+
 from collections.abc import Mapping
 from contextlib import contextmanager
 from pathlib import Path
