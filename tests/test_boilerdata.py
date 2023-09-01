@@ -15,14 +15,12 @@ def test_nb_stages(nb_client: PloomberClient):
 
 
 @pytest.mark.slow()
-@pytest.mark.usefixtures("_tmp_workdir")
 @pytest.mark.parametrize("stage", STAGES)
 def test_stages(stage: str):
     """Test that stages can run."""
     import_module(stage).main()
 
 
-@pytest.mark.usefixtures("_tmp_workdir")
 @pytest.mark.parametrize(
     "group_name",
     [

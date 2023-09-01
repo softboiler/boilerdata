@@ -7,7 +7,7 @@ from boilercore.paths import get_package_dir, map_stages
 from pydantic import DirectoryPath, FilePath
 
 import boilerdata
-from boilerdata.models import CWD
+from boilerdata import PROJECT_PATH
 
 
 class Paths(CreatePathsModel):
@@ -15,7 +15,7 @@ class Paths(CreatePathsModel):
 
     # * Roots
     # ! Project
-    project: DirectoryPath = CWD
+    project: DirectoryPath = PROJECT_PATH
     # ! Package
     package: DirectoryPath = get_package_dir(boilerdata)
     axes_enum: FilePath = package / "axes_enum.py"

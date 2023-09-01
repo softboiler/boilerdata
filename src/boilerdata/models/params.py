@@ -10,12 +10,14 @@ from boilercore.models import SynchronizedPathsYamlModel
 from boilercore.types import FitMethod
 from pydantic import Extra, Field, validator
 
+from boilerdata import get_params_file
 from boilerdata.axes_enum import AxesEnum as A  # noqa: N814
-from boilerdata.models import CWD
 from boilerdata.models.axes import Axes
 from boilerdata.models.geometry import Geometry
 from boilerdata.models.paths import Paths
 from boilerdata.models.trials import Trial, Trials
+
+PARAMS_FILE = get_params_file()
 
 Bound: TypeAlias = float | Literal["-inf", "inf"]
 
@@ -128,7 +130,7 @@ class Params(SynchronizedPathsYamlModel, extra=Extra.allow):
     geometry: Geometry = Field(default_factory=Geometry)
     paths: Paths = Field(default_factory=Paths)
 
-    def __init__(self, data_file: Path = CWD / "params.yaml", **kwargs):
+    def __init__(self, data_file: Path = PARAMS_FILE, **kwargs):
         super().__init__(data_file, **kwargs)
         self.axes = Axes(self.paths.axes_config)
         self.trials = Trials(self.paths.trials_config).trials
