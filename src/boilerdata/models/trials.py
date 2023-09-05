@@ -104,8 +104,8 @@ class Trial(BaseModel):
 
             trial_date = self.date.isoformat()  # for input to fromisoformat() below
             run_index.append(
-                tuple(
-                    pd.Timestamp.fromisoformat(item) for item in [trial_date, run_time]
+                tuple(  # type: ignore  # It's indeterminate but we hard-code the inputs  # pyright 1.1.325
+                    pd.Timestamp.fromisoformat(item) for item in (trial_date, run_time)
                 )
             )
         self.run_index = run_index
