@@ -8,11 +8,11 @@ from typing import Any
 import matplotlib as mpl
 import numpy as np
 import pandas as pd
+from boilercore.modelfun import get_model
 from matplotlib import pyplot as plt
 from uncertainties import ufloat
 
 from boilerdata.axes_enum import AxesEnum as A  # noqa: N814
-from boilerdata.modelfun import get_model
 from boilerdata.models.params import PARAMS, Params
 from boilerdata.models.trials import Trial
 
