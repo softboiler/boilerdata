@@ -69,6 +69,7 @@ ignore_undeclared = [
     "graphviz",      # .tools/requirements/requirements_docs.txt
     "originpro",     # .tools/requirements/requirements_dev.txt
     "pytest",
+    "_pytest",
     "rich",          # .tools/requirements/requirements_dev.txt
 ]
 [tool.fawltydeps.custom_mapping]

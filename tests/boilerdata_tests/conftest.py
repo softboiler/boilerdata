@@ -1,19 +1,22 @@
 """Test configuration."""
 
+from collections.abc import Callable
+from importlib import import_module
 from pathlib import Path
+from types import SimpleNamespace
 
 import pytest
 from boilercore import filter_certain_warnings
-from boilercore.testing import get_nb_client, get_session_path
+from boilercore.testing import get_nb_client, get_nb_namespace, get_session_path
 from ploomber_engine.ipython import PloomberClient
 
 import boilerdata
-from boilerdata_tests import NOTEBOOK_STAGES
+from boilerdata_tests import MODELFUN, nbs_to_execute, stages
 
 
 @pytest.fixture(scope="session", autouse=True)
-def session_path(tmp_path_factory: pytest.TempPathFactory) -> Path:
-    """Set the project directory."""
+def project_session_path(tmp_path_factory) -> Path:
+    """Project session path."""
     return get_session_path(tmp_path_factory, boilerdata)
 
 
@@ -24,7 +27,30 @@ def _filter_certain_warnings():
     filter_certain_warnings()
 
 
-@pytest.fixture(params=NOTEBOOK_STAGES)
-def nb_client(request: pytest.FixtureRequest, session_path: Path) -> PloomberClient:
-    """Run a notebook client in a temporary project directory."""
-    return get_nb_client(request, session_path)
+@pytest.fixture(params=stages)
+def stage(request) -> str:
+    """Stage module name."""
+    return request.param
+
+
+def main(stage) -> Callable[..., None]:
+    """Main function for a stage."""
+    return import_module(stage).main
+
+
+@pytest.fixture(params=nbs_to_execute)
+def nb_to_execute(request) -> Path:
+    """Path to a notebook that should be executed only."""
+    return request.param
+
+
+@pytest.fixture()
+def nb_client_to_execute(project_session_path, nb_to_execute) -> PloomberClient:
+    """Notebook client to be executed only."""
+    return get_nb_client(nb_to_execute, project_session_path)
+
+
+@pytest.fixture()
+def modelfun_namespace(project_session_path) -> SimpleNamespace:
+    """Namespace for the modelfun notebook."""
+    return get_nb_namespace(get_nb_client(MODELFUN, project_session_path))
