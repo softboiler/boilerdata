@@ -8,7 +8,7 @@ from boilercore.testing import get_nb_client, get_session_path
 from ploomber_engine.ipython import PloomberClient
 
 import boilerdata
-from tests import NOTEBOOK_STAGES
+from boilerdata_tests import NOTEBOOK_STAGES
 
 
 @pytest.fixture(scope="session", autouse=True)

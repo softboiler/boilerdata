@@ -1,11 +1,9 @@
-"""Tests."""
-
 from importlib import import_module
 
 import pytest
 from ploomber_engine.ipython import PloomberClient
 
-from tests import STAGES
+from boilerdata_tests import STAGES
 
 
 @pytest.mark.slow()
