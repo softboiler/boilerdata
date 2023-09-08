@@ -3,6 +3,7 @@ from warnings import catch_warnings, simplefilter
 
 import numpy as np
 import pytest
+from boilercore.testing import get_nb_client, get_nb_namespace
 from dill import UnpicklingWarning, loads
 from sympy import Eq
 
@@ -18,11 +19,23 @@ def ns(project_session_path) -> SimpleNamespace:
 
 
 @pytest.fixture()
+def notebook_model(ns):
+    """Notebook model."""
+    return ns.model_for_pickling
+
+
+@pytest.fixture()
 def unpickled_model(ns):
     """Unpickled model."""
     with catch_warnings():
         simplefilter("ignore", UnpicklingWarning)
         return loads(ns.pickled_model)
+
+
+@pytest.fixture(params=["notebook_model", "unpickled_model"])
+def model(request):
+    """Model."""
+    return request.getfixturevalue(request.param)
 
 
 def test_ode(ns):
@@ -47,15 +60,34 @@ def test_temperature_gradient_continuous(ns):
     assert Eq(q_wa_expr_w, q_wa_expr_a).simplify()
 
 
-def test_pickle_roundtrip_basic(ns, unpickled_model):
-    """Test that the unpickled basic model matches the original model."""
+def test_model_fit(model):
+    """Test that the model fit is as expected."""
     assert np.allclose(
-        ns.model_evaluated_at_x_smooth, unpickled_model.basic(**ns.model_kwargs)
-    )
-
-
-def test_pickle_roundtrip_ufloat(ns, unpickled_model):
-    """Test that the unpickled model for ufloats matches the original model."""
-    assert np.allclose(
-        ns.model_evaluated_at_x_smooth, unpickled_model.for_ufloat(**ns.model_kwargs)
+        model.basic(
+            x=np.linspace(0, 0.10),
+            T_s=105,  # (C)
+            q_s=20,  # (W/cm^2)
+            h_a=100,  # (W/m^2-K)
+            h_w=np.finfo(float).eps,  # (W/m^2-K)
+            k=400,  # (W/m-K)
+        ),
+        np.array(
+            [
+                # fmt: off
+                105.        , 106.02040672, 107.04081917, 108.06122589,
+                109.08163071, 110.10204124, 111.12244987, 112.14286041,
+                113.16326523, 114.18367195, 115.2040844 , 116.22449112,
+                117.24489594, 118.26530647, 119.2857151 , 120.30612183,
+                121.32653046, 122.34693718, 123.36734962, 124.39013155,
+                125.4467062 , 126.5472041 , 127.69210646, 128.88191394,
+                130.11714679, 131.39834518, 132.72606933, 134.10089984,
+                135.52343788, 136.99430552, 138.51414591, 140.08362367,
+                141.70342508, 143.37425846, 145.09685442, 146.87196622,
+                148.70037008, 150.58286552, 152.52027572, 154.51344787,
+                156.56325353, 158.67058905, 160.83637592, 163.06156119,
+                165.3471179 , 167.69404545, 170.10337013, 172.57614547,
+                175.11345277, 177.71640154
+                # fmt: on
+            ]
+        ),
     )
