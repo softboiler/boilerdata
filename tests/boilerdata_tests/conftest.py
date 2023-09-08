@@ -3,15 +3,14 @@
 from collections.abc import Callable
 from importlib import import_module
 from pathlib import Path
-from types import SimpleNamespace
 
 import pytest
 from boilercore import filter_certain_warnings
-from boilercore.testing import get_nb_client, get_nb_namespace, get_session_path
+from boilercore.testing import get_nb_client, get_session_path
 from ploomber_engine.ipython import PloomberClient
 
 import boilerdata
-from boilerdata_tests import MODELFUN, nbs_to_execute, stages
+from boilerdata_tests import nbs_to_execute, stages
 
 
 @pytest.fixture(scope="session", autouse=True)
@@ -33,6 +32,7 @@ def stage(request) -> str:
     return request.param
 
 
+@pytest.fixture()
 def main(stage) -> Callable[..., None]:
     """Main function for a stage."""
     return import_module(stage).main
@@ -48,9 +48,3 @@ def nb_to_execute(request) -> Path:
 def nb_client_to_execute(project_session_path, nb_to_execute) -> PloomberClient:
     """Notebook client to be executed only."""
     return get_nb_client(nb_to_execute, project_session_path)
-
-
-@pytest.fixture()
-def modelfun_namespace(project_session_path) -> SimpleNamespace:
-    """Namespace for the modelfun notebook."""
-    return get_nb_namespace(get_nb_client(MODELFUN, project_session_path))

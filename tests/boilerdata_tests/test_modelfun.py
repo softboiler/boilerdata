@@ -1,13 +1,28 @@
+from types import SimpleNamespace
+from warnings import catch_warnings, simplefilter
+
 import numpy as np
 import pytest
+from dill import UnpicklingWarning, loads
 from sympy import Eq
+
+from boilerdata_tests import MODELFUN
 
 pytestmark = [pytest.mark.slow]
 
 
 @pytest.fixture()
-def ns(modelfun_namespace):
-    return modelfun_namespace
+def ns(project_session_path) -> SimpleNamespace:
+    """Namespace for the modelfun notebook."""
+    return get_nb_namespace(get_nb_client(MODELFUN, project_session_path))
+
+
+@pytest.fixture()
+def unpickled_model(ns):
+    """Unpickled model."""
+    with catch_warnings():
+        simplefilter("ignore", UnpicklingWarning)
+        return loads(ns.pickled_model)
 
 
 def test_ode(ns):
@@ -32,15 +47,15 @@ def test_temperature_gradient_continuous(ns):
     assert Eq(q_wa_expr_w, q_wa_expr_a).simplify()
 
 
-def test_pickle_roundtrip_basic(ns):
+def test_pickle_roundtrip_basic(ns, unpickled_model):
     """Test that the unpickled basic model matches the original model."""
     assert np.allclose(
-        ns.model_evaluated_at_x_smooth, ns.unpickled_model.basic(**ns.model_kwargs)
+        ns.model_evaluated_at_x_smooth, unpickled_model.basic(**ns.model_kwargs)
     )
 
 
-def test_pickle_roundtrip_ufloat(ns):
+def test_pickle_roundtrip_ufloat(ns, unpickled_model):
     """Test that the unpickled model for ufloats matches the original model."""
     assert np.allclose(
-        ns.model_evaluated_at_x_smooth, ns.unpickled_model.for_ufloat(**ns.model_kwargs)
+        ns.model_evaluated_at_x_smooth, unpickled_model.for_ufloat(**ns.model_kwargs)
     )
