@@ -46,26 +46,6 @@ def model(request):
     return request.getfixturevalue(request.param)
 
 
-def test_ode(ns):
-    """Verify the solution to the ODE by substitution."""
-    # Don't subs/simplify the lhs then try equating to zero. Doesn't work. "Truth value of
-    # relational" issue. Here we subs/simplify the whole ODE equation.
-    ode, T, x, T_int_expr = ns.ode, ns.T, ns.x, ns.T_int_expr  # noqa: N806
-    assert ode.subs(T(x), T_int_expr).simplify()
-
-
-def test_temperature_continuous(ns):
-    """Test that temperature is continuous at the domain transition."""
-    T_wa_expr_w, T_wa_expr_a = ns.T_wa_expr_w, ns.T_wa_expr_a  # noqa: N806
-    assert Eq(T_wa_expr_w, T_wa_expr_a).simplify()
-
-
-def test_temperature_gradient_continuous(ns):
-    """Test that the temperature gradient is continuous at the domain transition."""
-    q_wa_expr_w, q_wa_expr_a = ns.q_wa_expr_w, ns.q_wa_expr_a
-    assert Eq(q_wa_expr_w, q_wa_expr_a).simplify()
-
-
 def test_model_fit(model):
     """Test that the model fit is as expected."""
     assert np.allclose(
@@ -97,3 +77,46 @@ def test_model_fit(model):
             ]
         ),
     )
+
+
+def test_ode(ns):
+    """Verify the solution to the ODE by substitution."""
+    # Don't subs/simplify the lhs then try equating to zero. Doesn't work. "Truth value of
+    # relational" issue. Here we subs/simplify the whole ODE equation.
+    ode, T, x, T_int_expr = ns.ode, ns.T, ns.x, ns.T_int_expr  # noqa: N806
+    assert ode.subs(T(x), T_int_expr).simplify()
+
+
+@pytest.mark.parametrize(
+    "group_name",
+    [
+        "params",
+        "inputs",
+        "intermediate_vars",
+        "functions",
+    ],
+)
+def test_syms(group_name: str):
+    """Test that declared symbolic variables are assigned to the correct symbols."""
+    from boilerdata import syms
+
+    module_vars = vars(syms)
+    sym_group = module_vars[group_name]
+    symvars = {
+        var: sym
+        for var, sym in module_vars.items()
+        if var in [group_sym.name for group_sym in sym_group]
+    }
+    assert all(var == sym.name for var, sym in symvars.items())
+
+
+def test_temperature_continuous(ns):
+    """Test that temperature is continuous at the domain transition."""
+    T_wa_expr_w, T_wa_expr_a = ns.T_wa_expr_w, ns.T_wa_expr_a  # noqa: N806
+    assert Eq(T_wa_expr_w, T_wa_expr_a).simplify()
+
+
+def test_temperature_gradient_continuous(ns):
+    """Test that the temperature gradient is continuous at the domain transition."""
+    q_wa_expr_w, q_wa_expr_a = ns.q_wa_expr_w, ns.q_wa_expr_a
+    assert Eq(q_wa_expr_w, q_wa_expr_a).simplify()
