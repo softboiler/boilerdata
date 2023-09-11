@@ -28,7 +28,7 @@ class Paths(CreatePathsModel):
     # Careful, "Config" is a special member of BaseClass
     config: DirectoryPath = data / "config"
 
-    # * Git-Tracked Inputs
+    # * Git-tracked Inputs
     # ! Axes And Trial Configs
     axes_config: FilePath = config / "axes.yaml"
     trials_config: FilePath = config / "trials.yaml"
@@ -37,6 +37,9 @@ class Paths(CreatePathsModel):
     # ? Files
     mpl_base: FilePath = plot_config / "base.mplstyle"
     mpl_hide_title: FilePath = plot_config / "hide_title.mplstyle"
+
+    # * Git-tracked results
+    test_file_model: Path = project / "tests/root/data/modelfun/model.dillpickle"
 
     # * Local Inputs
     # ! Properties

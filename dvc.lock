@@ -29,8 +29,8 @@ stages:
       nfiles: 2
     - path: src/boilerdata/stages/modelfun.ipynb
       hash: md5
-      md5: 0fc6782f61d864c11611815b79381a25
-      size: 11088
+      md5: 5e3ec906a4d4bc5c233c409f98d6978d
+      size: 8526
     params:
       params.yaml:
         fixed_params:
@@ -51,8 +51,8 @@ stages:
     outs:
     - path: data/modelfun
       hash: md5
-      md5: bf51829a3f06363e02610c6d663acd49.dir
-      size: 60239
+      md5: 61298311c58bccafe3021c4e460df15b.dir
+      size: 60220
       nfiles: 1
   runs:
     cmd: python src/boilerdata/stages/runs.py
@@ -90,8 +90,8 @@ stages:
       nfiles: 1
     - path: data/modelfun
       hash: md5
-      md5: bf51829a3f06363e02610c6d663acd49.dir
-      size: 60239
+      md5: 183ae300214d0c0f1d0b52e6c572cd88.dir
+      size: 60220
       nfiles: 1
     - path: data/runs
       hash: md5
@@ -100,8 +100,8 @@ stages:
       nfiles: 1
     - path: src/boilerdata/stages/pipeline.py
       hash: md5
-      md5: f4ea053c83ae2615b70f12f24212d38e
-      size: 6384
+      md5: 27f48f5fb736b3f2292e23497b6c1cc9
+      size: 6355
     - path: src/boilerdata/validation.py
       hash: md5
       md5: 7a3f3a96cd21288bc6ed6332765244de
@@ -191,8 +191,8 @@ stages:
       nfiles: 9
     - path: src/boilerdata/models
       hash: md5
-      md5: 3c7f293f72dbd363595ac90b3ccbece0.dir
-      size: 21013
+      md5: e4ee308aca2d71aa0e2fc1eff6cdaac1.dir
+      size: 20898
       nfiles: 7
     - path: src/boilerdata/stages/literature.py
       hash: md5
@@ -213,8 +213,8 @@ stages:
       size: 2322
     - path: src/boilerdata/models
       hash: md5
-      md5: 3c7f293f72dbd363595ac90b3ccbece0.dir
-      size: 21013
+      md5: 25d452e100aca517cfdcaf71635b8d4a.dir
+      size: 21012
       nfiles: 7
     - path: src/boilerdata/stages/axes.py
       hash: md5

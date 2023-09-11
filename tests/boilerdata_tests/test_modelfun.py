@@ -12,7 +12,7 @@ from boilerdata_tests import MODELFUN
 pytestmark = [pytest.mark.slow]
 
 
-@pytest.fixture()
+@pytest.fixture(scope="module")
 def ns(project_session_path) -> SimpleNamespace:
     """Namespace for the modelfun notebook."""
     return get_nb_namespace(get_nb_client(MODELFUN, project_session_path))
@@ -21,7 +21,7 @@ def ns(project_session_path) -> SimpleNamespace:
 @pytest.fixture()
 def notebook_model(ns):
     """Notebook model."""
-    return ns.model_for_pickling
+    return ns.model_for_pickling.basic
 
 
 @pytest.fixture()
@@ -29,10 +29,18 @@ def unpickled_model(ns):
     """Unpickled model."""
     with catch_warnings():
         simplefilter("ignore", UnpicklingWarning)
-        return loads(ns.pickled_model)
+        return loads(ns.pickled_model).basic
 
 
-@pytest.fixture(params=["notebook_model", "unpickled_model"])
+@pytest.fixture()
+def stage_model():
+    """Model as loaded prior to running stages."""
+    from boilerdata.stages import MODEL
+
+    return MODEL
+
+
+@pytest.fixture(params=["notebook_model", "unpickled_model", "stage_model"])
 def model(request):
     """Model."""
     return request.getfixturevalue(request.param)
@@ -49,13 +57,11 @@ def test_ode(ns):
 def test_temperature_continuous(ns):
     """Test that temperature is continuous at the domain transition."""
     T_wa_expr_w, T_wa_expr_a = ns.T_wa_expr_w, ns.T_wa_expr_a  # noqa: N806
-    q_wa_expr_w, q_wa_expr_a = ns.q_wa_expr_w, ns.q_wa_expr_a
     assert Eq(T_wa_expr_w, T_wa_expr_a).simplify()
 
 
 def test_temperature_gradient_continuous(ns):
     """Test that the temperature gradient is continuous at the domain transition."""
-    T_wa_expr_w, T_wa_expr_a = ns.T_wa_expr_w, ns.T_wa_expr_a  # noqa: N806
     q_wa_expr_w, q_wa_expr_a = ns.q_wa_expr_w, ns.q_wa_expr_a
     assert Eq(q_wa_expr_w, q_wa_expr_a).simplify()
 
@@ -63,7 +69,7 @@ def test_temperature_gradient_continuous(ns):
 def test_model_fit(model):
     """Test that the model fit is as expected."""
     assert np.allclose(
-        model.basic(
+        model(
             x=np.linspace(0, 0.10),
             T_s=105,  # (C)
             q_s=20,  # (W/cm^2)
