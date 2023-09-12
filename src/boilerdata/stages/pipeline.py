@@ -58,7 +58,7 @@ def get_properties(df: pd.DataFrame, params: Params) -> pd.DataFrame:
                 A.T_w: lambda df: (T_w_avg + T_w_p) / 2,
                 A.T_w_diff: lambda df: abs(T_w_avg - T_w_p),
             }
-            | {k: 0 for k in params.fixed_errors}  # Zero error for fixed params
+            | {k: 0 for k in params.fit.fixed_errors}  # Zero error for fixed params
         )
     )
 
@@ -89,17 +89,17 @@ def fit(
     x, y, y_errors = fit_setup(grp, params, trial)
 
     # Get fixed values
-    fixed_values: dict[str, float] = params.fixed_values
+    fixed_values: dict[str, float] = params.fit.fixed_values
     for key in fixed_values:
         if not all(grp[key].isna()):
             fixed_values[key] = grp[key].mean()
 
     # Get bounds/guesses and override some. Can't do it earlier because of the override.
     fitted_params, errors = fit_to_model(
-        params.model_bounds,
-        params.initial_values,
-        params.free_params,
-        params.fit_method,
+        params.fit.model_bounds,
+        params.fit.initial_values,
+        params.fit.free_params,
+        params.fit.fit_method,
         model,
         confidence_interval_95,
         x,
@@ -112,7 +112,7 @@ def fit(
         **{key: fixed_values[key] for key in fixed_values if all(grp[key].isna())},
         **pd.Series(
             np.concatenate([fitted_params, errors]),
-            index=params.free_params + params.free_errors,
+            index=params.fit.free_params + params.fit.free_errors,
         ),
     )
     return grp
@@ -145,7 +145,7 @@ def agg_over_runs(
                 # Override the agg for cols with duplicates in a run to take the first
                 | {
                     col: pd.NamedAgg(column=col, aggfunc="first")
-                    for col in (tc_errors + params.params_and_errors)
+                    for col in (tc_errors + params.fit.params_and_errors)
                 }
             )
         )

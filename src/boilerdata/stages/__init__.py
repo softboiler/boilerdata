@@ -200,7 +200,7 @@ def plot_new_fits(grp: pd.DataFrame, params: Params, model):
 
         # Initial plot boundaries
         x_bounds = np.array([0, trial.thermocouple_pos[A.T_1]])
-        y_bounds = model(x_bounds, **get_params_mapping(ser, params.model_params))
+        y_bounds = model(x_bounds, **get_params_mapping(ser, params.fit.model_params))
         ax.plot(
             x_bounds,
             y_bounds,
@@ -308,8 +308,8 @@ def get_params_mapping_with_uncertainties(
     grp: pd.Series | pd.DataFrame, params: Params  # type: ignore  # pandas
 ) -> dict[str, Any]:
     """Get a mapping of parameter names to values with uncertainty."""
-    model_params = params.model_params
-    param_errors = params.model_errors
+    model_params = params.fit.model_params
+    param_errors = params.fit.model_errors
     model_param_uncertainties = [
         ufloat(model_param, model_error, tag)
         for model_param, model_error, tag in zip(

@@ -4,7 +4,7 @@ from sympy import Function, symbols
 
 from boilerdata.models.params import PARAMS
 
-params = symbols(["x", *PARAMS.free_params, *PARAMS.fixed_params])
+params = symbols(["x", *PARAMS.fit.free_params, *PARAMS.fit.fixed_params])
 (
     x,
     T_s,
@@ -14,7 +14,7 @@ params = symbols(["x", *PARAMS.free_params, *PARAMS.fixed_params])
     h_w,
 ) = params
 
-inputs = symbols(list(PARAMS.model_inputs.keys()))
+inputs = symbols(list(PARAMS.fit.model_inputs.keys()))
 (
     r,
     T_infa,

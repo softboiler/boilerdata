@@ -1,5 +1,4 @@
 [core]
     remote = origin
-    autostage = true
 ['remote "origin"']
     url = gs://boilerdata
