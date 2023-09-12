@@ -1,52 +1,33 @@
-from types import SimpleNamespace
-from warnings import catch_warnings, simplefilter
-
 import numpy as np
 import pytest
 from boilercore.fits import fit_to_model
-from boilercore.testing import get_nb_client, get_nb_namespace
-from dill import UnpicklingWarning, loads
 from sympy import Eq
 
-from boilerdata_tests import MODELFUN
 
-pytestmark = [pytest.mark.slow]
+@pytest.mark.parametrize(
+    "group_name",
+    [
+        "params",
+        "inputs",
+        "intermediate_vars",
+        "functions",
+    ],
+)
+def test_syms(group_name: str):
+    """Test that declared symbolic variables are assigned to the correct symbols."""
+    from boilerdata import syms
 
-
-@pytest.fixture(scope="module")
-def ns(project_session_path) -> SimpleNamespace:
-    """Namespace for the modelfun notebook."""
-    return get_nb_namespace(get_nb_client(MODELFUN, project_session_path))
-
-
-@pytest.fixture()
-def notebook_model(ns):
-    """Notebook model."""
-    return ns.model_for_pickling.basic
-
-
-@pytest.fixture()
-def unpickled_model(ns):
-    """Unpickled model."""
-    with catch_warnings():
-        simplefilter("ignore", UnpicklingWarning)
-        return loads(ns.pickled_model).basic
-
-
-@pytest.fixture()
-def stage_model():
-    """Model as loaded prior to running stages."""
-    from boilerdata.stages import MODEL
-
-    return MODEL
+    module_vars = vars(syms)
+    sym_group = module_vars[group_name]
+    symvars = {
+        var: sym
+        for var, sym in module_vars.items()
+        if var in [group_sym.name for group_sym in sym_group]
+    }
+    assert all(var == sym.name for var, sym in symvars.items())
 
 
-@pytest.fixture(params=["notebook_model", "unpickled_model", "stage_model"])
-def model(request):
-    """Model."""
-    return request.getfixturevalue(request.param)
-
-
+@pytest.mark.slow()
 def test_forward_model(model):
     """Test that the model evaluates to the expected output for known input."""
     assert np.allclose(
@@ -80,6 +61,7 @@ def test_forward_model(model):
     )
 
 
+@pytest.mark.slow()
 def test_model_fit(model):
     """Test that the model fit is as expected."""
     # grp.index.get_level_values(A.run)[0] == pd.Timestamp.fromisoformat("2022-09-14T10:21:00")
@@ -155,6 +137,7 @@ def test_model_fit(model):
     )
 
 
+@pytest.mark.slow()
 def test_ode(ns):
     """Verify the solution to the ODE by substitution."""
     # Don't subs/simplify the lhs then try equating to zero. Doesn't work. "Truth value of
@@ -163,35 +146,14 @@ def test_ode(ns):
     assert ode.subs(T(x), T_int_expr).simplify()
 
 
-@pytest.mark.parametrize(
-    "group_name",
-    [
-        "params",
-        "inputs",
-        "intermediate_vars",
-        "functions",
-    ],
-)
-def test_syms(group_name: str):
-    """Test that declared symbolic variables are assigned to the correct symbols."""
-    from boilerdata import syms
-
-    module_vars = vars(syms)
-    sym_group = module_vars[group_name]
-    symvars = {
-        var: sym
-        for var, sym in module_vars.items()
-        if var in [group_sym.name for group_sym in sym_group]
-    }
-    assert all(var == sym.name for var, sym in symvars.items())
-
-
+@pytest.mark.slow()
 def test_temperature_continuous(ns):
     """Test that temperature is continuous at the domain transition."""
     T_wa_expr_w, T_wa_expr_a = ns.T_wa_expr_w, ns.T_wa_expr_a  # noqa: N806
     assert Eq(T_wa_expr_w, T_wa_expr_a).simplify()
 
 
+@pytest.mark.slow()
 def test_temperature_gradient_continuous(ns):
     """Test that the temperature gradient is continuous at the domain transition."""
     q_wa_expr_w, q_wa_expr_a = ns.q_wa_expr_w, ns.q_wa_expr_a
