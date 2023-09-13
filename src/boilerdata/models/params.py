@@ -6,13 +6,13 @@ from typing import Any, Literal, TypeAlias
 
 import pandas as pd
 from boilercore.models import SynchronizedPathsYamlModel
+from boilercore.models.geometry import Geometry
 from boilercore.models.params import FitParams
 from pydantic import Extra, Field
 
 from boilerdata import get_params_file
 from boilerdata.axes_enum import AxesEnum as A  # noqa: N814
 from boilerdata.models.axes import Axes
-from boilerdata.models.geometry import Geometry
 from boilerdata.models.paths import Paths
 from boilerdata.models.trials import Trial, Trials
 

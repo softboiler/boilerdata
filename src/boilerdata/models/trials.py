@@ -5,11 +5,12 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 from boilercore.models import YamlModel
+from boilercore.models.geometry import Geometry
+from boilercore.types import Coupon, Rod
 from pydantic import BaseModel, DirectoryPath, Field, FilePath, validator
 
-from boilerdata.models.geometry import Geometry
 from boilerdata.models.paths import Paths
-from boilerdata.types import Coupon, Group, Joint, Rod, Sample
+from boilerdata.types import Group, Joint, Sample
 
 
 class Trial(BaseModel):

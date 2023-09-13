@@ -82,7 +82,7 @@ def test_forward_model(model):
 )
 def test_model_fit(params, model, plt, run, y, expected):
     """Test that the model fit is as expected."""
-    x = [0.10413994, 0.09207495, 0.08000996, 0.06794496, 0.02412999]
+    x = params.geometry.rods["R"]
     y_errors = [2.2] * len(x)
     fixed_values = params.fit.fixed_values
     fixed_errors = {k: 0 for k in params.fit.fixed_errors}

@@ -51,7 +51,7 @@ stages:
     outs:
     - path: data/modelfun
       hash: md5
-      md5: d749da4e752dc32328c6a4a7a994bcff.dir
+      md5: b8089c0df29d3b2842f388d28b47109b.dir
       size: 60196
       nfiles: 1
   runs:
@@ -90,7 +90,7 @@ stages:
       nfiles: 1
     - path: data/modelfun
       hash: md5
-      md5: d749da4e752dc32328c6a4a7a994bcff.dir
+      md5: b8089c0df29d3b2842f388d28b47109b.dir
       size: 60196
       nfiles: 1
     - path: data/runs
@@ -213,9 +213,9 @@ stages:
       size: 2323
     - path: src/boilerdata/models
       hash: md5
-      md5: 486de81bb5f1e4ce261c4a08e7868154.dir
-      size: 17806
-      nfiles: 7
+      md5: 2defd7612d5c04eced773b35f708a8d8.dir
+      size: 15808
+      nfiles: 6
     - path: src/boilerdata/stages/axes.py
       hash: md5
       md5: 832d545bfadf4c06c992c3b68877fc54
