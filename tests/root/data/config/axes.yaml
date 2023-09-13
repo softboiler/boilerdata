@@ -37,7 +37,7 @@ all:
     dtype: "boolean"
     meta: true
 
-  - name: "new"
+  - name: "plot"
     dtype: "boolean"
     meta: true
 

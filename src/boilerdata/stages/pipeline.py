@@ -1,3 +1,5 @@
+from typing import Any
+
 import numpy as np
 import pandas as pd
 from boilercore.fits import fit_to_model
@@ -66,7 +68,7 @@ def get_properties(df: pd.DataFrame, params: Params) -> pd.DataFrame:
 def fit(
     grp: pd.DataFrame,
     params: Params,
-    model,
+    model: Any,
     confidence_interval_95: float,
 ) -> pd.DataFrame:
     """Fit the data to a model function."""

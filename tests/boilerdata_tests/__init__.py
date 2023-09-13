@@ -6,6 +6,12 @@ import pytest
 from _pytest.mark.structures import ParameterSet
 from boilercore.paths import get_module_rel, walk_module_paths, walk_modules
 
+
+def approx(*args):
+    """Approximate equality with a relative tolerance of 1e-3."""
+    return pytest.approx(*args, rel=1e-3)
+
+
 BOILERDATA = Path("src") / "boilerdata"
 STAGES_DIR = BOILERDATA / "stages"
 

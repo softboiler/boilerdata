@@ -31,7 +31,7 @@ meta_cols = {
     A.sample: Column(c[A.sample].dtype, nullable=True),
     A.joint: Column(c[A.joint].dtype),
     A.good: Column(c[A.good].dtype),
-    A.new: Column(c[A.new].dtype),
+    A.plot: Column(c[A.plot].dtype),
 }
 
 runs_cols = {

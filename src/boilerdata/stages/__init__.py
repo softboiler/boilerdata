@@ -1,16 +1,15 @@
 """Stages."""
 
-from collections.abc import Mapping
+from collections.abc import Mapping, Sequence
 from contextlib import contextmanager
 from pathlib import Path
-from typing import Any
+from typing import TypeVar
 
 import matplotlib as mpl
-import numpy as np
 import pandas as pd
 from boilercore.modelfun import get_model
+from boilercore.plotting import plot_fit
 from matplotlib import pyplot as plt
-from uncertainties import ufloat
 
 from boilerdata.axes_enum import AxesEnum as A  # noqa: N814
 from boilerdata.models.params import PARAMS, Params
@@ -164,12 +163,12 @@ def plot_new_fits(grp: pd.DataFrame, params: Params, model):
     """Plot model fits for trials marked as new."""
 
     trial = get_trial(grp, params)
-    if not trial.new:
+    if not trial.plot:
         return grp
 
     tcs, tc_errors = get_tcs(trial)
-    x_unique = list(trial.thermocouple_pos.values())
-    figs = dict(
+    x = list(trial.thermocouple_pos.values())
+    for fig_dst, (ser_name, ser) in dict(
         zip(
             [
                 params.paths.plot_new_fit_0,
@@ -185,84 +184,21 @@ def plot_new_fits(grp: pd.DataFrame, params: Params, model):
             ].iterrows(),
             strict=True,
         )
-    )
-
-    for fig_dst, (ser_name, ser) in figs.items():
-        y_unique = ser[tcs]
-
-        # Plot setup
+    ).items():
         fig, ax = plt.subplots(layout="constrained")
-        run = ser_name[-1].isoformat()  # type: ignore  # pandas
-        ax.margins(0, 0)
-        ax.set_title(f"{run = }")
-        ax.set_xlabel("x (m)")
-        ax.set_ylabel("T (C)")
-
-        # Initial plot boundaries
-        x_bounds = np.array([0, trial.thermocouple_pos[A.T_1]])
-        y_bounds = model(x_bounds, **get_params_mapping(ser, params.fit.model_params))
-        ax.plot(
-            x_bounds,
-            y_bounds,
-            "none",
+        plot_fit(
+            ax=ax,
+            run=ser_name[-1].isoformat(),  # type: ignore  # pandas
+            x=x,
+            y=ser[tcs],  # type: ignore  # pandas
+            y_errors=ser[tc_errors],  # type: ignore  # pandas
+            y_0=ser[A.T_s],
+            model=model,
+            params=get_params_mapping(ser, params.fit.model_params),
+            errors=get_params_mapping(ser, params.fit.model_errors),
         )
-
-        # Measurements
-        measurements_color = [0.2, 0.2, 0.2]
-        ax.plot(
-            x_unique,
-            y_unique,
-            ".",
-            label="Measurements",
-            color=measurements_color,
-            markersize=10,
-        )
-        ax.errorbar(
-            x=x_unique,
-            y=y_unique,
-            yerr=ser[tc_errors],
-            fmt="none",
-            color=measurements_color,
-        )
-
-        # Confidence interval
-        (xlim_min, xlim_max) = ax.get_xlim()
-        pad = 0.025 * (xlim_max - xlim_min)
-        x_padded = np.linspace(xlim_min - pad, xlim_max + pad, 200)
-
-        y_padded, y_padded_min, y_padded_max = get_model_with_error(
-            model, x_padded, get_params_mapping_with_uncertainties(ser, params)
-        )
-        ax.plot(
-            x_padded,
-            y_padded,
-            "--",
-            label="Model Fit",
-        )
-        ax.fill_between(
-            x=x_padded,
-            y1=y_padded_min,
-            y2=y_padded_max,
-            color=[0.8, 0.8, 0.8],
-            edgecolor=[1, 1, 1],
-            label="95% CI",
-        )
-
-        # Extrapolation
-        ax.plot(
-            0,
-            ser[A.T_s],
-            "x",
-            label="Extrapolation",
-            color=[1, 0, 0],
-        )
-
-        # Finishing
-        ax.legend()
-        fig.savefig(
-            fig_dst,  # type: ignore  # matplotlib
-            dpi=300,
-        )
+        if params.do_plot:
+            fig.savefig(fig_dst, dpi=300)  # type: ignore  # matplotlib
 
 
 # * -------------------------------------------------------------------------------- * #
@@ -297,40 +233,16 @@ def sep_unit(val: str) -> tuple[str, str]:
     return quantity, units
 
 
-def get_params_mapping(
-    grp: pd.Series | pd.DataFrame, model_params: list[Any]  # type: ignore  # pandas
-) -> dict[str, Any]:
-    """Get a mapping of parameter names to values."""
-    return dict(zip(model_params, grp[model_params], strict=True))
-
-
-def get_params_mapping_with_uncertainties(
-    grp: pd.Series | pd.DataFrame, params: Params  # type: ignore  # pandas
-) -> dict[str, Any]:
-    """Get a mapping of parameter names to values with uncertainty."""
-    model_params = params.fit.model_params
-    param_errors = params.fit.model_errors
-    model_param_uncertainties = [
-        ufloat(model_param, model_error, tag)
-        for model_param, model_error, tag in zip(
-            grp[model_params], grp[param_errors], model_params, strict=True
-        )
-    ]
-    return dict(zip(model_params, model_param_uncertainties, strict=True))
-
-
-def get_model_with_error(model, x, model_param_uncertainties):
-    """Evaluate the model for x and return y with errors."""
-    u_x = [ufloat(v, 0, "x") for v in x]
-    u_y = model(u_x, **model_param_uncertainties)
-    y = np.array([v.nominal_value for v in u_y])
-    y_min = y - [v.std_dev for v in u_y]
-    y_max = y + [v.std_dev for v in u_y]
-    return y, y_min, y_max
-
-
 def get_tcs(trial: Trial) -> tuple[list[str], list[str]]:
     """Get the thermocouple names and their error names for this trial."""
     tcs = list(trial.thermocouple_pos.keys())
     tc_errors = [tc + "_err" for tc in tcs]
     return tcs, tc_errors
+
+
+T = TypeVar("T")
+
+
+def get_params_mapping(ser: pd.Series, model_params: Sequence[T]) -> dict[str, T]:  # type: ignore  # pandas
+    """Get a mapping of parameter names to values."""
+    return dict(zip(model_params, ser[model_params], strict=True))  # type: ignore  # pandas

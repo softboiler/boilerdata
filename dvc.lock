@@ -24,8 +24,8 @@ stages:
     deps:
     - path: data/axes
       hash: md5
-      md5: 89fde75511c4a36293f54e1f92313c1d.dir
-      size: 958
+      md5: 5de10d91991e59e7e76be3de3a3c8e4b.dir
+      size: 959
       nfiles: 2
     - path: src/boilerdata/stages/modelfun.ipynb
       hash: md5
@@ -51,7 +51,7 @@ stages:
     outs:
     - path: data/modelfun
       hash: md5
-      md5: f5834fe0338438a13d913020a6888cd1.dir
+      md5: 921cf3105ddb600ac69a3c6cde732efe.dir
       size: 60196
       nfiles: 1
   runs:
@@ -59,8 +59,8 @@ stages:
     deps:
     - path: data/axes
       hash: md5
-      md5: 89fde75511c4a36293f54e1f92313c1d.dir
-      size: 958
+      md5: 5de10d91991e59e7e76be3de3a3c8e4b.dir
+      size: 959
       nfiles: 2
     - path: data/curves
       hash: md5
@@ -77,8 +77,8 @@ stages:
     outs:
     - path: data/runs
       hash: md5
-      md5: 0eb2509935e666622dbbbf167abec153.dir
-      size: 1002736
+      md5: 00e4bdae06d0d01f14bb12b1d82d98a6.dir
+      size: 1002737
       nfiles: 1
   pipeline:
     cmd: python src/boilerdata/stages/pipeline.py
@@ -209,12 +209,12 @@ stages:
     deps:
     - path: data/config/axes.yaml
       hash: md5
-      md5: efacd631554ec35115676fc39e0da8dd
-      size: 2322
+      md5: 5c2a1ccd6ac3482d6d777f5caa012c4d
+      size: 2323
     - path: src/boilerdata/models
       hash: md5
-      md5: 539e5d87b32fd666c6fa15cb04490f65.dir
-      size: 17805
+      md5: 486de81bb5f1e4ce261c4a08e7868154.dir
+      size: 17806
       nfiles: 7
     - path: src/boilerdata/stages/axes.py
       hash: md5
@@ -223,8 +223,8 @@ stages:
     outs:
     - path: data/axes
       hash: md5
-      md5: 89fde75511c4a36293f54e1f92313c1d.dir
-      size: 958
+      md5: 5de10d91991e59e7e76be3de3a3c8e4b.dir
+      size: 959
       nfiles: 2
   originlab:
     cmd: python src/boilerdata/stages/originlab.py

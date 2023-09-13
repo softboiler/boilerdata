@@ -15,7 +15,7 @@ class AxesEnum(GetNameEnum):
     sample = auto()
     joint = auto()
     good = auto()
-    new = auto()
+    plot = auto()
     V = auto()
     I = auto()
     T_0 = auto()

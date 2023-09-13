@@ -84,9 +84,9 @@
           "default": true,
           "type": "boolean"
         },
-        "new": {
-          "title": "New",
-          "description": "Whether this is newly-collected data.",
+        "plot": {
+          "title": "Plot",
+          "description": "Whether this trial should be plotted.",
           "default": false,
           "type": "boolean"
         },

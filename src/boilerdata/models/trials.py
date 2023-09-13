@@ -38,9 +38,9 @@ class Trial(BaseModel):
         default=True,
         description="Whether the boiling curve is good.",
     )
-    new: bool = Field(
+    plot: bool = Field(
         default=False,
-        description="Whether this is newly-collected data.",
+        description="Whether this trial should be plotted.",
     )
 
     # ! FIELDS TO EXCLUDE FROM DATAFRAME
