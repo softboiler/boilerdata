@@ -1,6 +1,15 @@
 """Types used throughout this package."""
 
+from enum import StrEnum
 from typing import Literal
+
+
+class GetNameEnum(StrEnum):
+    """When getting a value from an enum, return the name."""
+
+    def __get__(self, *_):
+        return self.name
+
 
 PandasAggfun = Literal[
     "mean",

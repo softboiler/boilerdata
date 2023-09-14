@@ -23,7 +23,7 @@ def generate_axes_enum(axes: list[str], path: Path) -> None:
 
         from enum import auto
 
-        from boilerdata.models.enums import GetNameEnum
+        from boilerdata.types import GetNameEnum
 
 
         class AxesEnum(GetNameEnum):

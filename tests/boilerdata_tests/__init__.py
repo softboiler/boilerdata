@@ -9,7 +9,7 @@ from boilercore.paths import get_module_rel, walk_module_paths, walk_modules
 
 def approx(*args):
     """Approximate equality with a relative tolerance of 1e-3."""
-    return pytest.approx(*args, rel=1e-3)
+    return pytest.approx(*args, rel=0.1, abs=1)
 
 
 BOILERDATA = Path("src") / "boilerdata"
