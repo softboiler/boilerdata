@@ -2,15 +2,6 @@
 
 from typing import Literal
 
-Group = Literal["control", "porous", "hybrid"]
-"""The group that this sample belongs to."""
-
-Joint = Literal["paste", "epoxy", "solder", "none"]
-"""The method used to join parts of the sample in this trial."""
-
-Sample = Literal["B3"]
-"""The sample attached to the coupon in this trial."""
-
 PandasAggfun = Literal[
     "mean",
     "sum",

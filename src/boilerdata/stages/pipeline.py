@@ -1,15 +1,17 @@
+"""Pipeline."""
+
 from typing import Any
 
 import numpy as np
 import pandas as pd
 from boilercore.fits import fit_to_model
+from boilercore.models.trials import Trial
 from pyXSteam.XSteam import XSteam
 from scipy.constants import convert_temperature
 from scipy.stats import t
 
 from boilerdata.axes_enum import AxesEnum as A  # noqa: N814
 from boilerdata.models.params import PARAMS, Mat, Params, Prop, get_prop
-from boilerdata.models.trials import Trial
 from boilerdata.stages import MODEL, get_tcs, get_trial, per_run, per_trial
 from boilerdata.validation import (
     handle_invalid_data,

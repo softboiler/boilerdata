@@ -1,12 +1,11 @@
+"""Test model fits."""
+
 import numpy as np
 import pytest
-from boilercore.fits import fit_to_model
-from boilercore.plotting import plot_fit
-from scipy.stats import t
+from boilercore.testing import MFParam, fit_and_plot
 from sympy import Eq
 
 from boilerdata_tests import approx
-from boilerdata_tests.modelfun import MFParam
 
 
 @pytest.mark.parametrize(
@@ -72,9 +71,25 @@ def test_forward_model(model):
     [
         pytest.param(
             *MFParam(
-                id_=(id_ := "low"),  # Run: 2022-09-14T10:21:00
+                run=(id_ := "low"),  # Run: 2022-09-14T10:21:00
                 y=[93.91, 93.28, 94.48, 94.84, 96.30],
-                expected={"T_s": 95.00, "q_s": 1.00e-10},
+                expected={"T_s": 95.0000000095, "q_s": 1e-10},
+            ),
+            id=id_,
+        ),
+        pytest.param(
+            *MFParam(
+                run=(id_ := "med"),  # Run: 2022-09-14T12:09:46
+                y=[108.00, 106.20, 105.50, 104.40, 102.00],
+                expected={"T_s": 101.02846966626252, "q_s": 1.650783011076045},
+            ),
+            id=id_,
+        ),
+        pytest.param(
+            *MFParam(
+                run=(id_ := "high"),  # Run: 2022-09-14 15:17:21
+                y=[165.7, 156.8, 149.2, 141.1, 116.4],
+                expected={"T_s": 103.86511878120051, "q_s": 21.212187098500316},
             ),
             id=id_,
         ),
@@ -82,37 +97,7 @@ def test_forward_model(model):
 )
 def test_model_fit(params, model, plt, run, y, expected):
     """Test that the model fit is as expected."""
-    x = params.geometry.rods["R"]
-    y_errors = [2.2] * len(x)
-    fixed_values = params.fit.fixed_values
-    fixed_errors = {k: 0 for k in params.fit.fixed_errors}
-    model_fit, model_error = fit_to_model(
-        model_bounds=params.fit.model_bounds,
-        initial_values=params.fit.initial_values,
-        free_params=params.fit.free_params,
-        fit_method=params.fit.fit_method,
-        model=model,
-        confidence_interval=t.interval(0.95, 1)[1],
-        x=x,
-        y=y,
-        y_errors=y_errors,
-        fixed_values=fixed_values,
-    )
-    fit = dict(zip(params.fit.free_params, model_fit, strict=True))
-    error = dict(zip(params.fit.free_errors, model_error, strict=True))
-    _fig, ax = plt.subplots()
-    plot_fit(
-        ax=ax,
-        run=run,
-        x=x,
-        y=y,
-        y_errors=y_errors,
-        y_0=fit["T_s"],
-        model=model,
-        params=fit | fixed_values,
-        errors=error | fixed_errors,
-    )
-    assert expected == approx({k: v for k, v in fit.items() if k in ["T_s", "q_s"]})
+    assert expected == approx(fit_and_plot(params, model, plt, run, y))
 
 
 @pytest.mark.slow()

@@ -8,12 +8,12 @@ from typing import TypeVar
 import matplotlib as mpl
 import pandas as pd
 from boilercore.modelfun import get_model
+from boilercore.models.trials import Trial
 from boilercore.plotting import plot_fit
 from matplotlib import pyplot as plt
 
 from boilerdata.axes_enum import AxesEnum as A  # noqa: N814
 from boilerdata.models.params import PARAMS, Params
-from boilerdata.models.trials import Trial
 
 idxs = pd.IndexSlice
 """Use to slice pd.MultiIndex indices."""

@@ -2,23 +2,21 @@
 
 from os import environ
 from pathlib import Path
-from typing import Any, Literal, TypeAlias
+from typing import Any
 
 import pandas as pd
 from boilercore.models import SynchronizedPathsYamlModel
 from boilercore.models.geometry import Geometry
 from boilercore.models.params import FitParams
+from boilercore.models.trials import Trial, Trials
 from pydantic import Extra, Field
 
 from boilerdata import get_params_file
 from boilerdata.axes_enum import AxesEnum as A  # noqa: N814
 from boilerdata.models.axes import Axes
 from boilerdata.models.paths import Paths
-from boilerdata.models.trials import Trial, Trials
 
 PARAMS_FILE = get_params_file()
-
-Bound: TypeAlias = float | Literal["-inf", "inf"]
 
 
 class Params(SynchronizedPathsYamlModel, extra=Extra.allow):
