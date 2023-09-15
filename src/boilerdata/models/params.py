@@ -7,7 +7,7 @@ from typing import Any
 import pandas as pd
 from boilercore.models import SynchronizedPathsYamlModel
 from boilercore.models.geometry import Geometry
-from boilercore.models.params import FitParams
+from boilercore.models.params import Fit
 from boilercore.models.trials import Trial, Trials
 from pydantic import Extra, Field
 
@@ -22,9 +22,7 @@ PARAMS_FILE = get_params_file()
 class Params(SynchronizedPathsYamlModel, extra=Extra.allow):
     """Global project parameters."""
 
-    fit: FitParams = Field(
-        default_factory=FitParams, description="Parameters for model fit."
-    )
+    fit: Fit = Field(default_factory=Fit, description="Parameters for model fit.")
 
     records_to_average: int = Field(
         default=5,
