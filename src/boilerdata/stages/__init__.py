@@ -7,9 +7,9 @@ from typing import TypeVar
 
 import matplotlib as mpl
 import pandas as pd
+from boilercore.fits import plot_fit
 from boilercore.modelfun import get_model
 from boilercore.models.trials import Trial
-from boilercore.plotting import plot_fit
 from matplotlib import pyplot as plt
 
 from boilerdata.axes_enum import AxesEnum as A  # noqa: N814

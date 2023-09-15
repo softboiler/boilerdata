@@ -60,7 +60,6 @@ paths:
   plot_config: data/config/plotting
   mpl_base: data/config/plotting/base.mplstyle
   mpl_hide_title: data/config/plotting/hide_title.mplstyle
-  test_file_model: tests/root/data/modelfun/model.dillpickle
   propshop: data/propshop
   benchmarks: data/benchmarks
   plotter: data/plotter
