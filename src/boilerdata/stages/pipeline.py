@@ -4,7 +4,7 @@ from typing import Any
 
 import numpy as np
 import pandas as pd
-from boilercore.fits import fit_to_model
+from boilercore.fits import fit_from_params
 from boilercore.models.trials import Trial
 from pyXSteam.XSteam import XSteam
 from scipy.constants import convert_temperature
@@ -76,7 +76,6 @@ def fit(
     """Fit the data to a model function."""
 
     trial = get_trial(grp, params)
-
     # Assign thermocouple errors trial-by-trial (since they can vary)
     _, tc_errors = get_tcs(trial)
     k_type_error = 2.2
@@ -88,36 +87,26 @@ def fit(
             | {A.T_5_err: t_type_error}
         )
     )
-
     # Prepare for fitting
     x, y, y_errors = fit_setup(grp, params, trial)
-
     # Get fixed values
     fixed_values: dict[str, float] = params.fit.fixed_values
     for key in fixed_values:
         if not all(grp[key].isna()):
             fixed_values[key] = grp[key].mean()
-
     # Get bounds/guesses and override some. Can't do it earlier because of the override.
-    fitted_params, errors = fit_to_model(
-        params.fit.model_bounds,
-        params.fit.initial_values,
-        params.fit.free_params,
-        params.fit.fit_method,
-        model,
-        confidence_interval_95,
-        x,
-        y,
-        y_errors,
-        fixed_values,
+    fits, errors = fit_from_params(
+        model=model,
+        params=params.fit,
+        x=x,
+        y=y,
+        y_errors=y_errors,
+        confidence_interval=confidence_interval_95,
     )
-
     grp = grp.assign(
         **{key: fixed_values[key] for key in fixed_values if all(grp[key].isna())},
-        **pd.Series(
-            np.concatenate([fitted_params, errors]),
-            index=params.fit.free_params + params.fit.free_errors,
-        ),
+        **fits,
+        **errors,
     )
     return grp
 

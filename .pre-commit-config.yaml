@@ -4,6 +4,8 @@ ci:
     - "core-update"
     - "pytest-fast-only"
     - "fawltydeps"
+    - "dvc-post-checkout"
+    - "dvc-pre-push"
   autoupdate_schedule: "quarterly"
 
 repos:

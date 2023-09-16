@@ -8,18 +8,6 @@ stages:
     outs:
       - "${paths.axes}"
 
-  modelfun:
-    cmd: "ploomber-engine ${paths.stages.modelfun} NUL"
-    deps:
-      - "${paths.stages.modelfun}"
-      - "${paths.axes}"
-    outs:
-      - "${paths.modelfun}"
-    params:
-      - "model_inputs"
-      - "model_params"
-      - "fixed_params"
-
   runs:
     cmd: "python ${paths.stages.runs}"
     deps:
@@ -44,16 +32,12 @@ stages:
     cmd: "python ${paths.stages.pipeline}"
     deps:
       - "${paths.stages.pipeline}"
-      - "${paths.modelfun}"
+      - "${paths.model}"
       - "${paths.runs}"
       - "${paths.benchmarks_parsed}"
       - "${paths.validation}"
     outs:
       - "${paths.results}"
-    params:
-      - "fit_method"
-      - "initial_values"
-      - "model_bounds"
 
   metrics:
     cmd: "ploomber-engine ${paths.stages.metrics} NUL"

@@ -1,43 +1,5 @@
 do_plot: true
 records_to_average: 9
-fit_method: trf
-model_inputs:
-  r: 0.0047625
-  T_infa: 25
-  T_infw: 100
-  x_s: 0
-  x_wa: 0.0381
-model_params:
-  - T_s
-  - q_s
-  - k
-  - h_a
-  - h_w
-fixed_params:
-  - k
-  - h_w
-initial_values:
-  T_s: 95
-  q_s: 0
-  k: 400
-  h_a: 0
-  h_w: 0
-model_bounds:
-  T_s:
-    - -inf
-    - inf
-  q_s:
-    - -inf
-    - inf
-  k:
-    - 350
-    - 450
-  h_a:
-    - -inf
-    - inf
-  h_w:
-    - -inf
-    - inf
 paths:
   project: .
   package: src/boilerdata
@@ -47,7 +9,6 @@ paths:
     axes: src/boilerdata/stages/axes.py
     literature: src/boilerdata/stages/literature.py
     metrics: src/boilerdata/stages/metrics.ipynb
-    modelfun: src/boilerdata/stages/modelfun.ipynb
     originlab: src/boilerdata/stages/originlab.py
     parse_benchmarks: src/boilerdata/stages/parse_benchmarks.py
     pipeline: src/boilerdata/stages/pipeline.py
@@ -61,6 +22,7 @@ paths:
   mpl_base: data/config/plotting/base.mplstyle
   mpl_hide_title: data/config/plotting/hide_title.mplstyle
   propshop: data/propshop
+  model: data/model.dillpickle
   benchmarks: data/benchmarks
   plotter: data/plotter
   file_plotter: data/plotter/results.opju
@@ -73,8 +35,6 @@ paths:
   file_benchmarks_parsed: data/benchmarks_parsed/benchmarks_parsed.csv
   literature_results: data/literature_results
   file_literature_results: data/literature_results/lit.csv
-  modelfun: data/modelfun
-  file_model: data/modelfun/model.dillpickle
   originlab_plots: data/originlab_plots
   originlab_plot_files:
     lit: data/originlab_plots/lit.png

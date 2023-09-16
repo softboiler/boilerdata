@@ -5,6 +5,9 @@
 
 boilercore@git+https://github.com/blakeNaccarato/boilercore@77bc179ebb2ffc579cbb61cec7730e9e90854ea0
 
+# ? Install tests package so modules can be run in debugging
+tests/.
+
 # * -------------------------------------------------------------------------------- * #
 # * Changes below may be lost in significant template updates.
 

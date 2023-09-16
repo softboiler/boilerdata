@@ -3,9 +3,6 @@
 # * -------------------------------------------------------------------------------- * #
 # * Changes below should persist in significant template updates.
 
-# Additional testing plugins
-pytest-plt==1.1.0
-
 # * -------------------------------------------------------------------------------- * #
 # * Changes below may be lost in significant template updates.
 

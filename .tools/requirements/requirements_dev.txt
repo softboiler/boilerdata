@@ -4,6 +4,7 @@
 # * Changes below should persist in significant template updates.
 
 -e ../boilercore
+# ? Install tests package so modules can be run in debugging
 -e tests/.
 # ? For DVC repro of OriginPro steps on dev machine only
 originpro==1.1.7

@@ -42,6 +42,10 @@ class Paths(CreatePathsModel):
     # ! Properties
     propshop: DirectoryPath = data / "propshop"
 
+    # * DVC imports from boilercore
+    # ! Model Fit Function
+    model: Path = data / "model.dillpickle"
+
     # * DVC-Tracked Inputs
     # ! Benchmarks
     benchmarks: DirectoryPath = data / "benchmarks"
@@ -65,9 +69,6 @@ class Paths(CreatePathsModel):
     # ! Literature Results
     literature_results: DirectoryPath = data / "literature_results"
     file_literature_results: Path = literature_results / "lit.csv"
-    # ! Model Fit Function
-    modelfun: DirectoryPath = data / "modelfun"
-    file_model: Path = modelfun / "model.dillpickle"
     # ! Originlab Plots
     originlab_plots: DirectoryPath = data / "originlab_plots"
     originlab_plot_files: dict[str, Path] = (  # noqa: PLC3002  # need lambda *shrug*
