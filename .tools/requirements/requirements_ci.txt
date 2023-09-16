@@ -3,7 +3,7 @@
 # * -------------------------------------------------------------------------------- * #
 # * Changes below should persist in significant template updates.
 
-boilercore@git+https://github.com/blakeNaccarato/boilercore@77bc179ebb2ffc579cbb61cec7730e9e90854ea0
+boilercore@git+https://github.com/blakeNaccarato/boilercore@5b2fe4beaf6d735053cf0f60ddf731b59ce1005e
 
 # ? Install tests package so modules can be run in debugging
 tests/.
