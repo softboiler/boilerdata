@@ -6,8 +6,8 @@ from typing import Any
 
 import pandas as pd
 from boilercore.models import SynchronizedPathsYamlModel
+from boilercore.models.fit import Fit
 from boilercore.models.geometry import Geometry
-from boilercore.models.params import Fit
 from boilercore.models.trials import Trial, Trials
 from pydantic import Extra, Field
 
