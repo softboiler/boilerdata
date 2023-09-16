@@ -1,18 +1,18 @@
 # Latest working requirements of your package, should be ahead of pyproject.toml.
-dvc[gs]==3.15.3
-IPython[notebook]==8.14.0
-matplotlib==3.7.2
+dvc[gs]==3.21.1
+IPython[notebook]==8.15.0
+matplotlib==3.8.0
 nbqa==1.7.0
 pandas[hdf5,performance]==2.0.2
 pandas-stubs~=2.0.2
 pandera==0.16.1
-ploomber-engine==0.0.30
+ploomber-engine==0.0.31
 propshop==0.1.1
 pyarrow==12.0.1
 pydantic==1.10.12
 pyjanitor==0.25.0
 pyXSteam==0.4.9
-scipy==1.11.1
+scipy==1.11.2
 seaborn==0.12.2
 # Numba only supports numpy<1.25 https://github.com/numba/numba/issues/8698
 # ! Unpin numba once it supports numpy>=1.25
