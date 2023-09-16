@@ -64,8 +64,8 @@
 
 # Binary files
 *.db binary
-*.p binary
 *.dillpickle binary
+*.p binary
 *.pkl binary
 *.pickle binary
 *.pyc binary export-ignore
