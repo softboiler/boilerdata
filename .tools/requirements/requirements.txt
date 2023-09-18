@@ -1,5 +1,4 @@
 # Latest working requirements of your package, should be ahead of pyproject.toml.
-dvc[gs]==3.21.1
 IPython[notebook]==8.15.0
 matplotlib==3.8.0
 nbqa==1.7.0
