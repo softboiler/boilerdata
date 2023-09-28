@@ -17,7 +17,7 @@ from boilerdata_tests import nbs_to_execute, stages
 @pytest.fixture(autouse=True)
 def _filter_certain_warnings():
     """Filter certain warnings."""
-    filter_certain_warnings()
+    filter_certain_warnings(package=boilerdata.__name__)
 
 
 @pytest.fixture(autouse=True, scope="session")
