@@ -3,6 +3,9 @@
 # * -------------------------------------------------------------------------------- * #
 # * Changes below should persist in significant template updates.
 
+#? For tests
+ploomber-engine==0.0.31
+
 # * -------------------------------------------------------------------------------- * #
 # * Changes below may be lost in significant template updates.
 
