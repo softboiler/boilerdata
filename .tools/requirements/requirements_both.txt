@@ -12,7 +12,7 @@ ploomber-engine==0.0.31
 # Type checking
 pyright==1.1.327
 # Pre-commit common requirements
-ruff==0.0.287
+ruff==0.0.292
 # Testing
 pytest==7.4.0
 # Testing plugins
