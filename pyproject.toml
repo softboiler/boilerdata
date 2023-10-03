@@ -56,7 +56,6 @@ ignore_unused = [
 ]
 [tool.fawltydeps.custom_mapping]
 boilercore = ["boilercore"]
-ipykernel = ["IPython"]
 
 [tool.pyright]
 
