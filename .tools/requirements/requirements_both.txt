@@ -10,7 +10,7 @@ ploomber-engine==0.0.31
 # * Changes below may be lost in significant template updates.
 
 # Type checking
-pyright==1.1.327
+pyright==1.1.331
 # Pre-commit common requirements
 ruff==0.0.292
 # Testing
