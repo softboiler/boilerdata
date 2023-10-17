@@ -12,20 +12,14 @@ class Axis(BaseModel):
 
     # ! COMMON FIELDS
 
-    name: str = Field(
-        default=...,
-        description="The name of the column.",
-    )
+    name: str = Field(default=..., description="The name of the column.")
 
     dtype: PandasDtype = Field(
         default="float",
         description="The Pandas data type to be used to represent this column.",
     )
 
-    units: str = Field(
-        default="",
-        description="The units for this column's values.",
-    )
+    units: str = Field(default="", description="The units for this column's values.")
 
     # ! AGGREGATION
 
@@ -51,8 +45,7 @@ class Axis(BaseModel):
     # ! INDEX
 
     index: bool = Field(
-        default=False,
-        description="Whether this column is to be the index.",
+        default=False, description="Whether this column is to be the index."
     )
 
     @validator("index", pre=True, always=True)
@@ -69,8 +62,7 @@ class Axis(BaseModel):
     # ! ORIGINLAB
 
     originlab_coldes: OriginLabColdes = Field(
-        default="N",
-        description="The column designation for plotting in OriginLab.",
+        default="N", description="The column designation for plotting in OriginLab."
     )
 
     # ! PRETTY NAME

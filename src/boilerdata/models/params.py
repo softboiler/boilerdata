@@ -45,8 +45,7 @@ class Params(SynchronizedPathsYamlModel, extra=Extra.allow):
 
     # ! PLOTTING
     do_plot: bool = Field(
-        default=False,
-        description="Whether to plot the fits of the individual runs.",
+        default=False, description="Whether to plot the fits of the individual runs."
     )
 
     geometry: Geometry = Field(default_factory=Geometry)

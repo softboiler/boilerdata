@@ -68,10 +68,7 @@ def get_properties(df: pd.DataFrame, params: Params) -> pd.DataFrame:
 
 
 def fit(
-    grp: pd.DataFrame,
-    params: Params,
-    model: Any,
-    confidence_interval_95: float,
+    grp: pd.DataFrame, params: Params, model: Any, confidence_interval_95: float
 ) -> pd.DataFrame:
     """Fit the data to a model function."""
 
@@ -122,9 +119,7 @@ def fit_setup(grp: pd.DataFrame, params: Params, trial: Trial):
 
 
 def agg_over_runs(
-    grp: pd.DataFrame,
-    params: Params,
-    confidence_interval_95: float,
+    grp: pd.DataFrame, params: Params, confidence_interval_95: float
 ) -> pd.DataFrame:
     """Aggregate properties over each run. Runs per trial because TCs can vary."""
     trial = get_trial(grp, params)

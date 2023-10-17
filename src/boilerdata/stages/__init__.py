@@ -43,7 +43,7 @@ def get_run(params: Params, run: Path) -> pd.DataFrame:
             parse_dates=[index],  # type: ignore  # pandas
             dtype=source_dtypes,
             encoding="utf-8",
-        )
+        ),
         # Rarely a run has an all NA record at the end
     ).dropna(how="all")
 
@@ -99,11 +99,7 @@ def per_index(
 
 
 def per_trial(
-    df: pd.DataFrame,
-    per_trial_func,
-    params: Params,
-    *args,
-    **kwargs,
+    df: pd.DataFrame, per_trial_func, params: Params, *args, **kwargs
 ) -> pd.DataFrame:
     """Apply a function to individual trials."""
     df = per_index(df, A.trial, per_trial_func, params, *args, **kwargs)
@@ -111,11 +107,7 @@ def per_trial(
 
 
 def per_run(
-    df: pd.DataFrame,
-    per_run_func,
-    params: Params,
-    *args,
-    **kwargs,
+    df: pd.DataFrame, per_run_func, params: Params, *args, **kwargs
 ) -> pd.DataFrame:
     """Apply a function to individual runs."""
     df = per_index(df, [A.trial, A.run], per_run_func, params, *args, **kwargs)
@@ -175,13 +167,7 @@ def plot_new_fits(grp: pd.DataFrame, params: Params, model):
                 params.paths.plot_new_fit_1,
                 params.paths.plot_new_fit_2,
             ],
-            grp.iloc[
-                [
-                    0,
-                    (len(grp) // 2) - 1,
-                    len(grp) - 1,
-                ]
-            ].iterrows(),
+            grp.iloc[[0, (len(grp) // 2) - 1, len(grp) - 1]].iterrows(),
             strict=True,
         )
     ).items():

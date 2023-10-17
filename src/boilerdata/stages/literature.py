@@ -73,13 +73,7 @@ def get_dict(data: dict[str, Any]) -> dict[str, Any]:
 def get_df(data: dict[str, Any]) -> pd.DataFrame:
     list_of_dfs = []
     for name, xy_matrix in data.items():
-        df = pd.DataFrame(
-            {
-                "x": xy_matrix[:, 0],
-                "y": xy_matrix[:, 1],
-                "name": name,
-            }
-        )
+        df = pd.DataFrame({"x": xy_matrix[:, 0], "y": xy_matrix[:, 1], "name": name})
         list_of_dfs += [df]
     return pd.concat(list_of_dfs, ignore_index=True)
 

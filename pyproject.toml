@@ -176,7 +176,6 @@ unfixable = [
 
 [tool.ruff.format]
 preview = true
-line-ending = "lf"
 skip-magic-trailing-comma = true
 
 [tool.ruff.pydocstyle]
