@@ -2,7 +2,7 @@
 IPython[notebook]==8.15.0
 matplotlib==3.8.0
 nbqa==1.7.0
-pandas[hdf5,performance]==2.0.2
+pandas[hdf5,performance]==2.1.1
 pandas-stubs~=2.0.2
 pandera==0.16.1
 propshop==0.1.1
@@ -13,8 +13,8 @@ scipy==1.11.2
 seaborn==0.12.2
 # Numba only supports numpy<1.25 https://github.com/numba/numba/issues/8698
 # ! Unpin numba once it supports numpy>=1.25
-numba==0.57.1
-numpy==1.24.4
+numba==0.58.1
+numpy==1.26.1
 # ! boilercore specified differently in dev and CI to allow editable package in dev
 # boilercore==...
 # ! originpro specified in dev environment and omitted from CI (incompatible w/ linux)
