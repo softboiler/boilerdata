@@ -16,7 +16,6 @@
       "options": [
         "",
         "axes",
-        "modelfun",
         "runs",
         "parse_benchmarks",
         "pipeline",
