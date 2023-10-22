@@ -4,7 +4,7 @@
 # * Changes below should persist in significant template updates.
 
 # ? Decouple package install from DVC, an external tool used in this repo
-dvc[gs]==3.21.1
+dvc[gs]==3.27.0
 # ? For using the latest version of this core package during development
 -e ../boilercore
 # ? Install tests package so modules can be run in debugging
@@ -15,7 +15,7 @@ dvc[gs]==3.21.1
 # ? For DVC repro of OriginPro steps on dev machine only
 originpro==1.1.8
 # ? https://github.com/pydata/numexpr/issues/442#issuecomment-1684551982
-numexpr==2.8.6
+numexpr==2.8.7
 
 # * -------------------------------------------------------------------------------- * #
 # * Changes below may be lost in significant template updates.
