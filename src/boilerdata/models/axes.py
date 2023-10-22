@@ -29,7 +29,7 @@ class Axis(BaseModel):
 
     @validator("agg", always=True)
     def validate_agg(cls, agg, values):
-        return (lambda ser: ser[0]) if values["dtype"] == "category" else agg
+        return (lambda ser: ser.iloc[0]) if values["dtype"] == "category" else agg
 
     # ! COLUMNS IN SOURCE DATA
 
