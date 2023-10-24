@@ -2,6 +2,8 @@ do_plot: true
 records_to_average: 9
 paths:
   project: .
+  data: data
+  propshop: data/propshop
   package: src/boilerdata
   axes_enum: src/boilerdata/axes_enum.py
   models: src/boilerdata/models
@@ -14,23 +16,21 @@ paths:
     pipeline: src/boilerdata/stages/pipeline.py
     runs: src/boilerdata/stages/runs.py
   validation: src/boilerdata/validation.py
-  data: data
   config: data/config
   axes_config: data/config/axes.yaml
   trials_config: data/config/trials.yaml
   plot_config: data/config/plotting
   mpl_base: data/config/plotting/base.mplstyle
   mpl_hide_title: data/config/plotting/hide_title.mplstyle
-  propshop: data/propshop
   model: data/model.dillpickle
   benchmarks: data/benchmarks
-  plotter: data/plotter
-  file_plotter: data/plotter/results.opju
   axes: data/axes
   axes_enum_copy: data/axes/axes_enum.py
   file_originlab_coldes: data/axes/originlab_coldes.txt
-  trials: data/curves
   literature: data/literature
+  plotter: data/plotter
+  file_plotter: data/plotter/results.opju
+  trials: data/curves
   benchmarks_parsed: data/benchmarks_parsed
   file_benchmarks_parsed: data/benchmarks_parsed/benchmarks_parsed.csv
   literature_results: data/literature_results

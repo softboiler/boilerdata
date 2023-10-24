@@ -14,62 +14,54 @@ class Paths(CreatePathsModel):
     """Paths relevant to the project."""
 
     # * Roots
-    # ! Project
     project: DirectoryPath = PROJECT_PATH
+    data: DirectoryPath = project / "data"
+
+    # * Local inputs
+    propshop: DirectoryPath = data / "propshop"
+
+    # * Git-tracked inputs
     # ! Package
     package: DirectoryPath = get_package_dir(boilerdata)
     axes_enum: FilePath = package / "axes_enum.py"
     models: DirectoryPath = package / "models"
     stages: dict[str, FilePath] = map_stages(package / "stages", package)
     validation: FilePath = package / "validation.py"
-    # ! Data
-    data: DirectoryPath = project / "data"
     # ! Config
     # Careful, "Config" is a special member of BaseClass
     config: DirectoryPath = data / "config"
-
-    # * Git-tracked Inputs
-    # ! Axes And Trial Configs
     axes_config: FilePath = config / "axes.yaml"
     trials_config: FilePath = config / "trials.yaml"
-    # ! Plot Configs
+    # ! Plotting
     plot_config: DirectoryPath = config / "plotting"
-    # ? Files
     mpl_base: FilePath = plot_config / "base.mplstyle"
     mpl_hide_title: FilePath = plot_config / "hide_title.mplstyle"
 
-    # * Local Inputs
-    # ! Properties
-    propshop: DirectoryPath = data / "propshop"
-
-    # * DVC imports from boilercore
-    # ! Model Fit Function
+    # * DVC-tracked imports
     model: Path = data / "model.dillpickle"
 
-    # * DVC-Tracked Inputs
-    # ! Benchmarks
+    # * DVC-tracked inputs
     benchmarks: DirectoryPath = data / "benchmarks"
+    # ! Axes
+    axes: DirectoryPath = data / "axes"
+    axes_enum_copy: Path = axes / "axes_enum.py"
+    file_originlab_coldes: Path = axes / "originlab_coldes.txt"
+    # ! Literature
+    literature: DirectoryPath = data / "literature"
     # ! Plotter
     plotter: DirectoryPath = data / "plotter"
     file_plotter: FilePath = plotter / "results.opju"
-    # ! Axes
-    axes: DirectoryPath = data / "axes"
-    # ? Files
-    axes_enum_copy: Path = axes / "axes_enum.py"
-    file_originlab_coldes: Path = axes / "originlab_coldes.txt"
-    # ! Curves (Trials)
+    # ! Trials/curves
     trials: DirectoryPath = data / "curves"
-    # ! Literature
-    literature: DirectoryPath = data / "literature"
 
-    # * DVC-Tracked Results
-    # ! Benchmarks Parsed
+    # * DVC-tracked results
+    # ! Benchmarks parsed
     benchmarks_parsed: DirectoryPath = data / "benchmarks_parsed"
     file_benchmarks_parsed: Path = benchmarks_parsed / "benchmarks_parsed.csv"
-    # ! Literature Results
+    # ! Literature results
     literature_results: DirectoryPath = data / "literature_results"
     file_literature_results: Path = literature_results / "lit.csv"
-    # ! Originlab Plots
+    # ! Originlab plots
     originlab_plots: DirectoryPath = data / "originlab_plots"
     originlab_plot_files: dict[str, Path] = (  # noqa: PLC3002  # need lambda *shrug*
         lambda originlab_plots: {
@@ -77,12 +69,11 @@ class Paths(CreatePathsModel):
             for shortname in ["lit", "low"]
         }
     )(originlab_plots)
-    # ! Originlab Results
+    # ! Originlab results
     originlab_results: DirectoryPath = data / "originlab_results"
     file_originlab_results: Path = originlab_results / "originlab_results.csv"
     # ! Plots
     plots: DirectoryPath = data / "plots"
-    # ? Files
     plot_new_fit_0: Path = plots / "new_fit_0.png"
     plot_new_fit_1: Path = plots / "new_fit_1.png"
     plot_new_fit_2: Path = plots / "new_fit_2.png"

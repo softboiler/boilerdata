@@ -20,7 +20,6 @@ dependencies = [
     "boilercore>=0.0.0",
     "IPython[notebook]>=8.14.0",
     "matplotlib>=3.7.2",
-    "nbqa>=1.7.0",
     "numpy>=1.24.4",
     "originpro>=1.1.7",
     "pandas[hdf5,performance]>=2.0.2",
@@ -47,7 +46,6 @@ output_format = "human_detailed"
 code = ["src"]
 deps = ["pyproject.toml"]
 ignore_unused = [
-    "nbqa",    # boilercv.pre_repro.clean_notebook
     "pyarrow", # boilercv.init: pd.set_option("mode.string_storage", "pyarrow")
 ]
 [tool.fawltydeps.custom_mapping]
