@@ -25,7 +25,7 @@ class Paths(CreatePathsModel):
     package: DirectoryPath = get_package_dir(boilerdata)
     axes_enum: FilePath = package / "axes_enum.py"
     models: DirectoryPath = package / "models"
-    stages: dict[str, FilePath] = map_stages(package / "stages", package)
+    stages: dict[str, FilePath] = map_stages(package / "stages")
     validation: FilePath = package / "validation.py"
     # ! Config
     # Careful, "Config" is a special member of BaseClass
