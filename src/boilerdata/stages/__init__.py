@@ -136,10 +136,7 @@ def add_units(
 def manual_subplot_spacing():
     """Context manager that allows custom spacing of subplots."""
     with mpl.rc_context({"figure.autolayout": False}):
-        try:
-            yield
-        finally:
-            ...
+        yield
 
 
 def tex_wrap(df: pd.DataFrame) -> tuple[pd.DataFrame, Mapping[str, str]]:
