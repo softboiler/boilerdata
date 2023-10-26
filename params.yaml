@@ -10,7 +10,6 @@ paths:
   stages:
     axes: src/boilerdata/stages/axes.py
     literature: src/boilerdata/stages/literature.py
-    metrics: src/boilerdata/stages/metrics.ipynb
     originlab: src/boilerdata/stages/originlab.py
     parse_benchmarks: src/boilerdata/stages/parse_benchmarks.py
     pipeline: src/boilerdata/stages/pipeline.py
