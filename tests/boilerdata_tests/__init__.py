@@ -1,4 +1,4 @@
-"""Tests."""
+"""Helper functions for tests."""
 
 from pathlib import Path
 

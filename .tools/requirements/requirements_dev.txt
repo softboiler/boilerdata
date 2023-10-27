@@ -3,13 +3,6 @@
 # * -------------------------------------------------------------------------------- * #
 # * Changes below should persist in significant template updates.
 
-# ? DVC is an external tool used in this repo
-dvc[gs]==3.27.0
-# ? For using the latest version of this core package during development
--e ../boilercore
-# ? For DVC repro of OriginPro steps on dev machine only
-originpro==1.1.8
-
 # * -------------------------------------------------------------------------------- * #
 # * Changes below may be lost in significant template updates.
 
@@ -24,7 +17,6 @@ debugpy==1.8.0
 # For `pythonstartup.py`
 rich==13.6.0
 # Format
-black[jupyter]==23.7.0
 sourcery-cli==1.11.0
 # Profiling
 snakeviz==2.2.0

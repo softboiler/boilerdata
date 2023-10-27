@@ -97,15 +97,6 @@ repos:
     hooks:
       - id: "end-of-file-fixer"
       - id: "trailing-whitespace"
-  - repo: "https://github.com/charliermarsh/ruff-pre-commit"
-    rev: "v0.1.3"
-    hooks:
-      - id: "ruff"
-      - id: "ruff-format"
-  - repo: "https://github.com/DavidAnson/markdownlint-cli2"
-    rev: "v0.10.0"
-    hooks:
-      - id: "markdownlint-cli2-fix"
   - repo: "https://github.com/srstevenson/nb-clean"
     rev: "3.1.0"
     hooks:
@@ -119,18 +110,17 @@ repos:
         files: |
           (?x)^(
             src/.*
+            |docs/.*
             |tests/.*
           )$
-      - id: "nb-clean"
-        name: "nb-clean (keep docs outputs)"
-        args:
-          - "--remove-empty-cells"
-          - "--preserve-cell-outputs"
-          - "--preserve-cell-metadata"
-          - "special"
-          - "tags"
-          - "--"
-        files: |
-          (?x)^(
-            docs/.*
-          )$
+  - repo: "https://github.com/DavidAnson/markdownlint-cli2"
+    rev: "v0.10.0"
+    hooks:
+      - id: "markdownlint-cli2-fix"
+  - repo: "https://github.com/charliermarsh/ruff-pre-commit"
+    rev: "v0.1.3"
+    hooks:
+      - id: "ruff"
+        types_or: ["python", "pyi", "jupyter"]
+      - id: "ruff-format"
+        types_or: ["python", "pyi", "jupyter"]
