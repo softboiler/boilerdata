@@ -7,7 +7,7 @@ pandas[hdf5,performance]==2.1.1
 pandas-stubs~=2.1.1
 pandera==0.17.2
 propshop==0.1.1
-pyarrow==13.0.0
+pyarrow==14.0.1
 pydantic==1.10.12
 pyXSteam==0.4.9
 scipy==1.11.3
