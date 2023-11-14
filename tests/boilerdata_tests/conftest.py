@@ -55,4 +55,4 @@ def nb_to_execute(request) -> Path:
 @pytest.fixture()
 def nb_client_to_execute(nb_to_execute) -> PloomberClient:
     """Notebook client to be executed only."""
-    return get_nb_client(nb_to_execute)
+    return get_nb_client(nb_to_execute.read_text(encoding="utf-8"))
