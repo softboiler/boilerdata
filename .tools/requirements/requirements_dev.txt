@@ -1,4 +1,8 @@
 # Requirements for the dev environment.
+
+# ? For using the latest version of this core package during development
+-e ../boilercore
+
 # Install tests package so modules can be run in debugging
 -e tests/.
 # Introspection
