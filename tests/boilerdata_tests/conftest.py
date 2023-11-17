@@ -6,7 +6,8 @@ from pathlib import Path
 
 import pytest
 from boilercore import filter_certain_warnings
-from boilercore.testing import get_nb_client, get_session_path
+from boilercore.notebooks.namespaces import get_nb_client
+from boilercore.testing import get_session_path
 from ploomber_engine.ipython import PloomberClient
 
 import boilerdata
