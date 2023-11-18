@@ -31,10 +31,16 @@
       "matchPackageNames": ["pyright", "submodules/typings"]
     },
     {
-      "description": "Don't bump pydantic until we're ready for migration.",
+      "description": "Stubs for pandas sometimes lag.",
+      "groupName": "pandas",
       "matchManagers": ["pip_requirements"],
-      "matchPaths": [".tools/requirements/*"],
-      "ignoreDeps": ["pydantic"]
+      "matchPackagePatterns": ["pandas"]
+    },
+    {
+      "description": "Pandas stubs are managed by `.tools/scripts/core_update.py`.",
+      "matchManagers": ["pip_requirements"],
+      "matchFileNames": [".tools/requirements/*"],
+      "ignoreDeps": ["pandas-stubs"]
     },
     {
       "description": "Ignore changerelease.yml workflow deps managed by the template",
