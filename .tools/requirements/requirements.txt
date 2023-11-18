@@ -1,14 +1,14 @@
 # Latest working requirements of your package, should be ahead of pyproject.toml.
-IPython[notebook]==8.16.1
-matplotlib==3.8.0
+IPython[notebook]==8.17.2
+matplotlib==3.8.2
 nbqa==1.7.0
-numpy==1.26.1
+numpy==1.26.2
 pandas[hdf5,performance]==2.1.1
 pandas-stubs~=2.1.1
 pandera==0.17.2
 propshop==0.1.1
 pyarrow==14.0.1
-pydantic==1.10.12
+pydantic==1.10.13
 pyXSteam==0.4.9
 scipy==1.11.3
 seaborn==0.13.0
