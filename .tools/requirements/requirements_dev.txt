@@ -1,14 +1,18 @@
 # Requirements for the dev environment.
 
+# ? Decouple package install from DVC, an external tool used in this repo
+dvc[gs]==3.34.0
 # ? For using the latest version of this core package during development
 -e ../boilercore
+# ? For using the latest version of this core package during development
+originpro==1.1.10
 
 # Install tests package so modules can be run in debugging
 -e tests/.
 # Introspection
 fawltydeps==0.13.2
-# Experiment
-ipykernel==6.26.0
+# ? Specified in `pyproject.toml`
+# ipykernel==6.27.1
 # Debug
 debugpy==1.8.0
 # For `pythonstartup.py`

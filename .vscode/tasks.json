@@ -92,7 +92,6 @@
       "icon": { "id": "graph" },
       "problemMatcher": []
     },
-
     {
       "label": "dvc: dag",
       "dependsOrder": "sequence",

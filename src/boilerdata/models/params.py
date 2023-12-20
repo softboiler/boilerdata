@@ -9,7 +9,7 @@ from boilercore.models import SynchronizedPathsYamlModel
 from boilercore.models.fit import Fit
 from boilercore.models.geometry import Geometry
 from boilercore.models.trials import Trial, Trials
-from pydantic import Extra, Field
+from pydantic.v1 import Extra, Field
 
 from boilerdata import get_params_file
 from boilerdata.axes_enum import AxesEnum as A  # noqa: N814
