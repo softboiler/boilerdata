@@ -17,8 +17,8 @@ dependencies = [
     "numpy>=1.24.4",
     "originpro>=1.1.7",
     "pandas[hdf5,performance]>=2.0.2",
-    "pandera>=0.16.1",
-    "propshop>=0.1.1",
+    "pandera>=0.17.2",
+    "propshop>=0.1.2",
     "pyarrow>=14.0.1",
     "pydantic>=2",
     "pyXSteam>=0.4.9",
@@ -44,6 +44,7 @@ ignore_unused = [
 ]
 [tool.fawltydeps.custom_mapping]
 boilercore = ["boilercore"]
+ipykernel = ["IPython"]
 
 [tool.pyright]
 # Paths
@@ -163,4 +164,4 @@ convention = "google"
 extend-immutable-calls = ["typer.Argument", "typer.Option"]
 
 [tool.ruff.pep8-naming]
-classmethod-decorators = ["pydantic.validator"]
+classmethod-decorators = ["pydantic.validator", "pydantic.v1.validator"]

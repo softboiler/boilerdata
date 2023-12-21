@@ -4,8 +4,8 @@ nbqa==1.7.0
 numpy==1.26.2
 pandas[hdf5,performance]==2.1.1
 pandas-stubs~=2.1.1
-pandera==0.17.2
-propshop@git+https://github.com/blakeNaccarato/propshop@74ff8214e59d76da7b1133f135ed39e30f6d0115
+pandera==0.18.0
+propshop==0.1.2
 pyarrow==14.0.1
 pydantic==2.5.2
 pyXSteam==0.4.9
