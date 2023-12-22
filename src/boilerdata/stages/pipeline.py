@@ -137,14 +137,12 @@ def agg_over_runs(
                 }
             )
         )
-        .assign(
-            **{
-                tc_error: lambda df: df[tc_error]  # noqa: B023  # False positive
-                * confidence_interval_95
-                / np.sqrt(params.records_to_average)
-                for tc_error in tc_errors
-            }
-        )
+        .assign(**{
+            tc_error: lambda df: df[tc_error]  # noqa: B023  # False positive
+            * confidence_interval_95
+            / np.sqrt(params.records_to_average)
+            for tc_error in tc_errors
+        })
     )
     return grp
 
@@ -153,25 +151,21 @@ def get_superheat(df: pd.DataFrame, params: Params) -> pd.DataFrame:
     """Calculate heat transfer and superheat based on one-dimensional approximation."""
     # Explicitly index the trial to catch improper application of the mean
     trial = get_trial(df, params)
-    return df.assign(
-        **{
-            A.DT: lambda df: (df[A.T_s] - df.loc[trial.date.isoformat(), A.T_w].mean()),
-            A.DT_err: lambda df: df[A.T_s_err],
-        }
-    )
+    return df.assign(**{
+        A.DT: lambda df: (df[A.T_s] - df.loc[trial.date.isoformat(), A.T_w].mean()),
+        A.DT_err: lambda df: df[A.T_s_err],
+    })
 
 
 def assign_metadata(grp: pd.DataFrame, params: Params) -> pd.DataFrame:
     """Assign metadata columns to the dataframe."""
     trial = get_trial(grp, params)
     # Need to re-apply categorical dtypes
-    grp = grp.assign(
-        **{
-            field: value
-            for field, value in trial.dict().items()  # Dict call avoids excluded properties
-            if field not in [idx.name for idx in params.axes.index]
-        }
-    )
+    grp = grp.assign(**{
+        field: value
+        for field, value in trial.dict().items()  # Dict call avoids excluded properties
+        if field not in [idx.name for idx in params.axes.index]
+    })
     return grp
 
 

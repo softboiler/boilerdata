@@ -140,9 +140,9 @@ class Axes(YamlModel):
         )
 
     def get_originlab_coldes(self) -> str:
-        return "".join(
-            [ax.originlab_coldes for ax in self.all if ax.originlab_coldes != "Q"]
-        )
+        return "".join([
+            ax.originlab_coldes for ax in self.all if ax.originlab_coldes != "Q"
+        ])
 
     def __init__(self, data_file: Path):
         super().__init__(data_file)

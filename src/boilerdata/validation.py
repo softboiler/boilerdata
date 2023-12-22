@@ -108,13 +108,11 @@ def handle_invalid_data(df: pd.DataFrame, validator: DataFrameSchema) -> pd.Data
             ):
                 raise
             failed = exc.check_output
-            df = df.assign(
-                **{
-                    failed.name: (
-                        lambda df: df[failed.name].where(failed).ffill()  # noqa: B023
-                    )
-                }
-            )
+            df = df.assign(**{
+                failed.name: (
+                    lambda df: df[failed.name].where(failed).ffill()  # noqa: B023
+                )
+            })
             continue
         else:
             validation_error = False

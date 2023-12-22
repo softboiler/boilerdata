@@ -48,9 +48,9 @@ def transform_for_originlab(df: pd.DataFrame, params: Params) -> pd.DataFrame:
     subscript_repl = r"\-(\1)"
 
     cols = params.axes.get_col_index()
-    quantity = cols.get_level_values("quantity").map(
-        {col.name: col.pretty_name for col in params.axes.all}
-    )
+    quantity = cols.get_level_values("quantity").map({
+        col.name: col.pretty_name for col in params.axes.all
+    })
     units = cols.get_level_values("units")
     indices = [
         index.to_series()

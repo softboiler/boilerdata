@@ -24,6 +24,8 @@ dependencies = [
     "pyXSteam>=0.4.9",
     "scipy>=1.11.1",
     "seaborn>=0.12.2",
+    # ? https://github.com/ipython/ipython/issues/14255
+    "ipython<8.18",
 ]
 [[project.authors]]
 name = "Blake Naccarato"
