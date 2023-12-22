@@ -1,4 +1,5 @@
 # Latest working requirements of your package, should be ahead of pyproject.toml.
+ipykernel==6.27.1
 matplotlib==3.8.2
 nbqa==1.7.0
 numpy==1.26.2
