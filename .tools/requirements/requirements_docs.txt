@@ -1,4 +1,4 @@
-# Requirements for documentation.
+# Requirements for documentation
 # * ---------------------------------------------------------------------------------- *
 graphviz==0.20.1
 sphinxcontrib-mermaid==0.9.2
