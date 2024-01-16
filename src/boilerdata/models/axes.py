@@ -28,6 +28,7 @@ class Axis(BaseModel):
     )
 
     @validator("agg", always=True)
+    @classmethod
     def validate_agg(cls, agg, values):
         return (lambda ser: ser.iloc[0]) if values["dtype"] == "category" else agg
 
@@ -39,6 +40,7 @@ class Axis(BaseModel):
     )
 
     @validator("source")
+    @classmethod
     def validate_source(cls, source, values):
         return f"{source} ({values['units']})" if values["units"] else source
 
@@ -49,6 +51,7 @@ class Axis(BaseModel):
     )
 
     @validator("index", pre=True, always=True)
+    @classmethod
     def validate_index(cls, index):
         return index or False
 
