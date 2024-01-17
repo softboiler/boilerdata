@@ -4,13 +4,13 @@ from collections.abc import Callable
 from importlib import import_module
 from pathlib import Path
 
+import boilerdata
 import pytest
 from boilercore import filter_certain_warnings
 from boilercore.notebooks.namespaces import get_nb_client
 from boilercore.testing import get_session_path
 from ploomber_engine.ipython import PloomberClient
 
-import boilerdata
 from boilerdata_tests import nbs_to_execute, stages
 
 
