@@ -5,7 +5,7 @@ cachier@git+https://github.com/blakeNaccarato/cachier@0892f53dc8fd9fb8a7f959305a
 #? For tests
 ploomber-engine==0.0.31
 # Type checking
-pyright==1.1.347
+pyright==1.1.348
 # * ---------------------------------------------------------------------------------- *
 # Pre-commit common requirements
 ruff==0.1.11
