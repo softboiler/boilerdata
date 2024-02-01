@@ -55,10 +55,10 @@
       "problemMatcher": []
     },
     {
-      "label": "proj: local pyrightconfig",
+      "label": "proj: local dev configs (Pyrightconfig, pytest.ini)",
       "type": "shell",
       "options": { "shell": { "executable": "pwsh", "args": ["-Command"] } },
-      "command": "python .tools/scripts/local_pyrightconfig.py",
+      "command": "python .tools/scripts/local_dev_configs.py",
       "icon": { "id": "graph" },
       "problemMatcher": []
     },
