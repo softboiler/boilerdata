@@ -62,7 +62,7 @@ def get_properties(df: pd.DataFrame, params: Params) -> pd.DataFrame:
                 A.T_w: lambda df: (T_w_avg + T_w_p) / 2,
                 A.T_w_diff: lambda df: abs(T_w_avg - T_w_p),
             }
-            | {k: 0 for k in params.fit.fixed_errors}  # Zero error for fixed params
+            | dict.fromkeys(params.fit.fixed_errors, 0)  # Zero error for fixed params
         )
     )
 
@@ -79,10 +79,7 @@ def fit(
     t_type_error = 1.0
     # Need to assign here (not at the end) because these are used in the model fit
     grp = grp.assign(
-        **(
-            {tc_error: k_type_error for tc_error in tc_errors}
-            | {A.T_5_err: t_type_error}
-        )
+        **(dict.fromkeys(tc_errors, k_type_error) | {A.T_5_err: t_type_error})
     )
     # Prepare for fitting
     x, y, y_errors = fit_setup(grp, params, trial)

@@ -85,7 +85,7 @@ class Axis(BaseModel):
 class Axes(YamlModel):
     """Columns in the dataframe."""
 
-    all: list[Axis]  # noqa: A003
+    all: list[Axis]
 
     def __getitem__(self, key):
         return next(axis for axis in self.all if axis.name == key)

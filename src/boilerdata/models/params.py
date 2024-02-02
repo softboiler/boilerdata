@@ -67,7 +67,8 @@ class Params(SynchronizedPathsYamlModel, extra=Extra.allow):
                 return trial
         raise ValueError(f"Trial '{timestamp.date()}' not found.")
 
-    def get_model_errors(self, params) -> list[str]:
+    @classmethod
+    def get_model_errors(cls, params) -> list[str]:
         return [f"{param}_err" for param in params]
 
 
@@ -81,8 +82,8 @@ def init() -> tuple[Params, Any, Any, Any]:
     environ["DYNACONF_APP_FOLDER"] = environ["APP_FOLDER_FOR_DYNACONF"] = str(
         params.paths.propshop
     )
-    from propshop import get_prop
-    from propshop.library import Mat, Prop
+    from propshop import get_prop  # noqa: PLC0415
+    from propshop.library import Mat, Prop  # noqa: PLC0415
 
     return params, get_prop, Mat, Prop
 

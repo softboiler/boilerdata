@@ -30,7 +30,7 @@ def project_session_path(tmp_path_factory) -> Path:
 @pytest.fixture()
 def params(project_session_path):
     """Parameters."""
-    from boilerdata.models.params import PARAMS
+    from boilerdata.models.params import PARAMS  # noqa: PLC0415
 
     return PARAMS
 

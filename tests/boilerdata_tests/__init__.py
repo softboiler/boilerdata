@@ -13,7 +13,7 @@ for module in (f"boilerdata.{module}" for module in walk_modules(STAGES_DIR)):
     rel = get_module_rel(module, "stages")
     stages.append(
         pytest.param(
-            module, id=rel, marks=[pytest.mark.skip] if rel in {"originlab"} else []
+            module, id=rel, marks=[pytest.mark.skip] if rel == "originlab" else []
         )
     )
 nbs_to_execute: list[ParameterSet] = [
