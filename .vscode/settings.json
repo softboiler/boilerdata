@@ -12,8 +12,8 @@
   //! Terminal
   //? Use PowerShell on all platforms, facilitates running template scripts
   "terminal.integrated.defaultProfile.windows": "PowerShell",
-  "terminal.integrated.defaultProfile.linux": "PowerShell",
-  "terminal.integrated.defaultProfile.osx": "PowerShell",
+  "terminal.integrated.defaultProfile.linux": "pwsh",
+  "terminal.integrated.defaultProfile.osx": "pwsh",
   //! File excludes
   "files.exclude": {
     //? Cache directory set in `pyproject.toml`
@@ -26,8 +26,12 @@
     "**/*pylance-notebook-cell*": true
   },
   "search.exclude": {
-    //? Don't clutter search with submodule contents
-    "submodules": true
+    //? Template clutters quick-open
+    "submodules/template": true,
+    //? Type stubs clutter quick-open
+    "submodules/typings": true,
+    //? Locks clutter searches
+    "tools/lock.json": true
   },
   //! File nesting
   "explorer.sortOrder": "foldersNestsFiles",
@@ -35,7 +39,7 @@
   "explorer.fileNesting.expand": false,
   "explorer.fileNesting.patterns": {
     //? Prevents file nesting from hijacking brand new files before setting filename
-    "*.root": ".*, a*, b*, c*, d*, e*, f*, g*, h*, i*, j*, k*, l*, m*, n*, o*, p*, q*, r*, s*, t*, u*, v*, w*, x*, y*, z*, 0*, 1*, 2*, 3*, 4*, 5*, 6*, 7*, 8*, 9*, _*, -*, {*"
+    "*.root": ".*, a*, b*, c*, d*, e*, f*, g*, h*, i*, j*, k*, l*, m*, n*, o*, p*, q*, r*, s*, t*, u*, v*, w*, x*, y*, z*, A*, B*, C*, D*, E*, F*, G*, H*, I*, J*, K*, L*, M*, N*, O*, P*, Q*, R*, S*, T*, U*, V*, W*, X*, Y*, Z*, 0*, 1*, 2*, 3*, 4*, 5*, 6*, 7*, 8*, 9*, _*, -*, {*"
   },
   //! File associations
   "files.associations": {
@@ -44,8 +48,8 @@
     ".pylintrc": "ini",
     ".root": "plaintext",
     ".sourcery.yaml": "yaml",
-    "*requirements*.txt": "pip-requirements",
     "*ipython-input*": "python",
+    "*requirements*.in": "pip-requirements",
     "pyrightconfig.json": "jsonc"
   },
   //! Git
@@ -57,6 +61,11 @@
   "git.inputValidationLength": 1e100,
   "editor.wordWrapColumn": 88,
   "editor.rulers": [88],
+  "scm.inputMaxLineCount": 50,
+  "scm.inputMinLineCount": 3,
+  "[scminput]": {
+    "editor.rulers": [88]
+  },
   //! pytest
   "python.testing.unittestEnabled": false,
   "python.testing.pytestEnabled": true,
@@ -82,23 +91,42 @@
     "source.organizeImports": "explicit"
   },
   //! Extensions
+  //* autoDocstring
+  "autoDocstring.docstringFormat": "numpy-notypes",
   //* GitHub Actions
-  "github-actions.workflows.pinned.workflows": [".github/workflows/main.yml"],
+  "github-actions.workflows.pinned.workflows": [".github/workflows/ci.yml"],
   //* Jupyter Notebooks
   "jupyter.notebookFileRoot": "${workspaceFolder}",
   "jupyter.showVariableViewWhenDebugging": true,
+  //* MyST
+  "myst.preview.extensions": ["colon_fence", "dollarmath"],
+  // * Python
+  "python.terminal.activateEnvInCurrentTerminal": true,
   //* Pylance
   "python.languageServer": "Pylance",
+  "python.analysis.diagnosticMode": "openFilesOnly",
+  "python.analysis.typeCheckingMode": "strict",
+  "editor.inlayHints.enabled": "offUnlessPressed",
   "python.analysis.autoFormatStrings": true,
   "python.analysis.autoImportCompletions": true,
-  "python.analysis.completeFunctionParens": true,
+  "python.analysis.extraCommitChars": true,
   "python.analysis.gotoDefinitionInStringLiteral": true,
   "python.analysis.importFormat": "absolute",
-  "editor.inlayHints.enabled": "offUnlessPressed",
   "python.analysis.inlayHints.callArgumentNames": "all",
   "python.analysis.inlayHints.functionReturnTypes": true,
   "python.analysis.inlayHints.pytestParameters": true,
   "python.analysis.inlayHints.variableTypes": true,
+  //* PowerShell
+  "powershell.startAutomatically": false,
+  "powershell.promptToUpdatePowerShell": false,
+  "powershell.integratedConsole.showOnStartup": false,
+  "powershell.codeFormatting.autoCorrectAliases": true,
+  "powershell.codeFormatting.avoidSemicolonsAsLineTerminators": true,
+  "powershell.codeFormatting.trimWhitespaceAroundPipe": true,
+  "powershell.codeFormatting.useConstantStrings": true,
+  "powershell.codeFormatting.useCorrectCasing": true,
+  "powershell.codeFormatting.whitespaceBetweenParameters": true,
+  "powershell.codeFormatting.pipelineIndentationStyle": "IncreaseIndentationForFirstPipeline",
   //* Rewrap
   "rewrap.wrappingColumn": 88,
   "rewrap.wholeComment": false,
@@ -120,14 +148,23 @@
   "[jsonc]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
+  "[powershell]": {
+    "editor.defaultFormatter": "ms-vscode.powershell",
+    "editor.wordWrap": "off"
+  },
   "[yaml]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.wordWrap": "off"
+  },
+  "[github-actions-workflow]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.wordWrap": "off"
   },
   "yaml.format.printWidth": 88,
   //* ruff (PY, IPYNB)
   "ruff.importStrategy": "fromEnvironment",
-  "ruff.format.args": [],
-  "ruff.lint.args": [],
+  "ruff.lint.args": ["--config", "pyproject.toml"],
+  "ruff.format.args": ["--config", "pyproject.toml"],
   "[python]": {
     "editor.defaultFormatter": "charliermarsh.ruff",
     "editor.wordWrap": "off"

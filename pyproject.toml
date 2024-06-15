@@ -11,42 +11,37 @@ license = { file = "LICENSE" }
 requires-python = ">=3.11"
 classifiers = ["License :: OSI Approved :: MIT License"]
 dependencies = [
-    "boilercore>=0.0.4",
     "ipykernel>=6.29.0",
-    "matplotlib>=3.7.2",
-    "numpy>=1.24.4",
+    "matplotlib>=3.8.3",
+    "nbqa>=1.7.1",
+    "numpy>=1.26.4",
     "originpro>=1.1.7",
-    "pandas[hdf5,performance]>=2.0.2",
-    "pandera>=0.17.2",
-    "propshop>=0.1.2",
-    "pyarrow>=14.0.1",
-    "pydantic>=2",
+    "pandas[hdf5,performance]>=2.2.0",
+    "pandera>=0.18.0",
+    "propshop>=0.1.3",
+    "pyarrow>=15.0.0",
+    "pydantic>=2.6.1",
     "pyXSteam>=0.4.9",
-    "scipy>=1.11.1",
-    "seaborn>=0.12.2",
-    # ? https://github.com/ipython/ipython/issues/14255
-    "ipython<8.18",
+    "scipy>=1.12.0",
+    "seaborn>=0.13.2",
 ]
-[[project.authors]]
-name = "Blake Naccarato"
-email = "blake.naccarato@gmail.com"
-
 [project.urls]
 Changes = "https://blakeNaccarato.github.io/boilerdata/changelog.html"
 Docs = "https://blakeNaccarato.github.io/boilerdata"
 Home = "https://github.com/blakeNaccarato/boilerdata"
 Tracker = "https://github.com/blakeNaccarato/boilerdata/issues"
+[[project.authors]]
+name = "Blake Naccarato"
+email = "blake.naccarato@gmail.com"
 
+[tool.coverage.run]
+branch = true
+source = ["boilerdata", "boilerdata_docs", "boilerdata_tests", "boilerdata_tools"]
+[tool.coverage.report]
+ignore_errors = true
 [tool.fawltydeps]
-output_format = "human_detailed"
-code = ["src"]
 deps = ["pyproject.toml"]
-ignore_unused = [
-    "pyarrow", # boilercv.init: pd.set_option("mode.string_storage", "pyarrow")
-]
-[tool.fawltydeps.custom_mapping]
-boilercore = ["boilercore"]
-ipykernel = ["IPython"]
+code = ["src"]
 
 [tool.pytest.ini_options]
 addopts = '''
@@ -61,14 +56,37 @@ markers = "slow"
 testpaths = "tests"
 xfail_strict = true
 
-[tool.coverage.run]
-branch = true
-source = ["boilerdata"]
-[tool.coverage.report]
-ignore_errors = true
+[tool.towncrier]
+directory = "changelog"
+filename = "CHANGELOG.md"
+template = "changelog/towncrier_template.md.jinja"
+title_format = ""
+issue_format = "[#{issue}](https://github.com/blakeNaccarato/boilerdata/{issue})"
+underlines = ["", "", ""]
+[[tool.towncrier.section]]
+path = ""
+[[tool.towncrier.type]]
+directory = "breaking"
+name = "Backwards-incompatible changes"
+showcontent = true
+[[tool.towncrier.type]]
+directory = "deprecation"
+name = "Deprecations"
+showcontent = true
+[[tool.towncrier.type]]
+directory = "change"
+name = "Changes"
+showcontent = true
 
 [tool.pyright]
-exclude = ["**/node_modules", "**/__pycache__", "**/.*", "submodules"]
+exclude = [
+    "**/node_modules",
+    "**/__pycache__",
+    "**/.*",
+    "bin",
+    "submodules/template",
+    "submodules/typings",
+]
 stubPath = "submodules/typings"
 typeCheckingMode = "strict"
 # Default "true" in strict
@@ -86,6 +104,7 @@ enableExperimentalFeatures = false
 reportMissingModuleSource = "warning"
 # Default "error" in strict
 reportMissingImports = "warning"
+reportInvalidTypeForm = "warning"
 reportUndefinedVariable = "warning"
 reportAssertAlwaysTrue = "warning"
 reportInvalidStringEscapeSequence = "warning"
@@ -95,21 +114,36 @@ reportSelfClsParameterName = "warning"
 reportUnsupportedDunderAll = "warning"
 reportUnusedExpression = "none"                # Handled by Ruff
 reportWildcardImportFromLibrary = "warning"
+reportAbstractUsage = "warning"
+reportArgumentType = "warning"
+reportAssertTypeFailure = "warning"
+reportAssignmentType = "warning"
+reportAttributeAccessIssue = "warning"
+reportCallIssue = "warning"
 reportGeneralTypeIssues = "warning"
+reportInconsistentOverload = "warning"
+reportIndexIssue = "warning"
+reportInvalidTypeArguments = "warning"
+reportNoOverloadImplementation = "warning"
+reportOperatorIssue = "warning"
 reportOptionalSubscript = "warning"
 reportOptionalMemberAccess = "warning"
 reportOptionalCall = "warning"
 reportOptionalIterable = "warning"
 reportOptionalContextManager = "warning"
 reportOptionalOperand = "warning"
+reportRedeclaration = "warning"
+reportReturnType = "warning"
 reportTypedDictNotRequiredAccess = "warning"
 reportPrivateImportUsage = "none"              # Flaky regarding "not exported"
 reportUnboundVariable = "warning"
 reportUnusedCoroutine = "none"                 # Handled by Ruff
+reportUnusedExcept = "warning"
 reportFunctionMemberAccess = "warning"
 reportIncompatibleMethodOverride = "warning"
 reportIncompatibleVariableOverride = "warning"
 reportOverlappingOverload = "warning"
+reportPossiblyUnboundVariable = "warning"
 reportConstantRedefinition = "none"
 reportDeprecated = "warning"
 reportDuplicateImport = "warning"
@@ -152,29 +186,32 @@ reportUnusedCallResult = "none"
 
 [tool.ruff]
 cache-dir = ".cache/.ruff_cache"
-extend-exclude = ["submodules"]
+extend-exclude = ["bin", "submodules"]
 extend-include = ["*.ipynb"]
-fix = true
-force-exclude = true
-show-fixes = true
+src = ["src", "docs", "scripts", "tests"]
 output-format = "grouped"
+fix = true
 preview = true
-unsafe-fixes = false
-
+show-fixes = true
 [tool.ruff.lint]
 fixable = ["ALL"]
-select = ["ALL"]
-extend-ignore = [
+select = [
+    "ALL",  # Select all rules
+    "D417", # Explicitly enable parameter check even when using Numpy docstrings
+]
+unfixable = [
+    "PIE790", # Don't remove `pass`/`...`, overridden in pre-commit
+]
+extend-safe-fixes = [
+    "F401", # Allow autofix for unused imports even in `__init__.py`
+]
+ignore = [
     "ANN",     # Don't require type annotations
     "ARG005",  # Allow unused lambda argument. For consistency across df pipelines.
     "C408",    # Allow dict calls
     "COM",     # Allow magic commas and magic missing commas
     "CPY001",  # Don't check for copyright
-    "D10",     # Missing docstrings
-    "D20",     # Don't reformat docstrings in these ways
-    "D213",    # Multi-line docstring summary should start at the second line
-    "D402",    # False positives for parens in first line
-    "D412",    # Allow blanks below headers in Google-style docstrings
+    "D105",    # Allow missing docstring for magic methods
     "DTZ",     # Timezones are important, but only contextually necessary.
     "E501",    # Don't check line length. Black handles this.
     "EM",      # Don't check for exception message issues
@@ -182,23 +219,32 @@ extend-ignore = [
     "FBT",     # Allow boolean "traps"
     "FIX002",  # Allow TODOs
     "FLY002",  # Allow different string representations
+    "FURB118", # Incorrectly applies `itemgetter`
     "FURB140", # Don't replace comprehensions with starmap
     "G0",      # Allow f-strings, etc. in Loguru logging
+    "ICN",     # Don't require these ad-hoc "conventional" import names
     "INP001",  # False positives. Checks for packages missing `__init__.py`
     "ISC",     # False positives. Implicit string concatenation is fine.
+    "PD009",   # Allow `df.iat`.
     "PD011",   # Allow use of `.values`. False positives.
     "PD013",   # Allow `stack` instead of `melt`. They're not a direct swap.
     "PD101",   # Allow use of nunique(). False positives
     "PD901",   # Allow `df` variable name. We are all consenting adults here.
+    "PD011",   # Allow use of `.values`. False positives.
+    "PLR6201", # Don't require set literal for membership checks
     "PGH003",  # Until black stops wrapping special ignores, let's allow bare
     "PIE804",  # Allow dict unpack even if unnecessary, consisent for df.assign{**...}
+    "PLC0105", # Dont enforce Hungarian notation for `TypeVar` variance
     "PLC2701", # Allow private name imports
     "PLR0913", # Allow more than five function arguments
+    "PLR0914", # Allow lots of local variables
     "PLR0917", # Allow more than five positional arguments
     "PLR1704", # Allow redefining arguments, often for sanitization
     "PLR2004", # Allow magic values. This check is too sensitive
     "PLR6201", # Don't require set literal for membership checks
     "PLR6301", # Allow methods that don't reference self, may be overridden
+    "PLW0108", # Don't warn about unnecessary lambda. Often needed in pandas chains
+    "PLW0642", # Allow reassignment to `cls` and `self`
     "PLW2901", # For loop variable
     "RET",     # Return checks are flaky, Sourcery does fine analysing these paths
     "S301",    # Don't warn about pickling.
@@ -209,18 +255,16 @@ extend-ignore = [
     "TRY003",  # Allow long exception messages
     "W2",      # Allow whitespace issues. Fixed automatically by black.
 ]
-
-[tool.ruff.format]
-skip-magic-trailing-comma = true
 [tool.ruff.lint.isort]
 split-on-trailing-comma = false
-
+[tool.ruff.format]
+skip-magic-trailing-comma = true
 [tool.ruff.lint.pydocstyle]
-convention = "google"
-
+convention = "numpy"
 [tool.ruff.lint.extend-per-file-ignores]
 "**/*.ipynb" = [
     "B018", # Allow "useless" expressions, which do suppress outputs in notebooks
+    "E703", # Allow semicolons to suppress outputs in notebooks
     "F821", # Allow undefined names, such as `display`
     "S101", # Allow assert
     "T201", # Allow print in notebooks
@@ -234,6 +278,3 @@ convention = "google"
     "SIM300", # Allow constants (expectations) on the RHS
     "SLF001", # Allow private member access in tests
 ]
-
-[tool.ruff.lint.flake8-bugbear]
-extend-immutable-calls = ["typer.Argument", "typer.Option"]

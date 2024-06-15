@@ -1,4 +1,4 @@
-"""Test boilerdata."""
+"""Tests."""
 
 import pytest
 

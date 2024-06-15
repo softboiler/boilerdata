@@ -1,4 +1,4 @@
-# boilerdata
+# `boilerdata`
 
 [![DOI](https://zenodo.org/badge/454192899.svg)](https://zenodo.org/badge/latestdoi/454192899)
 
@@ -59,3 +59,9 @@ flowchart TD
  node11-->node9
  node12-->node11
 ```
+
+## Project information
+
+- [Changes](<https://blakeNaccarato.github.io/boilerdata/changelog.html>)
+- [Docs](<https://blakeNaccarato.github.io/boilerdata>)
+- [Contributing](<https://blakeNaccarato.github.io/boilerdata/contributing.html>)
