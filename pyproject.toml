@@ -15,7 +15,8 @@ dependencies = [
     "matplotlib>=3.8.3",
     "nbqa>=1.7.1",
     "numpy>=1.26.4",
-    "originpro>=1.1.7",
+    # ? `originpro` pipeline parts only supported on Windows
+    "originpro>=1.1.7 ; sys_platform == 'windows'",
     "pandas[hdf5,performance]>=2.2.0",
     "pandera>=0.18.0",
     "propshop>=0.1.3",

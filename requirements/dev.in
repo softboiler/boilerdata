@@ -7,8 +7,6 @@ debugpy==1.8.1
 fawltydeps==0.15.0
 flit==3.9.0
 keyring==25.2.1
-# ? For using the latest version of this core package during development
-originpro==1.1.10
 pandas-stubs~=2.2.0
 pre-commit==3.7.1
 pyright==1.1.367
