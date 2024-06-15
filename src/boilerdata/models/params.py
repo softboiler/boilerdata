@@ -75,7 +75,8 @@ class Params(SynchronizedPathsYamlModel, extra=Extra.allow):
 def init() -> tuple[Params, Any, Any, Any]:
     """Parameters and associated project setup.
 
-    Assigned to module constants at the end of this module."""
+    Assigned to module constants at the end of this module.
+    """
     params = Params()
 
     # Override the default app folder

@@ -26,7 +26,6 @@ MODEL, MODEL_WITH_UNCERTAINTY = get_model(PARAMS.paths.model)
 
 def get_run(params: Params, run: Path) -> pd.DataFrame:
     """Get data for a single run."""
-
     # Get source columns
     index = params.axes.index[-1].source  # Get the last index, associated with source
     source_col_names = [col.source for col in params.axes.source_cols]
@@ -150,7 +149,6 @@ def tex_wrap(df: pd.DataFrame) -> tuple[pd.DataFrame, Mapping[str, str]]:
 
 def plot_new_fits(grp: pd.DataFrame, params: Params, model):
     """Plot model fits for trials marked as new."""
-
     trial = get_trial(grp, params)
     if not trial.plot:
         return grp

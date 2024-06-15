@@ -18,7 +18,6 @@ def main():
 
 def get_runs(params: Params) -> pd.DataFrame:
     """Get runs from all trials."""
-
     # Get runs and multiindex
     dtypes = {col.name: col.dtype for col in params.axes.source if not col.index}
     runs: list[pd.DataFrame] = []

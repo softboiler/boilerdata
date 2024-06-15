@@ -41,7 +41,6 @@ def transform_for_originlab(df: pd.DataFrame, params: Params) -> pd.DataFrame:
 
     See: <https://www.originlab.com/doc/en/Origin-Help/Escape-Sequences>
     """
-
     superscript = re.compile(r"\^(.*)")
     superscript_repl = r"\+(\1)"
     subscript = re.compile(r"\_(.*)")

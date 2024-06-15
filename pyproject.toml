@@ -11,9 +11,8 @@ license = { file = "LICENSE" }
 requires-python = ">=3.11"
 classifiers = ["License :: OSI Approved :: MIT License"]
 dependencies = [
-    "ipykernel>=6.29.0",
+    "ipython>=8.25.0",
     "matplotlib>=3.8.3",
-    "nbqa>=1.7.1",
     "numpy>=1.26.4",
     # ? `originpro` pipeline parts only supported on Windows
     "originpro>=1.1.7 ; sys_platform == 'windows'",
@@ -43,6 +42,10 @@ ignore_errors = true
 [tool.fawltydeps]
 deps = ["pyproject.toml"]
 code = ["src"]
+ignore_undeclared = ["boilercore"]
+ignore_unused = [
+    "pyarrow", # Pandas backend
+]
 
 [tool.pytest.ini_options]
 addopts = '''

@@ -43,7 +43,6 @@ def main():
 
 def get_properties(df: pd.DataFrame, params: Params) -> pd.DataFrame:
     """Get properties."""
-
     get_saturation_temp = XSteam(XSteam.UNIT_SYSTEM_FLS).tsat_p  # A lookup function
 
     T_w_avg = df[[A.T_w1, A.T_w2, A.T_w3]].mean(axis="columns")  # noqa: N806
@@ -71,7 +70,6 @@ def fit(
     grp: pd.DataFrame, params: Params, model: Any, confidence_interval_95: float
 ) -> pd.DataFrame:
     """Fit the data to a model function."""
-
     trial = get_trial(grp, params)
     # Assign thermocouple errors trial-by-trial (since they can vary)
     _, tc_errors = get_tcs(trial)
