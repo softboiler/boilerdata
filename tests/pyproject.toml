@@ -14,8 +14,6 @@ dependencies = [
     "pytest==8.0.0",
     # ? Other testing
     "ploomber-engine>=0.0.30",
-    # ? Other deps
-    "cachier @ git+https://github.com/blakeNaccarato/cachier@0892f53dc8fd9fb8a7f959305a1a9ec692876dc0", # Allows `dill` caching
 ]
 
 [tool.fawltydeps]

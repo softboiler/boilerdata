@@ -18,7 +18,7 @@ from boilerdata_tests import nbs_to_execute, stages
 @pytest.fixture(autouse=True)
 def _filter_certain_warnings():
     """Filter certain warnings."""
-    filter_certain_warnings()
+    filter_certain_warnings(package="boilerdata")
 
 
 @pytest.fixture(autouse=True, scope="session")
@@ -42,8 +42,7 @@ def stage(request) -> str:
 
 
 @pytest.fixture()
-def main(stage) -> Callable[..., None]:
-    """Main function for a stage."""
+def main(stage) -> Callable[..., None]:  # noqa: D103
     return import_module(stage).main
 
 

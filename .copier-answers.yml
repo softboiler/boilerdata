@@ -1,7 +1,7 @@
 # Changes here will be overwritten by Copier; NEVER EDIT MANUALLY
 _commit: 9c973dc
 _src_path: gh:blakeNaccarato/copier-python
-actions_runner: ubuntu-latest
+actions_runner: ubuntu-22.04
 active: true
 github_repo_name: boilerdata
 project_description: Data processing pipeline for a nucleate pool boiling apparatus.
