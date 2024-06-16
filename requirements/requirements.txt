@@ -58,7 +58,7 @@ docutils==0.21.2
 dpath==2.2.0
 dulwich==0.21.5
 dunamai==1.21.1
-dvc-data==2.8.1
+dvc-data==3.15.1
 dvc-http==2.32.0
 dvc-objects==0.25.0
 dvc-render==0.7.0
