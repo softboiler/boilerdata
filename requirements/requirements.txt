@@ -143,7 +143,7 @@ networkx==3.3
 nodeenv==1.9.1
 numba==0.60.0
 numexpr==2.10.0
-numpy==1.26.4
+numpy==2.0.0
 numpydoc==1.7.0
 omegaconf==2.3.0
 orjson==3.10.5
