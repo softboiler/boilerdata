@@ -40,7 +40,7 @@ VERSION = ANS["project_version"]
 """Package version."""
 # ! Intersphinx and related
 ISPX_MAPPING: dict[str, IspxMappingValue] = {
-    **{pkg: get_rtd(pkg) for pkg in ["myst_parser", "numpydoc"]},
+    **{pkg: get_rtd(pkg) for pkg in ["myst_parser", "numpydoc", "pandera"]},
     "pytest": get_url("docs.pytest.org/en"),
     "python": get_ispx("docs.python.org/3"),
     "pandas": get_ispx("pandas.pydata.org/docs"),
@@ -193,6 +193,7 @@ nitpick_ignore_regex = [
     (r"py:.*", r"docutils\..+"),
     (r"py:.*", r"numpydoc\.docscrape\..+"),
     (r"py:.*", r"_pytest\..+"),
+    (r"py:.*", r"pydantic\..+"),  # ? https://github.com/pydantic/pydantic/issues/1339
     # ? TypeAlias: https://github.com/sphinx-doc/sphinx/issues/10785
     (r"py:class", rf"{PACKAGE}.*\.types\..+"),
 ]
