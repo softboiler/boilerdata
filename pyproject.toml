@@ -86,10 +86,11 @@ showcontent = true
 exclude = [
     "**/node_modules",
     "**/__pycache__",
+    "**/.*",
     "**/.*/**",
+    "**/.venv",
     "**/.vscode/extensions",
     "**/AppData",
-    "**/.venv",
     "bin",
     "submodules/template",
     "submodules/typings",
