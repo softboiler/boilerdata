@@ -23,7 +23,7 @@ import pandas as pd
 from boilerdata.models.params import PARAMS
 
 
-def main():
+def main():  # noqa: D103
     raw_df = pd.DataFrame(
         columns=["year", "authors", "paper", "fig", "dataset", "ΔT", "q''"]
     )
@@ -47,6 +47,7 @@ def main():
 
 
 def get_dirs_sorted(path: Path) -> list[Path]:
+    """Get sorted directories without hidden files."""
     return [
         path
         for path in sorted(path.iterdir())
@@ -55,12 +56,14 @@ def get_dirs_sorted(path: Path) -> list[Path]:
 
 
 def get_data(file: str | Path) -> pd.DataFrame:
+    """Get data from Web Plot Digitizer file."""
     data = json.loads(Path(file).read_text(encoding="utf-8"))
     data = get_dict(data)
     return get_df(data)
 
 
 def get_dict(data: dict[str, Any]) -> dict[str, Any]:
+    """Get dictionary of datasets from Web Plot Digitizer data."""
     dataset_coll = data["datasetColl"]
     dict_of_data_sets = {}
     for data_set in dataset_coll:
@@ -71,6 +74,7 @@ def get_dict(data: dict[str, Any]) -> dict[str, Any]:
 
 
 def get_df(data: dict[str, Any]) -> pd.DataFrame:
+    """Get DataFrame from dictionary of datasets."""
     list_of_dfs = []
     for name, xy_matrix in data.items():
         df = pd.DataFrame({"x": xy_matrix[:, 0], "y": xy_matrix[:, 1], "name": name})

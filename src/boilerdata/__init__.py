@@ -6,4 +6,5 @@ PROJECT_PATH = Path()
 
 
 def get_params_file():
+    """Get the path to the project parameters file."""
     return PROJECT_PATH / "params.yaml"

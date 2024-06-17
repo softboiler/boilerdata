@@ -20,7 +20,7 @@ from boilerdata.validation import (
 )
 
 
-def main():
+def main():  # noqa: D103
     confidence_interval_95 = t.interval(0.95, PARAMS.records_to_average)[1]
 
     (

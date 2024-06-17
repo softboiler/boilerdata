@@ -86,7 +86,10 @@ showcontent = true
 exclude = [
     "**/node_modules",
     "**/__pycache__",
-    "**/.*",
+    "**/.*/**",
+    "**/.vscode/extensions",
+    "**/AppData",
+    "**/.venv",
     "bin",
     "submodules/template",
     "submodules/typings",
@@ -190,7 +193,7 @@ reportUnusedCallResult = "none"
 
 [tool.ruff]
 cache-dir = ".cache/.ruff_cache"
-extend-exclude = ["bin", "submodules"]
+extend-exclude = ["bin", "submodules", "**/axes_enum.py"]
 extend-include = ["*.ipynb"]
 src = ["src", "docs", "scripts", "tests"]
 output-format = "grouped"
@@ -275,6 +278,9 @@ convention = "numpy"
 ]
 "docs/**" = [
     "E402", # Need to allow imports below patches in docs notebooks
+]
+"src/boilerdata/models/axes.py" = [
+    "D102", # Lots of small, one-liner methods that are self-explanatory here
 ]
 "tests/**" = [
     "ARG001", # Allow unused arguments

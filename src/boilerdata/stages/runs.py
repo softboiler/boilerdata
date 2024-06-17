@@ -8,7 +8,7 @@ from boilerdata.models.params import PARAMS, Params
 from boilerdata.stages import get_run, set_dtypes
 
 
-def main():
+def main():  # noqa: D103
     (
         pd.DataFrame(
             columns=[ax.name for ax in PARAMS.axes.cols], data=get_runs(PARAMS)

@@ -1,5 +1,3 @@
-# flake8: noqa
-
 from enum import auto
 
 from boilerdata.types import GetNameEnum

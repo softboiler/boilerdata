@@ -12,7 +12,7 @@ from boilerdata.axes_enum import AxesEnum as A  # noqa: N814
 from boilerdata.models.params import PARAMS, Params
 
 
-def main():
+def main():  # noqa: D103
     (
         pd.read_csv(
             PARAMS.paths.file_results,

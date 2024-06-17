@@ -9,7 +9,7 @@ from boilerdata.models.params import PARAMS, Params
 from boilerdata.stages import get_run
 
 
-def main():
+def main():  # noqa: D103
     pd.DataFrame(data=get_benchmarks(PARAMS)).to_csv(
         PARAMS.paths.file_benchmarks_parsed, encoding="utf-8"
     )

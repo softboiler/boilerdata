@@ -1,3 +1,5 @@
+"""Validation."""
+
 import pandas as pd
 from pandera import Check, Column, DataFrameSchema, Index, MultiIndex
 from pandera.errors import SchemaError
@@ -94,6 +96,7 @@ validate_final_df = DataFrameSchema(
 
 
 def handle_invalid_data(df: pd.DataFrame, validator: DataFrameSchema) -> pd.DataFrame:
+    """Handle invalid data."""
     validation_error = True
     while validation_error:
         try:

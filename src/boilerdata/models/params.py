@@ -69,6 +69,7 @@ class Params(SynchronizedPathsYamlModel, extra=Extra.allow):
 
     @classmethod
     def get_model_errors(cls, params) -> list[str]:
+        """Get the error parameters for a given set of parameters."""
         return [f"{param}_err" for param in params]
 
 

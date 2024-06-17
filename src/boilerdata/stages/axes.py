@@ -7,7 +7,7 @@ from textwrap import dedent
 from boilerdata.models.params import PARAMS
 
 
-def main():
+def main():  # noqa: D103
     generate_axes_enum([ax.name for ax in PARAMS.axes.all], PARAMS.paths.axes_enum_copy)
     copy(PARAMS.paths.axes_enum_copy, PARAMS.paths.axes_enum)
     PARAMS.paths.file_originlab_coldes.write_text(
@@ -18,8 +18,8 @@ def main():
 def generate_axes_enum(axes: list[str], path: Path) -> None:
     """Given a list of axis names, generate a Python script with axes as enums."""
     text = dedent(
-        """\
-        # flake8: noqa
+        '''\
+        """Auto-generated enums for auto-complete."""
 
         from enum import auto
 
@@ -27,7 +27,7 @@ def generate_axes_enum(axes: list[str], path: Path) -> None:
 
 
         class AxesEnum(GetNameEnum):
-        """
+        '''
     )
     for label in axes:
         text += f"    {label} = auto()\n"
