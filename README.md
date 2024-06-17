@@ -62,6 +62,6 @@ flowchart TD
 
 ## Project information
 
-- [Changes](<https://blakeNaccarato.github.io/boilerdata/changelog.html>)
-- [Docs](<https://blakeNaccarato.github.io/boilerdata>)
-- [Contributing](<https://blakeNaccarato.github.io/boilerdata/contributing.html>)
+- [Changes](<https://softboiler.github.io/boilerdata/changelog.html>)
+- [Docs](<https://softboiler.github.io/boilerdata>)
+- [Contributing](<https://softboiler.github.io/boilerdata/contributing.html>)

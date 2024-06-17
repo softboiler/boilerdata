@@ -26,10 +26,10 @@ dependencies = [
     "seaborn>=0.13.2",
 ]
 [project.urls]
-Changes = "https://blakeNaccarato.github.io/boilerdata/changelog.html"
-Docs = "https://blakeNaccarato.github.io/boilerdata"
-Home = "https://github.com/blakeNaccarato/boilerdata"
-Tracker = "https://github.com/blakeNaccarato/boilerdata/issues"
+Changes = "https://softboiler.github.io/boilerdata/changelog.html"
+Docs = "https://softboiler.github.io/boilerdata"
+Home = "https://github.com/softboiler/boilerdata"
+Tracker = "https://github.com/softboiler/boilerdata/issues"
 [[project.authors]]
 name = "Blake Naccarato"
 email = "blake.naccarato@gmail.com"
@@ -65,7 +65,7 @@ directory = "changelog"
 filename = "CHANGELOG.md"
 template = "changelog/towncrier_template.md.jinja"
 title_format = ""
-issue_format = "[#{issue}](https://github.com/blakeNaccarato/boilerdata/{issue})"
+issue_format = "[#{issue}](https://github.com/softboiler/boilerdata/{issue})"
 underlines = ["", "", ""]
 [[tool.towncrier.section]]
 path = ""
