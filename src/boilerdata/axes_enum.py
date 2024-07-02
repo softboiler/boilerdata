@@ -1,3 +1,5 @@
+"""Auto-generated enums for auto-complete."""
+
 from enum import auto
 
 from boilerdata.types import GetNameEnum
