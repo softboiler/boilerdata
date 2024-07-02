@@ -1,6 +1,6 @@
-# `boilerdata`
+# boilerdata
 
-[![DOI](https://zenodo.org/badge/454192899.svg)](https://zenodo.org/badge/latestdoi/454192899)
+[![DOI](https://zenodo.org/badge/454192899.svg)](https://zenodo.org/badge/latestdoi/454192899) [![All Contributors](https://img.shields.io/github/all-contributors/softboiler/boilerdata?color=ee8449&style=flat-square)](#contributors)
 
 Data processing pipeline for a nucleate pool boiling apparatus.
 
@@ -65,3 +65,8 @@ flowchart TD
 - [Changes](<https://softboiler.github.io/boilerdata/changelog.html>)
 - [Docs](<https://softboiler.github.io/boilerdata>)
 - [Contributing](<https://softboiler.github.io/boilerdata/contributing.html>)
+
+## Contributors
+
+<!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
+<!-- ALL-CONTRIBUTORS-LIST:END -->

@@ -13,7 +13,7 @@ function Get-Py {
         'Virtual environment is the wrong Python version' | Write-Progress -Info
         Remove-Item -Recurse -Force $Env:VIRTUAL_ENV
     }
-    bin/uv venv --python $(Get-PySystem $Version)
+    bin/uv venv --python=$(Get-PySystem $Version)
     return Start-PyVenv
 }
 
@@ -36,7 +36,14 @@ function Get-PySystem {
 
     # ? Look for suitable global Python interpreter, return if correct Python version
     'Looking for suitable global Python interpreter' | Write-Progress -Info
-    if ($py -eq 'py') { $SysPy = & $py -$Version -c $getExe }
+    if ($py -eq 'py') {
+        try {
+            $SysPy = & $py -$Version -c $getExe
+        }
+        catch [System.Management.Automation.NativeCommandExitException] {
+            $SysPy = & $py -c $getExe
+        }
+    }
     else { $SysPy = & $py -c $getExe }
     if (Select-PyVersion $py $Version) { return $SysPy }
 
@@ -46,7 +53,7 @@ function Get-PySystem {
     $SysPyVenvPath = 'bin/sys_venv'
     if (!(Test-Path $SysPyVenvPath)) { bin/uv venv $SysPyVenvPath }
     $SysPyVenv = Start-PyVenv $SysPyVenvPath
-    bin/uv pip install $(Get-Content 'requirements/install.in')
+    bin/uv pip install --requirement 'requirements/install.txt'
     return & $SysPyVenv scripts/install.py $Version
 }
 
