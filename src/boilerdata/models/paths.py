@@ -40,7 +40,7 @@ class Paths(CreatePathsModel):
     mpl_hide_title: FilePath = plot_config / "hide_title.mplstyle"
 
     # * DVC-tracked imports
-    model: Path = data / "model.dillpickle"
+    model_functions: Path = data / "models"
 
     # * DVC-tracked inputs
     benchmarks: DirectoryPath = data / "benchmarks"

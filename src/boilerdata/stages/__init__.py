@@ -18,7 +18,7 @@ from boilerdata.models.params import PARAMS, Params
 idxs = pd.IndexSlice
 """Use to slice pd.MultiIndex indices."""
 
-MODEL, MODEL_WITH_UNCERTAINTY = get_model(PARAMS.paths.model)
+MODEL, MODEL_WITH_UNCERTAINTY = get_model(PARAMS.paths.model_functions)
 
 # * -------------------------------------------------------------------------------- * #
 # * DATA MANIPULATION

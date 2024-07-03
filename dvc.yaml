@@ -32,7 +32,7 @@ stages:
     cmd: "python ${paths.stages.pipeline}"
     deps:
       - "${paths.stages.pipeline}"
-      - "${paths.model}"
+      - "${paths.model_functions}"
       - "${paths.runs}"
       - "${paths.benchmarks_parsed}"
       - "${paths.validation}"

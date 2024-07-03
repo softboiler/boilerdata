@@ -22,7 +22,7 @@ paths:
   plot_config: data/config/plotting
   mpl_base: data/config/plotting/base.mplstyle
   mpl_hide_title: data/config/plotting/hide_title.mplstyle
-  model: data/model.dillpickle
+  model_functions: data/models
   benchmarks: data/benchmarks
   axes: data/axes
   axes_enum_copy: data/axes/axes_enum.py

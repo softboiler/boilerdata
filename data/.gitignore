@@ -4,3 +4,4 @@
 !*.dvcignore
 !*.dvc
 !config
+!models
