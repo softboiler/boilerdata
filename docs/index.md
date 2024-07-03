@@ -1,4 +1,4 @@
-# `boilerdata`
+# boilerdata
 
 [![All Contributors](https://img.shields.io/github/all-contributors/softboiler/boilerdata?color=ee8449&style=flat-square)](../README.md#contributors) [![DOI](https://zenodo.org/badge/454192899.svg)](https://zenodo.org/badge/latestdoi/454192899)
 
