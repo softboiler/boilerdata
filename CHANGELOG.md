@@ -14,6 +14,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 
 <!-- towncrier release notes start -->
 
+## [2024.1.1](https://github.com/softboiler/boilerdata/tree/2024.1.1)
+
+### Changes
+
+- Handle model function for all supported Python versions
+
 ## Unreleased
 
 - Nothing yet
