@@ -52,7 +52,7 @@
     {
       "label": "dvc: repro",
       "dependsOrder": "sequence",
-      "dependsOn": ["dvc: synchronize params"],
+      "dependsOn": ["dvc: sync params"],
       "type": "process",
       "command": "pwsh",
       "args": ["-Command", "dvc repro ${input:stage}"],
@@ -62,7 +62,7 @@
     {
       "label": "dvc: repro force downstream",
       "dependsOrder": "sequence",
-      "dependsOn": ["dvc: synchronize params"],
+      "dependsOn": ["dvc: sync params"],
       "type": "process",
       "command": "pwsh",
       "args": ["-Command", "dvc repro --force-downstream ${input:stage}"],
@@ -72,7 +72,7 @@
     {
       "label": "dvc: repro force",
       "dependsOrder": "sequence",
-      "dependsOn": ["dvc: synchronize params"],
+      "dependsOn": ["dvc: sync params"],
       "type": "process",
       "command": "pwsh",
       "args": ["-Command", "dvc repro --force ${input:stage}"],
@@ -82,7 +82,7 @@
     {
       "label": "dvc: dag",
       "dependsOrder": "sequence",
-      "dependsOn": ["dvc: synchronize params"],
+      "dependsOn": ["dvc: sync params"],
       "type": "process",
       "command": "pwsh",
       "args": [
@@ -93,7 +93,7 @@
       "problemMatcher": []
     },
     {
-      "label": "dvc: synchronize params",
+      "label": "dvc: sync params",
       "type": "process",
       "command": "pwsh",
       "args": ["-Command", "python -m boilerdata.models.params"],
