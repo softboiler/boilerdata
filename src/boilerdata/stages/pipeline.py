@@ -27,7 +27,7 @@ def main():  # noqa: D103
         pd.read_csv(
             PARAMS.paths.file_runs,
             index_col=(index_col := [A.trial, A.run, A.time]),
-            parse_dates=index_col,
+            parse_dates=index_col,  # pyright: ignore[reportArgumentType]
             dtype={col.name: col.dtype for col in PARAMS.axes.cols},
         )
         .pipe(handle_invalid_data, validate_initial_df)

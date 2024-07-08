@@ -17,7 +17,7 @@ def main():  # noqa: D103
         pd.read_csv(
             PARAMS.paths.file_results,
             index_col=(index := [A.trial, A.run]),
-            parse_dates=index,
+            parse_dates=index,  # pyright: ignore[reportArgumentType]
             dtype={col.name: col.dtype for col in PARAMS.axes.cols},
         )
         .pipe(transform_for_originlab, PARAMS)
