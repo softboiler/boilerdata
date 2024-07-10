@@ -44,6 +44,7 @@ ISPX_MAPPING: dict[str, IspxMappingValue] = {
     "pytest": get_url("docs.pytest.org/en"),
     "python": get_ispx("docs.python.org/3"),
     "pandas": get_ispx("pandas.pydata.org/docs"),
+    "boilercore": IspxMappingValue("https://softboiler.org/boilercore"),
 }
 """Intersphinx mapping."""
 TIPPY_RTD_URLS = [
@@ -196,6 +197,7 @@ nitpick_ignore_regex = [
     (r"py:.*", r"pydantic\..+"),  # ? https://github.com/pydantic/pydantic/issues/1339
     # ? TypeAlias: https://github.com/sphinx-doc/sphinx/issues/10785
     (r"py:class", rf"{PACKAGE}.*\.types\..+"),
+    (r"py:class", r"boilercore.*\.types\..+"),
 ]
 # ! Tippy
 # ? https://sphinx-tippy.readthedocs.io/en/latest/index.html#confval-tippy_anchor_parent_selector
