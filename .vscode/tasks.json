@@ -36,15 +36,13 @@
     {
       "label": "proj: set symlink propshop",
       "type": "shell",
-      "options": { "shell": { "executable": "pwsh" } },
-      "command": ".tools/scripts/Set-SymlinkPropshop.ps1",
+      "command": "New-Item -ItemType SymbolicLink -Target 'G:/My Drive/Blake/School/Grad/Projects/18.09 Nucleate Pool Boiling/Symlinks/propshop' -Path 'data/propshop' -Force",
       "icon": { "id": "graph" },
       "problemMatcher": []
     },
     {
       "label": "proj: local dev configs (Pyrightconfig, pytest.ini)",
       "type": "shell",
-      "options": { "shell": { "executable": "pwsh", "args": ["-Command"] } },
       "command": "python .tools/scripts/local_dev_configs.py",
       "icon": { "id": "graph" },
       "problemMatcher": []
