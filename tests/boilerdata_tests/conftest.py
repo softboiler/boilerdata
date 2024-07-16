@@ -27,7 +27,7 @@ def project_session_path(tmp_path_factory) -> Path:
     return get_session_path(tmp_path_factory, boilerdata)
 
 
-@pytest.fixture()
+@pytest.fixture
 def params(project_session_path):
     """Parameters."""
     from boilerdata.models.params import PARAMS  # noqa: PLC0415
@@ -41,7 +41,7 @@ def stage(request) -> str:
     return request.param
 
 
-@pytest.fixture()
+@pytest.fixture
 def main(stage) -> Callable[..., None]:  # noqa: D103
     return import_module(stage).main
 
@@ -52,7 +52,7 @@ def nb_to_execute(request) -> Path:
     return request.param
 
 
-@pytest.fixture()
+@pytest.fixture
 def nb_client_to_execute(nb_to_execute) -> PloomberClient:
     """Notebook client to be executed only."""
     return get_nb_client(nb_to_execute.read_text(encoding="utf-8"))
