@@ -100,20 +100,8 @@ name = "Changes"
 showcontent = true
 
 [tool.pyright]
-exclude = [
-    "**/node_modules",
-    "**/__pycache__",
-    "**/.*",
-    "**/.*/**",
-    "**/.venv",
-    "**/.vscode/extensions",
-    "**/AppData",
-    "bin",
-    "submodules/template",
-    "submodules/**/docs",
-    "submodules/**/scripts",
-    "submodules/**/tests",
-]
+stubPath = "submodules/stubs/stubs"
+ignore = ["bin", "submodules", "scripts/install.py"]
 typeCheckingMode = "strict"
 # Default "true" in strict
 analyzeUnannotatedFunctions = true
@@ -212,7 +200,7 @@ reportUnusedCallResult = "none"
 
 [tool.ruff]
 cache-dir = ".cache/.ruff_cache"
-extend-exclude = ["bin", "submodules", "**/axes_enum.py"]
+extend-exclude = ["bin", "submodules", "scripts/install.py", "**/axes_enum.py"]
 extend-include = ["*.ipynb"]
 src = ["src", "docs", "scripts", "tests"]
 output-format = "grouped"
