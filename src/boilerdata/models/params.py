@@ -12,7 +12,7 @@ from boilercore.models.trials import Trial, Trials
 from pydantic.v1 import Extra, Field
 
 from boilerdata import get_params_file
-from boilerdata.axes_enum import AxesEnum as A  # noqa: N814
+from boilerdata.axes_enum import AxesEnum as A
 from boilerdata.models.axes import Axes
 from boilerdata.models.paths import Paths
 
