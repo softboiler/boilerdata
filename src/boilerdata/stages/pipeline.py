@@ -10,7 +10,7 @@ from pyXSteam.XSteam import XSteam
 from scipy.constants import convert_temperature
 from scipy.stats import t
 
-from boilerdata.axes_enum import AxesEnum as A  # noqa: N814
+from boilerdata.axes_enum import AxesEnum as A
 from boilerdata.models.params import PARAMS, Mat, Params, Prop, get_prop
 from boilerdata.stages import MODEL, get_tcs, get_trial, per_run, per_trial
 from boilerdata.validation import (
