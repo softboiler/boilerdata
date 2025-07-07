@@ -12,7 +12,7 @@ from boilercore.modelfun import get_model
 from boilercore.models.trials import Trial
 from matplotlib import pyplot as plt
 
-from boilerdata.axes_enum import AxesEnum as A  # noqa: N814
+from boilerdata.axes_enum import AxesEnum as A
 from boilerdata.models.params import PARAMS, Params
 
 idxs = pd.IndexSlice
