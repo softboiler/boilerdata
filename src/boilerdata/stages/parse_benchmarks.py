@@ -4,7 +4,7 @@ from pathlib import Path
 
 import pandas as pd
 
-from boilerdata.axes_enum import AxesEnum as A  # noqa: N814
+from boilerdata.axes_enum import AxesEnum as A
 from boilerdata.models.params import PARAMS, Params
 from boilerdata.stages import get_run
 

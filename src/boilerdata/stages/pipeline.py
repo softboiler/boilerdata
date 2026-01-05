@@ -10,7 +10,7 @@ from pyXSteam.XSteam import XSteam
 from scipy.constants import convert_temperature
 from scipy.stats import t
 
-from boilerdata.axes_enum import AxesEnum as A  # noqa: N814
+from boilerdata.axes_enum import AxesEnum as A
 from boilerdata.models.params import PARAMS, Mat, Params, Prop, get_prop
 from boilerdata.stages import MODEL, get_tcs, get_trial, per_run, per_trial
 from boilerdata.validation import (
@@ -24,7 +24,8 @@ def main():  # noqa: D103
     confidence_interval_95 = t.interval(0.95, PARAMS.records_to_average)[1]
 
     (
-        pd.read_csv(
+        pd
+        .read_csv(
             PARAMS.paths.file_runs,
             index_col=(index_col := [A.trial, A.run, A.time]),
             parse_dates=index_col,  # pyright: ignore[reportArgumentType]
@@ -120,7 +121,8 @@ def agg_over_runs(
     trial = get_trial(grp, params)
     _, tc_errors = get_tcs(trial)
     grp = (
-        grp.groupby(level=[A.trial, A.run], dropna=False)  # type: ignore  # pandas
+        grp
+        .groupby(level=[A.trial, A.run], dropna=False)  # type: ignore  # pandas
         .agg(
             **(  # type: ignore  # pandas-stubs 2.0.2
                 # Take the default agg for all cols
@@ -133,9 +135,11 @@ def agg_over_runs(
             )
         )
         .assign(**{
-            tc_error: lambda df: df[tc_error]  # noqa: B023  # False positive
-            * confidence_interval_95
-            / np.sqrt(params.records_to_average)
+            tc_error: lambda df: (
+                df[tc_error]  # noqa: B023  # False positive
+                * confidence_interval_95
+                / np.sqrt(params.records_to_average)
+            )
             for tc_error in tc_errors
         })
     )
@@ -147,7 +151,7 @@ def get_superheat(df: pd.DataFrame, params: Params) -> pd.DataFrame:
     # Explicitly index the trial to catch improper application of the mean
     trial = get_trial(df, params)
     return df.assign(**{
-        A.DT: lambda df: (df[A.T_s] - df.loc[trial.date.isoformat(), A.T_w].mean()),
+        A.DT: lambda df: df[A.T_s] - df.loc[trial.date.isoformat(), A.T_w].mean(),
         A.DT_err: lambda df: df[A.T_s_err],
     })
 

@@ -31,7 +31,8 @@ def get_runs(params: Params) -> pd.DataFrame:
             )
 
     return (
-        pd.concat(runs)
+        pd
+        .concat(runs)
         .set_index(
             pd.MultiIndex.from_tuples(
                 multiindex, names=[idx.name for idx in params.axes.index]
