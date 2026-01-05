@@ -8,13 +8,14 @@ from time import sleep
 import originpro as op  # type: ignore  # Not installed in CI
 import pandas as pd
 
-from boilerdata.axes_enum import AxesEnum as A  # noqa: N814
+from boilerdata.axes_enum import AxesEnum as A
 from boilerdata.models.params import PARAMS, Params
 
 
 def main():  # noqa: D103
     (
-        pd.read_csv(
+        pd
+        .read_csv(
             PARAMS.paths.file_results,
             index_col=(index := [A.trial, A.run]),
             parse_dates=index,  # pyright: ignore[reportArgumentType]
@@ -52,7 +53,8 @@ def transform_for_originlab(df: pd.DataFrame, params: Params) -> pd.DataFrame:
     })
     units = cols.get_level_values("units")
     indices = [
-        index.to_series()
+        index
+        .to_series()
         .reset_index(drop=True)
         .replace(superscript, superscript_repl)  # type: ignore  # pandas
         .replace(subscript, subscript_repl)

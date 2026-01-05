@@ -4,7 +4,7 @@ import pandas as pd
 from pandera import Check, Column, DataFrameSchema, Index, MultiIndex
 from pandera.errors import SchemaError
 
-from boilerdata.axes_enum import AxesEnum as A  # noqa: N814
+from boilerdata.axes_enum import AxesEnum as A
 from boilerdata.models.params import PARAMS
 
 c = {ax.name: ax for ax in PARAMS.axes.all}
