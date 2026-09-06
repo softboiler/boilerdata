@@ -1,20 +1,20 @@
 {
   "name": "devcontainer",
-  "image": "mcr.microsoft.com/devcontainers/base:1.1.2-ubuntu-22.04",
+  "image": "mcr.microsoft.com/devcontainers/base:2.0.5-ubuntu-22.04",
   "features": {
-    "ghcr.io/devcontainers/features/powershell:1.4.0": {
+    "ghcr.io/devcontainers/features/powershell:2.0.3": {
       "version": "7.4.1"
     },
-    "ghcr.io/devcontainers/features/python:1.6.2": {
-      "version": "3.11"
+    "ghcr.io/devcontainers/features/python:1.8.0": {
+      "version": "3.14"
     },
-    "ghcr.io/devcontainers/features/desktop-lite:1.2.0": {
+    "ghcr.io/devcontainers/features/desktop-lite:1.2.10": {
       "noVncVersion": "1.4.0"
     },
     "ghcr.io/dhoeric/features/google-cloud-cli:1.0.1": {
       "version": "470.0.0"
     },
-    "ghcr.io/joshuanianji/devcontainer-features/gcloud-cli-persistence:1.0.3": {}
+    "ghcr.io/joshuanianji/devcontainer-features/gcloud-cli-persistence:1.0.4": {}
   },
   "onCreateCommand": {
     "set-up-profile": [
